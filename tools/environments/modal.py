@@ -1,7 +1,7 @@
 """Modal cloud execution environment using the native Modal SDK directly.
 
 Uses ``Sandbox.create()`` + ``Sandbox.exec()`` instead of the older runtime
-wrapper, while preserving Triibal' persistent snapshot behavior across sessions.
+wrapper, while preserving Tribal' persistent snapshot behavior across sessions.
 """
 
 import asyncio
@@ -14,7 +14,7 @@ import threading
 from pathlib import Path
 from typing import Any, Optional
 
-from triibal_constants import get_triibal_home
+from tribal_constants import get_tribal_home
 from tools.environments.base import (
     BaseEnvironment,
     _ThreadedProcessHandle,
@@ -31,7 +31,7 @@ from tools.environments.file_sync import (
 
 logger = logging.getLogger(__name__)
 
-_SNAPSHOT_STORE = get_triibal_home() / "modal_snapshots.json"
+_SNAPSHOT_STORE = get_tribal_home() / "modal_snapshots.json"
 _DIRECT_SNAPSHOT_NAMESPACE = "direct"
 
 
@@ -239,7 +239,7 @@ class ModalEnvironment(BaseEnvironment):
         self._worker.start()
 
         async def _create_sandbox(image_spec: Any):
-            app = await _modal.App.lookup.aio("triibal-agent", create_if_missing=True)
+            app = await _modal.App.lookup.aio("tribal-agent", create_if_missing=True)
             create_kwargs = dict(sandbox_kwargs)
             if cred_mounts:
                 existing_mounts = list(create_kwargs.pop("mounts", []))
@@ -283,7 +283,7 @@ class ModalEnvironment(BaseEnvironment):
         logger.info("Modal: sandbox created (task=%s)", self._task_id)
 
         self._sync_manager = FileSyncManager(
-            get_files_fn=lambda: iter_sync_files("/root/.triibal"),
+            get_files_fn=lambda: iter_sync_files("/root/.tribal"),
             upload_fn=self._modal_upload,
             delete_fn=self._modal_delete,
             bulk_upload_fn=self._modal_bulk_upload,
@@ -367,14 +367,14 @@ class ModalEnvironment(BaseEnvironment):
         self._worker.run_coroutine(_bulk(), timeout=120)
 
     def _modal_bulk_download(self, dest: Path) -> None:
-        """Download remote .triibal/ as a tar archive.
+        """Download remote .tribal/ as a tar archive.
 
-        Modal sandboxes always run as root, so /root/.triibal is hardcoded
+        Modal sandboxes always run as root, so /root/.tribal is hardcoded
         (consistent with iter_sync_files call on line 269).
         """
         async def _download():
             proc = await self._sandbox.exec.aio(
-                "bash", "-c", "tar cf - -C / root/.triibal"
+                "bash", "-c", "tar cf - -C / root/.tribal"
             )
             data = await proc.stdout.read.aio()
             exit_code = await proc.wait.aio()

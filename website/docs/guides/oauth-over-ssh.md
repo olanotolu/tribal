@@ -1,16 +1,16 @@
 ---
 sidebar_position: 17
 title: "OAuth over SSH / Remote Hosts"
-description: "How to complete browser-based OAuth (xAI, Spotify, MCP servers) when Triibal runs on a remote machine, container, or behind a jump box"
+description: "How to complete browser-based OAuth (xAI, Spotify, MCP servers) when Tribal runs on a remote machine, container, or behind a jump box"
 ---
 
 # OAuth over SSH / Remote Hosts
 
-Some Triibal providers — **xAI Grok OAuth**, **Spotify**, and **remote MCP servers** (Linear, Sentry, Atlassian, Asana, Figma, …) — use a *loopback redirect* OAuth flow. The auth server redirects your browser to `http://127.0.0.1:<port>/callback` so a tiny HTTP listener started by Triibal can grab the authorization code.
+Some Tribal providers — **xAI Grok OAuth**, **Spotify**, and **remote MCP servers** (Linear, Sentry, Atlassian, Asana, Figma, …) — use a *loopback redirect* OAuth flow. The auth server redirects your browser to `http://127.0.0.1:<port>/callback` so a tiny HTTP listener started by Tribal can grab the authorization code.
 
-This works perfectly when Triibal and your browser are on the same machine. It breaks the moment they aren't: your laptop's browser tries to reach `127.0.0.1` on **your laptop**, but the listener is bound to `127.0.0.1` on **the remote server**.
+This works perfectly when Tribal and your browser are on the same machine. It breaks the moment they aren't: your laptop's browser tries to reach `127.0.0.1` on **your laptop**, but the listener is bound to `127.0.0.1` on **the remote server**.
 
-The fix is a one-line SSH local-forward — **or**, when you don't have a real SSH client (GCP Cloud Shell, GitHub Codespaces, EC2 Instance Connect, Gitpod, browser-based web IDEs), the new `--manual-paste` flag introduced in [#26923](https://github.com/Triibal/triibal/issues/26923).
+The fix is a one-line SSH local-forward — **or**, when you don't have a real SSH client (GCP Cloud Shell, GitHub Codespaces, EC2 Instance Connect, Gitpod, browser-based web IDEs), the new `--manual-paste` flag introduced in [#26923](https://github.com/Tribal/tribal/issues/26923).
 
 ## TL;DR
 
@@ -19,38 +19,38 @@ The fix is a one-line SSH local-forward — **or**, when you don't have a real S
 ssh -N -L 56121:127.0.0.1:56121 user@remote-host
 
 # In your existing SSH session on the remote machine:
-triibal auth add xai-oauth --no-browser
-# → Triibal prints an authorize URL. Open it in a browser on your laptop.
+tribal auth add xai-oauth --no-browser
+# → Tribal prints an authorize URL. Open it in a browser on your laptop.
 # → Your browser redirects to 127.0.0.1:56121/callback, the tunnel forwards
 #   the request to the remote listener, login completes.
 ```
 
-Port `56121` is what xAI OAuth uses. For Spotify, replace it with `43827`. Triibal prints the exact port it bound to on the `Waiting for callback on ...` line — copy it from there.
+Port `56121` is what xAI OAuth uses. For Spotify, replace it with `43827`. Tribal prints the exact port it bound to on the `Waiting for callback on ...` line — copy it from there.
 
 ## Browser-only remote (Cloud Shell / Codespaces / EC2 Instance Connect)
 
-If you don't have a regular SSH client — for example because you're running Triibal inside GCP Cloud Shell, GitHub Codespaces, AWS EC2 Instance Connect, Gitpod, or another browser-based console — the SSH tunnel above isn't available. Use `--manual-paste` instead:
+If you don't have a regular SSH client — for example because you're running Tribal inside GCP Cloud Shell, GitHub Codespaces, AWS EC2 Instance Connect, Gitpod, or another browser-based console — the SSH tunnel above isn't available. Use `--manual-paste` instead:
 
 ```bash
-triibal auth add xai-oauth --manual-paste
-# → Triibal prints an authorize URL. Open it in a browser on your laptop.
+tribal auth add xai-oauth --manual-paste
+# → Tribal prints an authorize URL. Open it in a browser on your laptop.
 # → Approve in the browser. The redirect to 127.0.0.1:56121/callback fails
 #   to load — that's expected.
 # → Copy the FULL URL from the failed page's address bar.
 # → Paste it back into the terminal at the "Callback URL:" prompt.
 ```
 
-The same flag works on `triibal model --manual-paste` for the integrated model picker. A bare `?code=...&state=...` query fragment is accepted too if you don't want to paste the whole URL.
+The same flag works on `tribal model --manual-paste` for the integrated model picker. A bare `?code=...&state=...` query fragment is accepted too if you don't want to paste the whole URL.
 
-Triibal uses the **same PKCE verifier, state and nonce** for both paths, so the upstream OAuth flow is byte-identical — `--manual-paste` is purely a transport change for the callback hop and is not a security downgrade.
+Tribal uses the **same PKCE verifier, state and nonce** for both paths, so the upstream OAuth flow is byte-identical — `--manual-paste` is purely a transport change for the callback hop and is not a security downgrade.
 
 ## Which Providers Need This
 
 | Provider | Loopback port | Tunnel needed? |
 |----------|---------------|----------------|
-| `xai-oauth` (Grok SuperGrok) | `56121` | Yes, when Triibal is remote |
-| Spotify | `43827` | Yes, when Triibal is remote |
-| MCP servers (`auth: oauth`) | auto-picked per server | Yes, when Triibal is remote |
+| `xai-oauth` (Grok SuperGrok) | `56121` | Yes, when Tribal is remote |
+| Spotify | `43827` | Yes, when Tribal is remote |
+| MCP servers (`auth: oauth`) | auto-picked per server | Yes, when Tribal is remote |
 | `anthropic` (Claude Pro/Max) | n/a | No — paste-the-code flow |
 | `openai-codex` (ChatGPT Plus/Pro) | n/a | No — device code flow |
 | `minimax`, `nous-portal` | n/a | No — device code flow |
@@ -59,11 +59,11 @@ If your provider isn't in the table, you don't need a tunnel.
 
 ## MCP Servers
 
-Remote MCP servers (Linear, Sentry, Atlassian, Asana, Figma, etc.) use the same loopback redirect flow. Triibal auto-picks a free port per server and prints the authorize URL when the OAuth flow kicks off — either at startup (when a new server appears in `mcp_servers:`) or when you run `triibal mcp login <server>`.
+Remote MCP servers (Linear, Sentry, Atlassian, Asana, Figma, etc.) use the same loopback redirect flow. Tribal auto-picks a free port per server and prints the authorize URL when the OAuth flow kicks off — either at startup (when a new server appears in `mcp_servers:`) or when you run `tribal mcp login <server>`.
 
 You have two ways to complete it from a remote host:
 
-**Option 1 — paste the redirect URL back (no setup, works anywhere).** On an interactive terminal, Triibal prompts you to paste the redirect URL alongside running the local listener. After approving in your browser, the redirect to `http://127.0.0.1:<port>/callback` will show a connection error — that's expected. Copy the **full URL from the browser's address bar** and paste it at the Triibal prompt:
+**Option 1 — paste the redirect URL back (no setup, works anywhere).** On an interactive terminal, Tribal prompts you to paste the redirect URL alongside running the local listener. After approving in your browser, the redirect to `http://127.0.0.1:<port>/callback` will show a connection error — that's expected. Copy the **full URL from the browser's address bar** and paste it at the Tribal prompt:
 
 ```
   MCP OAuth: authorization required.
@@ -78,7 +78,7 @@ You have two ways to complete it from a remote host:
 
 A bare `?code=...&state=...` query string is accepted too. This works for any MCP server with `auth: oauth` and requires no SSH config changes.
 
-**Option 2 — SSH port forward (same as xAI / Spotify).** Triibal prints the exact port it bound to in the SSH-session hint. Open a separate terminal on your laptop:
+**Option 2 — SSH port forward (same as xAI / Spotify).** Tribal prints the exact port it bound to in the SSH-session hint. Open a separate terminal on your laptop:
 
 ```bash
 ssh -N -L <port>:127.0.0.1:<port> user@remote-host
@@ -86,7 +86,7 @@ ssh -N -L <port>:127.0.0.1:<port> user@remote-host
 
 Then open the authorize URL in your browser as normal; the redirect tunnels through and the listener picks it up. Use this when you need the flow to complete unattended (e.g. scripted re-auth where you can't paste interactively).
 
-**Pitfall — the 30s config-reload race.** If you edit `~/.triibal/config.yaml` to add an OAuth MCP server from inside a running Triibal session, the CLI auto-reloads MCP connections with a 30s timeout. That's not enough time to complete an interactive OAuth flow, and the reload will give up. Use `triibal mcp login <server>` from a fresh terminal instead — it has no such cap and waits the full 5 min for you to paste back.
+**Pitfall — the 30s config-reload race.** If you edit `~/.tribal/config.yaml` to add an OAuth MCP server from inside a running Tribal session, the CLI auto-reloads MCP connections with a 30s timeout. That's not enough time to complete an interactive OAuth flow, and the reload will give up. Use `tribal mcp login <server>` from a fresh terminal instead — it has no such cap and waits the full 5 min for you to paste back.
 
 ## Why the listener can't just bind 0.0.0.0
 
@@ -110,22 +110,22 @@ ssh -N -L 43827:127.0.0.1:43827 user@remote-host
 
 ```bash
 ssh user@remote-host
-triibal auth add xai-oauth --no-browser
+tribal auth add xai-oauth --no-browser
 # or for Spotify:
-# triibal auth add spotify --no-browser
+# tribal auth add spotify --no-browser
 ```
 
-Triibal detects the SSH session, skips the browser auto-open, and prints an authorize URL plus a `Waiting for callback on http://127.0.0.1:<port>/callback` line.
+Tribal detects the SSH session, skips the browser auto-open, and prints an authorize URL plus a `Waiting for callback on http://127.0.0.1:<port>/callback` line.
 
 ### 3. Open the URL in your local browser
 
-Copy the authorize URL from the remote terminal and paste it into the browser on your laptop. Approve the consent screen. The auth server redirects to `http://127.0.0.1:<port>/callback`. Your browser hits the tunnel, the request is forwarded to the remote listener, and Triibal prints `Login successful!`.
+Copy the authorize URL from the remote terminal and paste it into the browser on your laptop. Approve the consent screen. The auth server redirects to `http://127.0.0.1:<port>/callback`. Your browser hits the tunnel, the request is forwarded to the remote listener, and Tribal prints `Login successful!`.
 
 You can tear down the tunnel (Ctrl+C in the first terminal) once you see the success line.
 
 ## Step-by-step: through a jump box
 
-If you reach Triibal through a bastion / jump host, use SSH's built-in `-J` (ProxyJump):
+If you reach Tribal through a bastion / jump host, use SSH's built-in `-J` (ProxyJump):
 
 ```bash
 ssh -N -L 56121:127.0.0.1:56121 -J jump-user@jump-host user@final-host
@@ -144,7 +144,7 @@ ssh -N \
 
 ## Mosh, tmux, ssh ControlMaster
 
-The tunnel is a property of the underlying SSH connection. If you're running Triibal inside `tmux` over a mosh session, the mosh roaming doesn't carry the `-L` forwarding. Open a *separate* plain SSH session **only** for the `-L` tunnel — that's the connection that has to stay alive during the auth flow. Your interactive mosh/tmux session can keep running Triibal normally.
+The tunnel is a property of the underlying SSH connection. If you're running Tribal inside `tmux` over a mosh session, the mosh roaming doesn't carry the `-L` forwarding. Open a *separate* plain SSH session **only** for the `-L` tunnel — that's the connection that has to stay alive during the auth flow. Your interactive mosh/tmux session can keep running Tribal normally.
 
 If you use `ssh -o ControlMaster=auto`, port forwards on a multiplexed connection share the master's lifetime. Restart the master if the tunnel doesn't come up:
 
@@ -157,7 +157,7 @@ ssh -N -L 56121:127.0.0.1:56121 user@remote-host
 
 ### `bind [127.0.0.1]:56121: Address already in use`
 
-Something on your laptop is already using that port. Either the previous tunnel didn't shut down cleanly, or a local Triibal is also listening on it. Find and kill the offender:
+Something on your laptop is already using that port. Either the previous tunnel didn't shut down cleanly, or a local Tribal is also listening on it. Find and kill the offender:
 
 ```bash
 # macOS / Linux
@@ -169,15 +169,15 @@ Then retry the `ssh -L` command.
 
 ### "Could not establish connection. We couldn't reach your app." (xAI)
 
-xAI's authorize page shows this when its redirect to `127.0.0.1:<port>/callback` doesn't reach a listener. Either the tunnel isn't running, the port is wrong, or you're using the port Triibal printed in a previous run (the port can be auto-bumped if the preferred one is busy — always read the latest `Waiting for callback on ...` line).
+xAI's authorize page shows this when its redirect to `127.0.0.1:<port>/callback` doesn't reach a listener. Either the tunnel isn't running, the port is wrong, or you're using the port Tribal printed in a previous run (the port can be auto-bumped if the preferred one is busy — always read the latest `Waiting for callback on ...` line).
 
 ### `xAI authorization timed out waiting for the local callback`
 
-Same root cause as above — the redirect never made it back. Check the tunnel is still alive (`ssh -N` doesn't show output, so look at the terminal you started it from), restart it if needed, and re-run `triibal auth add xai-oauth --no-browser`.
+Same root cause as above — the redirect never made it back. Check the tunnel is still alive (`ssh -N` doesn't show output, so look at the terminal you started it from), restart it if needed, and re-run `tribal auth add xai-oauth --no-browser`.
 
-### Tokens land in the wrong `~/.triibal`
+### Tokens land in the wrong `~/.tribal`
 
-The tokens are written under the Linux user that ran `triibal auth add ...`. If your gateway / systemd service runs as a different user (e.g. `root` or a dedicated `triibal` user), authenticate as **that** user so the tokens land in their `~/.triibal/auth.json`. `sudo -u triibal -i` or equivalent.
+The tokens are written under the Linux user that ran `tribal auth add ...`. If your gateway / systemd service runs as a different user (e.g. `root` or a dedicated `tribal` user), authenticate as **that** user so the tokens land in their `~/.tribal/auth.json`. `sudo -u tribal -i` or equivalent.
 
 ## See Also
 

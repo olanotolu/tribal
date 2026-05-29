@@ -74,7 +74,7 @@ from gateway.platforms.yuanbao_proto import (
     _parse_fields,
     WS_HEARTBEAT_RUNNING,
     WS_HEARTBEAT_FINISH,
-    TRIIBAL_INSTANCE_ID,
+    TRIBAL_INSTANCE_ID,
     decode_conn_msg,
     decode_inbound_push,
     decode_query_group_info_rsp,
@@ -98,13 +98,13 @@ logger = logging.getLogger(__name__)
 # Version / platform constants (used in AUTH_BIND and sign-token headers)
 # ---------------------------------------------------------------------------
 try:
-    from triibal_cli import __version__ as _TRIIBAL_VERSION
+    from tribal_cli import __version__ as _TRIBAL_VERSION
 except ImportError:
-    _TRIIBAL_VERSION = "0.0.0"
+    _TRIBAL_VERSION = "0.0.0"
 
-_APP_VERSION = _TRIIBAL_VERSION
-_BOT_VERSION = _TRIIBAL_VERSION
-_YUANBAO_INSTANCE_ID = str(TRIIBAL_INSTANCE_ID)  # single source: yuanbao_proto.TRIIBAL_INSTANCE_ID
+_APP_VERSION = _TRIBAL_VERSION
+_BOT_VERSION = _TRIBAL_VERSION
+_YUANBAO_INSTANCE_ID = str(TRIBAL_INSTANCE_ID)  # single source: yuanbao_proto.TRIBAL_INSTANCE_ID
 _OPERATION_SYSTEM = sys.platform
 
 # ---------------------------------------------------------------------------
@@ -1588,11 +1588,11 @@ class AutoSetHomeMiddleware(InboundMiddleware):
                 adapter._auto_sethome_done = True  # DM seen — no further upgrades needed
             if _should_set:
                 try:
-                    from triibal_constants import get_triibal_home
+                    from tribal_constants import get_tribal_home
                     from utils import atomic_yaml_write
                     import yaml
 
-                    _home = get_triibal_home()
+                    _home = get_tribal_home()
                     config_path = _home / "config.yaml"
                     user_config: dict = {}
                     if config_path.exists():

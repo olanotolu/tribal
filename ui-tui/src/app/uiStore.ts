@@ -24,7 +24,7 @@ const buildUiState = (): UiState => ({
   showCost: false,
   showReasoning: false,
   sid: null,
-  status: 'summoning triibal…',
+  status: 'summoning tribal…',
   statusBar: 'top',
   streaming: true,
   theme: DEFAULT_THEME,

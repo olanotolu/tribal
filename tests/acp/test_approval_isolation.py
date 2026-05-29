@@ -1,14 +1,14 @@
 """Tests for GHSA-96vc-wcxf-jjff and GHSA-qg5c-hvr5-hjgr.
 
 Two related ACP approval-flow issues:
-- 96vc: ACP didn't set TRIIBAL_EXEC_ASK, so `check_all_command_guards`
+- 96vc: ACP didn't set TRIBAL_EXEC_ASK, so `check_all_command_guards`
   took the non-interactive auto-approve path and never consulted the
   ACP-supplied callback.
 - qg5c: `_approval_callback` was a module-global in terminal_tool;
   overlapping ACP sessions overwrote each other's callback slot.
 
 Both fixed together by:
-1. Setting TRIIBAL_EXEC_ASK inside _run_agent (wraps the agent call).
+1. Setting TRIBAL_EXEC_ASK inside _run_agent (wraps the agent call).
 2. Storing the callback in thread-local state so concurrent executor
    threads don't collide.
 """
@@ -145,7 +145,7 @@ class TestThreadLocalApprovalCallback:
         """ACP's ThreadPoolExecutor reuses threads. Two ACP sessions that land
         on the same reused thread must not share the interactive sudo password
         cache. The fix wraps each session in contextvars.copy_context() and
-        binds TRIIBAL_SESSION_KEY per session, so the cache scope key differs
+        binds TRIBAL_SESSION_KEY per session, so the cache scope key differs
         across sessions even when the underlying thread is identical.
         """
         import contextvars
@@ -196,23 +196,23 @@ class TestThreadLocalApprovalCallback:
 
 
 class TestAcpExecAskGate:
-    """GHSA-96vc-wcxf-jjff: ACP's _run_agent must set TRIIBAL_INTERACTIVE so
+    """GHSA-96vc-wcxf-jjff: ACP's _run_agent must set TRIBAL_INTERACTIVE so
     that tools.approval.check_all_command_guards takes the CLI-interactive
     path (consults the registered callback via prompt_dangerous_approval)
     instead of the non-interactive auto-approve shortcut.
 
-    (TRIIBAL_EXEC_ASK takes the gateway-queue path which requires a
+    (TRIBAL_EXEC_ASK takes the gateway-queue path which requires a
     notify_cb registered in _gateway_notify_cbs — not applicable to ACP,
     which uses a direct callback shape.)"""
 
     def test_interactive_env_var_routes_to_callback(self, monkeypatch):
-        """When TRIIBAL_INTERACTIVE is set and an approval callback is
+        """When TRIBAL_INTERACTIVE is set and an approval callback is
         registered, a dangerous command must route through the callback."""
         # Clean env
-        monkeypatch.delenv("TRIIBAL_INTERACTIVE", raising=False)
-        monkeypatch.delenv("TRIIBAL_GATEWAY_SESSION", raising=False)
-        monkeypatch.delenv("TRIIBAL_EXEC_ASK", raising=False)
-        monkeypatch.delenv("TRIIBAL_YOLO_MODE", raising=False)
+        monkeypatch.delenv("TRIBAL_INTERACTIVE", raising=False)
+        monkeypatch.delenv("TRIBAL_GATEWAY_SESSION", raising=False)
+        monkeypatch.delenv("TRIBAL_EXEC_ASK", raising=False)
+        monkeypatch.delenv("TRIBAL_YOLO_MODE", raising=False)
 
         from tools.approval import check_all_command_guards
 
@@ -222,24 +222,24 @@ class TestAcpExecAskGate:
             called_with.append((command, description))
             return "once"
 
-        # Without TRIIBAL_INTERACTIVE: takes auto-approve path, callback NOT called
+        # Without TRIBAL_INTERACTIVE: takes auto-approve path, callback NOT called
         result = check_all_command_guards(
             "rm -rf /tmp/test-exec-ask", "local", approval_callback=fake_cb,
         )
         assert result["approved"] is True
         assert called_with == [], (
-            "without TRIIBAL_INTERACTIVE the non-interactive auto-approve "
+            "without TRIBAL_INTERACTIVE the non-interactive auto-approve "
             "path should fire without consulting the callback"
         )
 
-        # With TRIIBAL_INTERACTIVE: callback IS called, approval flows through it
-        monkeypatch.setenv("TRIIBAL_INTERACTIVE", "1")
+        # With TRIBAL_INTERACTIVE: callback IS called, approval flows through it
+        monkeypatch.setenv("TRIBAL_INTERACTIVE", "1")
         called_with.clear()
         result = check_all_command_guards(
             "rm -rf /tmp/test-exec-ask", "local", approval_callback=fake_cb,
         )
         assert called_with, (
-            "with TRIIBAL_INTERACTIVE the approval path should consult the "
+            "with TRIBAL_INTERACTIVE the approval path should consult the "
             "registered callback — this was the ACP bypass in "
             "GHSA-96vc-wcxf-jjff"
         )

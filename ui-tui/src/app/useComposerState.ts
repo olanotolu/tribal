@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { useStdin, withInkSuspended } from '@triibal/ink'
+import { useStdin, withInkSuspended } from '@tribal/ink'
 import { useStore } from '@nanostores/react'
 import { useCallback, useMemo, useState } from 'react'
 
@@ -268,7 +268,7 @@ export function useComposerState({
   )
 
   const openEditor = useCallback(async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'triibal-'))
+    const dir = mkdtempSync(join(tmpdir(), 'tribal-'))
     const file = join(dir, 'prompt.md')
     const [cmd, ...args] = resolveEditor()
 

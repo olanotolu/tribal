@@ -39,7 +39,7 @@ def _make_event(text):
 
 def _fake_switch_result():
     """Build a successful ModelSwitchResult that bypasses real provider resolution."""
-    from triibal_cli.model_switch import ModelSwitchResult
+    from tribal_cli.model_switch import ModelSwitchResult
 
     return ModelSwitchResult(
         success=True,
@@ -58,23 +58,23 @@ def _setup_isolated_home(tmp_path, monkeypatch, model_yaml_value):
     """Write a config.yaml with the given ``model:`` value and stub the heavy bits."""
     import gateway.run as gateway_run
 
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    cfg_path = triibal_home / "config.yaml"
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    cfg_path = tribal_home / "config.yaml"
     cfg_path.write_text(
         yaml.safe_dump({"model": model_yaml_value, "providers": {}}),
         encoding="utf-8",
     )
 
-    monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+    monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(
-        "triibal_cli.model_switch.switch_model",
+        "tribal_cli.model_switch.switch_model",
         lambda **kw: _fake_switch_result(),
     )
-    # save_config writes to ``get_triibal_home() / config.yaml`` — point it here.
-    monkeypatch.setattr("triibal_constants.get_triibal_home", lambda: triibal_home)
-    monkeypatch.setattr("triibal_cli.config.get_triibal_home", lambda: triibal_home)
+    # save_config writes to ``get_tribal_home() / config.yaml`` — point it here.
+    monkeypatch.setattr("tribal_constants.get_tribal_home", lambda: tribal_home)
+    monkeypatch.setattr("tribal_cli.config.get_tribal_home", lambda: tribal_home)
     return cfg_path
 
 
@@ -112,19 +112,19 @@ async def test_model_global_persists_when_config_has_missing_model(tmp_path, mon
     """
     import gateway.run as gateway_run
 
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    cfg_path = triibal_home / "config.yaml"
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    cfg_path = tribal_home / "config.yaml"
     cfg_path.write_text(yaml.safe_dump({"providers": {}}), encoding="utf-8")
 
-    monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+    monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
     monkeypatch.setattr(
-        "triibal_cli.model_switch.switch_model",
+        "tribal_cli.model_switch.switch_model",
         lambda **kw: _fake_switch_result(),
     )
-    monkeypatch.setattr("triibal_constants.get_triibal_home", lambda: triibal_home)
-    monkeypatch.setattr("triibal_cli.config.get_triibal_home", lambda: triibal_home)
+    monkeypatch.setattr("tribal_constants.get_tribal_home", lambda: tribal_home)
+    monkeypatch.setattr("tribal_cli.config.get_tribal_home", lambda: tribal_home)
 
     result = await _make_runner()._handle_model_command(
         _make_event("/model gpt-5.5 --global")

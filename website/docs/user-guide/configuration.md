@@ -1,21 +1,21 @@
 ---
 sidebar_position: 2
 title: "Configuration"
-description: "Configure Triibal Agent — config.yaml, providers, models, API keys, and more"
+description: "Configure Tribal Agent — config.yaml, providers, models, API keys, and more"
 ---
 
 # Configuration
 
-All settings are stored in the `~/.triibal/` directory for easy access.
+All settings are stored in the `~/.tribal/` directory for easy access.
 
 :::tip Easiest path to a working `config.yaml`
-Run `triibal setup --portal` — one OAuth gets you a model provider and all four Tool Gateway tools without hand-editing YAML. Portal subscribers also get 10% off token-billed providers. See [Nous Portal](/integrations/nous-portal).
+Run `tribal setup --portal` — one OAuth gets you a model provider and all four Tool Gateway tools without hand-editing YAML. Portal subscribers also get 10% off token-billed providers. See [Nous Portal](/integrations/nous-portal).
 :::
 
 ## Directory Structure
 
 ```text
-~/.triibal/
+~/.tribal/
 ├── config.yaml     # Settings (model, terminal, TTS, compression, etc.)
 ├── .env            # API keys and secrets
 ├── auth.json       # OAuth provider credentials (Nous Portal, etc.)
@@ -30,29 +30,29 @@ Run `triibal setup --portal` — one OAuth gets you a model provider and all fou
 ## Managing Configuration
 
 ```bash
-triibal config              # View current configuration
-triibal config edit         # Open config.yaml in your editor
-triibal config set KEY VAL  # Set a specific value
-triibal config check        # Check for missing options (after updates)
-triibal config migrate      # Interactively add missing options
+tribal config              # View current configuration
+tribal config edit         # Open config.yaml in your editor
+tribal config set KEY VAL  # Set a specific value
+tribal config check        # Check for missing options (after updates)
+tribal config migrate      # Interactively add missing options
 
 # Examples:
-triibal config set model anthropic/claude-opus-4
-triibal config set terminal.backend docker
-triibal config set OPENROUTER_API_KEY sk-or-...  # Saves to .env
+tribal config set model anthropic/claude-opus-4
+tribal config set terminal.backend docker
+tribal config set OPENROUTER_API_KEY sk-or-...  # Saves to .env
 ```
 
 :::tip
-The `triibal config set` command automatically routes values to the right file — API keys are saved to `.env`, everything else to `config.yaml`.
+The `tribal config set` command automatically routes values to the right file — API keys are saved to `.env`, everything else to `config.yaml`.
 :::
 
 ## Configuration Precedence
 
 Settings are resolved in this order (highest priority first):
 
-1. **CLI arguments** — e.g., `triibal chat --model anthropic/claude-sonnet-4` (per-invocation override)
-2. **`~/.triibal/config.yaml`** — the primary config file for all non-secret settings
-3. **`~/.triibal/.env`** — fallback for env vars; **required** for secrets (API keys, tokens, passwords)
+1. **CLI arguments** — e.g., `tribal chat --model anthropic/claude-sonnet-4` (per-invocation override)
+2. **`~/.tribal/config.yaml`** — the primary config file for all non-secret settings
+3. **`~/.tribal/.env`** — fallback for env vars; **required** for secrets (API keys, tokens, passwords)
 4. **Built-in defaults** — hardcoded safe defaults when nothing else is set
 
 :::info Rule of Thumb
@@ -79,15 +79,15 @@ For AI provider setup (OpenRouter, Anthropic, Copilot, custom endpoints, self-ho
 
 ### Provider Timeouts
 
-You can set `providers.<id>.request_timeout_seconds` for a provider-wide request timeout, plus `providers.<id>.models.<model>.timeout_seconds` for a model-specific override. Applies to the primary turn client on every transport (OpenAI-wire, native Anthropic, Anthropic-compatible), the fallback chain, rebuilds after credential rotation, and (for OpenAI-wire) the per-request timeout kwarg — so the configured value wins over the legacy `TRIIBAL_API_TIMEOUT` env var.
+You can set `providers.<id>.request_timeout_seconds` for a provider-wide request timeout, plus `providers.<id>.models.<model>.timeout_seconds` for a model-specific override. Applies to the primary turn client on every transport (OpenAI-wire, native Anthropic, Anthropic-compatible), the fallback chain, rebuilds after credential rotation, and (for OpenAI-wire) the per-request timeout kwarg — so the configured value wins over the legacy `TRIBAL_API_TIMEOUT` env var.
 
-You can also set `providers.<id>.stale_timeout_seconds` for the non-streaming stale-call detector, plus `providers.<id>.models.<model>.stale_timeout_seconds` for a model-specific override. This wins over the legacy `TRIIBAL_API_CALL_STALE_TIMEOUT` env var.
+You can also set `providers.<id>.stale_timeout_seconds` for the non-streaming stale-call detector, plus `providers.<id>.models.<model>.stale_timeout_seconds` for a model-specific override. This wins over the legacy `TRIBAL_API_CALL_STALE_TIMEOUT` env var.
 
-Leaving these unset keeps the legacy defaults (`TRIIBAL_API_TIMEOUT=1800`s, `TRIIBAL_API_CALL_STALE_TIMEOUT=300`s, native Anthropic 900s). Not currently wired for AWS Bedrock (both `bedrock_converse` and AnthropicBedrock SDK paths use boto3 with its own timeout configuration). See the commented example in [`cli-config.yaml.example`](https://github.com/Triibal/triibal/blob/main/cli-config.yaml.example).
+Leaving these unset keeps the legacy defaults (`TRIBAL_API_TIMEOUT=1800`s, `TRIBAL_API_CALL_STALE_TIMEOUT=300`s, native Anthropic 900s). Not currently wired for AWS Bedrock (both `bedrock_converse` and AnthropicBedrock SDK paths use boto3 with its own timeout configuration). See the commented example in [`cli-config.yaml.example`](https://github.com/Tribal/tribal/blob/main/cli-config.yaml.example).
 
 ## Terminal Backend Configuration
 
-Triibal supports six terminal backends. Each determines where the agent's shell commands actually execute — your local machine, a Docker container, a remote server via SSH, a Modal cloud sandbox (direct or via the Nous-managed gateway), a Daytona workspace, or a Singularity/Apptainer container.
+Tribal supports six terminal backends. Each determines where the agent's shell commands actually execute — your local machine, a Docker container, a remote server via SSH, a Modal cloud sandbox (direct or via the Nous-managed gateway), a Daytona workspace, or a Singularity/Apptainer container.
 
 ```yaml
 terminal:
@@ -100,7 +100,7 @@ terminal:
   daytona_image: "nikolaik/python-nodejs:python3.11-nodejs20"               # Container image for Daytona backend
 ```
 
-For cloud sandboxes such as Modal and Daytona, `container_persistent: true` means Triibal will try to preserve filesystem state across sandbox recreation. It does not promise that the same live sandbox, PID space, or background processes will still be running later.
+For cloud sandboxes such as Modal and Daytona, `container_persistent: true` means Tribal will try to preserve filesystem state across sandbox recreation. It does not promise that the same live sandbox, PID space, or background processes will still be running later.
 
 ### Backend Overview
 
@@ -123,14 +123,14 @@ terminal:
 ```
 
 :::warning
-The agent has the same filesystem access as your user account. Use `triibal tools` to disable tools you don't want, or switch to Docker for sandboxing.
+The agent has the same filesystem access as your user account. Use `tribal tools` to disable tools you don't want, or switch to Docker for sandboxing.
 :::
 
 ### Docker Backend
 
 Runs commands inside a Docker container with security hardening (all capabilities dropped, no privilege escalation, PID limits).
 
-**Single persistent container, not per-command.** Triibal starts ONE long-lived container on first use and routes every terminal, file, and `execute_code` call through `docker exec` into that same container — across sessions, `/new`, `/reset`, and `delegate_task` subagents — for the lifetime of the Triibal process. Working-directory changes, installed packages, and files in `/workspace` carry over from one tool call to the next, just like a local shell. The container is stopped and removed on shutdown. See **Container lifecycle** below for details.
+**Single persistent container, not per-command.** Tribal starts ONE long-lived container on first use and routes every terminal, file, and `execute_code` call through `docker exec` into that same container — across sessions, `/new`, `/reset`, and `delegate_task` subagents — for the lifetime of the Tribal process. Working-directory changes, installed packages, and files in `/workspace` carry over from one tool call to the next, just like a local shell. The container is stopped and removed on shutdown. See **Container lifecycle** below for details.
 
 ```yaml
 terminal:
@@ -154,13 +154,13 @@ terminal:
   container_persistent: true       # Persist /workspace and /root across sessions
 ```
 
-**`terminal.docker_extra_args`** (also overridable via `TERMINAL_DOCKER_EXTRA_ARGS='["--gpus=all"]'`) lets you pass arbitrary `docker run` flags that Triibal doesn't surface as first-class keys — `--gpus`, `--network`, `--add-host`, alternative `--security-opt` overrides, etc. Each entry must be a string; the list is appended last to the assembled `docker run` invocation so it can override Triibal' defaults if needed. Use sparingly — flags that conflict with the sandbox hardening (capability drops, `--user`, the workspace bind mount) will silently weaken isolation.
+**`terminal.docker_extra_args`** (also overridable via `TERMINAL_DOCKER_EXTRA_ARGS='["--gpus=all"]'`) lets you pass arbitrary `docker run` flags that Tribal doesn't surface as first-class keys — `--gpus`, `--network`, `--add-host`, alternative `--security-opt` overrides, etc. Each entry must be a string; the list is appended last to the assembled `docker run` invocation so it can override Tribal' defaults if needed. Use sparingly — flags that conflict with the sandbox hardening (capability drops, `--user`, the workspace bind mount) will silently weaken isolation.
 
-**Requirements:** Docker Desktop or Docker Engine installed and running. Triibal probes `$PATH` plus common macOS install locations (`/usr/local/bin/docker`, `/opt/homebrew/bin/docker`, Docker Desktop app bundle). Podman is supported out of the box: set `TRIIBAL_DOCKER_BINARY=podman` (or the full path) to force it when both are installed.
+**Requirements:** Docker Desktop or Docker Engine installed and running. Tribal probes `$PATH` plus common macOS install locations (`/usr/local/bin/docker`, `/opt/homebrew/bin/docker`, Docker Desktop app bundle). Podman is supported out of the box: set `TRIBAL_DOCKER_BINARY=podman` (or the full path) to force it when both are installed.
 
-**Container lifecycle:** Triibal reuses a single long-lived container (`docker run -d ... sleep 2h`) for every terminal and file-tool call, across sessions, `/new`, `/reset`, and `delegate_task` subagents, for the lifetime of the Triibal process. Commands run via `docker exec` with a login shell, so working-directory changes, installed packages, and files in `/workspace` all persist from one tool call to the next. The container is stopped and removed on Triibal shutdown (or when the idle-sweep reclaims it).
+**Container lifecycle:** Tribal reuses a single long-lived container (`docker run -d ... sleep 2h`) for every terminal and file-tool call, across sessions, `/new`, `/reset`, and `delegate_task` subagents, for the lifetime of the Tribal process. Commands run via `docker exec` with a login shell, so working-directory changes, installed packages, and files in `/workspace` all persist from one tool call to the next. The container is stopped and removed on Tribal shutdown (or when the idle-sweep reclaims it).
 
-Parallel subagents spawned via `delegate_task(tasks=[...])` share this one container — concurrent `cd`, env mutations, and writes to the same path will collide. If a subagent needs an isolated sandbox, it must register a per-task image override via `register_task_env_overrides()`, which RL and benchmark environments (TerminalBench2, TriibalSweEnv, etc.) do automatically for their per-task Docker images.
+Parallel subagents spawned via `delegate_task(tasks=[...])` share this one container — concurrent `cd`, env mutations, and writes to the same path will collide. If a subagent needs an isolated sandbox, it must register a per-task image override via `register_task_env_overrides()`, which RL and benchmark environments (TerminalBench2, TribalSweEnv, etc.) do automatically for their per-task Docker images.
 
 **Security hardening:**
 - `--cap-drop ALL` with only `DAC_OVERRIDE`, `CHOWN`, `FOWNER` added back
@@ -168,7 +168,7 @@ Parallel subagents spawned via `delegate_task(tasks=[...])` share this one conta
 - `--pids-limit 256`
 - Size-limited tmpfs for `/tmp` (512MB), `/var/tmp` (256MB), `/run` (64MB)
 
-**Credential forwarding:** Env vars listed in `docker_forward_env` are resolved from your shell environment first, then `~/.triibal/.env`. Skills can also declare `required_environment_variables` which are merged automatically.
+**Credential forwarding:** Env vars listed in `docker_forward_env` are resolved from your shell environment first, then `~/.tribal/.env`. Skills can also declare `required_environment_variables` which are merged automatically.
 
 ### SSH Backend
 
@@ -212,9 +212,9 @@ terminal:
 
 **Required:** Either `MODAL_TOKEN_ID` + `MODAL_TOKEN_SECRET` environment variables, or a `~/.modal.toml` config file.
 
-**Persistence:** When enabled, the sandbox filesystem is snapshotted on cleanup and restored on next session. Snapshots are tracked in `~/.triibal/modal_snapshots.json`. This preserves filesystem state, not live processes, PID space, or background jobs.
+**Persistence:** When enabled, the sandbox filesystem is snapshotted on cleanup and restored on next session. Snapshots are tracked in `~/.tribal/modal_snapshots.json`. This preserves filesystem state, not live processes, PID space, or background jobs.
 
-**Credential files:** Automatically mounted from `~/.triibal/` (OAuth tokens, etc.) and synced before each command.
+**Credential files:** Automatically mounted from `~/.tribal/` (OAuth tokens, etc.) and synced before each command.
 
 ### Daytona Backend
 
@@ -231,7 +231,7 @@ terminal:
 
 **Required:** `DAYTONA_API_KEY` environment variable.
 
-**Persistence:** When enabled, sandboxes are stopped (not deleted) on cleanup and resumed on next session. Sandbox names follow the pattern `triibal-{task_id}`.
+**Persistence:** When enabled, sandboxes are stopped (not deleted) on cleanup and resumed on next session. Sandbox names follow the pattern `tribal-{task_id}`.
 
 **Disk limit:** Daytona enforces a 10 GiB maximum. Requests above this are capped with a warning.
 
@@ -252,7 +252,7 @@ terminal:
 
 **Image handling:** Docker URLs (`docker://...`) are automatically converted to SIF files and cached. Existing `.sif` files are used directly.
 
-**Scratch directory:** Resolved in order: `TERMINAL_SCRATCH_DIR` → `TERMINAL_SANDBOX_DIR/singularity` → `/scratch/$USER/triibal-agent` (HPC convention) → `~/.triibal/sandboxes/singularity`.
+**Scratch directory:** Resolved in order: `TERMINAL_SCRATCH_DIR` → `TERMINAL_SANDBOX_DIR/singularity` → `/scratch/$USER/tribal-agent` (HPC convention) → `~/.tribal/sandboxes/singularity`.
 
 **Isolation:** Uses `--containall --no-home` for full namespace isolation without mounting the host home directory.
 
@@ -261,9 +261,9 @@ terminal:
 If terminal commands fail immediately or the terminal tool is reported as disabled:
 
 - **Local** — No special requirements. The safest default when getting started.
-- **Docker** — Run `docker version` to verify Docker is working. If it fails, fix Docker or `triibal config set terminal.backend local`.
-- **SSH** — Both `TERMINAL_SSH_HOST` and `TERMINAL_SSH_USER` must be set. Triibal logs a clear error if either is missing.
-- **Modal** — Needs `MODAL_TOKEN_ID` env var or `~/.modal.toml`. Run `triibal doctor` to check.
+- **Docker** — Run `docker version` to verify Docker is working. If it fails, fix Docker or `tribal config set terminal.backend local`.
+- **SSH** — Both `TERMINAL_SSH_HOST` and `TERMINAL_SSH_USER` must be set. Tribal logs a clear error if either is missing.
+- **Modal** — Needs `MODAL_TOKEN_ID` env var or `~/.modal.toml`. Run `tribal doctor` to check.
 - **Daytona** — Needs `DAYTONA_API_KEY`. The Daytona SDK handles server URL configuration.
 - **Singularity** — Needs `apptainer` or `singularity` in `$PATH`. Common on HPC clusters.
 
@@ -271,11 +271,11 @@ When in doubt, set `terminal.backend` back to `local` and verify that commands r
 
 ### Remote-to-Host File Sync on Teardown
 
-For the **SSH**, **Modal**, and **Daytona** backends (anywhere the agent's working tree lives on a different machine than the host running Triibal), Triibal tracks files the agent touched inside the remote sandbox and, on session teardown / sandbox cleanup, **syncs the modified files back to the host** under `~/.triibal/cache/remote-syncs/<session-id>/`.
+For the **SSH**, **Modal**, and **Daytona** backends (anywhere the agent's working tree lives on a different machine than the host running Tribal), Tribal tracks files the agent touched inside the remote sandbox and, on session teardown / sandbox cleanup, **syncs the modified files back to the host** under `~/.tribal/cache/remote-syncs/<session-id>/`.
 
 - Triggers on: session close, `/new`, `/reset`, gateway message timeout, `delegate_task` subagent completion when the child used a remote backend.
 - Covers the whole tree the agent modified, not just files it explicitly opened. Additions, edits, and deletions are all captured.
-- The remote sandbox may have been torn down by the time you go looking; the local `~/.triibal/cache/remote-syncs/…` copy is the authoritative record of what the agent changed.
+- The remote sandbox may have been torn down by the time you go looking; the local `~/.tribal/cache/remote-syncs/…` copy is the authoritative record of what the agent changed.
 - Large binary outputs (model checkpoints, raw datasets) are capped by size — the sync skips files over `file_sync_max_mb` (default `100`). Bump that if you expect bigger artifacts to come back.
 
 ```yaml
@@ -296,7 +296,7 @@ terminal:
   docker_volumes:
     - "/home/user/projects:/workspace/projects"   # Read-write (default)
     - "/home/user/datasets:/data:ro"              # Read-only
-    - "/home/user/.triibal/cache/documents:/output" # Gateway-visible exports
+    - "/home/user/.tribal/cache/documents:/output" # Gateway-visible exports
 ```
 
 This is useful for:
@@ -306,11 +306,11 @@ This is useful for:
 
 If you use a messaging gateway and want the agent to send generated files via
 `MEDIA:/...`, prefer a dedicated host-visible export mount such as
-`/home/user/.triibal/cache/documents:/output`.
+`/home/user/.tribal/cache/documents:/output`.
 
 - Write files inside Docker to `/output/...`
 - Emit the **host path** in `MEDIA:`, for example:
-  `MEDIA:/home/user/.triibal/cache/documents/report.txt`
+  `MEDIA:/home/user/.tribal/cache/documents/report.txt`
 - Do **not** emit `/workspace/...` or `/output/...` unless that exact path also
   exists for the gateway process on the host
 
@@ -334,7 +334,7 @@ terminal:
     - "NPM_TOKEN"
 ```
 
-Triibal resolves each listed variable from your current shell first, then falls back to `~/.triibal/.env` if it was saved with `triibal config set`.
+Tribal resolves each listed variable from your current shell first, then falls back to `~/.tribal/.env` if it was saved with `tribal config set`.
 
 :::warning
 Anything listed in `docker_forward_env` becomes visible to commands run inside the container. Only forward credentials you are comfortable exposing to the terminal session.
@@ -350,13 +350,13 @@ terminal:
   docker_run_as_host_user: true   # default: false
 ```
 
-When enabled, Triibal appends `--user $(id -u):$(id -g)` to the `docker run` command so files written into bind-mounted directories (`/workspace`, `/root`, anything in `docker_volumes`) are owned by your host user, not root. The trade-off: the container can no longer `apt install` or write to root-owned paths like `/root/.npm` — use a base image whose `HOME` is owned by a non-root user (or add your required tooling at image build time) if you need both.
+When enabled, Tribal appends `--user $(id -u):$(id -g)` to the `docker run` command so files written into bind-mounted directories (`/workspace`, `/root`, anything in `docker_volumes`) are owned by your host user, not root. The trade-off: the container can no longer `apt install` or write to root-owned paths like `/root/.npm` — use a base image whose `HOME` is owned by a non-root user (or add your required tooling at image build time) if you need both.
 
 Leave this `false` (the default) for backwards-compatible behavior. Turn it on when your workflow is mostly "edit mounted host files" and you're tired of `sudo chown -R`.
 
 ### Optional: Mount the Launch Directory into `/workspace`
 
-Docker sandboxes stay isolated by default. Triibal does **not** pass your current host working directory into the container unless you explicitly opt in.
+Docker sandboxes stay isolated by default. Tribal does **not** pass your current host working directory into the container unless you explicitly opt in.
 
 Enable it in `config.yaml`:
 
@@ -367,7 +367,7 @@ terminal:
 ```
 
 When enabled:
-- if you launch Triibal from `~/projects/my-app`, that host directory is bind-mounted to `/workspace`
+- if you launch Tribal from `~/projects/my-app`, that host directory is bind-mounted to `/workspace`
 - the Docker backend starts in `/workspace`
 - file tools and terminal commands both see the same mounted project
 
@@ -375,7 +375,7 @@ When disabled, `/workspace` stays sandbox-owned unless you explicitly mount some
 
 Security tradeoff:
 - `false` preserves the sandbox boundary
-- `true` gives the sandbox direct access to the directory you launched Triibal from
+- `true` gives the sandbox direct access to the directory you launched Tribal from
 
 Use the opt-in only when you intentionally want the container to work on live host files.
 
@@ -393,7 +393,7 @@ terminal:
 To disable:
 
 ```bash
-triibal config set terminal.persistent_shell false
+tribal config set terminal.persistent_shell false
 ```
 
 **What persists across commands:**
@@ -434,21 +434,21 @@ skills:
 
 **How skill settings work:**
 
-- `triibal config migrate` scans all enabled skills, finds unconfigured settings, and offers to prompt you
-- `triibal config show` displays all skill settings under "Skill Settings" with the skill they belong to
+- `tribal config migrate` scans all enabled skills, finds unconfigured settings, and offers to prompt you
+- `tribal config show` displays all skill settings under "Skill Settings" with the skill they belong to
 - When a skill loads, its resolved config values are injected into the skill context automatically
 
 **Setting values manually:**
 
 ```bash
-triibal config set skills.config.myplugin.path ~/myplugin-data
+tribal config set skills.config.myplugin.path ~/myplugin-data
 ```
 
 For details on declaring config settings in your own skills, see [Creating Skills — Config Settings](/developer-guide/creating-skills#config-settings-configyaml).
 
 ### Guard on agent-created skill writes
 
-When the agent uses `skill_manage` to create, edit, patch, or delete a skill, Triibal can optionally scan the new/updated content for dangerous keyword patterns (credential harvesting, obvious prompt injection, exfil instructions). The scanner is **off by default** — real agent workflows that legitimately touch `~/.ssh/` or mention `$OPENAI_API_KEY` were tripping the heuristic too often. Turn it back on if you want the scanner to prompt you before the agent's skill writes land:
+When the agent uses `skill_manage` to create, edit, patch, or delete a skill, Tribal can optionally scan the new/updated content for dangerous keyword patterns (credential harvesting, obvious prompt injection, exfil instructions). The scanner is **off by default** — real agent workflows that legitimately touch `~/.ssh/` or mention `$OPENAI_API_KEY` were tripping the heuristic too often. Turn it back on if you want the scanner to prompt you before the agent's skill writes land:
 
 ```yaml
 skills:
@@ -489,7 +489,7 @@ The agent also deduplicates file reads automatically — if the same file region
 
 ## Tool Output Truncation Limits
 
-Three related caps control how much raw output a tool can return before Triibal truncates it:
+Three related caps control how much raw output a tool can return before Tribal truncates it:
 
 ```yaml
 tool_output:
@@ -498,7 +498,7 @@ tool_output:
   max_line_length: 2000   # per-line cap in read_file's line-numbered view
 ```
 
-- **`max_bytes`** — When a `terminal` command produces more than this many characters of combined stdout/stderr, Triibal keeps the first 40% and last 60% and inserts a `[OUTPUT TRUNCATED]` notice between them. Default `50000` (≈12-15K tokens across typical tokenisers).
+- **`max_bytes`** — When a `terminal` command produces more than this many characters of combined stdout/stderr, Tribal keeps the first 40% and last 60% and inserts a `[OUTPUT TRUNCATED]` notice between them. Default `50000` (≈12-15K tokens across typical tokenisers).
 - **`max_lines`** — Upper bound on the `limit` parameter of a single `read_file` call. Requests above this are clamped so a single read can't flood the context window. Default `2000`.
 - **`max_line_length`** — Per-line cap applied when `read_file` emits the line-numbered view. Lines longer than this are truncated to this many chars followed by `... [truncated]`. Default `2000`.
 
@@ -529,10 +529,10 @@ agent:
 ```
 
 This applies **after** per-platform tool config (`platform_toolsets` written by
-`triibal tools`), so a toolset listed here is always removed — even if a
+`tribal tools`), so a toolset listed here is always removed — even if a
 platform's saved config still lists it. Use this when you want a single
 switch for "turn X off everywhere" rather than editing 15+ platform rows in
-the `triibal tools` UI.
+the `tribal tools` UI.
 
 Leaving the list empty, or omitting the key, is a no-op.
 
@@ -541,7 +541,7 @@ Leaving the list empty, or omitting the key, is a no-op.
 Enable isolated git worktrees for running multiple agents in parallel on the same repo:
 
 ```yaml
-worktree: true    # Always create a worktree (same as triibal -w)
+worktree: true    # Always create a worktree (same as tribal -w)
 # worktree: false # Default — only when -w flag is passed
 ```
 
@@ -558,7 +558,7 @@ node_modules/
 
 ## Context Compression
 
-Triibal automatically compresses long conversations to stay within your model's context window. The compression summarizer is a separate LLM call — you can point it at any provider or endpoint.
+Tribal automatically compresses long conversations to stay within your model's context window. The compression summarizer is a separate LLM call — you can point it at any provider or endpoint.
 
 All compression settings live in `config.yaml` (no environment variables).
 
@@ -585,7 +585,7 @@ auxiliary:
 Older configs with `compression.summary_model`, `compression.summary_provider`, and `compression.summary_base_url` are automatically migrated to `auxiliary.compression.*` on first load (config version 17). No manual action needed.
 :::
 
-`hygiene_hard_message_limit` is a gateway-only **pre-compression safety valve**. Runaway sessions with thousands of messages can hit model context limits before the normal percent-of-context threshold fires; when message count crosses this ceiling, Triibal forces compression regardless of token usage. Default `400` — raise it for platforms where very long sessions are normal, lower it to force more aggressive compression. Editing this value on a running gateway takes effect on the next message (see below).
+`hygiene_hard_message_limit` is a gateway-only **pre-compression safety valve**. Runaway sessions with thousands of messages can hit model context limits before the normal percent-of-context threshold fires; when message count crosses this ceiling, Tribal forces compression regardless of token usage. Default `400` — raise it for platforms where very long sessions are normal, lower it to force more aggressive compression. Editing this value on a running gateway takes effect on the next message (see below).
 
 `protect_first_n` controls how many **non-system** head messages are pinned across every compaction. Default `3` — the opening user/assistant exchange survives every summarizer pass so the original goal stays visible. On long-running rolling-compaction sessions where the opening turn is no longer relevant, set `protect_first_n: 0` to pin nothing but the system prompt + summary + tail. The system prompt itself is always preserved regardless of this setting.
 
@@ -649,7 +649,7 @@ context:
   engine: "lcm"          # must match the plugin's name
 ```
 
-Plugin engines are **never auto-activated** — you must explicitly set `context.engine` to the plugin name. Available engines can be browsed and selected via `triibal plugins` → Provider Plugins → Context Engine.
+Plugin engines are **never auto-activated** — you must explicitly set `context.engine` to the plugin name. Available engines can be browsed and selected via `tribal plugins` → Provider Plugins → Context Engine.
 
 See [Memory Providers](/user-guide/features/memory-providers) for the analogous single-select system for memory plugins.
 
@@ -674,24 +674,24 @@ Budget pressure is enabled by default. The agent sees warnings naturally as part
 
 When the iteration budget is fully exhausted, the CLI shows a notification to the user: `⚠ Iteration budget reached (90/90) — response may be incomplete`. If the budget runs out during active work, the agent generates a summary of what was accomplished before stopping.
 
-`agent.api_max_retries` controls how many times Triibal retries a provider API call on transient errors (rate limits, connection drops, 5xx) **before** fallback-provider switching engages. The default is `3` — four attempts total. If you have [fallback providers](/user-guide/features/fallback-providers) configured and want to fail over faster, drop this to `0` so the first transient error on your primary immediately hands off to the fallback instead of churning retries against the flaky endpoint.
+`agent.api_max_retries` controls how many times Tribal retries a provider API call on transient errors (rate limits, connection drops, 5xx) **before** fallback-provider switching engages. The default is `3` — four attempts total. If you have [fallback providers](/user-guide/features/fallback-providers) configured and want to fail over faster, drop this to `0` so the first transient error on your primary immediately hands off to the fallback instead of churning retries against the flaky endpoint.
 
 ### API Timeouts
 
-Triibal has separate timeout layers for streaming, plus a stale detector for non-streaming calls. The stale detectors auto-adjust for local providers only when you leave them at their implicit defaults.
+Tribal has separate timeout layers for streaming, plus a stale detector for non-streaming calls. The stale detectors auto-adjust for local providers only when you leave them at their implicit defaults.
 
 | Timeout | Default | Local providers | Config / env |
 |---------|---------|----------------|--------------|
-| Socket read timeout | 120s | Auto-raised to 1800s | `TRIIBAL_STREAM_READ_TIMEOUT` |
-| Stale stream detection | 180s | Auto-disabled | `TRIIBAL_STREAM_STALE_TIMEOUT` |
-| Stale non-stream detection | 300s | Auto-disabled when left implicit | `providers.<id>.stale_timeout_seconds` or `TRIIBAL_API_CALL_STALE_TIMEOUT` |
-| API call (non-streaming) | 1800s | Unchanged | `providers.<id>.request_timeout_seconds` / `timeout_seconds` or `TRIIBAL_API_TIMEOUT` |
+| Socket read timeout | 120s | Auto-raised to 1800s | `TRIBAL_STREAM_READ_TIMEOUT` |
+| Stale stream detection | 180s | Auto-disabled | `TRIBAL_STREAM_STALE_TIMEOUT` |
+| Stale non-stream detection | 300s | Auto-disabled when left implicit | `providers.<id>.stale_timeout_seconds` or `TRIBAL_API_CALL_STALE_TIMEOUT` |
+| API call (non-streaming) | 1800s | Unchanged | `providers.<id>.request_timeout_seconds` / `timeout_seconds` or `TRIBAL_API_TIMEOUT` |
 
-The **socket read timeout** controls how long httpx waits for the next chunk of data from the provider. Local LLMs can take minutes for prefill on large contexts before producing the first token, so Triibal raises this to 30 minutes when it detects a local endpoint. If you explicitly set `TRIIBAL_STREAM_READ_TIMEOUT`, that value is always used regardless of endpoint detection.
+The **socket read timeout** controls how long httpx waits for the next chunk of data from the provider. Local LLMs can take minutes for prefill on large contexts before producing the first token, so Tribal raises this to 30 minutes when it detects a local endpoint. If you explicitly set `TRIBAL_STREAM_READ_TIMEOUT`, that value is always used regardless of endpoint detection.
 
 The **stale stream detection** kills connections that receive SSE keep-alive pings but no actual content. This is disabled entirely for local providers since they don't send keep-alive pings during prefill.
 
-The **stale non-stream detection** kills non-streaming calls that produce no response for too long. By default Triibal disables this on local endpoints to avoid false positives during long prefills. If you explicitly set `providers.<id>.stale_timeout_seconds`, `providers.<id>.models.<model>.stale_timeout_seconds`, or `TRIIBAL_API_CALL_STALE_TIMEOUT`, that explicit value is honored even on local endpoints.
+The **stale non-stream detection** kills non-streaming calls that produce no response for too long. By default Tribal disables this on local endpoints to avoid false positives during long prefills. If you explicitly set `providers.<id>.stale_timeout_seconds`, `providers.<id>.models.<model>.stale_timeout_seconds`, or `TRIBAL_API_CALL_STALE_TIMEOUT`, that explicit value is honored even on local endpoints.
 
 ## Context Pressure Warnings
 
@@ -732,17 +732,17 @@ Options: `fill_first` (default), `round_robin`, `least_used`, `random`. See [Cre
 
 ## Prompt caching
 
-Triibal turns on cross-session prompt caching automatically when the active provider supports it — no user config needed.
+Tribal turns on cross-session prompt caching automatically when the active provider supports it — no user config needed.
 
-For Claude on **native Anthropic**, **OpenRouter**, and **Nous Portal**, Triibal attaches `cache_control` breakpoints with the 1-hour TTL (`ttl: "1h"`) on the system prompt and skill blocks. The first send within a fresh hour pays full input rates; subsequent sends across any session within the same hour pull from the cache at the discounted cached-read rate. This means the system prompt, loaded skill content, and the early portion of any long-context include get reused across `triibal` sessions and across forked subagents for the first hour.
+For Claude on **native Anthropic**, **OpenRouter**, and **Nous Portal**, Tribal attaches `cache_control` breakpoints with the 1-hour TTL (`ttl: "1h"`) on the system prompt and skill blocks. The first send within a fresh hour pays full input rates; subsequent sends across any session within the same hour pull from the cache at the discounted cached-read rate. This means the system prompt, loaded skill content, and the early portion of any long-context include get reused across `tribal` sessions and across forked subagents for the first hour.
 
-The Qwen Cloud (Alibaba DashScope) upstream caps cache TTL at 5 minutes, so Triibal uses the 5-minute breakpoint TTL there instead. Other Claude-via-third-party paths (AWS Bedrock, Azure Foundry) fall back to the provider's own caching defaults. xAI Grok uses a separate session-pinned conversation-id mechanism — see [xAI prompt caching](/integrations/providers#xai-grok--responses-api--prompt-caching).
+The Qwen Cloud (Alibaba DashScope) upstream caps cache TTL at 5 minutes, so Tribal uses the 5-minute breakpoint TTL there instead. Other Claude-via-third-party paths (AWS Bedrock, Azure Foundry) fall back to the provider's own caching defaults. xAI Grok uses a separate session-pinned conversation-id mechanism — see [xAI prompt caching](/integrations/providers#xai-grok--responses-api--prompt-caching).
 
 No knob exists to disable this — caching is always-on and saves money even on single-turn conversations because the system prompt alone is a meaningful fraction of the input token count.
 
 ## Auxiliary Models
 
-Triibal uses "auxiliary" models for side tasks like image analysis, web page summarization, browser screenshot analysis, session-title generation, and context compression. By default (`auxiliary.*.provider: "auto"`), Triibal routes every auxiliary task to your **main chat model** — the same provider/model you picked in `triibal model`. You don't need to configure anything to get started, but be aware that on expensive reasoning models (Opus, MiniMax M2.7, etc.) auxiliary tasks add meaningful cost. If you want cheap-and-fast side tasks regardless of your main model, set `auxiliary.<task>.provider` and `auxiliary.<task>.model` explicitly (for example, Gemini Flash on OpenRouter for vision and web extraction).
+Tribal uses "auxiliary" models for side tasks like image analysis, web page summarization, browser screenshot analysis, session-title generation, and context compression. By default (`auxiliary.*.provider: "auto"`), Tribal routes every auxiliary task to your **main chat model** — the same provider/model you picked in `tribal model`. You don't need to configure anything to get started, but be aware that on expensive reasoning models (Opus, MiniMax M2.7, etc.) auxiliary tasks add meaningful cost. If you want cheap-and-fast side tasks regardless of your main model, set `auxiliary.<task>.provider` and `auxiliary.<task>.model` explicitly (for example, Gemini Flash on OpenRouter for vision and web extraction).
 
 :::note Why "auto" uses your main model
 Earlier builds split aggregator users (OpenRouter, Nous Portal) onto a cheap provider-side default. That was surprising — users who paid for an aggregator subscription would see a different model handling their auxiliary traffic. `auto` now uses the main model for everyone, and per-task overrides in `config.yaml` still win (see [Full auxiliary config reference](#full-auxiliary-config-reference) below).
@@ -750,10 +750,10 @@ Earlier builds split aggregator users (OpenRouter, Nous Portal) onto a cheap pro
 
 ### Configuring auxiliary models interactively
 
-Instead of hand-editing YAML, run `triibal model` and pick **"Configure auxiliary models"** from the menu. You'll get an interactive per-task picker:
+Instead of hand-editing YAML, run `tribal model` and pick **"Configure auxiliary models"** from the menu. You'll get an interactive per-task picker:
 
 ```
-$ triibal model
+$ tribal model
 → Configure auxiliary models
 
 [ ] vision               currently: auto / main model
@@ -773,7 +773,7 @@ Select a task, pick a provider (OAuth flows open a browser; API-key providers pr
 <div style={{position: 'relative', width: '100%', aspectRatio: '16 / 9', marginBottom: '1.5rem'}}>
   <iframe
     src="https://www.youtube.com/embed/NoF-YajElIM"
-    title="Triibal Agent — Auxiliary Models Tutorial"
+    title="Tribal Agent — Auxiliary Models Tutorial"
     style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0}}
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     allowFullScreen
@@ -782,7 +782,7 @@ Select a task, pick a provider (OAuth flows open a browser; API-key providers pr
 
 ### The universal config pattern
 
-Every model slot in Triibal — auxiliary tasks, compression, fallback — uses the same three knobs:
+Every model slot in Tribal — auxiliary tasks, compression, fallback — uses the same three knobs:
 
 | Key | What it does | Default |
 |-----|-------------|---------|
@@ -790,16 +790,16 @@ Every model slot in Triibal — auxiliary tasks, compression, fallback — uses 
 | `model` | Which model to request | provider's default |
 | `base_url` | Custom OpenAI-compatible endpoint (overrides provider) | not set |
 
-When `base_url` is set, Triibal ignores the provider and calls that endpoint directly (using `api_key` or `OPENAI_API_KEY` for auth). When only `provider` is set, Triibal uses that provider's built-in auth and base URL.
+When `base_url` is set, Tribal ignores the provider and calls that endpoint directly (using `api_key` or `OPENAI_API_KEY` for auth). When only `provider` is set, Tribal uses that provider's built-in auth and base URL.
 
 Available providers for auxiliary tasks: `auto`, `main`, plus any provider in the [provider registry](/reference/environment-variables) — `openrouter`, `nous`, `openai-codex`, `copilot`, `copilot-acp`, `anthropic`, `gemini`, `google-gemini-cli`, `qwen-oauth`, `zai`, `kimi-coding`, `kimi-coding-cn`, `minimax`, `minimax-cn`, `minimax-oauth`, `deepseek`, `nvidia`, `xai`, `xai-oauth`, `ollama-cloud`, `alibaba`, `bedrock`, `huggingface`, `arcee`, `xiaomi`, `kilocode`, `opencode-zen`, `opencode-go`, `azure-foundry` — or any named custom provider from your `custom_providers` list (e.g. `provider: "beans"`).
 
 :::tip MiniMax OAuth
-`minimax-oauth` logs in via browser OAuth (no API key needed). Run `triibal model` and select **MiniMax (OAuth)** to authenticate. Auxiliary tasks use `MiniMax-M2.7-highspeed` automatically. See the [MiniMax OAuth guide](../guides/minimax-oauth.md).
+`minimax-oauth` logs in via browser OAuth (no API key needed). Run `tribal model` and select **MiniMax (OAuth)** to authenticate. Auxiliary tasks use `MiniMax-M2.7-highspeed` automatically. See the [MiniMax OAuth guide](../guides/minimax-oauth.md).
 :::
 
 :::tip xAI Grok OAuth
-`xai-oauth` logs in via browser OAuth for SuperGrok and X Premium+ subscribers (no API key needed). Run `triibal model` and select **xAI Grok OAuth (SuperGrok / Premium+)** to authenticate. The same OAuth token is reused for every direct-to-xAI surface (chat, auxiliary tasks, TTS, image gen, video gen, transcription). See the [xAI Grok OAuth guide](../guides/xai-grok-oauth.md), and if Triibal is on a remote host see [OAuth over SSH / Remote Hosts](../guides/oauth-over-ssh.md).
+`xai-oauth` logs in via browser OAuth for SuperGrok and X Premium+ subscribers (no API key needed). Run `tribal model` and select **xAI Grok OAuth (SuperGrok / Premium+)** to authenticate. The same OAuth token is reused for every direct-to-xAI surface (chat, auxiliary tasks, TTS, image gen, video gen, transcription). See the [xAI Grok OAuth guide](../guides/xai-grok-oauth.md), and if Tribal is on a remote host see [OAuth over SSH / Remote Hosts](../guides/oauth-over-ssh.md).
 :::
 
 :::warning `"main"` is for auxiliary tasks only
@@ -855,7 +855,7 @@ auxiliary:
     api_key: ""
     timeout: 30
 
-  # Kanban triage specifier — `triibal kanban specify <id>` (or the
+  # Kanban triage specifier — `tribal kanban specify <id>` (or the
   # dashboard's ✨ Specify button on Triage-column cards) uses this
   # slot to expand a one-liner into a concrete spec and promote the
   # task to `todo`. Cheap fast models work well here; spec expansion
@@ -896,7 +896,7 @@ auxiliary:
           min_coding_score: 0.5            # 0.0–1.0; higher = stronger coders
 ```
 
-The shape mirrors what OpenRouter accepts in the chat completions request body. Triibal forwards the entire `extra_body` verbatim, so any other OpenRouter request-body field documented at [openrouter.ai/docs](https://openrouter.ai/docs) works the same way.
+The shape mirrors what OpenRouter accepts in the chat completions request body. Tribal forwards the entire `extra_body` verbatim, so any other OpenRouter request-body field documented at [openrouter.ai/docs](https://openrouter.ai/docs) works the same way.
 
 ### Changing the Vision Model
 
@@ -908,7 +908,7 @@ auxiliary:
     model: "openai/gpt-4o"
 ```
 
-Or via environment variable (in `~/.triibal/.env`):
+Or via environment variable (in `~/.tribal/.env`):
 
 ```bash
 AUXILIARY_VISION_MODEL=openai/gpt-4o
@@ -922,11 +922,11 @@ These options apply to **auxiliary task configs** (`auxiliary:`, `compression:`,
 |----------|-------------|-------------|
 | `"auto"` | Best available (default). Vision tries OpenRouter → Nous → Codex. | — |
 | `"openrouter"` | Force OpenRouter — routes to any model (Gemini, GPT-4o, Claude, etc.) | `OPENROUTER_API_KEY` |
-| `"nous"` | Force Nous Portal | `triibal auth` |
-| `"codex"` | Force Codex OAuth (ChatGPT account). Supports vision (gpt-5.3-codex). | `triibal model` → Codex |
-| `"minimax-oauth"` | Force MiniMax OAuth (browser login, no API key). Uses MiniMax-M2.7-highspeed for auxiliary tasks. | `triibal model` → MiniMax (OAuth) |
-| `"xai-oauth"` | Force xAI Grok OAuth (browser login for SuperGrok or X Premium+ subscribers, no API key). Same OAuth token covers chat, TTS, image, video, and transcription. | `triibal model` → xAI Grok OAuth (SuperGrok / Premium+) |
-| `"main"` | Use your active custom/main endpoint. This can come from `OPENAI_BASE_URL` + `OPENAI_API_KEY` or from a custom endpoint saved via `triibal model` / `config.yaml`. Works with OpenAI, local models, or any OpenAI-compatible API. **Auxiliary tasks only — not valid for `model.provider`.** | Custom endpoint credentials + base URL |
+| `"nous"` | Force Nous Portal | `tribal auth` |
+| `"codex"` | Force Codex OAuth (ChatGPT account). Supports vision (gpt-5.3-codex). | `tribal model` → Codex |
+| `"minimax-oauth"` | Force MiniMax OAuth (browser login, no API key). Uses MiniMax-M2.7-highspeed for auxiliary tasks. | `tribal model` → MiniMax (OAuth) |
+| `"xai-oauth"` | Force xAI Grok OAuth (browser login for SuperGrok or X Premium+ subscribers, no API key). Same OAuth token covers chat, TTS, image, video, and transcription. | `tribal model` → xAI Grok OAuth (SuperGrok / Premium+) |
+| `"main"` | Use your active custom/main endpoint. This can come from `OPENAI_BASE_URL` + `OPENAI_API_KEY` or from a custom endpoint saved via `tribal model` / `config.yaml`. Works with OpenAI, local models, or any OpenAI-compatible API. **Auxiliary tasks only — not valid for `model.provider`.** | Custom endpoint credentials + base URL |
 
 Direct API-key providers from the main provider catalog also work here when you want side tasks to bypass your default router. `gmi` is valid once `GMI_API_KEY` is configured:
 
@@ -950,11 +950,11 @@ auxiliary:
     model: "qwen2.5-vl"
 ```
 
-`base_url` takes precedence over `provider`, so this is the most explicit way to route an auxiliary task to a specific endpoint. For direct endpoint overrides, Triibal uses the configured `api_key` or falls back to `OPENAI_API_KEY`; it does not reuse `OPENROUTER_API_KEY` for that custom endpoint.
+`base_url` takes precedence over `provider`, so this is the most explicit way to route an auxiliary task to a specific endpoint. For direct endpoint overrides, Tribal uses the configured `api_key` or falls back to `OPENAI_API_KEY`; it does not reuse `OPENROUTER_API_KEY` for that custom endpoint.
 
 **Using OpenAI API key for vision:**
 ```yaml
-# In ~/.triibal/.env:
+# In ~/.tribal/.env:
 # OPENAI_BASE_URL=https://api.openai.com/v1
 # OPENAI_API_KEY=sk-...
 
@@ -987,7 +987,7 @@ model:
   provider: minimax-oauth
   base_url: https://api.minimax.io/anthropic
 ```
-Run `triibal model` and select **MiniMax (OAuth)** to log in and set this automatically. For the China region, the base URL will be `https://api.minimaxi.com/anthropic`. See the [MiniMax OAuth guide](../guides/minimax-oauth.md) for the full walkthrough.
+Run `tribal model` and select **MiniMax (OAuth)** to log in and set this automatically. For the China region, the base URL will be `https://api.minimaxi.com/anthropic`. See the [MiniMax OAuth guide](../guides/minimax-oauth.md) for the full walkthrough.
 
 **Using a local/self-hosted model:**
 ```yaml
@@ -997,7 +997,7 @@ auxiliary:
     model: "my-local-model"
 ```
 
-`provider: "main"` uses whatever provider Triibal uses for normal chat — whether that's a named custom provider (e.g. `beans`), a built-in provider like `openrouter`, or a legacy `OPENAI_BASE_URL` endpoint.
+`provider: "main"` uses whatever provider Tribal uses for normal chat — whether that's a named custom provider (e.g. `beans`), a built-in provider like `openrouter`, or a legacy `OPENAI_BASE_URL` endpoint.
 
 :::tip
 If you use Codex OAuth as your main model provider, vision works automatically — no extra configuration needed. Codex is included in the auto-detection chain for vision.
@@ -1025,7 +1025,7 @@ Auxiliary models can also be configured via environment variables. However, `con
 Compression and fallback model settings are config.yaml-only.
 
 :::tip
-Run `triibal config` to see your current auxiliary model settings. Overrides only show up when they differ from the defaults.
+Run `tribal config` to see your current auxiliary model settings. Overrides only show up when they differ from the defaults.
 :::
 
 ## Reasoning Effort
@@ -1157,7 +1157,7 @@ display:
 
 ### File-mutation verifier
 
-When `display.file_mutation_verifier` is `true` (default), Triibal appends a one-line advisory to the assistant's final response whenever a `write_file` or `patch` call failed during the turn and was never superseded by a successful write to the same path. This catches the "batch of parallel patches, half silently fail, model summarises success" class of over-claim without requiring you to manually run `git status` after every edit.
+When `display.file_mutation_verifier` is `true` (default), Tribal appends a one-line advisory to the assistant's final response whenever a `write_file` or `patch` call failed during the turn and was never superseded by a successful write to the same path. This catches the "batch of parallel patches, half silently fail, model summarises success" class of over-claim without requiring you to manually run `git status` after every edit.
 
 Example footer:
 
@@ -1168,7 +1168,7 @@ Example footer:
   • concepts/rag-pipeline.md — [patch] Could not find match for old_string
 ```
 
-Set `file_mutation_verifier: false` (or `TRIIBAL_FILE_MUTATION_VERIFIER=0`) to suppress the footer. The verifier only fires when real failures are outstanding at turn end — a model that retries a failed patch and succeeds within the same turn will not trigger it for that file.
+Set `file_mutation_verifier: false` (or `TRIBAL_FILE_MUTATION_VERIFIER=0`) to suppress the footer. The verifier only fires when real failures are outstanding at turn end — a model that retries a failed patch and succeeds within the same turn will not trigger it for that file.
 
 ### UI language for static messages
 
@@ -1176,7 +1176,7 @@ The `display.language` setting translates a small set of static user-facing mess
 
 Supported values: `en` (default), `zh` (Simplified Chinese), `ja` (Japanese), `de` (German), `es` (Spanish), `fr` (French), `tr` (Turkish), `uk` (Ukrainian). Unknown values fall back to English.
 
-You can also set this per-session with the `TRIIBAL_LANGUAGE` env var, which overrides the config value.
+You can also set this per-session with the `TRIBAL_LANGUAGE` env var, which overrides the config value.
 
 ```yaml
 display:
@@ -1194,7 +1194,7 @@ In the CLI, cycle through these modes with `/verbose`. To use `/verbose` in mess
 
 ### Runtime-metadata footer (gateway only)
 
-When `display.runtime_footer.enabled: true`, Triibal appends a small runtime-context footer to the **final** message of each gateway turn — same info the CLI shows in its status bar (model, context %, cwd, session duration, tokens, cost). Off by default; opt in per-gateway if your team wants every reply to include the provenance.
+When `display.runtime_footer.enabled: true`, Tribal appends a small runtime-context footer to the **final** message of each gateway turn — same info the CLI shows in its status bar (model, context %, cwd, session duration, tokens, cost). Off by default; opt in per-gateway if your team wants every reply to include the provenance.
 
 ```yaml
 display:
@@ -1231,7 +1231,7 @@ display:
 
 Platforms without an override fall back to the global `tool_progress` value. Valid platform keys: `telegram`, `discord`, `slack`, `signal`, `whatsapp`, `matrix`, `mattermost`, `email`, `sms`, `homeassistant`, `dingtalk`, `feishu`, `wecom`, `weixin`, `bluebubbles`, `qqbot`. The legacy `display.tool_progress_overrides` key still loads for backward compatibility but is deprecated and migrated into `display.platforms` on first load.
 
-`interim_assistant_messages` is gateway-only. When enabled, Triibal sends completed mid-turn assistant updates as separate chat messages. This is independent from `tool_progress` and does not require gateway streaming.
+`interim_assistant_messages` is gateway-only. When enabled, Tribal sends completed mid-turn assistant updates as separate chat messages. This is independent from `tool_progress` and does not require gateway streaming.
 
 ## Privacy
 
@@ -1272,7 +1272,7 @@ Provider behavior:
 - `groq` uses Groq's Whisper-compatible endpoint and reads `GROQ_API_KEY`.
 - `openai` uses the OpenAI speech API and reads `VOICE_TOOLS_OPENAI_KEY`.
 
-If the requested provider is unavailable, Triibal falls back automatically in this order: `local` → `groq` → `openai`.
+If the requested provider is unavailable, Tribal falls back automatically in this order: `local` → `groq` → `openai`.
 
 Groq and OpenAI model overrides are environment-driven:
 
@@ -1332,7 +1332,7 @@ For separate natural mid-turn assistant updates without progressive token editin
 **Fresh final (Telegram):** Telegram's `editMessageText` preserves the original message timestamp, so a long-running streamed reply would keep the first-token timestamp even after completion. When `fresh_final_after_seconds > 0` (default `60`), the completed reply is delivered as a brand-new message (with the stale preview best-effort deleted) so Telegram's visible timestamp reflects completion time. Short previews still finalize in place. Set to `0` to always edit in place.
 
 :::note
-Streaming is disabled by default. Enable it in `~/.triibal/config.yaml` to try the streaming UX.
+Streaming is disabled by default. Enable it in `~/.tribal/config.yaml` to try the streaming UX.
 :::
 
 ## Group Chat Session Isolation
@@ -1344,15 +1344,15 @@ group_sessions_per_user: true  # true = per-user isolation in groups/channels, f
 ```
 
 - `true` is the default and recommended setting. In Discord channels, Telegram groups, Slack channels, and similar shared contexts, each sender gets their own session when the platform provides a user ID.
-- `false` reverts to the old shared-room behavior. That can be useful if you explicitly want Triibal to treat a channel like one collaborative conversation, but it also means users share context, token costs, and interrupt state.
-- Direct messages are unaffected. Triibal still keys DMs by chat/DM ID as usual.
+- `false` reverts to the old shared-room behavior. That can be useful if you explicitly want Tribal to treat a channel like one collaborative conversation, but it also means users share context, token costs, and interrupt state.
+- Direct messages are unaffected. Tribal still keys DMs by chat/DM ID as usual.
 - Threads stay isolated from their parent channel either way; with `true`, each participant also gets their own session inside the thread.
 
 For the behavior details and examples, see [Sessions](/user-guide/sessions) and the [Discord guide](/user-guide/messaging/discord).
 
 ## Unauthorized DM Behavior
 
-Control what Triibal does when an unknown user sends a direct message:
+Control what Tribal does when an unknown user sends a direct message:
 
 ```yaml
 unauthorized_dm_behavior: pair
@@ -1361,7 +1361,7 @@ whatsapp:
   unauthorized_dm_behavior: ignore
 ```
 
-- `pair` is the default. Triibal denies access, but replies with a one-time pairing code in DMs.
+- `pair` is the default. Tribal denies access, but replies with a one-time pairing code in DMs.
 - `ignore` silently drops unauthorized DMs.
 - Platform sections override the global default, so you can keep pairing enabled broadly while making one platform quieter.
 
@@ -1373,13 +1373,13 @@ Define custom commands that either run shell commands without invoking the LLM, 
 quick_commands:
   status:
     type: exec
-    command: systemctl status triibal-agent
+    command: systemctl status tribal-agent
   disk:
     type: exec
     command: df -h /
   update:
     type: exec
-    command: cd ~/.triibal/triibal-agent && git pull && pip install -e .
+    command: cd ~/.tribal/tribal-agent && git pull && pip install -e .
   gpu:
     type: exec
     command: nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader
@@ -1423,13 +1423,13 @@ code_execution:
 **`mode`** controls the working directory and Python interpreter for scripts:
 
 - **`project`** (default) — scripts run in the session's working directory with the active virtualenv/conda env's python. Project deps (`pandas`, `torch`, project packages) and relative paths (`.env`, `./data.csv`) resolve naturally, matching what `terminal()` sees.
-- **`strict`** — scripts run in a temp staging directory with `sys.executable` (Triibal's own python). Maximum reproducibility, but project deps and relative paths won't resolve.
+- **`strict`** — scripts run in a temp staging directory with `sys.executable` (Tribal's own python). Maximum reproducibility, but project deps and relative paths won't resolve.
 
 Environment scrubbing (strips `*_API_KEY`, `*_TOKEN`, `*_SECRET`, `*_PASSWORD`, `*_CREDENTIAL`, `*_PASSWD`, `*_AUTH`) and the tool whitelist apply identically in both modes — switching mode does not change the security posture.
 
 ## Web Search Backends
 
-The `web_search` and `web_extract` tools support five backend providers. Configure the backend in `config.yaml` or via `triibal tools`:
+The `web_search` and `web_extract` tools support five backend providers. Configure the backend in `config.yaml` or via `tribal tools`:
 
 ```yaml
 web:
@@ -1456,7 +1456,7 @@ web:
 
 **Parallel search modes:** Set `PARALLEL_SEARCH_MODE` to control search behavior — `fast`, `one-shot`, or `agentic` (default: `agentic`).
 
-**Exa:** Set `EXA_API_KEY` in `~/.triibal/.env`. Supports `category` filtering (`company`, `research paper`, `news`, `people`, `personal site`, `pdf`) and domain/date filters.
+**Exa:** Set `EXA_API_KEY` in `~/.tribal/.env`. Supports `category` filtering (`company`, `research paper`, `news`, `people`, `personal site`, `pdf`) and domain/date filters.
 
 ## Browser
 
@@ -1466,8 +1466,8 @@ Configure browser automation behavior:
 browser:
   inactivity_timeout: 120        # Seconds before auto-closing idle sessions
   command_timeout: 30             # Timeout in seconds for browser commands (screenshot, navigate, etc.)
-  record_sessions: false         # Auto-record browser sessions as WebM videos to ~/.triibal/browser_recordings/
-  # Optional CDP override — when set, Triibal attaches directly to your own
+  record_sessions: false         # Auto-record browser sessions as WebM videos to ~/.tribal/browser_recordings/
+  # Optional CDP override — when set, Tribal attaches directly to your own
   # Chromium-family browser (via /browser connect) rather than starting a headless browser.
   cdp_url: ""
   # Dialog supervisor — controls how native JS dialogs (alert / confirm / prompt)
@@ -1478,7 +1478,7 @@ browser:
   camofox:
     managed_persistence: false   # When true, Camofox sessions persist cookies/logins across restarts
     user_id: ""                  # Optional externally managed Camofox userId
-    session_key: ""              # Optional session key sent when Triibal creates a tab
+    session_key: ""              # Optional session key sent when Tribal creates a tab
     adopt_existing_tab: false    # Reuse an existing tab for this identity before creating one
 ```
 
@@ -1553,7 +1553,7 @@ security:
       - "admin.example.com"
       - "*.local"
     shared_files:                # Load additional rules from external files
-      - "/etc/triibal/blocked-sites.txt"
+      - "/etc/tribal/blocked-sites.txt"
 ```
 
 When enabled, any URL matching a blocked domain pattern is rejected before the web or browser tool executes. This applies to `web_search`, `web_extract`, `browser_navigate`, and any tool that accesses URLs.
@@ -1569,7 +1569,7 @@ The policy is cached for 30 seconds, so config changes take effect quickly witho
 
 ## Smart Approvals
 
-Control how Triibal handles potentially dangerous commands:
+Control how Tribal handles potentially dangerous commands:
 
 ```yaml
 approvals:
@@ -1580,7 +1580,7 @@ approvals:
 |------|----------|
 | `manual` (default) | Prompt the user before executing any flagged command. In the CLI, shows an interactive approval dialog. In messaging, queues a pending approval request. |
 | `smart` | Use an auxiliary LLM to assess whether a flagged command is actually dangerous. Low-risk commands are auto-approved with session-level persistence. Genuinely risky commands are escalated to the user. |
-| `off` | Skip all approval checks. Equivalent to `TRIIBAL_YOLO_MODE=true`. **Use with caution.** |
+| `off` | Skip all approval checks. Equivalent to `TRIBAL_YOLO_MODE=true`. **Use with caution.** |
 
 Smart mode is particularly useful for reducing approval fatigue — it lets the agent work more autonomously on safe operations while still catching genuinely destructive commands.
 
@@ -1594,7 +1594,7 @@ Automatic filesystem snapshots before destructive file operations. See the [Chec
 
 ```yaml
 checkpoints:
-  enabled: false                 # Enable automatic checkpoints (also: triibal chat --checkpoints). Default: false (opt-in).
+  enabled: false                 # Enable automatic checkpoints (also: tribal chat --checkpoints). Default: false (opt-in).
   max_snapshots: 20              # Max checkpoints to keep per directory (default: 20)
 ```
 
@@ -1617,9 +1617,9 @@ delegation:
 
 **Subagent provider:model override:** By default, subagents inherit the parent agent's provider and model. Set `delegation.provider` and `delegation.model` to route subagents to a different provider:model pair — e.g., use a cheap/fast model for narrowly-scoped subtasks while your primary agent runs an expensive reasoning model.
 
-**Direct endpoint override:** If you want the obvious custom-endpoint path, set `delegation.base_url`, `delegation.api_key`, and `delegation.model`. That sends subagents directly to that OpenAI-compatible endpoint and takes precedence over `delegation.provider`. If `delegation.api_key` is omitted, Triibal falls back to `OPENAI_API_KEY` only.
+**Direct endpoint override:** If you want the obvious custom-endpoint path, set `delegation.base_url`, `delegation.api_key`, and `delegation.model`. That sends subagents directly to that OpenAI-compatible endpoint and takes precedence over `delegation.provider`. If `delegation.api_key` is omitted, Tribal falls back to `OPENAI_API_KEY` only.
 
-**Wire protocol (`api_mode`):** Triibal auto-detects the wire protocol from `delegation.base_url` (e.g. paths ending in `/anthropic` → `anthropic_messages`; Codex / native Anthropic / Kimi-coding hostnames keep their existing detection). For endpoints the heuristic can't classify — for example Azure AI Foundry, MiniMax, Zhipu GLM, or LiteLLM proxies fronting an Anthropic-shaped backend — set `delegation.api_mode` explicitly to one of `chat_completions`, `codex_responses`, or `anthropic_messages`. Leave it empty (the default) to keep auto-detection.
+**Wire protocol (`api_mode`):** Tribal auto-detects the wire protocol from `delegation.base_url` (e.g. paths ending in `/anthropic` → `anthropic_messages`; Codex / native Anthropic / Kimi-coding hostnames keep their existing detection). For endpoints the heuristic can't classify — for example Azure AI Foundry, MiniMax, Zhipu GLM, or LiteLLM proxies fronting an Anthropic-shaped backend — set `delegation.api_mode` explicitly to one of `chat_completions`, `codex_responses`, or `anthropic_messages`. Leave it empty (the default) to keep auto-detection.
 
 The delegation provider uses the same credential resolution as CLI/gateway startup. All configured providers are supported: `openrouter`, `nous`, `copilot`, `zai`, `kimi-coding`, `minimax`, `minimax-cn`. When a provider is set, the system automatically resolves the correct base URL, API key, and API mode — no manual credential wiring needed.
 
@@ -1638,22 +1638,22 @@ clarify:
 
 ## Context Files (SOUL.md, AGENTS.md)
 
-Triibal uses two different context scopes:
+Tribal uses two different context scopes:
 
 | File | Purpose | Scope |
 |------|---------|-------|
-| `SOUL.md` | **Primary agent identity** — defines who the agent is (slot #1 in the system prompt) | `~/.triibal/SOUL.md` or `$TRIIBAL_HOME/SOUL.md` |
-| `.triibal.md` / `TRIIBAL.md` | Project-specific instructions (highest priority) | Walks to git root |
+| `SOUL.md` | **Primary agent identity** — defines who the agent is (slot #1 in the system prompt) | `~/.tribal/SOUL.md` or `$TRIBAL_HOME/SOUL.md` |
+| `.tribal.md` / `TRIBAL.md` | Project-specific instructions (highest priority) | Walks to git root |
 | `AGENTS.md` | Project-specific instructions, coding conventions | Recursive directory walk |
 | `CLAUDE.md` | Claude Code context files (also detected) | Working directory only |
 | `.cursorrules` | Cursor IDE rules (also detected) | Working directory only |
 | `.cursor/rules/*.mdc` | Cursor rule files (also detected) | Working directory only |
 
 - **SOUL.md** is the agent's primary identity. It occupies slot #1 in the system prompt, completely replacing the built-in default identity. Edit it to fully customize who the agent is.
-- If SOUL.md is missing, empty, or cannot be loaded, Triibal falls back to a built-in default identity.
-- **Project context files use a priority system** — only ONE type is loaded (first match wins): `.triibal.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules`. SOUL.md is always loaded independently.
+- If SOUL.md is missing, empty, or cannot be loaded, Tribal falls back to a built-in default identity.
+- **Project context files use a priority system** — only ONE type is loaded (first match wins): `.tribal.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules`. SOUL.md is always loaded independently.
 - **AGENTS.md** is hierarchical: if subdirectories also have AGENTS.md, all are combined.
-- Triibal automatically seeds a default `SOUL.md` if one does not already exist.
+- Tribal automatically seeds a default `SOUL.md` if one does not already exist.
 - All loaded context files are capped at 20,000 characters with smart truncation.
 
 See also:
@@ -1664,13 +1664,13 @@ See also:
 
 | Context | Default |
 |---------|---------|
-| **CLI (`triibal`)** | Current directory where you run the command |
+| **CLI (`tribal`)** | Current directory where you run the command |
 | **Messaging gateway** | Home directory `~` (override with `MESSAGING_CWD`) |
 | **Docker / Singularity / Modal / SSH** | User's home directory inside the container or remote machine |
 
 Override the working directory:
 ```bash
-# In ~/.triibal/.env or ~/.triibal/config.yaml:
+# In ~/.tribal/.env or ~/.tribal/config.yaml:
 MESSAGING_CWD=/home/myuser/projects    # Gateway sessions
 TERMINAL_CWD=/workspace                # All terminal sessions
 ```

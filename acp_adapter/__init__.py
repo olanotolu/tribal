@@ -1,1 +1,1 @@
-"""ACP (Agent Communication Protocol) adapter for triibal-agent."""
+"""ACP (Agent Communication Protocol) adapter for tribal-agent."""

@@ -292,10 +292,10 @@ class TestConfigMigration:
         }
         config_path.write_text(yaml.dump(config), encoding="utf-8")
 
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        # Re-import to pick up the new TRIIBAL_HOME
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        # Re-import to pick up the new TRIBAL_HOME
         import importlib
-        import triibal_cli.config as cfg_mod
+        import tribal_cli.config as cfg_mod
         importlib.reload(cfg_mod)
 
         result = cfg_mod.migrate_config(interactive=False, quiet=True)
@@ -319,9 +319,9 @@ class TestConfigMigration:
         }
         config_path.write_text(yaml.dump(config), encoding="utf-8")
 
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
         import importlib
-        import triibal_cli.config as cfg_mod
+        import tribal_cli.config as cfg_mod
         importlib.reload(cfg_mod)
 
         cfg_mod.migrate_config(interactive=False, quiet=True)

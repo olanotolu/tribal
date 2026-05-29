@@ -4,15 +4,15 @@ sidebar_position: 7
 
 # Profile Commands Reference
 
-This page covers all commands related to [Triibal profiles](../user-guide/profiles.md). For general CLI commands, see [CLI Commands Reference](./cli-commands.md).
+This page covers all commands related to [Tribal profiles](../user-guide/profiles.md). For general CLI commands, see [CLI Commands Reference](./cli-commands.md).
 
-## `triibal profile`
+## `tribal profile`
 
 ```bash
-triibal profile <subcommand>
+tribal profile <subcommand>
 ```
 
-Top-level command for managing profiles. Running `triibal profile` without a subcommand shows help.
+Top-level command for managing profiles. Running `tribal profile` without a subcommand shows help.
 
 | Subcommand | Description |
 |------------|-------------|
@@ -29,10 +29,10 @@ Top-level command for managing profiles. Running `triibal profile` without a sub
 | `update` | Re-pull a distribution-managed profile and re-apply its bundle. |
 | `info` | Show distribution metadata for a profile (origin URL, commit, last update). |
 
-## `triibal profile list`
+## `tribal profile list`
 
 ```bash
-triibal profile list
+tribal profile list
 ```
 
 Lists all profiles. The currently active profile is marked with `*`.
@@ -40,7 +40,7 @@ Lists all profiles. The currently active profile is marked with `*`.
 **Example:**
 
 ```bash
-$ triibal profile list
+$ tribal profile list
   default
 * work
   dev
@@ -49,13 +49,13 @@ $ triibal profile list
 
 No options.
 
-## `triibal profile use`
+## `tribal profile use`
 
 ```bash
-triibal profile use <name>
+tribal profile use <name>
 ```
 
-Sets `<name>` as the active profile. All subsequent `triibal` commands (without `-p`) will use this profile.
+Sets `<name>` as the active profile. All subsequent `tribal` commands (without `-p`) will use this profile.
 
 | Argument | Description |
 |----------|-------------|
@@ -64,14 +64,14 @@ Sets `<name>` as the active profile. All subsequent `triibal` commands (without 
 **Example:**
 
 ```bash
-triibal profile use work
-triibal profile use default
+tribal profile use work
+tribal profile use default
 ```
 
-## `triibal profile create`
+## `tribal profile create`
 
 ```bash
-triibal profile create <name> [options]
+tribal profile create <name> [options]
 ```
 
 Creates a new profile.
@@ -83,8 +83,8 @@ Creates a new profile.
 | `--clone-all` | Copy everything (config, memories, skills, sessions, state) from the current profile. |
 | `--clone-from <profile>` | Clone from a specific profile instead of the current one. Used with `--clone` or `--clone-all`. |
 | `--no-alias` | Skip wrapper script creation. |
-| `--description "<text>"` | One- or two-sentence description of what this profile is good at. Used by the kanban orchestrator to route tasks based on role instead of profile name alone. Skip and add later via `triibal profile describe`. Persisted in `<profile_dir>/profile.yaml`. |
-| `--no-skills` | Create an **empty** profile with zero bundled skills enabled. Writes a `.no-skills` marker into the profile so future `triibal update` runs won't re-seed the bundled set, and refuses to combine with `--clone` / `--clone-all` (which would copy skills in anyway). Useful for narrow orchestrator profiles or sandbox profiles that should not inherit the full skill catalog. |
+| `--description "<text>"` | One- or two-sentence description of what this profile is good at. Used by the kanban orchestrator to route tasks based on role instead of profile name alone. Skip and add later via `tribal profile describe`. Persisted in `<profile_dir>/profile.yaml`. |
+| `--no-skills` | Create an **empty** profile with zero bundled skills enabled. Writes a `.no-skills` marker into the profile so future `tribal update` runs won't re-seed the bundled set, and refuses to combine with `--clone` / `--clone-all` (which would copy skills in anyway). Useful for narrow orchestrator profiles or sandbox profiles that should not inherit the full skill catalog. |
 
 Creating a profile does **not** make that profile directory the default project/workspace directory for terminal commands. If you want a profile to start in a specific project, set `terminal.cwd` in that profile's `config.yaml`.
 
@@ -92,22 +92,22 @@ Creating a profile does **not** make that profile directory the default project/
 
 ```bash
 # Blank profile — needs full setup
-triibal profile create mybot
+tribal profile create mybot
 
 # Clone config only from current profile
-triibal profile create work --clone
+tribal profile create work --clone
 
 # Clone everything from current profile
-triibal profile create backup --clone-all
+tribal profile create backup --clone-all
 
 # Clone config from a specific profile
-triibal profile create work2 --clone --clone-from work
+tribal profile create work2 --clone --clone-from work
 ```
 
-## `triibal profile describe`
+## `tribal profile describe`
 
 ```bash
-triibal profile describe [<name>] [options]
+tribal profile describe [<name>] [options]
 ```
 
 Read or set a profile's description. The description is consumed by the kanban orchestrator to route tasks based on what each profile is good at, rather than guessing from the profile name alone. Persisted in `<profile_dir>/profile.yaml` so it survives reboots and is shared with the gateway.
@@ -126,22 +126,22 @@ With no flags, prints the current description (or `(no description set for '<nam
 
 ```bash
 # Read the current description
-triibal profile describe researcher
+tribal profile describe researcher
 
 # Set it explicitly
-triibal profile describe researcher --text "Reads source code and writes findings."
+tribal profile describe researcher --text "Reads source code and writes findings."
 
 # Let the LLM generate one
-triibal profile describe researcher --auto
+tribal profile describe researcher --auto
 
 # Fill in descriptions for every profile that doesn't have one
-triibal profile describe --all --auto
+tribal profile describe --all --auto
 ```
 
-## `triibal profile delete`
+## `tribal profile delete`
 
 ```bash
-triibal profile delete <name> [options]
+tribal profile delete <name> [options]
 ```
 
 Deletes a profile and removes its shell alias.
@@ -154,23 +154,23 @@ Deletes a profile and removes its shell alias.
 **Example:**
 
 ```bash
-triibal profile delete mybot
-triibal profile delete mybot --yes
+tribal profile delete mybot
+tribal profile delete mybot --yes
 ```
 
 :::warning
 This permanently deletes the profile's entire directory including all config, memories, sessions, and skills. Cannot delete the currently active profile.
 :::
 
-## `triibal profile show`
+## `tribal profile show`
 
 ```bash
-triibal profile show <name>
+tribal profile show <name>
 ```
 
 Displays details about a profile including its home directory, configured model, gateway status, skills count, and configuration file status.
 
-This shows the profile's Triibal home directory, not the terminal working directory. Terminal commands start from `terminal.cwd` (or the launch directory on the local backend when `cwd: "."`).
+This shows the profile's Tribal home directory, not the terminal working directory. Terminal commands start from `terminal.cwd` (or the launch directory on the local backend when `cwd: "."`).
 
 | Argument | Description |
 |----------|-------------|
@@ -179,9 +179,9 @@ This shows the profile's Triibal home directory, not the terminal working direct
 **Example:**
 
 ```bash
-$ triibal profile show work
+$ tribal profile show work
 Profile: work
-Path:    ~/.triibal/profiles/work
+Path:    ~/.tribal/profiles/work
 Model:   anthropic/claude-sonnet-4 (anthropic)
 Gateway: stopped
 Skills:  12
@@ -190,13 +190,13 @@ SOUL.md: exists
 Alias:   ~/.local/bin/work
 ```
 
-## `triibal profile alias`
+## `tribal profile alias`
 
 ```bash
-triibal profile alias <name> [options]
+tribal profile alias <name> [options]
 ```
 
-Regenerates the shell alias script at `~/.local/bin/<name>`. Useful if the alias was accidentally deleted or if you need to update it after moving your Triibal installation.
+Regenerates the shell alias script at `~/.local/bin/<name>`. Useful if the alias was accidentally deleted or if you need to update it after moving your Tribal installation.
 
 | Argument / Option | Description |
 |-------------------|-------------|
@@ -207,20 +207,20 @@ Regenerates the shell alias script at `~/.local/bin/<name>`. Useful if the alias
 **Example:**
 
 ```bash
-triibal profile alias work
+tribal profile alias work
 # Creates/updates ~/.local/bin/work
 
-triibal profile alias work --name mywork
+tribal profile alias work --name mywork
 # Creates ~/.local/bin/mywork
 
-triibal profile alias work --remove
+tribal profile alias work --remove
 # Removes the wrapper script
 ```
 
-## `triibal profile rename`
+## `tribal profile rename`
 
 ```bash
-triibal profile rename <old-name> <new-name>
+tribal profile rename <old-name> <new-name>
 ```
 
 Renames a profile. Updates the directory and shell alias.
@@ -233,15 +233,15 @@ Renames a profile. Updates the directory and shell alias.
 **Example:**
 
 ```bash
-triibal profile rename mybot assistant
-# ~/.triibal/profiles/mybot → ~/.triibal/profiles/assistant
+tribal profile rename mybot assistant
+# ~/.tribal/profiles/mybot → ~/.tribal/profiles/assistant
 # ~/.local/bin/mybot → ~/.local/bin/assistant
 ```
 
-## `triibal profile export`
+## `tribal profile export`
 
 ```bash
-triibal profile export <name> [options]
+tribal profile export <name> [options]
 ```
 
 Exports a profile as a compressed tar.gz archive.
@@ -254,16 +254,16 @@ Exports a profile as a compressed tar.gz archive.
 **Example:**
 
 ```bash
-triibal profile export work
+tribal profile export work
 # Creates work.tar.gz in the current directory
 
-triibal profile export work -o ./work-2026-03-29.tar.gz
+tribal profile export work -o ./work-2026-03-29.tar.gz
 ```
 
-## `triibal profile import`
+## `tribal profile import`
 
 ```bash
-triibal profile import <archive> [options]
+tribal profile import <archive> [options]
 ```
 
 Imports a profile from a tar.gz archive.
@@ -276,10 +276,10 @@ Imports a profile from a tar.gz archive.
 **Example:**
 
 ```bash
-triibal profile import ./work-2026-03-29.tar.gz
+tribal profile import ./work-2026-03-29.tar.gz
 # Infers profile name from the archive
 
-triibal profile import ./work-2026-03-29.tar.gz --name work-restored
+tribal profile import ./work-2026-03-29.tar.gz --name work-restored
 ```
 
 ## Distribution commands
@@ -301,16 +301,16 @@ The recipient's user data (memories, sessions, auth, their own edits to
 updates.
 
 :::info
-`triibal profile export` / `import` are still the right commands for
+`tribal profile export` / `import` are still the right commands for
 **local backup and restore** of a profile on your own machine. Distribution
 (`install` / `update` / `info`) is a separate concept: ship a profile via
 git so someone else can install it.
 :::
 
-### `triibal profile install`
+### `tribal profile install`
 
 ```bash
-triibal profile install <source> [--name <name>] [--alias] [--force] [--yes]
+tribal profile install <source> [--name <name>] [--alias] [--force] [--yes]
 ```
 
 Installs a profile distribution from a git URL or a local directory.
@@ -319,7 +319,7 @@ Installs a profile distribution from a git URL or a local directory.
 |--------|-------------|
 | `<source>` | Git URL (`github.com/user/repo`, `https://...`, `git@...`, `ssh://`, `git://`) or a local directory containing `distribution.yaml` at its root. |
 | `--name NAME` | Override the profile name from the manifest. |
-| `--alias` | Also create a shell wrapper (e.g. `telemetry` → `triibal -p telemetry`). |
+| `--alias` | Also create a shell wrapper (e.g. `telemetry` → `tribal -p telemetry`). |
 | `--force` | Overwrite an existing profile of the same name. User data is still preserved. |
 | `-y`, `--yes` | Skip the manifest-preview confirmation prompt. |
 
@@ -331,22 +331,22 @@ cron jobs before asking for confirmation. Required env vars go into a
 
 ```bash
 # Install from a GitHub repo (shorthand)
-triibal profile install github.com/kyle/telemetry-distribution --alias
+tribal profile install github.com/kyle/telemetry-distribution --alias
 
 # Install from a full HTTPS git URL
-triibal profile install https://github.com/kyle/telemetry-distribution.git
+tribal profile install https://github.com/kyle/telemetry-distribution.git
 
 # Install from SSH
-triibal profile install git@github.com:kyle/telemetry-distribution.git
+tribal profile install git@github.com:kyle/telemetry-distribution.git
 
 # Install from a local directory during development
-triibal profile install ./telemetry/
+tribal profile install ./telemetry/
 ```
 
-### `triibal profile update`
+### `tribal profile update`
 
 ```bash
-triibal profile update <name> [--force-config] [--yes]
+tribal profile update <name> [--force-config] [--yes]
 ```
 
 Re-clones the distribution from its recorded source and applies updates.
@@ -356,21 +356,21 @@ overwritten; user data (memories, sessions, auth, .env) is never touched.
 `config.yaml` is preserved by default to keep your local overrides.
 Pass `--force-config` to reset it to the distribution's shipped config.
 
-### `triibal profile info`
+### `tribal profile info`
 
 ```bash
-triibal profile info <name>
+tribal profile info <name>
 ```
 
 Prints the profile's distribution manifest — name, version, required
-Triibal version, author, env var requirements, the source URL/path, and
+Tribal version, author, env var requirements, the source URL/path, and
 the `Installed:` timestamp recorded when the distribution was last
 `install`-ed or `update`-d. Useful for checking what a shared profile
 needs before installing it, and for spotting "this profile was installed
 6 months ago and hasn't been updated."
 
-`triibal profile list` also shows the distribution name and version in a
-`Distribution` column, and `triibal profile show <name>` / `delete <name>`
+`tribal profile list` also shows the distribution name and version in a
+`Distribution` column, and `tribal profile show <name>` / `delete <name>`
 surface the source URL so you can tell at a glance which profiles came
 from a git repo vs. were created locally.
 
@@ -384,10 +384,10 @@ transparently.
 
 ```bash
 # Uses your SSH key, the same as any other `git clone`
-triibal profile install git@github.com:your-org/internal-assistant.git
+tribal profile install git@github.com:your-org/internal-assistant.git
 
 # Uses your git credential helper
-triibal profile install https://github.com/your-org/internal-assistant.git
+tribal profile install https://github.com/your-org/internal-assistant.git
 ```
 
 If a clone prompts for credentials interactively in your terminal during
@@ -402,7 +402,7 @@ Every distribution has a `distribution.yaml` at the root of its repository:
 name: telemetry
 version: 0.1.0
 description: "Compliance monitoring harness"
-triibal_requires: ">=0.12.0"
+tribal_requires: ">=0.12.0"
 author: "Your Name"
 license: "MIT"
 env_requires:
@@ -420,9 +420,9 @@ distribution_owned:   # optional; defaults to SOUL.md, config.yaml,
   - cron/
 ```
 
-`triibal_requires` supports `>=`, `<=`, `==`, `!=`, `>`, `<`, or a bare
+`tribal_requires` supports `>=`, `<=`, `==`, `!=`, `>`, `<`, or a bare
 version (treated as `>=`). Install fails with a clear error if the current
-Triibal version doesn't satisfy the spec.
+Tribal version doesn't satisfy the spec.
 
 `distribution_owned` is optional. If set, only those paths are replaced on
 update; anything else in the profile stays user-owned. If omitted, the
@@ -435,20 +435,20 @@ Authoring a distribution is just a git push:
 1. In your profile directory, create `distribution.yaml` with at least `name`
    and `version`.
 2. Initialize a git repo (or use an existing one) and push to GitHub /
-   GitLab / any host Triibal can clone from.
-3. Tell recipients to run `triibal profile install <your-repo-url>`.
+   GitLab / any host Tribal can clone from.
+3. Tell recipients to run `tribal profile install <your-repo-url>`.
 
 Use git tags for versioned releases — recipients who clone `HEAD` get your
 latest state, and you can always bump `version:` in the manifest.
 
-## `triibal -p` / `triibal --profile`
+## `tribal -p` / `tribal --profile`
 
 ```bash
-triibal -p <name> <command> [options]
-triibal --profile <name> <command> [options]
+tribal -p <name> <command> [options]
+tribal --profile <name> <command> [options]
 ```
 
-Global flag to run any Triibal command under a specific profile without changing the sticky default. This overrides the active profile for the duration of the command.
+Global flag to run any Tribal command under a specific profile without changing the sticky default. This overrides the active profile for the duration of the command.
 
 | Option | Description |
 |--------|-------------|
@@ -457,16 +457,16 @@ Global flag to run any Triibal command under a specific profile without changing
 **Examples:**
 
 ```bash
-triibal -p work chat -q "Check the server status"
-triibal --profile dev gateway start
-triibal -p personal skills list
-triibal -p work config edit
+tribal -p work chat -q "Check the server status"
+tribal --profile dev gateway start
+tribal -p personal skills list
+tribal -p work config edit
 ```
 
-## `triibal completion`
+## `tribal completion`
 
 ```bash
-triibal completion <shell>
+tribal completion <shell>
 ```
 
 Generates shell completion scripts. Includes completions for profile names and profile subcommands.
@@ -479,18 +479,18 @@ Generates shell completion scripts. Includes completions for profile names and p
 
 ```bash
 # Install completions
-triibal completion bash >> ~/.bashrc
-triibal completion zsh >> ~/.zshrc
-triibal completion fish > ~/.config/fish/completions/triibal.fish
+tribal completion bash >> ~/.bashrc
+tribal completion zsh >> ~/.zshrc
+tribal completion fish > ~/.config/fish/completions/tribal.fish
 
 # Reload shell
 source ~/.bashrc
 ```
 
 After installation, tab completion works for:
-- `triibal profile <TAB>` — subcommands (list, use, create, etc.)
-- `triibal profile use <TAB>` — profile names
-- `triibal -p <TAB>` — profile names
+- `tribal profile <TAB>` — subcommands (list, use, create, etc.)
+- `tribal profile use <TAB>` — profile names
+- `tribal -p <TAB>` — profile names
 
 ## See also
 

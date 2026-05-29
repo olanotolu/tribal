@@ -7,28 +7,28 @@ from pathlib import Path
 from typing import Optional
 
 
-def _triibal_home_path() -> Path:
-    """Resolve the active TRIIBAL_HOME (profile-aware) without circular imports."""
+def _tribal_home_path() -> Path:
+    """Resolve the active TRIBAL_HOME (profile-aware) without circular imports."""
     try:
-        from triibal_constants import get_triibal_home  # local import to avoid cycles
-        return get_triibal_home()
+        from tribal_constants import get_tribal_home  # local import to avoid cycles
+        return get_tribal_home()
     except Exception:
-        return Path(os.path.expanduser("~/.triibal"))
+        return Path(os.path.expanduser("~/.tribal"))
 
 
-def _triibal_root_path() -> Path:
-    """Resolve the Triibal root dir (always the parent of any profile, never per-profile)."""
+def _tribal_root_path() -> Path:
+    """Resolve the Tribal root dir (always the parent of any profile, never per-profile)."""
     try:
-        from triibal_constants import get_default_triibal_root  # local import to avoid cycles
-        return get_default_triibal_root()
+        from tribal_constants import get_default_tribal_root  # local import to avoid cycles
+        return get_default_tribal_root()
     except Exception:
-        return Path(os.path.expanduser("~/.triibal"))
+        return Path(os.path.expanduser("~/.tribal"))
 
 
 def build_write_denied_paths(home: str) -> set[str]:
     """Return exact sensitive paths that must never be written."""
-    triibal_home = _triibal_home_path()
-    triibal_root = _triibal_root_path()
+    tribal_home = _tribal_home_path()
+    tribal_root = _tribal_root_path()
     return {
         os.path.realpath(p)
         for p in [
@@ -37,15 +37,15 @@ def build_write_denied_paths(home: str) -> set[str]:
             os.path.join(home, ".ssh", "id_ed25519"),
             os.path.join(home, ".ssh", "config"),
             # Active profile .env (or top-level .env when not in profile mode).
-            str(triibal_home / ".env"),
+            str(tribal_home / ".env"),
             # Top-level .env, even when running under a profile — overwriting it
             # leaks credentials across every profile that inherits from root (#15981).
-            str(triibal_root / ".env"),
+            str(tribal_root / ".env"),
             # Active profile Anthropic PKCE credential store.
-            str(triibal_home / ".anthropic_oauth.json"),
+            str(tribal_home / ".anthropic_oauth.json"),
             # Top-level Anthropic PKCE credential store remains sensitive even
             # when a profile is active; default/non-profile sessions still read it.
-            str(triibal_root / ".anthropic_oauth.json"),
+            str(tribal_root / ".anthropic_oauth.json"),
             os.path.join(home, ".bashrc"),
             os.path.join(home, ".zshrc"),
             os.path.join(home, ".profile"),
@@ -83,8 +83,8 @@ def build_write_denied_prefixes(home: str) -> list[str]:
 
 
 def get_safe_write_root() -> Optional[str]:
-    """Return the resolved TRIIBAL_WRITE_SAFE_ROOT path, or None if unset."""
-    root = os.getenv("TRIIBAL_WRITE_SAFE_ROOT", "")
+    """Return the resolved TRIBAL_WRITE_SAFE_ROOT path, or None if unset."""
+    root = os.getenv("TRIBAL_WRITE_SAFE_ROOT", "")
     if not root:
         return None
     try:
@@ -104,24 +104,24 @@ def is_write_denied(path: str) -> bool:
         if resolved.startswith(prefix):
             return True
 
-    # Triibal control-plane files: block both the ACTIVE profile's view
-    # (triibal_home) AND the global root view. Without the root pass, a
+    # Tribal control-plane files: block both the ACTIVE profile's view
+    # (tribal_home) AND the global root view. Without the root pass, a
     # profile-mode session leaves <root>/auth.json + <root>/config.yaml
     # writable — letting a prompt-injected write_file overwrite the global
     # files that every profile inherits from (same shape as #15981).
     control_file_names = ("auth.json", "config.yaml", "webhook_subscriptions.json")
     mcp_tokens_dir_name = "mcp-tokens"
 
-    triibal_dirs = []
-    for base in (_triibal_home_path(), _triibal_root_path()):
+    tribal_dirs = []
+    for base in (_tribal_home_path(), _tribal_root_path()):
         try:
             real = os.path.realpath(base)
-            if real not in triibal_dirs:
-                triibal_dirs.append(real)
+            if real not in tribal_dirs:
+                tribal_dirs.append(real)
         except Exception:
             continue
 
-    for base_real in triibal_dirs:
+    for base_real in tribal_dirs:
         for name in control_file_names:
             try:
                 if resolved == os.path.realpath(os.path.join(base_real, name)):
@@ -163,14 +163,14 @@ _BLOCKED_PROJECT_ENV_BASENAMES: set[str] = {
 
 
 def get_read_block_error(path: str) -> Optional[str]:
-    """Return an error message when a read targets a denied Triibal path.
+    """Return an error message when a read targets a denied Tribal path.
 
     Three categories are blocked:
 
-      * Internal Triibal cache files under ``TRIIBAL_HOME/skills/.hub`` —
+      * Internal Tribal cache files under ``TRIBAL_HOME/skills/.hub`` —
         readable metadata that an attacker could use as a prompt-injection
         carrier.
-      * Credential / secret stores under TRIIBAL_HOME and the global Triibal
+      * Credential / secret stores under TRIBAL_HOME and the global Tribal
         root: ``auth.json``, ``auth.lock``, ``.anthropic_oauth.json``,
         ``.env``, ``webhook_subscriptions.json``, ``auth/google_oauth.json``,
         and anything under ``mcp-tokens/``. These hold plaintext provider keys,
@@ -187,7 +187,7 @@ def get_read_block_error(path: str) -> Optional[str]:
 
     **This is NOT a security boundary.** The terminal tool runs as the
     same OS user with shell access; the agent can still ``cat auth.json``
-    or ``cat ~/.triibal/.env`` and exfiltrate the file. The read-deny exists
+    or ``cat ~/.tribal/.env`` and exfiltrate the file. The read-deny exists
     as defense-in-depth that:
 
       * Returns a clear error to models that respect tool denials, which
@@ -209,22 +209,22 @@ def get_read_block_error(path: str) -> Optional[str]:
     """
     resolved = Path(path).expanduser().resolve()
 
-    # Resolve BOTH the active TRIIBAL_HOME (profile-aware) AND the global
-    # Triibal root so credential stores at <root>/auth.json etc. are also
-    # blocked when running under a profile (TRIIBAL_HOME points at
+    # Resolve BOTH the active TRIBAL_HOME (profile-aware) AND the global
+    # Tribal root so credential stores at <root>/auth.json etc. are also
+    # blocked when running under a profile (TRIBAL_HOME points at
     # <root>/profiles/<name> in profile mode). Same shape as the write
     # deny widening (#15981, #14157).
-    triibal_dirs: list[Path] = []
-    for base in (_triibal_home_path(), _triibal_root_path()):
+    tribal_dirs: list[Path] = []
+    for base in (_tribal_home_path(), _tribal_root_path()):
         try:
             real = base.resolve()
-            if real not in triibal_dirs:
-                triibal_dirs.append(real)
+            if real not in tribal_dirs:
+                tribal_dirs.append(real)
         except Exception:
             continue
 
     # Skills .hub: prompt-injection carriers.
-    for hd in triibal_dirs:
+    for hd in tribal_dirs:
         blocked_dirs = [
             hd / "skills" / ".hub" / "index-cache",
             hd / "skills" / ".hub",
@@ -235,13 +235,13 @@ def get_read_block_error(path: str) -> Optional[str]:
             except ValueError:
                 continue
             return (
-                f"Access denied: {path} is an internal Triibal cache file "
+                f"Access denied: {path} is an internal Tribal cache file "
                 "and cannot be read directly to prevent prompt injection. "
                 "Use the skills_list or skill_view tools instead."
             )
 
     # Credential / secret stores. Exact-file matches under either
-    # TRIIBAL_HOME or <root>.
+    # TRIBAL_HOME or <root>.
     credential_file_names = (
         "auth.json",
         "auth.lock",
@@ -250,7 +250,7 @@ def get_read_block_error(path: str) -> Optional[str]:
         "webhook_subscriptions.json",
         os.path.join("auth", "google_oauth.json"),
     )
-    for hd in triibal_dirs:
+    for hd in tribal_dirs:
         for name in credential_file_names:
             try:
                 blocked = (hd / name).resolve()
@@ -258,7 +258,7 @@ def get_read_block_error(path: str) -> Optional[str]:
                 continue
             if resolved == blocked:
                 return (
-                    f"Access denied: {path} is a Triibal credential store "
+                    f"Access denied: {path} is a Tribal credential store "
                     "and cannot be read directly. Provider tools consume "
                     "these credentials through internal channels. "
                     "(Defense-in-depth — not a security boundary; the "
@@ -267,14 +267,14 @@ def get_read_block_error(path: str) -> Optional[str]:
 
     # mcp-tokens/: directory prefix match — anything inside is OAuth
     # token material.
-    for hd in triibal_dirs:
+    for hd in tribal_dirs:
         try:
             mcp_tokens = (hd / "mcp-tokens").resolve()
         except Exception:
             continue
         if resolved == mcp_tokens:
             return (
-                f"Access denied: {path} is the Triibal MCP token directory "
+                f"Access denied: {path} is the Tribal MCP token directory "
                 "and cannot be read directly. (Defense-in-depth — not a "
                 "security boundary; the terminal tool can still bypass.)"
             )
@@ -283,7 +283,7 @@ def get_read_block_error(path: str) -> Optional[str]:
         except ValueError:
             continue
         return (
-            f"Access denied: {path} is a Triibal MCP token file "
+            f"Access denied: {path} is a Tribal MCP token file "
             "and cannot be read directly. (Defense-in-depth — not a "
             "security boundary; the terminal tool can still bypass.)"
         )
@@ -307,7 +307,7 @@ def get_read_block_error(path: str) -> Optional[str]:
 # ---------------------------------------------------------------------------
 # Cross-profile write guard (#TBD)
 #
-# Triibal profiles are separate TRIIBAL_HOME dirs under
+# Tribal profiles are separate TRIBAL_HOME dirs under
 # ``<root>/profiles/<name>/``. Each profile has its own skills/, plugins/,
 # cron/, memories/. When an agent runs under one profile, writing into
 # ANOTHER profile's directories is almost always wrong — those skills /
@@ -320,30 +320,30 @@ def get_read_block_error(path: str) -> Optional[str]:
 # as the dangerous-command approval flow — the agent is told the boundary
 # exists, and explicit user direction is required to cross it.
 #
-# Reference: May 2026 incident where a triibal-security profile session
-# edited skills under both ``~/.triibal/profiles/triibal-security/skills/``
-# AND ``~/.triibal/skills/`` (the default profile's skills) without realizing
+# Reference: May 2026 incident where a tribal-security profile session
+# edited skills under both ``~/.tribal/profiles/tribal-security/skills/``
+# AND ``~/.tribal/skills/`` (the default profile's skills) without realizing
 # the second path belonged to a different profile.
 # ---------------------------------------------------------------------------
 
-# Profile-scoped directories under TRIIBAL_HOME / <root> / <root>/profiles/<X>/
+# Profile-scoped directories under TRIBAL_HOME / <root> / <root>/profiles/<X>/
 # that should be guarded. Adding a new area here extends the guard with no
 # other code change.
 PROFILE_SCOPED_AREAS = ("skills", "plugins", "cron", "memories")
 
 
 def _resolve_active_profile_name() -> str:
-    """Return the active profile name derived from TRIIBAL_HOME.
+    """Return the active profile name derived from TRIBAL_HOME.
 
-    ``~/.triibal``              -> ``"default"``
-    ``~/.triibal/profiles/X``  -> ``"X"``
+    ``~/.tribal``              -> ``"default"``
+    ``~/.tribal/profiles/X``  -> ``"X"``
 
     Falls back to ``"default"`` on any resolution failure so the guard
     never raises into the tool path.
     """
     try:
-        home_real = _triibal_home_path().resolve()
-        root_real = _triibal_root_path().resolve()
+        home_real = _tribal_home_path().resolve()
+        root_real = _tribal_root_path().resolve()
     except (OSError, RuntimeError):
         return "default"
     profiles_dir = root_real / "profiles"
@@ -361,7 +361,7 @@ def classify_cross_profile_target(path: str) -> Optional[dict]:
     """Classify a write target as cross-profile if it lands in another
     profile's scoped area (skills/plugins/cron/memories).
 
-    Returns ``None`` when the target is outside Triibal scope, or is inside
+    Returns ``None`` when the target is outside Tribal scope, or is inside
     the ACTIVE profile, or doesn't hit a profile-scoped area. Otherwise
     returns a dict with:
 
@@ -376,7 +376,7 @@ def classify_cross_profile_target(path: str) -> Optional[dict]:
     """
     try:
         target = Path(os.path.expanduser(str(path))).resolve()
-        root_real = _triibal_root_path().resolve()
+        root_real = _tribal_root_path().resolve()
     except (OSError, RuntimeError):
         return None
 
@@ -424,7 +424,7 @@ def get_cross_profile_warning(path: str) -> Optional[str]:
     """Return a model-facing warning string when ``path`` is cross-profile.
 
     Returns ``None`` when the write is in-scope (same profile) or outside
-    Triibal entirely. Caller is expected to surface the warning to the
+    Tribal entirely. Caller is expected to surface the warning to the
     agent as a tool-result error, NOT to silently allow the write — the
     agent must either get explicit user direction to proceed, or pass
     ``cross_profile=True`` to its write tool.
@@ -438,7 +438,7 @@ def get_cross_profile_warning(path: str) -> Optional[str]:
         return None
     return (
         f"Cross-profile write blocked by soft guard: {info['target_path']} "
-        f"belongs to Triibal profile {info['target_profile']!r}, but the "
+        f"belongs to Tribal profile {info['target_profile']!r}, but the "
         f"agent is running under profile {info['active_profile']!r}. "
         f"Editing another profile's {info['area']}/ will affect that "
         f"profile's future sessions, not the one you are currently in. "

@@ -43,15 +43,15 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* Triibal Agent — Nous DS with the LENS_0 (Triibal teal) lens applied   */
-/* statically. Mirrors nousnet-web/(triibal-agent)/layout.tsx so the    */
-/* canonical Triibal palette is the default — teal canvas + cream      */
+/* Tribal Agent — Nous DS with the LENS_0 (Tribal teal) lens applied   */
+/* statically. Mirrors nousnet-web/(tribal-agent)/layout.tsx so the    */
+/* canonical Tribal palette is the default — teal canvas + cream      */
 /* accent — without relying on leva/gsap at runtime.                  */
 /* ------------------------------------------------------------------ */
 
 :root {
   /* LENS_0 — from design-language/src/ui/components/overlays/index.tsx.
-     These are the defaults for the `default` (Triibal Teal) dashboard theme;
+     These are the defaults for the `default` (Tribal Teal) dashboard theme;
      ThemeProvider rewrites them as inline styles when a user switches themes. */
   --foreground: color-mix(in srgb, #ffffff 0%, transparent);
   --foreground-base: #ffffff;
@@ -136,7 +136,7 @@ code, kbd, pre, samp, .font-mono, .font-mono-ui {
   }
 }
 
-/* Nousnet's triibal-agent layout bumps `small` and `code` to readable
+/* Nousnet's tribal-agent layout bumps `small` and `code` to readable
    dashboard sizes. Keep in sync. */
 small { font-size: 1.0625rem; }
 code { font-size: 0.875rem; }

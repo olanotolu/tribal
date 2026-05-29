@@ -14,10 +14,10 @@ description: "设置并使用 1Password CLI (op)"
 
 | | |
 |---|---|
-| 来源 | 可选 — 通过 `triibal skills install official/security/1password` 安装 |
+| 来源 | 可选 — 通过 `tribal skills install official/security/1password` 安装 |
 | 路径 | `optional-skills/security/1password` |
 | 版本 | `1.0.0` |
-| 作者 | arceus77-7，由 Triibal Agent 增强 |
+| 作者 | arceus77-7，由 Tribal Agent 增强 |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `security`, `secrets`, `1password`, `op`, `cli` |
@@ -25,7 +25,7 @@ description: "设置并使用 1Password CLI (op)"
 ## 参考：完整 SKILL.md
 
 :::info
-以下是 Triibal 在触发此 skill 时加载的完整 skill 定义。这是 skill 激活时 agent 所看到的指令内容。
+以下是 Tribal 在触发此 skill 时加载的完整 skill 定义。这是 skill 激活时 agent 所看到的指令内容。
 :::
 
 # 1Password CLI
@@ -37,7 +37,7 @@ description: "设置并使用 1Password CLI (op)"
 - 1Password 账户
 - 已安装 1Password CLI（`op`）
 - 以下之一：桌面应用集成、服务账户令牌（`OP_SERVICE_ACCOUNT_TOKEN`）或 Connect 服务器
-- `tmux` 可用，用于在 Triibal 终端调用期间保持稳定的已认证会话（仅限桌面应用流程）
+- `tmux` 可用，用于在 Tribal 终端调用期间保持稳定的已认证会话（仅限桌面应用流程）
 
 ## 使用场景
 
@@ -49,9 +49,9 @@ description: "设置并使用 1Password CLI (op)"
 
 ## 认证方式
 
-### 服务账户（推荐用于 Triibal）
+### 服务账户（推荐用于 Tribal）
 
-在 `~/.triibal/.env` 中设置 `OP_SERVICE_ACCOUNT_TOKEN`（skill 首次加载时会提示输入）。
+在 `~/.tribal/.env` 中设置 `OP_SERVICE_ACCOUNT_TOKEN`（skill 首次加载时会提示输入）。
 无需桌面应用。支持 `op read`、`op inject`、`op run`。
 
 ```bash
@@ -95,17 +95,17 @@ op --version
 
 3. 选择上述认证方式之一并进行配置。
 
-## Triibal 执行模式（桌面应用流程）
+## Tribal 执行模式（桌面应用流程）
 
-Triibal 终端命令默认为非交互式，且在多次调用之间可能丢失认证上下文。
+Tribal 终端命令默认为非交互式，且在多次调用之间可能丢失认证上下文。
 若要在桌面应用集成下可靠使用 `op`，请在专用 tmux 会话中执行登录和密钥操作。
 
 注意：使用 `OP_SERVICE_ACCOUNT_TOKEN` 时**无需**此操作 — 令牌会在终端调用之间自动持久化。
 
 ```bash
-SOCKET_DIR="${TMPDIR:-/tmp}/triibal-tmux-sockets"
+SOCKET_DIR="${TMPDIR:-/tmp}/tribal-tmux-sockets"
 mkdir -p "$SOCKET_DIR"
-SOCKET="$SOCKET_DIR/triibal-op.sock"
+SOCKET="$SOCKET_DIR/tribal-op.sock"
 SESSION="op-auth-$(date +%Y%m%d-%H%M%S)"
 
 tmux -S "$SOCKET" new -d -s "$SESSION" -n shell

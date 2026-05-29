@@ -5,11 +5,11 @@ export interface LaunchResult {
   error?: string
 }
 
-const resolveTriibalBin = () => process.env.TRIIBAL_BIN?.trim() || 'triibal'
+const resolveTribalBin = () => process.env.TRIBAL_BIN?.trim() || 'tribal'
 
-export const launchTriibalCommand = (args: string[]): Promise<LaunchResult> =>
+export const launchTribalCommand = (args: string[]): Promise<LaunchResult> =>
   new Promise(resolve => {
-    const child = spawn(resolveTriibalBin(), args, { stdio: 'inherit' })
+    const child = spawn(resolveTribalBin(), args, { stdio: 'inherit' })
 
     child.on('error', err => resolve({ code: null, error: err.message }))
     child.on('exit', code => resolve({ code }))

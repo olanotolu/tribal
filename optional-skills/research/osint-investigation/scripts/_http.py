@@ -12,9 +12,9 @@ import urllib.parse
 import urllib.request
 
 DEFAULT_UA = (
-    "triibal-osint-investigation/0.2 "
-    "(+https://github.com/Triibal/triibal; "
-    "set TRIIBAL_OSINT_UA env var to identify yourself per "
+    "tribal-osint-investigation/0.2 "
+    "(+https://github.com/Tribal/tribal; "
+    "set TRIBAL_OSINT_UA env var to identify yourself per "
     "Wikimedia / SEC fair-use guidance)"
 )
 
@@ -38,7 +38,7 @@ def get(
     if params:
         sep = "&" if "?" in url else "?"
         url = f"{url}{sep}{urllib.parse.urlencode(params)}"
-    h = {"User-Agent": user_agent or os.environ.get("TRIIBAL_OSINT_UA", DEFAULT_UA)}
+    h = {"User-Agent": user_agent or os.environ.get("TRIBAL_OSINT_UA", DEFAULT_UA)}
     if headers:
         h.update(headers)
 

@@ -1,14 +1,14 @@
 # 会话存储
 
-Triibal Agent 使用 SQLite 数据库（`~/.triibal/state.db`）跨 CLI 和 gateway 会话持久化会话元数据、完整消息历史及模型配置。这替代了早期的逐会话 JSONL 文件方案。
+Tribal Agent 使用 SQLite 数据库（`~/.tribal/state.db`）跨 CLI 和 gateway 会话持久化会话元数据、完整消息历史及模型配置。这替代了早期的逐会话 JSONL 文件方案。
 
-源文件：`triibal_state.py`
+源文件：`tribal_state.py`
 
 
 ## 架构概览
 
 ```
-~/.triibal/state.db (SQLite, WAL mode)
+~/.tribal/state.db (SQLite, WAL mode)
 ├── sessions              — 会话元数据、token 计数、计费信息
 ├── messages              — 每个会话的完整消息历史
 ├── messages_fts          — FTS5 虚拟表（content + tool_name + tool_calls）
@@ -153,7 +153,7 @@ END;
 
 ## 写入竞争处理
 
-多个 triibal 进程（gateway + CLI 会话 + worktree agent）共享同一个 `state.db`。`SessionDB` 类通过以下方式处理写入竞争：
+多个 tribal 进程（gateway + CLI 会话 + worktree agent）共享同一个 `state.db`。`SessionDB` 类通过以下方式处理写入竞争：
 
 - **短 SQLite 超时**（1 秒），而非默认的 30 秒
 - **应用层重试**，带随机抖动（20–150ms，最多 15 次重试）
@@ -175,9 +175,9 @@ _CHECKPOINT_EVERY_N_WRITES = 50
 ### 初始化
 
 ```python
-from triibal_state import SessionDB
+from tribal_state import SessionDB
 
-db = SessionDB()                           # 默认：~/.triibal/state.db
+db = SessionDB()                           # 默认：~/.tribal/state.db
 db = SessionDB(db_path=Path("/tmp/test.db"))  # 自定义路径
 ```
 
@@ -379,8 +379,8 @@ db.delete_session("sess_abc123")
 
 ## 数据库位置
 
-默认路径：`~/.triibal/state.db`
+默认路径：`~/.tribal/state.db`
 
-该路径由 `triibal_constants.get_triibal_home()` 推导，默认解析为 `~/.triibal/`，或 `TRIIBAL_HOME` 环境变量的值。
+该路径由 `tribal_constants.get_tribal_home()` 推导，默认解析为 `~/.tribal/`，或 `TRIBAL_HOME` 环境变量的值。
 
 数据库文件、WAL 文件（`state.db-wal`）和共享内存文件（`state.db-shm`）均创建于同一目录。

@@ -623,13 +623,13 @@ class MemoryManager:
     def initialize_all(self, session_id: str, **kwargs) -> None:
         """Initialize all providers.
 
-        Automatically injects ``triibal_home`` into *kwargs* so that every
+        Automatically injects ``tribal_home`` into *kwargs* so that every
         provider can resolve profile-scoped storage paths without importing
-        ``get_triibal_home()`` themselves.
+        ``get_tribal_home()`` themselves.
         """
-        if "triibal_home" not in kwargs:
-            from triibal_constants import get_triibal_home
-            kwargs["triibal_home"] = str(get_triibal_home())
+        if "tribal_home" not in kwargs:
+            from tribal_constants import get_tribal_home
+            kwargs["tribal_home"] = str(get_tribal_home())
         for provider in self._providers:
             try:
                 provider.initialize(session_id=session_id, **kwargs)

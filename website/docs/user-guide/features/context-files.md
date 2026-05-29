@@ -1,26 +1,26 @@
 ---
 sidebar_position: 8
 title: "Context Files"
-description: "Project context files — .triibal.md, AGENTS.md, CLAUDE.md, global SOUL.md, and .cursorrules — automatically injected into every conversation"
+description: "Project context files — .tribal.md, AGENTS.md, CLAUDE.md, global SOUL.md, and .cursorrules — automatically injected into every conversation"
 ---
 
 # Context Files
 
-Triibal Agent automatically discovers and loads context files that shape how it behaves. Some are project-local and discovered from your working directory. `SOUL.md` is now global to the Triibal instance and is loaded from `TRIIBAL_HOME` only.
+Tribal Agent automatically discovers and loads context files that shape how it behaves. Some are project-local and discovered from your working directory. `SOUL.md` is now global to the Tribal instance and is loaded from `TRIBAL_HOME` only.
 
 ## Supported Context Files
 
 | File | Purpose | Discovery |
 |------|---------|-----------| 
-| **.triibal.md** / **TRIIBAL.md** | Project instructions (highest priority) | Walks to git root |
+| **.tribal.md** / **TRIBAL.md** | Project instructions (highest priority) | Walks to git root |
 | **AGENTS.md** | Project instructions, conventions, architecture | CWD at startup + subdirectories progressively |
 | **CLAUDE.md** | Claude Code context files (also detected) | CWD at startup + subdirectories progressively |
-| **SOUL.md** | Global personality and tone customization for this Triibal instance | `TRIIBAL_HOME/SOUL.md` only |
+| **SOUL.md** | Global personality and tone customization for this Tribal instance | `TRIBAL_HOME/SOUL.md` only |
 | **.cursorrules** | Cursor IDE coding conventions | CWD only |
 | **.cursor/rules/*.mdc** | Cursor IDE rule modules | CWD only |
 
 :::info Priority system
-Only **one** project context type is loaded per session (first match wins): `.triibal.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules`. **SOUL.md** is always loaded independently as the agent identity (slot #1).
+Only **one** project context type is loaded per session (first match wins): `.tribal.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules`. **SOUL.md** is always loaded independently as the agent identity (slot #1).
 :::
 
 ## AGENTS.md
@@ -29,7 +29,7 @@ Only **one** project context type is loaded per session (first match wins): `.tr
 
 ### Progressive Subdirectory Discovery
 
-At session start, Triibal loads the `AGENTS.md` from your working directory into the system prompt. As the agent navigates into subdirectories during the session (via `read_file`, `terminal`, `search_files`, etc.), it **progressively discovers** context files in those directories and injects them into the conversation at the moment they become relevant.
+At session start, Tribal loads the `AGENTS.md` from your working directory into the system prompt. As the agent navigates into subdirectories during the session (via `read_file`, `terminal`, `search_files`, etc.), it **progressively discovers** context files in those directories and injects them into the conversation at the moment they become relevant.
 
 ```
 my-project/
@@ -83,22 +83,22 @@ This is a Next.js 14 web application with a Python FastAPI backend.
 
 **Location:**
 
-- `~/.triibal/SOUL.md`
-- or `$TRIIBAL_HOME/SOUL.md` if you run Triibal with a custom home directory
+- `~/.tribal/SOUL.md`
+- or `$TRIBAL_HOME/SOUL.md` if you run Tribal with a custom home directory
 
 Important details:
 
-- Triibal seeds a default `SOUL.md` automatically if one does not exist yet
-- Triibal loads `SOUL.md` only from `TRIIBAL_HOME`
-- Triibal does not probe the working directory for `SOUL.md`
+- Tribal seeds a default `SOUL.md` automatically if one does not exist yet
+- Tribal loads `SOUL.md` only from `TRIBAL_HOME`
+- Tribal does not probe the working directory for `SOUL.md`
 - If the file is empty, nothing from `SOUL.md` is added to the prompt
 - If the file has content, the content is injected verbatim after scanning and truncation
 
 ## .cursorrules
 
-Triibal is compatible with Cursor IDE's `.cursorrules` file and `.cursor/rules/*.mdc` rule modules. If these files exist in your project root and no higher-priority context file (`.triibal.md`, `AGENTS.md`, or `CLAUDE.md`) is found, they're loaded as the project context.
+Tribal is compatible with Cursor IDE's `.cursorrules` file and `.cursor/rules/*.mdc` rule modules. If these files exist in your project root and no higher-priority context file (`.tribal.md`, `AGENTS.md`, or `CLAUDE.md`) is found, they're loaded as the project context.
 
-This means your existing Cursor conventions automatically apply when using Triibal.
+This means your existing Cursor conventions automatically apply when using Tribal.
 
 ## How Context Files Are Loaded
 
@@ -106,7 +106,7 @@ This means your existing Cursor conventions automatically apply when using Triib
 
 Context files are loaded by `build_context_files_prompt()` in `agent/prompt_builder.py`:
 
-1. **Scan working directory** — checks for `.triibal.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules` (first match wins)
+1. **Scan working directory** — checks for `.tribal.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules` (first match wins)
 2. **Content is read** — each file is read as UTF-8 text
 3. **Security scan** — content is checked for prompt injection patterns
 4. **Truncation** — files exceeding 20,000 characters are head/tail truncated (70% head, 20% tail, with a marker in the middle)

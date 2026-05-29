@@ -14,10 +14,10 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def _isolate_home(tmp_path, monkeypatch):
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
-    yield triibal_home
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
+    yield tribal_home
 
 
 # ---------------------------------------------------------------------------
@@ -60,23 +60,23 @@ def test_setup_linux_loads_null_sink_and_virtual_source():
     assert len(calls) == 2
     assert calls[0][0] == "pactl" and calls[0][1] == "load-module"
     assert "module-null-sink" in calls[0]
-    assert any(a.startswith("sink_name=triibal_meet_sink") for a in calls[0])
+    assert any(a.startswith("sink_name=tribal_meet_sink") for a in calls[0])
     assert calls[1][0] == "pactl" and calls[1][1] == "load-module"
     assert "module-virtual-source" in calls[1]
-    assert any(a.startswith("source_name=triibal_meet_src") for a in calls[1])
-    assert any("master=triibal_meet_sink.monitor" in a for a in calls[1])
+    assert any(a.startswith("source_name=tribal_meet_src") for a in calls[1])
+    assert any("master=tribal_meet_sink.monitor" in a for a in calls[1])
 
     # Dict shape.
     assert info["platform"] == "linux"
-    assert info["device_name"] == "triibal_meet_src"
-    assert info["write_target"] == "triibal_meet_sink"
+    assert info["device_name"] == "tribal_meet_src"
+    assert info["write_target"] == "tribal_meet_sink"
     assert info["sample_rate"] == 48000
     assert info["channels"] == 2
     assert info["module_ids"] == [42, 43]
 
     # Properties.
-    assert br.device_name == "triibal_meet_src"
-    assert br.write_target == "triibal_meet_sink"
+    assert br.device_name == "tribal_meet_src"
+    assert br.write_target == "tribal_meet_sink"
 
 
 def test_teardown_linux_unloads_modules_in_reverse_order():
@@ -231,7 +231,7 @@ def test_chrome_fake_audio_flags_linux():
     with patch("plugins.google_meet.audio_bridge.platform.system",
                return_value="Linux"):
         flags = chrome_fake_audio_flags(
-            {"platform": "linux", "device_name": "triibal_meet_src"}
+            {"platform": "linux", "device_name": "tribal_meet_src"}
         )
     assert "--use-fake-ui-for-media-stream" in flags
 

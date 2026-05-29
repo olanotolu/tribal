@@ -1,4 +1,4 @@
-import { stringWidth, wrapAnsi } from '@triibal/ink'
+import { stringWidth, wrapAnsi } from '@tribal/ink'
 
 import type { Role } from '../types.js'
 

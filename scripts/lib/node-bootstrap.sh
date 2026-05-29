@@ -7,26 +7,26 @@
 #
 # Strategy (first hit wins — respects the user's existing tooling):
 #   1. modern `node` already on PATH
-#   2. ~/.triibal/node/ from a prior Triibal-managed install
+#   2. ~/.tribal/node/ from a prior Tribal-managed install
 #   3. fnm, proto, nvm (in that order) if the user already uses a version manager
 #   4. Termux `pkg`, macOS Homebrew
-#   5. pinned nodejs.org tarball into ~/.triibal/node/ (always works, zero shell rc edits)
+#   5. pinned nodejs.org tarball into ~/.tribal/node/ (always works, zero shell rc edits)
 #
 # Usage:
 #   source scripts/lib/node-bootstrap.sh
 #   ensure_node   # returns 0 on success, non-zero on failure
-#   if [ "$TRIIBAL_NODE_AVAILABLE" = true ]; then ...; fi
+#   if [ "$TRIBAL_NODE_AVAILABLE" = true ]; then ...; fi
 #
 # Env inputs (set before sourcing to override defaults):
-#   TRIIBAL_NODE_MIN_VERSION   (default: 20)   — accepted on PATH
-#   TRIIBAL_NODE_TARGET_MAJOR  (default: 22)   — installed when we install
-#   TRIIBAL_HOME               (default: $HOME/.triibal)
+#   TRIBAL_NODE_MIN_VERSION   (default: 20)   — accepted on PATH
+#   TRIBAL_NODE_TARGET_MAJOR  (default: 22)   — installed when we install
+#   TRIBAL_HOME               (default: $HOME/.tribal)
 # ============================================================================
 
-TRIIBAL_NODE_MIN_VERSION="${TRIIBAL_NODE_MIN_VERSION:-20}"
-TRIIBAL_NODE_TARGET_MAJOR="${TRIIBAL_NODE_TARGET_MAJOR:-22}"
-TRIIBAL_HOME="${TRIIBAL_HOME:-$HOME/.triibal}"
-TRIIBAL_NODE_AVAILABLE=false
+TRIBAL_NODE_MIN_VERSION="${TRIBAL_NODE_MIN_VERSION:-20}"
+TRIBAL_NODE_TARGET_MAJOR="${TRIBAL_NODE_TARGET_MAJOR:-22}"
+TRIBAL_HOME="${TRIBAL_HOME:-$HOME/.tribal}"
+TRIBAL_NODE_AVAILABLE=false
 
 # ---------------------------------------------------------------------------
 # Logging — prefer the host script's log_* helpers when present
@@ -52,7 +52,7 @@ _nb_node_major() {
 
 _nb_have_modern_node() {
     command -v node >/dev/null 2>&1 || return 1
-    [ "$(_nb_node_major)" -ge "$TRIIBAL_NODE_MIN_VERSION" ]
+    [ "$(_nb_node_major)" -ge "$TRIBAL_NODE_MIN_VERSION" ]
 }
 
 # ---------------------------------------------------------------------------
@@ -61,10 +61,10 @@ _nb_have_modern_node() {
 
 _nb_try_fnm() {
     command -v fnm >/dev/null 2>&1 || return 1
-    _nb_log "fnm detected — installing Node $TRIIBAL_NODE_TARGET_MAJOR..."
+    _nb_log "fnm detected — installing Node $TRIBAL_NODE_TARGET_MAJOR..."
     eval "$(fnm env 2>/dev/null)" || true
-    fnm install "$TRIIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
-    fnm use     "$TRIIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
+    fnm install "$TRIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
+    fnm use     "$TRIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
     _nb_have_modern_node || return 1
     _nb_ok "Node $(node --version) activated via fnm"
     return 0
@@ -72,8 +72,8 @@ _nb_try_fnm() {
 
 _nb_try_proto() {
     command -v proto >/dev/null 2>&1 || return 1
-    _nb_log "proto detected — installing Node $TRIIBAL_NODE_TARGET_MAJOR..."
-    proto install node "$TRIIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
+    _nb_log "proto detected — installing Node $TRIBAL_NODE_TARGET_MAJOR..."
+    proto install node "$TRIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
     _nb_have_modern_node || return 1
     _nb_ok "Node $(node --version) activated via proto"
     return 0
@@ -84,9 +84,9 @@ _nb_try_nvm() {
     [ -s "$nvm_sh" ] || return 1
     # shellcheck source=/dev/null
     \. "$nvm_sh" >/dev/null 2>&1 || return 1
-    _nb_log "nvm detected — installing Node $TRIIBAL_NODE_TARGET_MAJOR..."
-    nvm install "$TRIIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
-    nvm use     "$TRIIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
+    _nb_log "nvm detected — installing Node $TRIBAL_NODE_TARGET_MAJOR..."
+    nvm install "$TRIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
+    nvm use     "$TRIBAL_NODE_TARGET_MAJOR" >/dev/null 2>&1 || return 1
     _nb_have_modern_node || return 1
     _nb_ok "Node $(node --version) activated via nvm"
     return 0
@@ -109,10 +109,10 @@ _nb_try_brew() {
     [ "$(uname -s)" = "Darwin" ] || return 1
     command -v brew >/dev/null 2>&1 || return 1
     _nb_log "Installing Node via Homebrew..."
-    brew install "node@${TRIIBAL_NODE_TARGET_MAJOR}" >/dev/null 2>&1 \
+    brew install "node@${TRIBAL_NODE_TARGET_MAJOR}" >/dev/null 2>&1 \
         || brew install node >/dev/null 2>&1 \
         || return 1
-    brew link --overwrite --force "node@${TRIIBAL_NODE_TARGET_MAJOR}" >/dev/null 2>&1 || true
+    brew link --overwrite --force "node@${TRIBAL_NODE_TARGET_MAJOR}" >/dev/null 2>&1 || true
     _nb_have_modern_node || return 1
     _nb_ok "Node $(node --version) installed via Homebrew"
     return 0
@@ -145,18 +145,18 @@ _nb_install_bundled_node() {
             ;;
     esac
 
-    local index_url="https://nodejs.org/dist/latest-v${TRIIBAL_NODE_TARGET_MAJOR}.x/"
+    local index_url="https://nodejs.org/dist/latest-v${TRIBAL_NODE_TARGET_MAJOR}.x/"
     local tarball
     tarball=$(curl -fsSL "$index_url" \
-        | grep -oE "node-v${TRIIBAL_NODE_TARGET_MAJOR}\.[0-9]+\.[0-9]+-${node_os}-${node_arch}\.tar\.xz" \
+        | grep -oE "node-v${TRIBAL_NODE_TARGET_MAJOR}\.[0-9]+\.[0-9]+-${node_os}-${node_arch}\.tar\.xz" \
         | head -1)
     if [ -z "$tarball" ]; then
         tarball=$(curl -fsSL "$index_url" \
-            | grep -oE "node-v${TRIIBAL_NODE_TARGET_MAJOR}\.[0-9]+\.[0-9]+-${node_os}-${node_arch}\.tar\.gz" \
+            | grep -oE "node-v${TRIBAL_NODE_TARGET_MAJOR}\.[0-9]+\.[0-9]+-${node_os}-${node_arch}\.tar\.gz" \
             | head -1)
     fi
     if [ -z "$tarball" ]; then
-        _nb_warn "Could not resolve Node $TRIIBAL_NODE_TARGET_MAJOR binary for $node_os-$node_arch"
+        _nb_warn "Could not resolve Node $TRIBAL_NODE_TARGET_MAJOR binary for $node_os-$node_arch"
         return 1
     fi
 
@@ -167,7 +167,7 @@ _nb_install_bundled_node() {
         _nb_warn "Download failed"; rm -rf "$tmp"; return 1
     }
 
-    _nb_log "Extracting to $TRIIBAL_HOME/node/..."
+    _nb_log "Extracting to $TRIBAL_HOME/node/..."
     if [[ "$tarball" == *.tar.xz ]]; then
         tar xf  "$tmp/$tarball" -C "$tmp" || { rm -rf "$tmp"; return 1; }
     else
@@ -182,19 +182,19 @@ _nb_install_bundled_node() {
         return 1
     fi
 
-    mkdir -p "$TRIIBAL_HOME"
-    rm -rf "$TRIIBAL_HOME/node"
-    mv "$extracted" "$TRIIBAL_HOME/node"
+    mkdir -p "$TRIBAL_HOME"
+    rm -rf "$TRIBAL_HOME/node"
+    mv "$extracted" "$TRIBAL_HOME/node"
     rm -rf "$tmp"
 
     mkdir -p "$HOME/.local/bin"
-    ln -sf "$TRIIBAL_HOME/node/bin/node" "$HOME/.local/bin/node"
-    ln -sf "$TRIIBAL_HOME/node/bin/npm"  "$HOME/.local/bin/npm"
-    ln -sf "$TRIIBAL_HOME/node/bin/npx"  "$HOME/.local/bin/npx"
-    export PATH="$TRIIBAL_HOME/node/bin:$PATH"
+    ln -sf "$TRIBAL_HOME/node/bin/node" "$HOME/.local/bin/node"
+    ln -sf "$TRIBAL_HOME/node/bin/npm"  "$HOME/.local/bin/npm"
+    ln -sf "$TRIBAL_HOME/node/bin/npx"  "$HOME/.local/bin/npx"
+    export PATH="$TRIBAL_HOME/node/bin:$PATH"
 
     _nb_have_modern_node || return 1
-    _nb_ok "Node $(node --version) installed to $TRIIBAL_HOME/node/"
+    _nb_ok "Node $(node --version) installed to $TRIBAL_HOME/node/"
     return 0
 }
 
@@ -203,36 +203,36 @@ _nb_install_bundled_node() {
 # ---------------------------------------------------------------------------
 
 ensure_node() {
-    TRIIBAL_NODE_AVAILABLE=false
+    TRIBAL_NODE_AVAILABLE=false
 
     if _nb_have_modern_node; then
         _nb_ok "Node $(node --version) found"
-        TRIIBAL_NODE_AVAILABLE=true
+        TRIBAL_NODE_AVAILABLE=true
         return 0
     fi
 
-    if [ -x "$TRIIBAL_HOME/node/bin/node" ]; then
-        export PATH="$TRIIBAL_HOME/node/bin:$PATH"
+    if [ -x "$TRIBAL_HOME/node/bin/node" ]; then
+        export PATH="$TRIBAL_HOME/node/bin:$PATH"
         if _nb_have_modern_node; then
-            _nb_ok "Node $(node --version) found (Triibal-managed)"
-            TRIIBAL_NODE_AVAILABLE=true
+            _nb_ok "Node $(node --version) found (Tribal-managed)"
+            TRIBAL_NODE_AVAILABLE=true
             return 0
         fi
     fi
 
     # Version managers first — respect the user's existing setup.
-    _nb_try_fnm   && { TRIIBAL_NODE_AVAILABLE=true; return 0; }
-    _nb_try_proto && { TRIIBAL_NODE_AVAILABLE=true; return 0; }
-    _nb_try_nvm   && { TRIIBAL_NODE_AVAILABLE=true; return 0; }
+    _nb_try_fnm   && { TRIBAL_NODE_AVAILABLE=true; return 0; }
+    _nb_try_proto && { TRIBAL_NODE_AVAILABLE=true; return 0; }
+    _nb_try_nvm   && { TRIBAL_NODE_AVAILABLE=true; return 0; }
 
     # Platform package managers.
-    _nb_try_termux_pkg && { TRIIBAL_NODE_AVAILABLE=true; return 0; }
-    _nb_try_brew       && { TRIIBAL_NODE_AVAILABLE=true; return 0; }
+    _nb_try_termux_pkg && { TRIBAL_NODE_AVAILABLE=true; return 0; }
+    _nb_try_brew       && { TRIBAL_NODE_AVAILABLE=true; return 0; }
 
     # Last resort: pinned nodejs.org tarball.
-    _nb_install_bundled_node && { TRIIBAL_NODE_AVAILABLE=true; return 0; }
+    _nb_install_bundled_node && { TRIBAL_NODE_AVAILABLE=true; return 0; }
 
     _nb_warn "Node.js install failed — TUI and browser tools will be unavailable."
-    _nb_warn "Install manually: https://nodejs.org/en/download/  (or: \`brew install node\`, \`fnm install $TRIIBAL_NODE_TARGET_MAJOR\`, etc.)"
+    _nb_warn "Install manually: https://nodejs.org/en/download/  (or: \`brew install node\`, \`fnm install $TRIBAL_NODE_TARGET_MAJOR\`, etc.)"
     return 1
 }

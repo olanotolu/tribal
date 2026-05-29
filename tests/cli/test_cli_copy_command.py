@@ -2,11 +2,11 @@
 
 from unittest.mock import MagicMock, patch
 
-from cli import TriibalCLI
+from cli import TribalCLI
 
 
-def _make_cli() -> TriibalCLI:
-    cli_obj = TriibalCLI.__new__(TriibalCLI)
+def _make_cli() -> TribalCLI:
+    cli_obj = TribalCLI.__new__(TribalCLI)
     cli_obj.config = {}
     cli_obj.console = MagicMock()
     cli_obj.agent = None

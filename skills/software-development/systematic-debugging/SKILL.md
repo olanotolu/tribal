@@ -2,11 +2,11 @@
 name: systematic-debugging
 description: "4-phase root cause debugging: understand bugs before fixing."
 version: 1.1.0
-author: Triibal Agent (adapted from obra/superpowers)
+author: Tribal Agent (adapted from obra/superpowers)
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  triibal:
+  tribal:
     tags: [debugging, troubleshooting, problem-solving, root-cause, investigation]
     related_skills: [test-driven-development, writing-plans, subagent-driven-development]
 ---
@@ -315,11 +315,11 @@ If you catch yourself thinking:
 | **3. Hypothesis** | Form theory, test minimally, one variable at a time | Confirmed or new hypothesis |
 | **4. Implementation** | Create regression test, fix root cause, verify | Bug resolved, all tests pass |
 
-## Triibal Agent Integration
+## Tribal Agent Integration
 
 ### Investigation Tools
 
-Use these Triibal tools during Phase 1:
+Use these Tribal tools during Phase 1:
 
 - **`search_files`** — Find error strings, trace function calls, locate patterns
 - **`read_file`** — Read source code with line numbers for precise analysis

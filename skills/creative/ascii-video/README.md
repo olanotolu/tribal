@@ -2,7 +2,7 @@
 
 Renders any content as colored ASCII character video. Audio, video, images, text, or pure math in, MP4/GIF/PNG sequence out. Full RGB color per character cell, 1080p 24fps default. No GPU.
 
-Built for [Triibal Agent](https://github.com/Triibal/triibal). Usable in any coding agent. Canonical source lives here; synced to [`Triibal/triibal/skills/creative/ascii-video`](https://github.com/Triibal/triibal/tree/main/skills/creative/ascii-video) via PR.
+Built for [Tribal Agent](https://github.com/Tribal/tribal). Usable in any coding agent. Canonical source lives here; synced to [`Tribal/tribal/skills/creative/ascii-video`](https://github.com/Tribal/tribal/tree/main/skills/creative/ascii-video) via PR.
 
 ## What this is
 

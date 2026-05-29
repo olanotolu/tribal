@@ -1,11 +1,11 @@
 """
-Session Insights Engine for Triibal Agent.
+Session Insights Engine for Tribal Agent.
 
 Analyzes historical session data from the SQLite state database to produce
 comprehensive usage insights — token consumption, cost estimates, tool usage
 patterns, activity trends, model/platform breakdowns, and session metrics.
 
-Inspired by Claude Code's /insights command, adapted for Triibal Agent's
+Inspired by Claude Code's /insights command, adapted for Tribal Agent's
 multi-platform architecture with additional cost estimation and platform
 breakdown capabilities.
 
@@ -103,7 +103,7 @@ class InsightsEngine:
         Initialize with a SessionDB instance.
 
         Args:
-            db: A SessionDB instance (from triibal_state.py)
+            db: A SessionDB instance (from tribal_state.py)
         """
         self.db = db
         self._conn = db._conn
@@ -738,7 +738,7 @@ class InsightsEngine:
         # Header
         lines.append("")
         lines.append("  ╔══════════════════════════════════════════════════════════╗")
-        lines.append("  ║                    📊 Triibal Insights                    ║")
+        lines.append("  ║                    📊 Tribal Insights                    ║")
         period_label = f"Last {days} days"
         if src_filter:
             period_label += f" ({src_filter})"
@@ -873,7 +873,7 @@ class InsightsEngine:
         o = report["overview"]
         days = report["days"]
 
-        lines.append(f"📊 **Triibal Insights** — Last {days} days\n")
+        lines.append(f"📊 **Tribal Insights** — Last {days} days\n")
 
         # Overview
         lines.append(f"**Sessions:** {o['total_sessions']} | **Messages:** {o['total_messages']:,} | **Tool calls:** {o['total_tool_calls']:,}")

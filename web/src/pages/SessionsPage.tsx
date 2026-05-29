@@ -720,7 +720,7 @@ export default function SessionsPage() {
               <span className="text-xs font-mondwest tracking-[0.12em] truncate">
                 {activeAction === "restart"
                   ? t.status.restartGateway
-                  : t.status.updateTriibal}
+                  : t.status.updateTribal}
               </span>
 
               <Badge

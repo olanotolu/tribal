@@ -24,7 +24,7 @@ def _make_adapter(routes=None, extra=None):
 
 @pytest.fixture(autouse=True)
 def _isolate(tmp_path, monkeypatch):
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
 
 
 class TestDynamicRouteLoading:

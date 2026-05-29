@@ -8,8 +8,8 @@ OK="${GREEN}✔${NC}"; FAIL="${RED}✘${NC}"; WARN="${YELLOW}⚠${NC}"
 
 TWOZERO_URL="https://www.404zero.com/pisang/twozero.tox"
 TOX_PATH="$HOME/Downloads/twozero.tox"
-TRIIBAL_HOME_DIR="${TRIIBAL_HOME:-$HOME/.triibal}"
-TRIIBAL_CFG="${TRIIBAL_HOME_DIR}/config.yaml"
+TRIBAL_HOME_DIR="${TRIBAL_HOME:-$HOME/.tribal}"
+TRIBAL_CFG="${TRIBAL_HOME_DIR}/config.yaml"
 MCP_PORT=40404
 MCP_ENDPOINT="http://localhost:${MCP_PORT}/mcp"
 
@@ -43,18 +43,18 @@ else
     fi
 fi
 
-# ── 3. Ensure Triibal config has twozero_td MCP entry ──
-if [[ ! -f "$TRIIBAL_CFG" ]]; then
-    echo -e " ${FAIL} Triibal config not found at ${TRIIBAL_CFG}"
-    manual_steps+=("Create ${TRIIBAL_CFG} with twozero_td MCP server entry")
-elif grep -q 'twozero_td' "$TRIIBAL_CFG" 2>/dev/null; then
-    echo -e " ${OK} twozero_td MCP entry exists in Triibal config"
+# ── 3. Ensure Tribal config has twozero_td MCP entry ──
+if [[ ! -f "$TRIBAL_CFG" ]]; then
+    echo -e " ${FAIL} Tribal config not found at ${TRIBAL_CFG}"
+    manual_steps+=("Create ${TRIBAL_CFG} with twozero_td MCP server entry")
+elif grep -q 'twozero_td' "$TRIBAL_CFG" 2>/dev/null; then
+    echo -e " ${OK} twozero_td MCP entry exists in Tribal config"
 else
-    echo -e " ${WARN} Adding twozero_td MCP entry to Triibal config..."
+    echo -e " ${WARN} Adding twozero_td MCP entry to Tribal config..."
     python3 -c "
 import yaml, sys, copy
 
-cfg_path = '$TRIIBAL_CFG'
+cfg_path = '$TRIBAL_CFG'
 with open(cfg_path, 'r') as f:
     cfg = yaml.safe_load(f) or {}
 
@@ -71,8 +71,8 @@ if 'twozero_td' not in cfg['mcp_servers']:
         yaml.dump(cfg, f, default_flow_style=False, sort_keys=False)
 " 2>/dev/null && echo -e " ${OK} twozero_td MCP entry added to config" \
               || { echo -e " ${FAIL} Could not update config (is PyYAML installed?)"; \
-                   manual_steps+=("Add twozero_td MCP entry to ${TRIIBAL_CFG} manually"); }
-    manual_steps+=("Restart Triibal session to pick up config change")
+                   manual_steps+=("Add twozero_td MCP entry to ${TRIBAL_CFG} manually"); }
+    manual_steps+=("Restart Tribal session to pick up config change")
 fi
 
 # ── 4. Test if MCP port is responding ──

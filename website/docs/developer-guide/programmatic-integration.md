@@ -1,12 +1,12 @@
 ---
 sidebar_position: 8
 title: "Programmatic Integration"
-description: "Three protocols for driving triibal-agent from external programs: ACP, the TUI gateway JSON-RPC, and the OpenAI-compatible HTTP API"
+description: "Three protocols for driving tribal-agent from external programs: ACP, the TUI gateway JSON-RPC, and the OpenAI-compatible HTTP API"
 ---
 
 # Programmatic Integration
 
-Triibal ships three protocols for driving the agent from external programs — IDE plugins, custom UIs, CI pipelines, embedded sub-agents. Pick the one that matches your transport and consumer.
+Tribal ships three protocols for driving the agent from external programs — IDE plugins, custom UIs, CI pipelines, embedded sub-agents. Pick the one that matches your transport and consumer.
 
 | Protocol | Transport | Best for | Defined by |
 |----------|-----------|----------|------------|
@@ -20,22 +20,22 @@ All three drive the same `AIAgent` core. They differ only in wire format and whi
 
 ## ACP (Agent Client Protocol)
 
-`triibal acp` starts a stdio JSON-RPC server speaking ACP. Used in production by VS Code (Zed Industries' ACP extension), Zed, and any JetBrains IDE with an ACP plugin.
+`tribal acp` starts a stdio JSON-RPC server speaking ACP. Used in production by VS Code (Zed Industries' ACP extension), Zed, and any JetBrains IDE with an ACP plugin.
 
 Capabilities exposed: session creation, prompt submission, streaming agent message chunks, tool-call events, permission requests, session fork, cancel, and authentication. Tool output is rendered into ACP `Diff`/`ToolCall` content blocks the IDE understands.
 
 Full lifecycle, event bridge, and approval flow: [ACP Internals](./acp-internals).
 
 ```bash
-triibal acp                  # serve ACP on stdio
-triibal acp --bootstrap      # print install snippet for an ACP-capable IDE
+tribal acp                  # serve ACP on stdio
+tribal acp --bootstrap      # print install snippet for an ACP-capable IDE
 ```
 
 ---
 
 ## TUI Gateway JSON-RPC
 
-`tui_gateway/server.py` is the protocol the Ink TUI (`triibal --tui`) and the embedded dashboard PTY bridge talk to. Any external host can speak the same protocol over stdio (or WebSocket via `tui_gateway/ws.py`).
+`tui_gateway/server.py` is the protocol the Ink TUI (`tribal --tui`) and the embedded dashboard PTY bridge talk to. Any external host can speak the same protocol over stdio (or WebSocket via `tui_gateway/ws.py`).
 
 ### Method catalog (selected)
 
@@ -61,9 +61,9 @@ terminal.resize         clipboard.paste         image.attach
 
 ### Pi-style RPC mapping
 
-Every command in the Pi-mono RPC spec ([issue #360](https://github.com/Triibal/triibal/issues/360)) has a TUI-gateway equivalent:
+Every command in the Pi-mono RPC spec ([issue #360](https://github.com/Tribal/tribal/issues/360)) has a TUI-gateway equivalent:
 
-| Pi command | Triibal equivalent |
+| Pi command | Tribal equivalent |
 |------------|-------------------|
 | `prompt` | `prompt.submit` (or ACP `session/prompt`) |
 | `steer` | `session.steer` |
@@ -81,7 +81,7 @@ Every command in the Pi-mono RPC spec ([issue #360](https://github.com/Triibal/t
 
 ## OpenAI-Compatible API Server
 
-`gateway/platforms/api_server.py` exposes triibal over HTTP for any client that already speaks the OpenAI format. Useful when you want a web frontend, a curl-driven CI runner, or a non-Python consumer.
+`gateway/platforms/api_server.py` exposes tribal over HTTP for any client that already speaks the OpenAI format. Useful when you want a web frontend, a curl-driven CI runner, or a non-Python consumer.
 
 Endpoints:
 
@@ -94,18 +94,18 @@ GET  /v1/runs/{id}/events        SSE stream of lifecycle events
 POST /v1/runs/{id}/approval      Resolve a pending approval
 POST /v1/runs/{id}/stop          Interrupt the run
 GET  /v1/capabilities            Machine-readable feature flags
-GET  /v1/models                  Lists triibal-agent
+GET  /v1/models                  Lists tribal-agent
 GET  /health, /health/detailed
 ```
 
-Setup, headers (`X-Triibal-Session-Id`, `X-Triibal-Session-Key`), and frontend wiring: [API Server](../user-guide/features/api-server).
+Setup, headers (`X-Tribal-Session-Id`, `X-Tribal-Session-Key`), and frontend wiring: [API Server](../user-guide/features/api-server).
 
 ---
 
 ## Which one should I use?
 
 - **You're writing an IDE plugin and the IDE already speaks ACP** → ACP. Zero protocol work on the IDE side.
-- **You're writing a custom desktop / web / TUI host and want every Triibal feature** (slash commands, approvals, clarify, multi-agent, session branching) → TUI gateway JSON-RPC.
+- **You're writing a custom desktop / web / TUI host and want every Tribal feature** (slash commands, approvals, clarify, multi-agent, session branching) → TUI gateway JSON-RPC.
 - **You want any OpenAI-compatible frontend, a language-agnostic HTTP client, or curl-driven automation** → API server.
 - **You want a Python in-process embed without a subprocess** → import `run_agent.AIAgent` directly. See [Agent Loop](./agent-loop).
 
@@ -118,12 +118,12 @@ Mid-session model switching works on every surface — it's the `/model` slash c
 - **CLI / TUI:** `/model claude-sonnet-4` or `/model openrouter:anthropic/claude-sonnet-4.6`
 - **TUI gateway RPC:** `command.dispatch` with `{"command": "/model claude-sonnet-4"}`
 - **ACP:** the IDE sends the slash command as a prompt; the agent dispatches it
-- **API server:** include a `model` field in the request body or set `X-Triibal-Model`
+- **API server:** include a `model` field in the request body or set `X-Tribal-Model`
 
-Provider-aware resolution (the same model name picks the right format for whatever provider you're on) is built in. See `triibal_cli/model_switch.py`.
+Provider-aware resolution (the same model name picks the right format for whatever provider you're on) is built in. See `tribal_cli/model_switch.py`.
 
 ---
 
 ## A note on `--mode rpc`
 
-Triibal does not have a `--mode rpc` flag. The three protocols above already cover the use cases — ACP for IDE-protocol clients, the TUI gateway for stdio JSON-RPC hosts, and the API server for HTTP. If you find a real gap that none of them fill, open an issue with the concrete consumer you're building.
+Tribal does not have a `--mode rpc` flag. The three protocols above already cover the use cases — ACP for IDE-protocol clients, the TUI gateway for stdio JSON-RPC hosts, and the API server for HTTP. If you find a real gap that none of them fill, open an issue with the concrete consumer you're building.

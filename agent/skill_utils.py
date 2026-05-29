@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from triibal_constants import get_config_path, get_skills_dir, is_termux
+from tribal_constants import get_config_path, get_skills_dir, is_termux
 
 logger = logging.getLogger(__name__)
 
@@ -177,8 +177,8 @@ def get_disabled_skill_names(platform: str | None = None) -> Set[str]:
 
     Args:
         platform: Explicit platform name (e.g. ``"telegram"``).  When
-            *None*, resolves from ``TRIIBAL_PLATFORM`` or
-            ``TRIIBAL_SESSION_PLATFORM`` env vars.  Falls back to the
+            *None*, resolves from ``TRIBAL_PLATFORM`` or
+            ``TRIBAL_SESSION_PLATFORM`` env vars.  Falls back to the
             global disabled list when no platform is determined.
 
     Reads the config file directly (no CLI config imports) to stay
@@ -202,8 +202,8 @@ def get_disabled_skill_names(platform: str | None = None) -> Set[str]:
     from gateway.session_context import get_session_env
     resolved_platform = (
         platform
-        or os.getenv("TRIIBAL_PLATFORM")
-        or get_session_env("TRIIBAL_SESSION_PLATFORM")
+        or os.getenv("TRIBAL_PLATFORM")
+        or get_session_env("TRIBAL_SESSION_PLATFORM")
     )
     if resolved_platform:
         platform_disabled = (skills_cfg.get("platform_disabled") or {}).get(
@@ -227,7 +227,7 @@ def _normalize_string_set(values) -> Set[str]:
 # (config_path_str, mtime_ns) -> resolved external dirs list.  Keyed by
 # mtime_ns so a config.yaml edit mid-run is picked up automatically;
 # otherwise every call would re-read + re-YAML-parse the 15KB config,
-# which becomes the dominant cost of ``triibal`` startup when ~120 skills
+# which becomes the dominant cost of ``tribal`` startup when ~120 skills
 # each trigger a category lookup during banner construction (10+ seconds
 # of pure waste).
 _EXTERNAL_DIRS_CACHE: Dict[Tuple[str, int], List[Path]] = {}
@@ -243,11 +243,11 @@ def get_external_skills_dirs() -> List[Path]:
 
     Each entry is expanded (``~`` and ``${VAR}``) and resolved to an absolute
     path.  Only directories that actually exist are returned.  Duplicates and
-    paths that resolve to the local ``~/.triibal/skills/`` are silently skipped.
+    paths that resolve to the local ``~/.tribal/skills/`` are silently skipped.
 
     Cached in-process, keyed on ``config.yaml`` mtime — the function is
     called once per skill during banner / tool-registry scans, and YAML
-    parsing a non-trivial config dominates ``triibal`` cold-start time
+    parsing a non-trivial config dominates ``tribal`` cold-start time
     when the cache is absent.
     """
     config_path = get_config_path()
@@ -290,9 +290,9 @@ def get_external_skills_dirs() -> List[Path]:
     if not isinstance(raw_dirs, list):
         return []
 
-    from triibal_constants import get_triibal_home
+    from tribal_constants import get_tribal_home
 
-    triibal_home = get_triibal_home()
+    tribal_home = get_tribal_home()
     local_skills = get_skills_dir().resolve()
     seen: Set[Path] = set()
     result = []
@@ -304,9 +304,9 @@ def get_external_skills_dirs() -> List[Path]:
         # Expand ~ and environment variables
         expanded = os.path.expanduser(os.path.expandvars(entry))
         p = Path(expanded)
-        # Resolve relative paths against TRIIBAL_HOME, not cwd
+        # Resolve relative paths against TRIBAL_HOME, not cwd
         if not p.is_absolute():
-            p = (triibal_home / p).resolve()
+            p = (tribal_home / p).resolve()
         else:
             p = p.resolve()
         if p == local_skills:
@@ -325,7 +325,7 @@ def get_external_skills_dirs() -> List[Path]:
 
 
 def get_all_skills_dirs() -> List[Path]:
-    """Return all skill directories: local ``~/.triibal/skills/`` first, then external.
+    """Return all skill directories: local ``~/.tribal/skills/`` first, then external.
 
     The local dir is always first (and always included even if it doesn't exist
     yet — callers handle that).  External dirs follow in config order.
@@ -344,14 +344,14 @@ def extract_skill_conditions(frontmatter: Dict[str, Any]) -> Dict[str, List]:
     # Handle cases where metadata is not a dict (e.g., a string from malformed YAML)
     if not isinstance(metadata, dict):
         metadata = {}
-    triibal = metadata.get("triibal") or {}
-    if not isinstance(triibal, dict):
-        triibal = {}
+    tribal = metadata.get("tribal") or {}
+    if not isinstance(tribal, dict):
+        tribal = {}
     return {
-        "fallback_for_toolsets": triibal.get("fallback_for_toolsets", []),
-        "requires_toolsets": triibal.get("requires_toolsets", []),
-        "fallback_for_tools": triibal.get("fallback_for_tools", []),
-        "requires_tools": triibal.get("requires_tools", []),
+        "fallback_for_toolsets": tribal.get("fallback_for_toolsets", []),
+        "requires_toolsets": tribal.get("requires_toolsets", []),
+        "fallback_for_tools": tribal.get("fallback_for_tools", []),
+        "requires_tools": tribal.get("requires_tools", []),
     }
 
 
@@ -364,7 +364,7 @@ def extract_skill_config_vars(frontmatter: Dict[str, Any]) -> List[Dict[str, Any
     Skills declare config.yaml settings they need via::
 
         metadata:
-          triibal:
+          tribal:
             config:
               - key: wiki.path
                 description: Path to the LLM Wiki knowledge base directory
@@ -377,10 +377,10 @@ def extract_skill_config_vars(frontmatter: Dict[str, Any]) -> List[Dict[str, Any
     metadata = frontmatter.get("metadata")
     if not isinstance(metadata, dict):
         return []
-    triibal = metadata.get("triibal")
-    if not isinstance(triibal, dict):
+    tribal = metadata.get("tribal")
+    if not isinstance(tribal, dict):
         return []
-    raw = triibal.get("config")
+    raw = tribal.get("config")
     if not raw:
         return []
     if isinstance(raw, dict):
@@ -532,7 +532,7 @@ def extract_skill_description(frontmatter: Dict[str, Any]) -> str:
 def iter_skill_index_files(skills_dir: Path, filename: str):
     """Walk skills_dir yielding sorted paths matching *filename*.
 
-    Excludes Triibal metadata, VCS, virtualenv/dependency, and cache
+    Excludes Tribal metadata, VCS, virtualenv/dependency, and cache
     directories so dependencies cannot register nested skills.
     """
     matches = []

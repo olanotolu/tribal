@@ -119,8 +119,8 @@ def _setup_worktree(repo_root):
     """Test version of _setup_worktree — creates a worktree."""
     import uuid
     short_id = uuid.uuid4().hex[:8]
-    wt_name = f"triibal-{short_id}"
-    branch_name = f"triibal/{wt_name}"
+    wt_name = f"tribal-{short_id}"
+    branch_name = f"tribal/{wt_name}"
 
     worktrees_dir = Path(repo_root) / ".worktrees"
     worktrees_dir.mkdir(parents=True, exist_ok=True)
@@ -224,7 +224,7 @@ class TestWorktreeCreation:
         info = _setup_worktree(str(git_repo))
         assert info is not None
         assert Path(info["path"]).exists()
-        assert info["branch"].startswith("triibal/triibal-")
+        assert info["branch"].startswith("tribal/tribal-")
         assert info["repo_root"] == str(git_repo)
 
         # Verify it's a valid git worktree
@@ -365,7 +365,7 @@ class TestWorktreeCleanup:
         """Cleanup should handle already-removed worktrees gracefully."""
         info = {
             "path": str(git_repo / ".worktrees" / "nonexistent"),
-            "branch": "triibal/nonexistent",
+            "branch": "tribal/nonexistent",
             "repo_root": str(git_repo),
         }
         # Should not raise
@@ -565,7 +565,7 @@ class TestStaleWorktreePruning:
         cutoff = time.time() - (24 * 3600)
 
         for entry in worktrees_dir.iterdir():
-            if not entry.is_dir() or not entry.name.startswith("triibal-"):
+            if not entry.is_dir() or not entry.name.startswith("tribal-"):
                 continue
             try:
                 mtime = entry.stat().st_mtime
@@ -611,7 +611,7 @@ class TestStaleWorktreePruning:
 
         pruned = False
         for entry in worktrees_dir.iterdir():
-            if not entry.is_dir() or not entry.name.startswith("triibal-"):
+            if not entry.is_dir() or not entry.name.startswith("tribal-"):
                 continue
             mtime = entry.stat().st_mtime
             if mtime > cutoff:
@@ -660,7 +660,7 @@ class TestStaleWorktreePruning:
         cutoff = time.time() - (24 * 3600)
 
         for entry in worktrees_dir.iterdir():
-            if not entry.is_dir() or not entry.name.startswith("triibal-"):
+            if not entry.is_dir() or not entry.name.startswith("tribal-"):
                 continue
             mtime = entry.stat().st_mtime
             if mtime > cutoff:
@@ -702,7 +702,7 @@ class TestStaleWorktreePruning:
         cutoff = time.time() - (24 * 3600)
 
         for entry in worktrees_dir.iterdir():
-            if not entry.is_dir() or not entry.name.startswith("triibal-"):
+            if not entry.is_dir() or not entry.name.startswith("tribal-"):
                 continue
             mtime = entry.stat().st_mtime
             if mtime > cutoff:
@@ -865,22 +865,22 @@ class TestTerminalCWDIntegration:
 
 
 class TestOrphanedBranchPruning:
-    """Test cleanup of orphaned triibal/* and pr-* branches."""
+    """Test cleanup of orphaned tribal/* and pr-* branches."""
 
-    def test_prunes_orphaned_triibal_branch(self, git_repo):
-        """triibal/triibal-* branches with no worktree should be deleted."""
+    def test_prunes_orphaned_tribal_branch(self, git_repo):
+        """tribal/tribal-* branches with no worktree should be deleted."""
         # Create a branch that looks like a worktree branch but has no worktree
         subprocess.run(
-            ["git", "branch", "triibal/triibal-deadbeef", "HEAD"],
+            ["git", "branch", "tribal/tribal-deadbeef", "HEAD"],
             cwd=str(git_repo), capture_output=True,
         )
 
         # Verify it exists
         result = subprocess.run(
-            ["git", "branch", "--list", "triibal/triibal-deadbeef"],
+            ["git", "branch", "--list", "tribal/tribal-deadbeef"],
             capture_output=True, text=True, cwd=str(git_repo),
         )
-        assert "triibal/triibal-deadbeef" in result.stdout
+        assert "tribal/tribal-deadbeef" in result.stdout
 
         # Simulate _prune_orphaned_branches logic
         result = subprocess.run(
@@ -901,9 +901,9 @@ class TestOrphanedBranchPruning:
         orphaned = [
             b for b in all_branches
             if b not in active_branches
-            and (b.startswith("triibal/triibal-") or b.startswith("pr-"))
+            and (b.startswith("tribal/tribal-") or b.startswith("pr-"))
         ]
-        assert "triibal/triibal-deadbeef" in orphaned
+        assert "tribal/tribal-deadbeef" in orphaned
 
         # Delete them
         if orphaned:
@@ -914,10 +914,10 @@ class TestOrphanedBranchPruning:
 
         # Verify gone
         result = subprocess.run(
-            ["git", "branch", "--list", "triibal/triibal-deadbeef"],
+            ["git", "branch", "--list", "tribal/tribal-deadbeef"],
             capture_output=True, text=True, cwd=str(git_repo),
         )
-        assert "triibal/triibal-deadbeef" not in result.stdout
+        assert "tribal/tribal-deadbeef" not in result.stdout
 
     def test_prunes_orphaned_pr_branch(self, git_repo):
         """pr-* branches should be deleted during pruning."""
@@ -986,7 +986,7 @@ class TestOrphanedBranchPruning:
         orphaned = [
             b for b in all_branches
             if b not in active_branches
-            and (b.startswith("triibal/triibal-") or b.startswith("pr-"))
+            and (b.startswith("tribal/tribal-") or b.startswith("pr-"))
         ]
         assert "main" not in orphaned
 

@@ -1,21 +1,21 @@
 """Regression tests for the docker-exec privilege-drop shim.
 
-The shim (docker/triibal-exec-shim.sh, installed at /opt/triibal/bin/triibal)
+The shim (docker/tribal-exec-shim.sh, installed at /opt/tribal/bin/tribal)
 exists to prevent the auth.json ownership-mismatch bug where
-`docker exec <c> triibal login` would write /opt/data/auth.json as
+`docker exec <c> tribal login` would write /opt/data/auth.json as
 root:root mode 0600, leaving the supervised gateway (UID 10000) unable
 to read its own credentials and returning "Provider authentication
-failed: Triibal is not logged into Nous Portal" on every message.
+failed: Tribal is not logged into Nous Portal" on every message.
 
 These tests verify:
 
-1. ``docker exec <c> triibal …`` (defaulting to root) gets dropped to the
-   triibal user before the real binary runs.
-2. ``docker exec --user triibal <c> triibal …`` (already non-root) short-
+1. ``docker exec <c> tribal …`` (defaulting to root) gets dropped to the
+   tribal user before the real binary runs.
+2. ``docker exec --user tribal <c> tribal …`` (already non-root) short-
    circuits and doesn't try to drop again.
-3. Files written under $TRIIBAL_HOME from a ``docker exec`` session land
-   as triibal:triibal — the actual user-visible invariant.
-4. The TRIIBAL_DOCKER_EXEC_AS_ROOT opt-out lets diagnostic sessions keep
+3. Files written under $TRIBAL_HOME from a ``docker exec`` session land
+   as tribal:tribal — the actual user-visible invariant.
+4. The TRIBAL_DOCKER_EXEC_AS_ROOT opt-out lets diagnostic sessions keep
    running as root deliberately.
 5. The main CMD path (``docker run <image> …``) is unaffected by the
    PATH-shim ordering — no recursion, no behavior change.
@@ -71,19 +71,19 @@ def sleep_container(built_image: str, container_name: str) -> Iterator[str]:
         )
 
 
-def test_shim_drops_root_to_triibal_uid(sleep_container: str) -> None:
+def test_shim_drops_root_to_tribal_uid(sleep_container: str) -> None:
     """docker exec defaults to root; the shim should drop to uid 10000.
 
-    We invoke `triibal` with a Python-style `-c` shim equivalent — there's no
-    pure-triibal "print my uid" command, so we use the venv's python directly
+    We invoke `tribal` with a Python-style `-c` shim equivalent — there's no
+    pure-tribal "print my uid" command, so we use the venv's python directly
     via the shim's PATH lookup: `python -c 'print(os.getuid())'` is resolved
     through the venv. But that bypasses the shim. Instead, we exploit the
-    fact that the venv's `triibal` is a console_scripts entry — under the
+    fact that the venv's `tribal` is a console_scripts entry — under the
     hood it's a tiny Python wrapper. We can't easily inject "print my uid"
-    into it without forking subcommands. Simplest approach: have `triibal`
+    into it without forking subcommands. Simplest approach: have `tribal`
     do anything that writes to disk, then check the file's owner.
 
-    Use `triibal config set` which writes config.yaml under TRIIBAL_HOME.
+    Use `tribal config set` which writes config.yaml under TRIBAL_HOME.
     The resulting file ownership tells us what UID the shim ended up at.
     """
     # Wipe any prior state.
@@ -96,26 +96,26 @@ def test_shim_drops_root_to_triibal_uid(sleep_container: str) -> None:
     # Default docker exec (root) — should be dropped by the shim.
     r = subprocess.run(
         ["docker", "exec", sleep_container,
-         "triibal", "config", "set", "_test.shim_marker", "1"],
+         "tribal", "config", "set", "_test.shim_marker", "1"],
         capture_output=True, text=True, timeout=30,
     )
     assert r.returncode == 0, f"config set failed: stdout={r.stdout!r} stderr={r.stderr!r}"
 
-    # The written file must be owned by triibal, not root.
+    # The written file must be owned by tribal, not root.
     r = subprocess.run(
         ["docker", "exec", sleep_container,
          "stat", "-c", "%U:%G", "/opt/data/config.yaml"],
         capture_output=True, text=True, timeout=10,
     )
     assert r.returncode == 0, f"stat failed: {r.stderr}"
-    assert r.stdout.strip() == "triibal:triibal", (
-        f"config.yaml owned by {r.stdout.strip()!r}, expected triibal:triibal. "
-        "The shim did not drop privileges before invoking triibal."
+    assert r.stdout.strip() == "tribal:tribal", (
+        f"config.yaml owned by {r.stdout.strip()!r}, expected tribal:tribal. "
+        "The shim did not drop privileges before invoking tribal."
     )
 
 
 def test_shim_short_circuits_for_non_root_exec(sleep_container: str) -> None:
-    """docker exec --user triibal already runs as 10000; shim should be a no-op.
+    """docker exec --user tribal already runs as 10000; shim should be a no-op.
 
     Verified indirectly: the command must still succeed end-to-end. If the
     shim incorrectly tried to drop privileges a second time (e.g. by
@@ -129,26 +129,26 @@ def test_shim_short_circuits_for_non_root_exec(sleep_container: str) -> None:
     )
 
     r = subprocess.run(
-        ["docker", "exec", "--user", "triibal", sleep_container,
-         "triibal", "config", "set", "_test.shim_short_circuit", "1"],
+        ["docker", "exec", "--user", "tribal", sleep_container,
+         "tribal", "config", "set", "_test.shim_short_circuit", "1"],
         capture_output=True, text=True, timeout=30,
     )
     assert r.returncode == 0, (
-        f"docker exec --user triibal failed: {r.stderr!r} stdout={r.stdout!r}. "
+        f"docker exec --user tribal failed: {r.stderr!r} stdout={r.stdout!r}. "
         "If the shim mis-handled the non-root path, this would fail with EPERM."
     )
 
-    # File still ends up triibal:triibal — orthogonally confirms uid.
+    # File still ends up tribal:tribal — orthogonally confirms uid.
     r = subprocess.run(
         ["docker", "exec", sleep_container,
          "stat", "-c", "%U:%G", "/opt/data/config.yaml"],
         capture_output=True, text=True, timeout=10,
     )
-    assert r.stdout.strip() == "triibal:triibal"
+    assert r.stdout.strip() == "tribal:tribal"
 
 
 def test_shim_opt_out_keeps_root(sleep_container: str) -> None:
-    """TRIIBAL_DOCKER_EXEC_AS_ROOT=1 should suppress the privilege drop.
+    """TRIBAL_DOCKER_EXEC_AS_ROOT=1 should suppress the privilege drop.
 
     Reserved for diagnostic sessions where the operator deliberately
     wants root semantics. Verified by writing a file and checking its
@@ -162,9 +162,9 @@ def test_shim_opt_out_keeps_root(sleep_container: str) -> None:
 
     r = subprocess.run(
         ["docker", "exec",
-         "-e", "TRIIBAL_DOCKER_EXEC_AS_ROOT=1",
+         "-e", "TRIBAL_DOCKER_EXEC_AS_ROOT=1",
          sleep_container,
-         "triibal", "config", "set", "_test.opt_out", "1"],
+         "tribal", "config", "set", "_test.opt_out", "1"],
         capture_output=True, text=True, timeout=30,
     )
     assert r.returncode == 0, f"opt-out invocation failed: {r.stderr}"
@@ -175,7 +175,7 @@ def test_shim_opt_out_keeps_root(sleep_container: str) -> None:
         capture_output=True, text=True, timeout=10,
     )
     assert r.stdout.strip() == "root:root", (
-        f"With TRIIBAL_DOCKER_EXEC_AS_ROOT=1, expected root:root, "
+        f"With TRIBAL_DOCKER_EXEC_AS_ROOT=1, expected root:root, "
         f"got {r.stdout.strip()!r}"
     )
 
@@ -186,9 +186,9 @@ def test_shim_opt_out_strict_truthiness(
 ) -> None:
     """Anything other than 1/true/yes (case-insensitive) does NOT opt out.
 
-    Strict truthiness so a typo (``TRIIBAL_DOCKER_EXEC_AS_ROOT=0``) doesn't
+    Strict truthiness so a typo (``TRIBAL_DOCKER_EXEC_AS_ROOT=0``) doesn't
     silently keep the user as root. Mirrors the policy used by
-    ``TRIIBAL_GATEWAY_NO_SUPERVISE`` in #33583.
+    ``TRIBAL_GATEWAY_NO_SUPERVISE`` in #33583.
     """
     subprocess.run(
         ["docker", "exec", "--user", "root", sleep_container,
@@ -198,9 +198,9 @@ def test_shim_opt_out_strict_truthiness(
 
     r = subprocess.run(
         ["docker", "exec",
-         "-e", f"TRIIBAL_DOCKER_EXEC_AS_ROOT={falsy_value}",
+         "-e", f"TRIBAL_DOCKER_EXEC_AS_ROOT={falsy_value}",
          sleep_container,
-         "triibal", "config", "set", "_test.falsy", "1"],
+         "tribal", "config", "set", "_test.falsy", "1"],
         capture_output=True, text=True, timeout=30,
     )
     assert r.returncode == 0, f"falsy value {falsy_value!r} caused failure: {r.stderr}"
@@ -210,17 +210,17 @@ def test_shim_opt_out_strict_truthiness(
          "stat", "-c", "%U:%G", "/opt/data/config.yaml"],
         capture_output=True, text=True, timeout=10,
     )
-    assert r.stdout.strip() == "triibal:triibal", (
+    assert r.stdout.strip() == "tribal:tribal", (
         f"falsy opt-out value {falsy_value!r} unexpectedly suppressed the drop; "
-        f"file owner is {r.stdout.strip()!r}, expected triibal:triibal"
+        f"file owner is {r.stdout.strip()!r}, expected tribal:tribal"
     )
 
 
 def test_main_cmd_path_unaffected(built_image: str) -> None:
     """The CMD path (docker run <image> <args>) must still work.
 
-    The shim sits at /opt/triibal/bin earliest on PATH; main-wrapper.sh
-    invokes `s6-setuidgid triibal triibal <args>` which resolves `triibal`
+    The shim sits at /opt/tribal/bin earliest on PATH; main-wrapper.sh
+    invokes `s6-setuidgid tribal tribal <args>` which resolves `tribal`
     through PATH. With the shim in the way, this could regress if the
     shim recurses or interferes with TTY/exit-code propagation.
 
@@ -243,40 +243,40 @@ def test_e2e_login_then_supervised_gateway_can_read_auth(
 ) -> None:
     """End-to-end regression for the original bug.
 
-    Pre-shim: ``docker exec <c> triibal login`` (root) wrote
+    Pre-shim: ``docker exec <c> tribal login`` (root) wrote
     /opt/data/auth.json as root:root 0600. The supervised gateway (UID
     10000) couldn't read it, _load_auth_store swallowed PermissionError
     as a parse failure, and resolve_nous_runtime_credentials raised
-    "Triibal is not logged into Nous Portal" on every message.
+    "Tribal is not logged into Nous Portal" on every message.
 
     We can't do a real OAuth login in a unit test, but we can stand in
-    for it by writing the same file shape via `triibal config set`-style
+    for it by writing the same file shape via `tribal config set`-style
     writes — what matters is the *file ownership invariant* downstream
     of `_save_auth_store`. If the shim works, every file the
-    `docker exec` path produces is triibal-readable.
+    `docker exec` path produces is tribal-readable.
 
-    Specifically: pretend the operator ran `triibal login` (writes
+    Specifically: pretend the operator ran `tribal login` (writes
     auth.json) and verify (a) the file exists and (b) it's readable by
-    the triibal UID. We use `triibal auth list` since that touches the
+    the tribal UID. We use `tribal auth list` since that touches the
     auth store on the read side and would fail with the same
     'not logged in' shape if the file was unreadable to uid 10000.
     """
     # Have the shim-protected `docker exec` write the auth store.
-    # `triibal auth list` is read-only but still exercises _load_auth_store
-    # under the shim's UID. We invoke `triibal config set` first to
-    # provoke a write into TRIIBAL_HOME so we have something concrete to
+    # `tribal auth list` is read-only but still exercises _load_auth_store
+    # under the shim's UID. We invoke `tribal config set` first to
+    # provoke a write into TRIBAL_HOME so we have something concrete to
     # owner-check.
     r = subprocess.run(
         ["docker", "exec", sleep_container,
-         "triibal", "config", "set", "_test.e2e_marker", "1"],
+         "tribal", "config", "set", "_test.e2e_marker", "1"],
         capture_output=True, text=True, timeout=30,
     )
     assert r.returncode == 0, f"config set failed: {r.stderr}"
 
     # The supervised UID (10000) must be able to read everything under
-    # TRIIBAL_HOME that docker exec just wrote.
+    # TRIBAL_HOME that docker exec just wrote.
     r = subprocess.run(
-        ["docker", "exec", "--user", "triibal", sleep_container,
+        ["docker", "exec", "--user", "tribal", sleep_container,
          "find", "/opt/data", "-maxdepth", "2", "-type", "f",
          "!", "-readable", "-print"],
         capture_output=True, text=True, timeout=15,
@@ -284,7 +284,7 @@ def test_e2e_login_then_supervised_gateway_can_read_auth(
     assert r.returncode == 0, f"find failed: {r.stderr}"
     unreadable = [ln for ln in r.stdout.splitlines() if ln.strip()]
     assert not unreadable, (
-        "Files written by `docker exec` are unreadable to the triibal user "
+        "Files written by `docker exec` are unreadable to the tribal user "
         f"(supervised gateway UID): {unreadable}. The shim failed to drop "
         "privileges before the write."
     )

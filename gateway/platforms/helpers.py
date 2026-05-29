@@ -227,8 +227,8 @@ class ThreadParticipationTracker:
         }
 
     def _state_path(self) -> Path:
-        from triibal_constants import get_triibal_home
-        return get_triibal_home() / f"{self._platform}_threads.json"
+        from tribal_constants import get_tribal_home
+        return get_tribal_home() / f"{self._platform}_threads.json"
 
     def _load(self) -> list[str]:
         path = self._state_path()

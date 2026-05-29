@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-evm_client.py — EVM blockchain CLI tool for the Triibal Agent project.
+evm_client.py — EVM blockchain CLI tool for the Tribal Agent project.
 Zero external dependencies. Uses stdlib only: urllib, json, argparse, time, os, sys, typing.
 """
 

@@ -1,4 +1,4 @@
-import { AlternateScreen, Box, NoSelect, ScrollBox, Text } from '@triibal/ink'
+import { AlternateScreen, Box, NoSelect, ScrollBox, Text } from '@tribal/ink'
 import { useStore } from '@nanostores/react'
 import { Fragment, memo, useMemo, useRef } from 'react'
 

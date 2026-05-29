@@ -6,7 +6,7 @@ description: "AI-native persistent memory via Honcho — dialectic reasoning, mu
 
 # Honcho Memory
 
-[Honcho](https://github.com/plastic-labs/honcho) is an AI-native memory backend that adds dialectic reasoning and deep user modeling on top of Triibal's built-in memory system. Instead of simple key-value storage, Honcho maintains a running model of who the user is — their preferences, communication style, goals, and patterns — by reasoning about conversations after they happen.
+[Honcho](https://github.com/plastic-labs/honcho) is an AI-native memory backend that adds dialectic reasoning and deep user modeling on top of Tribal's built-in memory system. Instead of simple key-value storage, Honcho maintains a running model of who the user is — their preferences, communication style, goals, and patterns — by reasoning about conversations after they happen.
 
 :::info Honcho is a Memory Provider Plugin
 Honcho is integrated into the [Memory Providers](./memory-providers.md) system. All features below are available through the unified memory provider interface.
@@ -28,24 +28,24 @@ Honcho is integrated into the [Memory Providers](./memory-providers.md) system. 
 
 **Session-scoped context**: Base context now includes the session summary alongside the user representation and peer card. This gives the agent awareness of what has already been discussed in the current session, reducing repetition and enabling continuity.
 
-**Multi-agent profiles**: When multiple Triibal instances talk to the same user (e.g., a coding assistant and a personal assistant), Honcho maintains separate "peer" profiles. Each peer sees only its own observations and conclusions, preventing cross-contamination of context.
+**Multi-agent profiles**: When multiple Tribal instances talk to the same user (e.g., a coding assistant and a personal assistant), Honcho maintains separate "peer" profiles. Each peer sees only its own observations and conclusions, preventing cross-contamination of context.
 
 ## Setup
 
 ```bash
-triibal memory setup    # select "honcho" from the provider list
+tribal memory setup    # select "honcho" from the provider list
 ```
 
 Or configure manually:
 
 ```yaml
-# ~/.triibal/config.yaml
+# ~/.tribal/config.yaml
 memory:
   provider: honcho
 ```
 
 ```bash
-echo 'HONCHO_API_KEY=***' >> ~/.triibal/.env
+echo 'HONCHO_API_KEY=***' >> ~/.tribal/.env
 ```
 
 Get an API key at [honcho.dev](https://honcho.dev).
@@ -104,7 +104,7 @@ The auto-injected dialectic scales `dialecticReasoningLevel` by query length: +1
 
 ## Configuration Options
 
-Honcho is configured in `~/.honcho/config.json` (global) or `$TRIIBAL_HOME/honcho.json` (profile-local). The setup wizard handles this for you.
+Honcho is configured in `~/.honcho/config.json` (global) or `$TRIBAL_HOME/honcho.json` (profile-local). The setup wizard handles this for you.
 
 ### Full Config Reference
 
@@ -127,7 +127,7 @@ Honcho is configured in `~/.honcho/config.json` (global) or `$TRIIBAL_HOME/honch
 | `sessionStrategy` | `'per-directory'` | `per-directory`, `per-repo`, `per-session`, or `global` |
 
 **Session strategy** controls how Honcho sessions map to your work:
-- `per-session` — each `triibal` run gets a fresh session. Clean starts, memory via tools. Recommended for new users.
+- `per-session` — each `tribal` run gets a fresh session. Clean starts, memory via tools. Recommended for new users.
 - `per-directory` — one Honcho session per working directory. Context accumulates across runs.
 - `per-repo` — one session per git repository.
 - `global` — single session across all directories.
@@ -183,7 +183,7 @@ Common patterns:
 | AI shouldn't re-model the user from its own replies | `"ai": {"observeMe": true, "observeOthers": false}` |
 | Strong persona the AI peer shouldn't update from self-observation | `"ai": {"observeMe": false, "observeOthers": true}` |
 
-Server-side toggles set via the [Honcho dashboard](https://app.honcho.dev) win over local defaults — Triibal syncs them back at session init.
+Server-side toggles set via the [Honcho dashboard](https://app.honcho.dev) win over local defaults — Tribal syncs them back at session init.
 
 ## Tools
 
@@ -199,34 +199,34 @@ When Honcho is active as the memory provider, five tools become available:
 
 ## CLI Commands
 
-The `triibal honcho` subcommand is **only registered when Honcho is the active memory provider** (`memory.provider: honcho` in `config.yaml`). Run `triibal memory setup` and pick Honcho first; the subcommand appears on the next invocation.
+The `tribal honcho` subcommand is **only registered when Honcho is the active memory provider** (`memory.provider: honcho` in `config.yaml`). Run `tribal memory setup` and pick Honcho first; the subcommand appears on the next invocation.
 
 ```bash
-triibal honcho status          # Connection status, config, and key settings
-triibal honcho setup           # Redirects to `triibal memory setup`
-triibal honcho strategy        # Show or set session strategy (per-session/per-directory/per-repo/global)
-triibal honcho peer            # Show or update peer names + dialectic reasoning level
-triibal honcho mode            # Show or set recall mode (hybrid/context/tools)
-triibal honcho tokens          # Show or set token budget for context and dialectic
-triibal honcho identity        # Seed or show the AI peer's Honcho identity
-triibal honcho sync            # Sync Honcho config to all existing profiles
-triibal honcho peers           # Show peer identities across all profiles
-triibal honcho sessions        # List known Honcho session mappings
-triibal honcho map             # Map current directory to a Honcho session name
-triibal honcho enable          # Enable Honcho for the active profile
-triibal honcho disable         # Disable Honcho for the active profile
-triibal honcho migrate         # Step-by-step migration guide from openclaw-honcho
+tribal honcho status          # Connection status, config, and key settings
+tribal honcho setup           # Redirects to `tribal memory setup`
+tribal honcho strategy        # Show or set session strategy (per-session/per-directory/per-repo/global)
+tribal honcho peer            # Show or update peer names + dialectic reasoning level
+tribal honcho mode            # Show or set recall mode (hybrid/context/tools)
+tribal honcho tokens          # Show or set token budget for context and dialectic
+tribal honcho identity        # Seed or show the AI peer's Honcho identity
+tribal honcho sync            # Sync Honcho config to all existing profiles
+tribal honcho peers           # Show peer identities across all profiles
+tribal honcho sessions        # List known Honcho session mappings
+tribal honcho map             # Map current directory to a Honcho session name
+tribal honcho enable          # Enable Honcho for the active profile
+tribal honcho disable         # Disable Honcho for the active profile
+tribal honcho migrate         # Step-by-step migration guide from openclaw-honcho
 ```
 
-## Migrating from `triibal honcho`
+## Migrating from `tribal honcho`
 
-If you previously used the standalone `triibal honcho setup`:
+If you previously used the standalone `tribal honcho setup`:
 
 1. Your existing configuration (`honcho.json` or `~/.honcho/config.json`) is preserved
 2. Your server-side data (memories, conclusions, user profiles) is intact
 3. Set `memory.provider: honcho` in config.yaml to reactivate
 
-No re-login or re-setup needed. Run `triibal memory setup` and select "honcho" — the wizard detects your existing config.
+No re-login or re-setup needed. Run `tribal memory setup` and select "honcho" — the wizard detects your existing config.
 
 ## Full Documentation
 

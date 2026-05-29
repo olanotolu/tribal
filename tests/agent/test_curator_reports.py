@@ -1,6 +1,6 @@
 """Tests for the curator per-run report writer (run.json + REPORT.md).
 
-Reports live under ``~/.triibal/logs/curator/{YYYYMMDD-HHMMSS}/`` alongside
+Reports live under ``~/.tribal/logs/curator/{YYYYMMDD-HHMMSS}/`` alongside
 the standard log dir, not inside the user's ``skills/`` data directory.
 """
 
@@ -16,17 +16,17 @@ import pytest
 
 @pytest.fixture
 def curator_env(tmp_path, monkeypatch):
-    """Isolated TRIIBAL_HOME with a skills/ dir + reset curator module state."""
-    home = tmp_path / ".triibal"
+    """Isolated TRIBAL_HOME with a skills/ dir + reset curator module state."""
+    home = tmp_path / ".tribal"
     home.mkdir()
     (home / "skills").mkdir()
     (home / "logs").mkdir()
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     import importlib
-    import triibal_constants
-    importlib.reload(triibal_constants)
+    import tribal_constants
+    importlib.reload(tribal_constants)
     from agent import curator
     importlib.reload(curator)
     from tools import skill_usage
@@ -295,7 +295,7 @@ def curator_env_with_cron(curator_env, monkeypatch):
     import importlib
     import cron.jobs as jobs_mod
     importlib.reload(jobs_mod)
-    monkeypatch.setattr(jobs_mod, "TRIIBAL_DIR", home)
+    monkeypatch.setattr(jobs_mod, "TRIBAL_DIR", home)
     monkeypatch.setattr(jobs_mod, "CRON_DIR", home / "cron")
     monkeypatch.setattr(jobs_mod, "JOBS_FILE", home / "cron" / "jobs.json")
     monkeypatch.setattr(jobs_mod, "OUTPUT_DIR", home / "cron" / "output")

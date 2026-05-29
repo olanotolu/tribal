@@ -20,11 +20,11 @@ def test_install_script_unsets_pythonpath_and_pythonhome_early() -> None:
     assert 'unset PYTHONHOME' in text
 
 
-def test_triibal_launcher_wrapper_clears_python_env_before_exec() -> None:
+def test_tribal_launcher_wrapper_clears_python_env_before_exec() -> None:
     text = INSTALL_SH.read_text()
 
     # Wrapper should clear env and forward args untouched to the venv entrypoint.
-    assert 'cat > "$command_link_dir/triibal" <<EOF' in text
+    assert 'cat > "$command_link_dir/tribal" <<EOF' in text
     assert 'unset PYTHONPATH' in text
     assert 'unset PYTHONHOME' in text
-    assert 'exec "$TRIIBAL_BIN" "\\$@"' in text
+    assert 'exec "$TRIBAL_BIN" "\\$@"' in text

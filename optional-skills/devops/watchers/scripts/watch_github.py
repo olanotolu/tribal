@@ -3,12 +3,12 @@
 
 Usage (via cron with --no-agent):
 
-    triibal cron create triibal-issues \\
+    tribal cron create tribal-issues \\
       --schedule "*/5 * * * *" --no-agent \\
-      --script "$TRIIBAL_HOME/skills/devops/watchers/scripts/watch_github.py" \\
-      --script-args "--name triibal-issues --repo Triibal/triibal --scope issues"
+      --script "$TRIBAL_HOME/skills/devops/watchers/scripts/watch_github.py" \\
+      --script-args "--name tribal-issues --repo Tribal/tribal --scope issues"
 
-Set GITHUB_TOKEN (or GH_TOKEN) in ~/.triibal/.env to avoid the 60 req/hr
+Set GITHUB_TOKEN (or GH_TOKEN) in ~/.tribal/.env to avoid the 60 req/hr
 anonymous rate limit.
 
 Scopes: issues | pulls | releases | commits.  Or pass --search QUERY to
@@ -112,7 +112,7 @@ def main() -> int:
 
     headers = {
         "Accept": "application/vnd.github+json",
-        "User-Agent": "Triibal-Watcher/1.0",
+        "User-Agent": "Tribal-Watcher/1.0",
     }
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if token:

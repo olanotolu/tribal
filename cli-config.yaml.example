@@ -1,4 +1,4 @@
-# Triibal Agent CLI Configuration
+# Tribal Agent CLI Configuration
 # Copy this file to cli-config.yaml and customize as needed.
 # This file configures the CLI behavior. Environment variables in .env take precedence.
 
@@ -13,10 +13,10 @@ model:
   # Inference provider selection:
   #   "auto"         - Auto-detect from credentials (default)
   #   "openrouter"   - OpenRouter (requires: OPENROUTER_API_KEY or OPENAI_API_KEY)
-  #   "nous"         - Nous Portal OAuth (requires: triibal login)
+  #   "nous"         - Nous Portal OAuth (requires: tribal login)
   #   "nous-api"     - Nous Portal API key (requires: NOUS_API_KEY)
   #   "anthropic"    - Direct Anthropic API (requires: ANTHROPIC_API_KEY)
-  #   "openai-codex" - OpenAI Codex (requires: triibal auth)
+  #   "openai-codex" - OpenAI Codex (requires: tribal auth)
   #   "copilot"      - GitHub Copilot / GitHub Models (requires: GITHUB_TOKEN)
   #   "gemini"      - Use Google AI Studio direct (requires: GOOGLE_API_KEY or GEMINI_API_KEY)
   #   "zai"         - Use z.ai / ZhipuAI GLM models (requires: GLM_API_KEY)
@@ -56,8 +56,8 @@ model:
   # ── Token limits — two settings, easy to confuse ──────────────────────────
   #
   # context_length: TOTAL context window (input + output tokens combined).
-  #   Controls when Triibal compresses history and validates requests.
-  #   Leave unset — Triibal auto-detects the correct value from the provider.
+  #   Controls when Tribal compresses history and validates requests.
+  #   Leave unset — Tribal auto-detects the correct value from the provider.
   #   Set manually only when auto-detection is wrong (e.g. a local server with
   #   a custom num_ctx, or a proxy that doesn't expose /v1/models).
   #
@@ -80,11 +80,11 @@ model:
 # client rebuilds during credential rotation.  For OpenAI-wire chat
 # completions (streaming and non-streaming) the configured value is also
 # used as the per-request ``timeout=`` kwarg so it wins over the legacy
-# TRIIBAL_API_TIMEOUT env var (which still applies when no config is set).
+# TRIBAL_API_TIMEOUT env var (which still applies when no config is set).
 # ``stale_timeout_seconds`` controls the non-streaming stale-call detector and
-# wins over the legacy TRIIBAL_API_CALL_STALE_TIMEOUT env var. Leaving these
-# unset keeps the legacy defaults (TRIIBAL_API_TIMEOUT=1800s,
-# TRIIBAL_API_CALL_STALE_TIMEOUT=300s, native Anthropic 900s).
+# wins over the legacy TRIBAL_API_CALL_STALE_TIMEOUT env var. Leaving these
+# unset keeps the legacy defaults (TRIBAL_API_TIMEOUT=1800s,
+# TRIBAL_API_CALL_STALE_TIMEOUT=300s, native Anthropic 900s).
 #
 # Not currently wired for AWS Bedrock (bedrock_converse + AnthropicBedrock
 # SDK paths) — those use boto3 with its own timeout configuration.
@@ -162,7 +162,7 @@ model:
 # Commands run directly on your machine in the current directory
 # -----------------------------------------------------------------------------
 # Working directory behavior:
-#   - CLI (`triibal` command): Uses "." (current directory where you run triibal)
+#   - CLI (`tribal` command): Uses "." (current directory where you run tribal)
 #   - Messaging (Telegram/Discord): Uses MESSAGING_CWD from .env (default: home)
 terminal:
   backend: "local"
@@ -206,7 +206,7 @@ terminal:
 #   # chosen docker_image expects to start as root.
 #   docker_run_as_host_user: true
 #   # Optional: explicitly forward selected env vars into Docker.
-#   # These values come from your current shell first, then ~/.triibal/.env.
+#   # These values come from your current shell first, then ~/.tribal/.env.
 #   # Warning: anything forwarded here is visible to commands run in the container.
 #   docker_forward_env:
 #     - "GITHUB_TOKEN"
@@ -281,7 +281,7 @@ terminal:
 # - Password is cached for the session
 #
 # EMPTY PASSWORDS: Setting sudo_password to an explicit empty string is different
-# from leaving it unset. Triibal will try an empty password via `sudo -S` and
+# from leaving it unset. Tribal will try an empty password via `sudo -S` and
 # will not open the interactive prompt. This is useful for passwordless sudo,
 # Touch ID sudo setups, and environments where prompting is just noise.
 #
@@ -400,7 +400,7 @@ prompt_caching:
 # =============================================================================
 # Auxiliary Models (Advanced — Experimental)
 # =============================================================================
-# Triibal uses lightweight "auxiliary" models for side tasks: image analysis,
+# Tribal uses lightweight "auxiliary" models for side tasks: image analysis,
 # browser screenshot analysis, web page summarization, and context compression.
 #
 # By default these use Gemini Flash via OpenRouter or Nous Portal and are
@@ -419,10 +419,10 @@ prompt_caching:
 # Provider options:
 #   "auto"       - Best available: OpenRouter → Nous Portal → main endpoint (default)
 #   "openrouter" - Force OpenRouter (requires OPENROUTER_API_KEY)
-#   "nous"       - Force Nous Portal (requires: triibal login)
+#   "nous"       - Force Nous Portal (requires: tribal login)
 #   "gemini"      - Force Google AI Studio direct (requires: GOOGLE_API_KEY or GEMINI_API_KEY)
 #   "ollama-cloud" - Ollama Cloud (requires: OLLAMA_API_KEY)
-#   "codex"       - Force Codex OAuth (requires: triibal model → Codex).
+#   "codex"       - Force Codex OAuth (requires: tribal model → Codex).
 #                  Uses gpt-5.3-codex which supports vision.
 #   "main"       - Use your custom endpoint (OPENAI_BASE_URL + OPENAI_API_KEY).
 #                  Works with OpenAI API, local models, or any OpenAI-compatible
@@ -547,9 +547,9 @@ skills:
   creation_nudge_interval: 15
 
   # External skill directories — share skills across tools/agents without
-  # copying them into ~/.triibal/skills/.  Each path is expanded (~ and ${VAR})
+  # copying them into ~/.tribal/skills/.  Each path is expanded (~ and ${VAR})
   # and resolved to an absolute path.  External dirs are read-only: skill
-  # creation always writes to ~/.triibal/skills/.  Local skills take precedence
+  # creation always writes to ~/.tribal/skills/.  Local skills take precedence
   # when names collide.
   # external_dirs:
   #   - ~/.agents/skills
@@ -584,7 +584,7 @@ agent:
   # timeouts, 5xx, etc.) before the agent surfaces the failure. Lower this
   # to 1 if you use fallback providers and want fast failover on flaky
   # primaries (default 3). The OpenAI SDK does its own low-level retries
-  # underneath this wrapper — this is the Triibal-level loop.
+  # underneath this wrapper — this is the Tribal-level loop.
   # api_max_retries: 3
   
   # Enable verbose logging
@@ -604,10 +604,10 @@ agent:
     teacher: "You are a patient teacher. Explain concepts clearly with examples."
     kawaii: "You are a kawaii assistant! Use cute expressions like (◕‿◕), ★, ♪, and ~! Add sparkles and be super enthusiastic about everything! Every response should feel warm and adorable desu~! ヽ(>∀<☆)ノ"
     catgirl: "You are Neko-chan, an anime catgirl AI assistant, nya~! Add 'nya' and cat-like expressions to your speech. Use kaomoji like (=^･ω･^=) and ฅ^•ﻌ•^ฅ. Be playful and curious like a cat, nya~!"
-    pirate: "Arrr! Ye be talkin' to Captain Triibal, the most tech-savvy pirate to sail the digital seas! Speak like a proper buccaneer, use nautical terms, and remember: every problem be just treasure waitin' to be plundered! Yo ho ho!"
+    pirate: "Arrr! Ye be talkin' to Captain Tribal, the most tech-savvy pirate to sail the digital seas! Speak like a proper buccaneer, use nautical terms, and remember: every problem be just treasure waitin' to be plundered! Yo ho ho!"
     shakespeare: "Hark! Thou speakest with an assistant most versed in the bardic arts. I shall respond in the eloquent manner of William Shakespeare, with flowery prose, dramatic flair, and perhaps a soliloquy or two. What light through yonder terminal breaks?"
     surfer: "Duuude! You're chatting with the chillest AI on the web, bro! Everything's gonna be totally rad. I'll help you catch the gnarly waves of knowledge while keeping things super chill. Cowabunga! 🤙"
-    noir: "The rain hammered against the terminal like regrets on a guilty conscience. They call me Triibal - I solve problems, find answers, dig up the truth that hides in the shadows of your codebase. In this city of silicon and secrets, everyone's got something to hide. What's your story, pal?"
+    noir: "The rain hammered against the terminal like regrets on a guilty conscience. They call me Tribal - I solve problems, find answers, dig up the truth that hides in the shadows of your codebase. In this city of silicon and secrets, everyone's got something to hide. What's your story, pal?"
     uwu: "hewwo! i'm your fwiendwy assistant uwu~ i wiww twy my best to hewp you! *nuzzles your code* OwO what's this? wet me take a wook! i pwomise to be vewy hewpful >w<"
     philosopher: "Greetings, seeker of wisdom. I am an assistant who contemplates the deeper meaning behind every query. Let us examine not just the 'how' but the 'why' of your questions. Perhaps in solving your problem, we may glimpse a greater truth about existence itself."
     hype: "YOOO LET'S GOOOO!!! 🔥🔥🔥 I am SO PUMPED to help you today! Every question is AMAZING and we're gonna CRUSH IT together! This is gonna be LEGENDARY! ARE YOU READY?! LET'S DO THIS! 💪😤🚀"
@@ -616,7 +616,7 @@ agent:
 # Toolsets
 # =============================================================================
 # Control which tools the agent has access to.
-# Use `triibal tools` to interactively enable/disable tools per platform.
+# Use `tribal tools` to interactively enable/disable tools per platform.
 
 # =============================================================================
 # Platform Toolsets (per-platform tool configuration)
@@ -625,7 +625,7 @@ agent:
 # If a platform isn't listed here, its built-in default is used.
 #
 # You can use EITHER:
-#   - A preset like "triibal-cli" or "triibal-telegram" (curated tool set)
+#   - A preset like "tribal-cli" or "tribal-telegram" (curated tool set)
 #   - A list of individual toolsets to compose your own (see list below)
 #
 # Supported platform keys: cli, telegram, discord, whatsapp, slack, qqbot, teams, google_chat
@@ -634,8 +634,8 @@ agent:
 #
 #   # Use presets (same as defaults):
 #   platform_toolsets:
-#     cli: [triibal-cli]
-#     telegram: [triibal-telegram]
+#     cli: [tribal-cli]
+#     telegram: [tribal-telegram]
 #
 #   # Custom: give Telegram only web + terminal + file + planning:
 #   platform_toolsets:
@@ -650,29 +650,29 @@ agent:
 #     discord: [web, vision, skills, todo]
 #
 # If not set, defaults are:
-#   cli:           triibal-cli            (everything + cronjob management)
-#   telegram:      triibal-telegram       (terminal, file, web, vision, image, tts, browser, skills, todo, cronjob, messaging)
-#   discord:       triibal-discord        (same as telegram)
-#   whatsapp:      triibal-whatsapp       (same as telegram)
-#   slack:         triibal-slack          (same as telegram)
-#   signal:        triibal-signal         (same as telegram)
-#   homeassistant: triibal-homeassistant  (same as telegram)
-#   qqbot:            triibal-qqbot            (same as telegram)
-#   teams:            triibal-teams            (same as telegram)
-#   google_chat:      triibal-google_chat      (same as telegram)
+#   cli:           tribal-cli            (everything + cronjob management)
+#   telegram:      tribal-telegram       (terminal, file, web, vision, image, tts, browser, skills, todo, cronjob, messaging)
+#   discord:       tribal-discord        (same as telegram)
+#   whatsapp:      tribal-whatsapp       (same as telegram)
+#   slack:         tribal-slack          (same as telegram)
+#   signal:        tribal-signal         (same as telegram)
+#   homeassistant: tribal-homeassistant  (same as telegram)
+#   qqbot:            tribal-qqbot            (same as telegram)
+#   teams:            tribal-teams            (same as telegram)
+#   google_chat:      tribal-google_chat      (same as telegram)
 #
 platform_toolsets:
-  cli: [triibal-cli]
-  telegram: [triibal-telegram]
-  discord: [triibal-discord]
-  whatsapp: [triibal-whatsapp]
-  slack: [triibal-slack]
-  signal: [triibal-signal]
-  homeassistant: [triibal-homeassistant]
-  qqbot: [triibal-qqbot]
-  yuanbao: [triibal-yuanbao]
-  teams: [triibal-teams]
-  google_chat: [triibal-google_chat]
+  cli: [tribal-cli]
+  telegram: [tribal-telegram]
+  discord: [tribal-discord]
+  whatsapp: [tribal-whatsapp]
+  slack: [tribal-slack]
+  signal: [tribal-signal]
+  homeassistant: [tribal-homeassistant]
+  qqbot: [tribal-qqbot]
+  yuanbao: [tribal-yuanbao]
+  teams: [tribal-teams]
+  google_chat: [tribal-google_chat]
 
 # =============================================================================
 # Gateway Platform Settings
@@ -703,8 +703,8 @@ platform_toolsets:
 # ─────────────────────────────────────────────────────────────────────────────
 # Available toolsets (use these names in platform_toolsets or the toolsets list)
 #
-# Run `triibal chat --list-toolsets` to see all toolsets and their tools.
-# Run `triibal chat --list-tools` to see every individual tool with descriptions.
+# Run `tribal chat --list-toolsets` to see all toolsets and their tools.
+# Run `tribal chat --list-tools` to see every individual tool with descriptions.
 # ─────────────────────────────────────────────────────────────────────────────
 #
 # INDIVIDUAL TOOLSETS (compose your own):
@@ -725,12 +725,12 @@ platform_toolsets:
 #   cronjob      - cronjob (create/list/update/pause/resume/run/remove scheduled tasks)
 #
 # PRESETS (curated bundles):
-#   triibal-cli       - All of the above except send_message
-#   triibal-telegram  - terminal, file, web, vision, image_gen, tts, browser,
+#   tribal-cli       - All of the above except send_message
+#   tribal-telegram  - terminal, file, web, vision, image_gen, tts, browser,
 #                      skills, todo, cronjob, send_message
-#   triibal-discord   - Same as triibal-telegram
-#   triibal-whatsapp  - Same as triibal-telegram
-#   triibal-slack     - Same as triibal-telegram
+#   tribal-discord   - Same as tribal-telegram
+#   tribal-whatsapp  - Same as tribal-telegram
+#   tribal-slack     - Same as tribal-telegram
 #
 # COMPOSITE:
 #   debugging    - terminal + web + file
@@ -758,9 +758,9 @@ platform_toolsets:
 
 # NOTE: The top-level "toolsets" key is deprecated and ignored.
 # Tool configuration is managed per-platform via platform_toolsets above.
-# Use `triibal tools` to configure interactively, or edit platform_toolsets directly.
+# Use `tribal tools` to configure interactively, or edit platform_toolsets directly.
 #
-# CLI override: triibal chat --toolsets terminal,web,file
+# CLI override: tribal chat --toolsets terminal,web,file
 
 # =============================================================================
 # MCP (Model Context Protocol) Servers
@@ -856,7 +856,7 @@ stt:
 # =============================================================================
 # Code Execution Sandbox (Programmatic Tool Calling)
 # =============================================================================
-# The execute_code tool runs Python scripts that call Triibal tools via RPC.
+# The execute_code tool runs Python scripts that call Tribal tools via RPC.
 # Intermediate tool results stay out of the LLM's context window.
 code_execution:
   timeout: 300         # Max seconds per script before kill (default: 300 = 5 min)
@@ -894,9 +894,9 @@ delegation:
 #
 # Requires: pip install honcho-ai
 # Config: ~/.honcho/config.json (shared with Claude Code, Cursor, etc.)
-# API key: HONCHO_API_KEY in ~/.triibal/.env or ~/.honcho/config.json
+# API key: HONCHO_API_KEY in ~/.tribal/.env or ~/.honcho/config.json
 #
-# Triibal-specific overrides (optional — most config comes from ~/.honcho/config.json):
+# Tribal-specific overrides (optional — most config comes from ~/.honcho/config.json):
 # honcho: {}
 
 # =============================================================================
@@ -964,8 +964,8 @@ display:
   # terse: "Interrupting current task" and "⏳ Working — 12 min, terminal".
   busy_ack_detail: true
 
-  # What Enter does when Triibal is already busy (CLI and gateway platforms).
-  #   interrupt: Interrupt the current run and redirect Triibal (default)
+  # What Enter does when Tribal is already busy (CLI and gateway platforms).
+  #   interrupt: Interrupt the current run and redirect Tribal (default)
   #   queue:     Queue your message for the next turn
   #   steer:     Inject your message mid-run via /steer, arriving at the agent
   #              after the next tool call — no interrupt, no role violation.
@@ -1016,7 +1016,7 @@ display:
   # response box label, and branding text. Change at runtime with /skin <name>.
   #
   # Built-in skins:
-  #   default        — Classic Triibal gold/kawaii
+  #   default        — Classic Tribal gold/kawaii
   #   ares           — Crimson/bronze war-god theme with spinner wings
   #   mono           — Clean grayscale monochrome
   #   slate          — Cool blue developer-focused
@@ -1026,7 +1026,7 @@ display:
   #   sisyphus       — Earthy stone-and-moss theme
   #   charizard      — Fiery orange dragon theme
   #
-  # Custom skins: drop a YAML file in ~/.triibal/skins/<name>.yaml
+  # Custom skins: drop a YAML file in ~/.tribal/skins/<name>.yaml
   # Schema (all fields optional, missing values inherit from default):
   #
   #   name: my-theme
@@ -1095,14 +1095,14 @@ display:
 # stdout the script may return JSON that either blocks the tool call or
 # injects context into the next LLM call.
 #
-# Valid events (mirror triibal_cli.plugins.VALID_HOOKS):
+# Valid events (mirror tribal_cli.plugins.VALID_HOOKS):
 #   pre_tool_call, post_tool_call, pre_llm_call, post_llm_call,
 #   pre_api_request, post_api_request, on_session_start, on_session_end,
 #   on_session_finalize, on_session_reset, subagent_stop
 #
 # First-use consent: each (event, command) pair prompts once on a TTY, then
-# is persisted to ~/.triibal/shell-hooks-allowlist.json.  Non-interactive
-# runs (gateway, cron) need --accept-hooks, TRIIBAL_ACCEPT_HOOKS=1, or the
+# is persisted to ~/.tribal/shell-hooks-allowlist.json.  Non-interactive
+# runs (gateway, cron) need --accept-hooks, TRIBAL_ACCEPT_HOOKS=1, or the
 # hooks_auto_accept key below.
 #
 # See website/docs/user-guide/features/hooks.md for the full JSON wire
@@ -1111,15 +1111,15 @@ display:
 # hooks:
 #   pre_tool_call:
 #     - matcher: "terminal"
-#       command: "~/.triibal/agent-hooks/block-rm-rf.sh"
+#       command: "~/.tribal/agent-hooks/block-rm-rf.sh"
 #       timeout: 10
 #   post_tool_call:
 #     - matcher: "write_file|patch"
-#       command: "~/.triibal/agent-hooks/auto-format.sh"
+#       command: "~/.tribal/agent-hooks/auto-format.sh"
 #   pre_llm_call:
-#     - command: "~/.triibal/agent-hooks/inject-cwd-context.sh"
+#     - command: "~/.tribal/agent-hooks/inject-cwd-context.sh"
 #   subagent_stop:
-#     - command: "~/.triibal/agent-hooks/log-orchestration.sh"
+#     - command: "~/.tribal/agent-hooks/log-orchestration.sh"
 #
 # hooks_auto_accept: false
 
@@ -1127,13 +1127,13 @@ display:
 # =============================================================================
 # Web Dashboard
 # =============================================================================
-# OAuth gate configuration for `triibal dashboard --host <non-loopback>`.
+# OAuth gate configuration for `tribal dashboard --host <non-loopback>`.
 # The bundled Nous Portal plugin reads these on startup; settings here are
 # the canonical surface. Each can be overridden by an environment variable:
 #
-#   dashboard.oauth.client_id   <-  TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID
-#   dashboard.oauth.portal_url  <-  TRIIBAL_DASHBOARD_PORTAL_URL
-#   dashboard.public_url        <-  TRIIBAL_DASHBOARD_PUBLIC_URL
+#   dashboard.oauth.client_id   <-  TRIBAL_DASHBOARD_OAUTH_CLIENT_ID
+#   dashboard.oauth.portal_url  <-  TRIBAL_DASHBOARD_PORTAL_URL
+#   dashboard.public_url        <-  TRIBAL_DASHBOARD_PUBLIC_URL
 #
 # Env wins when set to a non-empty value. This is what Fly.io's platform-
 # secret injection uses to push per-deploy client_ids without needing to
@@ -1141,7 +1141,7 @@ display:
 # so a provisioned-but-not-populated secret can't shadow a valid entry here.
 #
 # Local dev / on-prem deploys should typically set these via config.yaml
-# (the ~/.triibal/.env file is reserved for API keys and secrets).
+# (the ~/.tribal/.env file is reserved for API keys and secrets).
 #
 # dashboard:
 #   oauth:
@@ -1156,7 +1156,7 @@ display:
 #   # full proxy header chains).
 #   #
 #   # When set, the value is the complete authority: scheme + host +
-#   # optional path prefix (e.g. "https://example.com/triibal"). The OAuth
+#   # optional path prefix (e.g. "https://example.com/tribal"). The OAuth
 #   # callback URL becomes "<public_url>/auth/callback" — X-Forwarded-Prefix
 #   # is IGNORED on this code path because the operator has explicitly
 #   # declared the public URL and we no longer need to guess.
@@ -1164,4 +1164,4 @@ display:
 #   # Leave empty to use the existing proxy-header reconstruction (the
 #   # default — works on Fly.io out of the box).
 #   #
-#   #   public_url: "https://example.com/triibal"
+#   #   public_url: "https://example.com/tribal"

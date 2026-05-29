@@ -1,10 +1,10 @@
-# nix/packages.nix — Triibal Agent package built with uv2nix
+# nix/packages.nix — Tribal Agent package built with uv2nix
 { inputs, ... }:
 {
   perSystem =
     { pkgs, lib, inputs', ... }:
     let
-      triibalAgent = pkgs.callPackage ./triibal-agent.nix {
+      tribalAgent = pkgs.callPackage ./tribal-agent.nix {
         inherit (inputs) uv2nix pyproject-nix pyproject-build-systems;
         npm-lockfile-fix = inputs'.npm-lockfile-fix.packages.default;
         # Only embed clean revs — dirtyRev doesn't represent any upstream
@@ -14,18 +14,18 @@
     in
     {
       packages = {
-        default = triibalAgent;
+        default = tribalAgent;
 
         # Ships discord.py + python-telegram-bot + slack-sdk so a plain
         # `nix profile install .#messaging` connects to Discord/Telegram/Slack
         # on first run — lazy-install can't write to the read-only /nix/store.
-        messaging = triibalAgent.override {
+        messaging = tribalAgent.override {
           extraDependencyGroups = [ "messaging" ];
         };
 
         # All platform-portable optional integrations pre-built.
         # matrix is Linux-only (oqs/liboqs lacks aarch64-darwin wheels).
-        full = triibalAgent.override {
+        full = tribalAgent.override {
           extraDependencyGroups = [
             "anthropic"
             "azure-identity"
@@ -48,11 +48,11 @@
           ] ++ lib.optionals pkgs.stdenv.isLinux [ "matrix" ];
         };
 
-        tui = triibalAgent.triibalTui;
-        web = triibalAgent.triibalWeb;
+        tui = tribalAgent.tribalTui;
+        web = tribalAgent.tribalWeb;
 
-        fix-lockfiles = triibalAgent.triibalNpmLib.mkFixLockfiles {
-          packages = [ triibalAgent.triibalTui triibalAgent.triibalWeb ];
+        fix-lockfiles = tribalAgent.tribalNpmLib.mkFixLockfiles {
+          packages = [ tribalAgent.tribalTui tribalAgent.tribalWeb ];
         };
       };
     };

@@ -22,8 +22,8 @@ def test_is_truthy_value_rejects_falsey_strings():
 
 
 def test_env_var_enabled_uses_shared_truthy_rules(monkeypatch):
-    monkeypatch.setenv("TRIIBAL_TEST_BOOL", "YeS")
-    assert env_var_enabled("TRIIBAL_TEST_BOOL") is True
+    monkeypatch.setenv("TRIBAL_TEST_BOOL", "YeS")
+    assert env_var_enabled("TRIBAL_TEST_BOOL") is True
 
-    monkeypatch.setenv("TRIIBAL_TEST_BOOL", "no")
-    assert env_var_enabled("TRIIBAL_TEST_BOOL") is False
+    monkeypatch.setenv("TRIBAL_TEST_BOOL", "no")
+    assert env_var_enabled("TRIBAL_TEST_BOOL") is False

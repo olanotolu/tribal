@@ -1,7 +1,7 @@
 """Consent-flow tests for the shell-hook allowlist.
 
 Covers the prompt/non-prompt decision tree: TTY vs non-TTY, and the
-three accept-hooks channels (--accept-hooks, TRIIBAL_ACCEPT_HOOKS env,
+three accept-hooks channels (--accept-hooks, TRIBAL_ACCEPT_HOOKS env,
 hooks_auto_accept: config key).
 """
 
@@ -18,8 +18,8 @@ from agent import shell_hooks
 
 @pytest.fixture(autouse=True)
 def _isolated_home(tmp_path, monkeypatch):
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path / "triibal_home"))
-    monkeypatch.delenv("TRIIBAL_ACCEPT_HOOKS", raising=False)
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path / "tribal_home"))
+    monkeypatch.delenv("TRIBAL_ACCEPT_HOOKS", raising=False)
     shell_hooks.reset_for_tests()
     yield
     shell_hooks.reset_for_tests()
@@ -37,7 +37,7 @@ def _write_hook_script(tmp_path: Path) -> Path:
 
 class TestTTYPromptFlow:
     def test_first_use_prompts_and_approves(self, tmp_path):
-        from triibal_cli import plugins
+        from tribal_cli import plugins
 
         script = _write_hook_script(tmp_path)
         plugins._plugin_manager = plugins.PluginManager()
@@ -56,7 +56,7 @@ class TestTTYPromptFlow:
         assert entry["command"] == str(script)
 
     def test_first_use_prompts_and_rejects(self, tmp_path):
-        from triibal_cli import plugins
+        from tribal_cli import plugins
 
         script = _write_hook_script(tmp_path)
         plugins._plugin_manager = plugins.PluginManager()
@@ -74,7 +74,7 @@ class TestTTYPromptFlow:
 
     def test_subsequent_use_does_not_prompt(self, tmp_path):
         """After the first approval, re-registration must be silent."""
-        from triibal_cli import plugins
+        from tribal_cli import plugins
 
         script = _write_hook_script(tmp_path)
         plugins._plugin_manager = plugins.PluginManager()
@@ -107,7 +107,7 @@ class TestTTYPromptFlow:
 
 class TestNonTTYFlow:
     def test_no_tty_no_flag_skips_registration(self, tmp_path):
-        from triibal_cli import plugins
+        from tribal_cli import plugins
 
         script = _write_hook_script(tmp_path)
         plugins._plugin_manager = plugins.PluginManager()
@@ -121,7 +121,7 @@ class TestNonTTYFlow:
         assert registered == []
 
     def test_no_tty_with_argument_flag_accepts(self, tmp_path):
-        from triibal_cli import plugins
+        from tribal_cli import plugins
 
         script = _write_hook_script(tmp_path)
         plugins._plugin_manager = plugins.PluginManager()
@@ -135,11 +135,11 @@ class TestNonTTYFlow:
         assert len(registered) == 1
 
     def test_no_tty_with_env_accepts(self, tmp_path, monkeypatch):
-        from triibal_cli import plugins
+        from tribal_cli import plugins
 
         script = _write_hook_script(tmp_path)
         plugins._plugin_manager = plugins.PluginManager()
-        monkeypatch.setenv("TRIIBAL_ACCEPT_HOOKS", "1")
+        monkeypatch.setenv("TRIBAL_ACCEPT_HOOKS", "1")
 
         with patch("sys.stdin") as mock_stdin:
             mock_stdin.isatty.return_value = False
@@ -150,7 +150,7 @@ class TestNonTTYFlow:
         assert len(registered) == 1
 
     def test_no_tty_with_config_accepts(self, tmp_path):
-        from triibal_cli import plugins
+        from tribal_cli import plugins
 
         script = _write_hook_script(tmp_path)
         plugins._plugin_manager = plugins.PluginManager()

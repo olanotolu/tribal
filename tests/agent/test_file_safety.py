@@ -68,13 +68,13 @@ class TestEnvFileReadBlocking:
             error = get_read_block_error(path)
             assert error is None, f"{path} should be allowed"
 
-    def test_allowed_triibal_env(self):
-        """Triibal' own .env inside TRIIBAL_HOME is NOT blocked by this rule
+    def test_allowed_tribal_env(self):
+        """Tribal' own .env inside TRIBAL_HOME is NOT blocked by this rule
         (it's handled by other mechanisms). Only project-local .env is blocked."""
-        # Note: triibal internal .env is in ~/.triibal/.env which is NOT a project-local
+        # Note: tribal internal .env is in ~/.tribal/.env which is NOT a project-local
         # path, but the basename check applies to ANY .env. This is intentional —
-        # even ~/.triibal/.env should not be readable via read_file.
-        error = get_read_block_error(os.path.expanduser("~/.triibal/.env"))
+        # even ~/.tribal/.env should not be readable via read_file.
+        error = get_read_block_error(os.path.expanduser("~/.tribal/.env"))
         assert error is not None
 
     def test_blocked_set_is_lowercase(self):
@@ -89,28 +89,28 @@ class TestEnvFileReadBlocking:
 
 
 class TestCacheFileReadBlocking:
-    """Internal Triibal cache files must remain blocked."""
+    """Internal Tribal cache files must remain blocked."""
 
     def test_hub_index_cache_blocked(self, tmp_path):
         """Hub index-cache reads are blocked."""
-        triibal_home = tmp_path / ".triibal"
-        cache = triibal_home / "skills" / ".hub" / "index-cache" / "data.json"
+        tribal_home = tmp_path / ".tribal"
+        cache = tribal_home / "skills" / ".hub" / "index-cache" / "data.json"
         cache.parent.mkdir(parents=True)
         cache.write_text("{}")
 
-        with patch("agent.file_safety._triibal_home_path", return_value=triibal_home):
+        with patch("agent.file_safety._tribal_home_path", return_value=tribal_home):
             error = get_read_block_error(str(cache))
             assert error is not None
-            assert "internal Triibal cache" in error
+            assert "internal Tribal cache" in error
 
     def test_hub_directory_blocked(self, tmp_path):
         """Hub directory reads are blocked."""
-        triibal_home = tmp_path / ".triibal"
-        hub = triibal_home / "skills" / ".hub" / "metadata.json"
+        tribal_home = tmp_path / ".tribal"
+        hub = tribal_home / "skills" / ".hub" / "metadata.json"
         hub.parent.mkdir(parents=True)
         hub.write_text("{}")
 
-        with patch("agent.file_safety._triibal_home_path", return_value=triibal_home):
+        with patch("agent.file_safety._tribal_home_path", return_value=tribal_home):
             error = get_read_block_error(str(hub))
             assert error is not None
 
@@ -123,12 +123,12 @@ class TestCacheFileReadBlocking:
 class TestCombinedGuards:
     """Both guards should work independently without interference."""
 
-    def test_env_guard_works_regardless_of_triibal_home(self, tmp_path):
-        """The env basename guard does not depend on TRIIBAL_HOME resolution."""
-        triibal_home = tmp_path / ".triibal"
-        triibal_home.mkdir()
+    def test_env_guard_works_regardless_of_tribal_home(self, tmp_path):
+        """The env basename guard does not depend on TRIBAL_HOME resolution."""
+        tribal_home = tmp_path / ".tribal"
+        tribal_home.mkdir()
 
-        with patch("agent.file_safety._triibal_home_path", return_value=triibal_home):
+        with patch("agent.file_safety._tribal_home_path", return_value=tribal_home):
             # Regular project .env should still be blocked
             error = get_read_block_error("/workspace/.env")
             assert error is not None
@@ -139,12 +139,12 @@ class TestCombinedGuards:
 
     def test_cache_guard_still_works_with_env_guard(self, tmp_path):
         """Cache file blocking still works when env guard is active."""
-        triibal_home = tmp_path / ".triibal"
-        cache = triibal_home / "skills" / ".hub" / "index-cache" / "x"
+        tribal_home = tmp_path / ".tribal"
+        cache = tribal_home / "skills" / ".hub" / "index-cache" / "x"
         cache.parent.mkdir(parents=True)
         cache.write_text("")
 
-        with patch("agent.file_safety._triibal_home_path", return_value=triibal_home):
+        with patch("agent.file_safety._tribal_home_path", return_value=tribal_home):
             error = get_read_block_error(str(cache))
             assert error is not None
-            assert "internal Triibal cache" in error
+            assert "internal Tribal cache" in error

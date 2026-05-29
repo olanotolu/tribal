@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@triibal/ink": ["src/types/triibal-ink.d.ts"]
+      "@tribal/ink": ["src/types/tribal-ink.d.ts"]
     }
   }
 }

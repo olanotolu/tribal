@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: "Toolsets Reference"
-description: "Reference for Triibal core, composite, platform, and dynamic toolsets"
+description: "Reference for Tribal core, composite, platform, and dynamic toolsets"
 ---
 
 # Toolsets Reference
@@ -14,30 +14,30 @@ Every tool belongs to exactly one toolset. When you enable a toolset, all tools 
 
 - **Core** — A single logical group of related tools (e.g., `file` bundles `read_file`, `write_file`, `patch`, `search_files`)
 - **Composite** — Combines multiple core toolsets for a common scenario (e.g., `debugging` bundles file, terminal, and web tools)
-- **Platform** — A complete tool configuration for a specific deployment context (e.g., `triibal-cli` is the default for interactive CLI sessions)
+- **Platform** — A complete tool configuration for a specific deployment context (e.g., `tribal-cli` is the default for interactive CLI sessions)
 
 ## Configuring Toolsets
 
 ### Per-session (CLI)
 
 ```bash
-triibal chat --toolsets web,file,terminal
-triibal chat --toolsets debugging        # composite — expands to file + terminal + web
-triibal chat --toolsets all              # everything
+tribal chat --toolsets web,file,terminal
+tribal chat --toolsets debugging        # composite — expands to file + terminal + web
+tribal chat --toolsets all              # everything
 ```
 
 ### Per-platform (config.yaml)
 
 ```yaml
 toolsets:
-  - triibal-cli          # default for CLI
-  # - triibal-telegram   # override for Telegram gateway
+  - tribal-cli          # default for CLI
+  # - tribal-telegram   # override for Telegram gateway
 ```
 
 ### Interactive management
 
 ```bash
-triibal tools                            # curses UI to enable/disable per platform
+tribal tools                            # curses UI to enable/disable per platform
 ```
 
 Or in-session:
@@ -54,20 +54,20 @@ Or in-session:
 |---------|-------|---------|
 | `browser` | `browser_back`, `browser_cdp`, `browser_click`, `browser_console`, `browser_dialog`, `browser_get_images`, `browser_navigate`, `browser_press`, `browser_scroll`, `browser_snapshot`, `browser_type`, `browser_vision`, `web_search` | Core browser automation. Includes `web_search` as a fallback for quick lookups. `browser_cdp` and `browser_dialog` are gated at runtime — registered only when a CDP endpoint is reachable at session start (via `/browser connect`, `browser.cdp_url` config, Browserbase, or Camofox). `browser_dialog` works together with the `pending_dialogs` and `frame_tree` fields that `browser_snapshot` adds when a CDP supervisor is attached. |
 | `clarify` | `clarify` | Ask the user a question when the agent needs clarification. |
-| `code_execution` | `execute_code` | Run Python scripts that call Triibal tools programmatically. |
+| `code_execution` | `execute_code` | Run Python scripts that call Tribal tools programmatically. |
 | `cronjob` | `cronjob` | Schedule and manage recurring tasks. |
 | `debugging` | composite (`file` + `terminal` + `web`) | Debug bundle — file, process/terminal, web extract/search. |
 | `delegation` | `delegate_task` | Spawn isolated subagent instances for parallel work. |
-| `discord` | `discord` | Core Discord text/embed/DM actions (gateway-only). Active on the `triibal-discord` toolset. |
-| `discord_admin` | `discord_admin` | Discord moderation (bans, role changes, channel management). Active on the `triibal-discord` toolset; requires the bot to hold the relevant Discord permissions. |
+| `discord` | `discord` | Core Discord text/embed/DM actions (gateway-only). Active on the `tribal-discord` toolset. |
+| `discord_admin` | `discord_admin` | Discord moderation (bans, role changes, channel management). Active on the `tribal-discord` toolset; requires the bot to hold the relevant Discord permissions. |
 | `feishu_doc` | `feishu_doc_read` | Read Feishu/Lark document content. Used by the Feishu document-comment intelligent-reply handler. |
-| `feishu_drive` | `feishu_drive_add_comment`, `feishu_drive_list_comments`, `feishu_drive_list_comment_replies`, `feishu_drive_reply_comment` | Feishu/Lark drive comment operations. Scoped to the comment agent; not exposed on `triibal-cli` or other messaging toolsets. |
+| `feishu_drive` | `feishu_drive_add_comment`, `feishu_drive_list_comments`, `feishu_drive_list_comment_replies`, `feishu_drive_reply_comment` | Feishu/Lark drive comment operations. Scoped to the comment agent; not exposed on `tribal-cli` or other messaging toolsets. |
 | `file` | `patch`, `read_file`, `search_files`, `write_file` | File reading, writing, searching, and editing. |
 | `homeassistant` | `ha_call_service`, `ha_get_state`, `ha_list_entities`, `ha_list_services` | Smart home control via Home Assistant. Only available when `HASS_TOKEN` is set. |
 | `computer_use` | `computer_use` | Background macOS desktop control via cua-driver — does not steal cursor/focus. Works with any tool-capable model. macOS only; requires `cua-driver` on `$PATH`. |
 | `image_gen` | `image_generate` | Text-to-image generation via FAL.ai (with opt-in OpenAI / xAI backends). |
 | `video_gen` | `video_generate` | Text-to-video and image-to-video via plugin-registered backends (xAI Grok-Imagine, FAL.ai Veo 3.1 / Pixverse v6 / Kling O3). Pass `image_url` to animate an image; omit it for text-to-video. |
-| `kanban` | `kanban_block`, `kanban_comment`, `kanban_complete`, `kanban_create`, `kanban_heartbeat`, `kanban_link`, `kanban_list`, `kanban_show`, `kanban_unblock` | Multi-agent coordination tools. Registered for dispatcher-spawned task workers (`TRIIBAL_KANBAN_TASK`) and for profiles that explicitly enable the `kanban` toolset. Workers mark tasks done, block, heartbeat, comment, and create/link follow-up tasks; orchestrator profiles additionally get board-routing tools like list/unblock. |
+| `kanban` | `kanban_block`, `kanban_comment`, `kanban_complete`, `kanban_create`, `kanban_heartbeat`, `kanban_link`, `kanban_list`, `kanban_show`, `kanban_unblock` | Multi-agent coordination tools. Registered for dispatcher-spawned task workers (`TRIBAL_KANBAN_TASK`) and for profiles that explicitly enable the `kanban` toolset. Workers mark tasks done, block, heartbeat, comment, and create/link follow-up tasks; orchestrator profiles additionally get board-routing tools like list/unblock. |
 | `memory` | `memory` | Persistent cross-session memory management. |
 | `messaging` | `send_message` | Send messages to other platforms (Telegram, Discord, etc.) from within a session. |
 | `moa` | `mixture_of_agents` | Multi-model consensus via Mixture of Agents. |
@@ -82,39 +82,39 @@ Or in-session:
 | `vision` | `vision_analyze` | Image analysis via vision-capable models. |
 | `video` | `video_analyze` | Video analysis and understanding tools (opt-in, not in the default toolset — add explicitly via `--toolsets`). |
 | `web` | `web_extract`, `web_search` | Web search and page content extraction. |
-| `x_search` | `x_search` | Search X (Twitter) posts and threads via xAI's built-in `x_search` Responses tool. Off by default; opt in via `triibal tools`. Schema only registered when xAI credentials (SuperGrok OAuth or `XAI_API_KEY`) are configured. |
-| `yuanbao` | `yb_query_group_info`, `yb_query_group_members`, `yb_search_sticker`, `yb_send_dm`, `yb_send_sticker` | Yuanbao DM/group actions and sticker search. Registered only on `triibal-yuanbao`. |
+| `x_search` | `x_search` | Search X (Twitter) posts and threads via xAI's built-in `x_search` Responses tool. Off by default; opt in via `tribal tools`. Schema only registered when xAI credentials (SuperGrok OAuth or `XAI_API_KEY`) are configured. |
+| `yuanbao` | `yb_query_group_info`, `yb_query_group_members`, `yb_search_sticker`, `yb_send_dm`, `yb_send_sticker` | Yuanbao DM/group actions and sticker search. Registered only on `tribal-yuanbao`. |
 
 ## Platform Toolsets
 
-Platform toolsets define the complete tool configuration for a deployment target. Most messaging platforms use the same set as `triibal-cli`:
+Platform toolsets define the complete tool configuration for a deployment target. Most messaging platforms use the same set as `tribal-cli`:
 
-| Toolset | Differences from `triibal-cli` |
+| Toolset | Differences from `tribal-cli` |
 |---------|-------------------------------|
-| `triibal-cli` | Full toolset — the default for interactive CLI sessions. Includes file, terminal, web, browser, memory, skills, vision, image_gen, todo, tts, delegation, code_execution, cronjob, session_search, clarify, and `safe` (read-only) bundles plus the standard messaging tools. |
-| `triibal-acp` | Drops `clarify`, `cronjob`, `image_generate`, `send_message`, `text_to_speech`, and all four Home Assistant tools. Focused on coding tasks in IDE context. |
-| `triibal-api-server` | Drops `clarify`, `send_message`, and `text_to_speech`. Keeps everything else — suitable for programmatic access where user interaction isn't possible. |
-| `triibal-cron` | Same as `triibal-cli`. |
-| `triibal-telegram` | Same as `triibal-cli`. |
-| `triibal-discord` | Adds `discord` and `discord_admin` on top of `triibal-cli`. |
-| `triibal-slack` | Same as `triibal-cli`. |
-| `triibal-whatsapp` | Same as `triibal-cli`. |
-| `triibal-signal` | Same as `triibal-cli`. |
-| `triibal-matrix` | Same as `triibal-cli`. |
-| `triibal-mattermost` | Same as `triibal-cli`. |
-| `triibal-email` | Same as `triibal-cli`. |
-| `triibal-sms` | Same as `triibal-cli`. |
-| `triibal-bluebubbles` | Same as `triibal-cli`. |
-| `triibal-dingtalk` | Same as `triibal-cli`. |
-| `triibal-feishu` | Adds the five `feishu_doc_*` / `feishu_drive_*` tools (only used by the document-comment handler, not the regular chat adapter). |
-| `triibal-qqbot` | Same as `triibal-cli`. |
-| `triibal-wecom` | Same as `triibal-cli`. |
-| `triibal-wecom-callback` | Same as `triibal-cli`. |
-| `triibal-weixin` | Same as `triibal-cli`. |
-| `triibal-yuanbao` | Adds the five `yb_*` tools (DM/group/sticker) on top of `triibal-cli`. |
-| `triibal-homeassistant` | Same as `triibal-cli` (the Home Assistant tools are already present by default and activate when `HASS_TOKEN` is set). |
-| `triibal-webhook` | Same as `triibal-cli`. |
-| `triibal-gateway` | Internal gateway orchestrator toolset — union of every `triibal-<platform>` toolset; used when the gateway needs to accept any message source. |
+| `tribal-cli` | Full toolset — the default for interactive CLI sessions. Includes file, terminal, web, browser, memory, skills, vision, image_gen, todo, tts, delegation, code_execution, cronjob, session_search, clarify, and `safe` (read-only) bundles plus the standard messaging tools. |
+| `tribal-acp` | Drops `clarify`, `cronjob`, `image_generate`, `send_message`, `text_to_speech`, and all four Home Assistant tools. Focused on coding tasks in IDE context. |
+| `tribal-api-server` | Drops `clarify`, `send_message`, and `text_to_speech`. Keeps everything else — suitable for programmatic access where user interaction isn't possible. |
+| `tribal-cron` | Same as `tribal-cli`. |
+| `tribal-telegram` | Same as `tribal-cli`. |
+| `tribal-discord` | Adds `discord` and `discord_admin` on top of `tribal-cli`. |
+| `tribal-slack` | Same as `tribal-cli`. |
+| `tribal-whatsapp` | Same as `tribal-cli`. |
+| `tribal-signal` | Same as `tribal-cli`. |
+| `tribal-matrix` | Same as `tribal-cli`. |
+| `tribal-mattermost` | Same as `tribal-cli`. |
+| `tribal-email` | Same as `tribal-cli`. |
+| `tribal-sms` | Same as `tribal-cli`. |
+| `tribal-bluebubbles` | Same as `tribal-cli`. |
+| `tribal-dingtalk` | Same as `tribal-cli`. |
+| `tribal-feishu` | Adds the five `feishu_doc_*` / `feishu_drive_*` tools (only used by the document-comment handler, not the regular chat adapter). |
+| `tribal-qqbot` | Same as `tribal-cli`. |
+| `tribal-wecom` | Same as `tribal-cli`. |
+| `tribal-wecom-callback` | Same as `tribal-cli`. |
+| `tribal-weixin` | Same as `tribal-cli`. |
+| `tribal-yuanbao` | Adds the five `yb_*` tools (DM/group/sticker) on top of `tribal-cli`. |
+| `tribal-homeassistant` | Same as `tribal-cli` (the Home Assistant tools are already present by default and activate when `HASS_TOKEN` is set). |
+| `tribal-webhook` | Same as `tribal-cli`. |
+| `tribal-gateway` | Internal gateway orchestrator toolset — union of every `tribal-<platform>` toolset; used when the gateway needs to accept any message source. |
 
 ## Dynamic Toolsets
 
@@ -142,7 +142,7 @@ Define custom toolsets in `config.yaml` to create project-specific bundles:
 
 ```yaml
 toolsets:
-  - triibal-cli
+  - tribal-cli
 custom_toolsets:
   data-science:
     - file
@@ -156,8 +156,8 @@ custom_toolsets:
 
 - `all` or `*` — expands to every registered toolset (built-in + dynamic + plugin)
 
-## Relationship to `triibal tools`
+## Relationship to `tribal tools`
 
-The `triibal tools` command provides a curses-based UI for toggling individual tools on or off per platform. This operates at the tool level (finer than toolsets) and persists to `config.yaml`. Disabled tools are filtered out even if their toolset is enabled.
+The `tribal tools` command provides a curses-based UI for toggling individual tools on or off per platform. This operates at the tool level (finer than toolsets) and persists to `config.yaml`. Disabled tools are filtered out even if their toolset is enabled.
 
 See also: [Tools Reference](./tools-reference.md) for the complete list of individual tools and their parameters.

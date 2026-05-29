@@ -17,7 +17,7 @@ GitHub auth setup: HTTPS tokens, SSH keys, gh CLI login.
 | Source | Bundled (installed by default) |
 | Path | `skills/github/github-auth` |
 | Version | `1.1.0` |
-| Author | Triibal Agent |
+| Author | Tribal Agent |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `GitHub`, `Authentication`, `Git`, `gh-cli`, `SSH`, `Setup` |
@@ -26,7 +26,7 @@ GitHub auth setup: HTTPS tokens, SSH keys, gh CLI login.
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # GitHub Authentication Setup
@@ -70,7 +70,7 @@ This is the most portable method — works everywhere, no SSH config needed.
 Tell the user to go to: **https://github.com/settings/tokens**
 
 - Click "Generate new token (classic)"
-- Give it a name like "triibal-agent"
+- Give it a name like "tribal-agent"
 - Select scopes:
   - `repo` (full repository access — read, write, push, PRs)
   - `workflow` (trigger and manage GitHub Actions)
@@ -149,7 +149,7 @@ cat ~/.ssh/id_ed25519.pub
 Tell the user to add the public key at: **https://github.com/settings/keys**
 - Click "New SSH key"
 - Paste the public key content
-- Give it a title like "triibal-agent-&lt;machine-name>"
+- Give it a title like "tribal-agent-&lt;machine-name>"
 
 **Step 3: Test the connection**
 
@@ -238,8 +238,8 @@ if command -v gh &>/dev/null && gh auth status &>/dev/null; then
   echo "AUTH_METHOD=gh"
 elif [ -n "$GITHUB_TOKEN" ]; then
   echo "AUTH_METHOD=curl"
-elif [ -f ~/.triibal/.env ] && grep -q "^GITHUB_TOKEN=" ~/.triibal/.env; then
-  export GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.triibal/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
+elif [ -f ~/.tribal/.env ] && grep -q "^GITHUB_TOKEN=" ~/.tribal/.env; then
+  export GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.tribal/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
   echo "AUTH_METHOD=curl"
 elif grep -q "github.com" ~/.git-credentials 2>/dev/null; then
   export GITHUB_TOKEN=$(grep "github.com" ~/.git-credentials | head -1 | sed 's|https://[^:]*:\([^@]*\)@.*|\1|')

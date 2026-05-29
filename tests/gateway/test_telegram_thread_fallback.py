@@ -1,6 +1,6 @@
 """Tests for Telegram topic/thread routing fallbacks.
 
-Supergroup forum topics route with ``message_thread_id``. Triibal-created
+Supergroup forum topics route with ``message_thread_id``. Tribal-created
 private DM topic lanes are different: live Telegram testing showed they only
 stay in the expected lane when sends include both the private topic
 ``message_thread_id`` and a ``reply_to_message_id`` anchor to the triggering
@@ -302,7 +302,7 @@ async def test_send_typing_does_not_fall_back_to_root_for_dm_topic():
 
 @pytest.mark.asyncio
 async def test_send_typing_attempts_api_call_for_dm_topic_reply_fallback():
-    """Triibal-created DM topic lanes should still attempt scoped typing.
+    """Tribal-created DM topic lanes should still attempt scoped typing.
 
     Some private DM topic lanes route message sends through reply-anchor
     fallback, but live Telegram testing shows sendChatAction accepts the lane's
@@ -511,7 +511,7 @@ async def test_gateway_runner_busy_ack_replies_to_triggering_message_for_telegra
     """GatewayRunner's duplicate thread metadata must match the base helper."""
     from gateway import run as gateway_run
 
-    monkeypatch.setattr(gateway_run, "_triibal_home", tmp_path)
+    monkeypatch.setattr(gateway_run, "_tribal_home", tmp_path)
     GatewayRunner = gateway_run.GatewayRunner
 
     class BusyAdapter:
@@ -570,8 +570,8 @@ async def test_gateway_runner_busy_ack_replies_to_triggering_message_for_telegra
 
 
 @pytest.mark.asyncio
-async def test_send_uses_reply_fallback_for_triibal_dm_topics():
-    """Triibal-created Telegram DM topics route with thread id plus reply anchor."""
+async def test_send_uses_reply_fallback_for_tribal_dm_topics():
+    """Tribal-created Telegram DM topics route with thread id plus reply anchor."""
     adapter = _make_adapter()
     call_log = []
 
@@ -653,7 +653,7 @@ async def test_created_private_topic_thread_not_found_fails_without_root_fallbac
 
 @pytest.mark.asyncio
 async def test_send_uses_metadata_reply_fallback_for_streaming_dm_topics():
-    """Metadata-only sends still stay in Triibal-created Telegram DM topics."""
+    """Metadata-only sends still stay in Tribal-created Telegram DM topics."""
     adapter = _make_adapter()
     call_log = []
 

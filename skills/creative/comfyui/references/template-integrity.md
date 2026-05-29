@@ -1,7 +1,7 @@
 # ComfyUI Workflow-Template Integrity
 
 > **Authored by [@purzbeats](https://github.com/purzbeats)** — adapted from
-> [purzbeats/triibal-agent-comfyui-helper](https://github.com/purzbeats/triibal-agent-comfyui-helper).
+> [purzbeats/tribal-agent-comfyui-helper](https://github.com/purzbeats/tribal-agent-comfyui-helper).
 > Use this reference when converting workflows from the official
 > `comfyui-workflow-templates` package (editor format) into API format for
 > submission via `/api/prompt`. The conversion has subtle gotchas that cause

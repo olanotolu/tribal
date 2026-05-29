@@ -1,4 +1,4 @@
-import type { MouseTrackingMode, ScrollBoxHandle } from '@triibal/ink'
+import type { MouseTrackingMode, ScrollBoxHandle } from '@tribal/ink'
 import type { MutableRefObject, ReactNode, RefObject, SetStateAction } from 'react'
 
 import type { PasteEvent } from '../components/textInput.js'

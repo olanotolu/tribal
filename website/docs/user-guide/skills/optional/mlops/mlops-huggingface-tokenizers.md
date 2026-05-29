@@ -14,7 +14,7 @@ Fast tokenizers optimized for research and production. Rust-based implementation
 
 | | |
 |---|---|
-| Source | Optional — install with `triibal skills install official/mlops/huggingface-tokenizers` |
+| Source | Optional — install with `tribal skills install official/mlops/huggingface-tokenizers` |
 | Path | `optional-skills/mlops/huggingface-tokenizers` |
 | Version | `1.0.0` |
 | Author | Orchestra Research |
@@ -26,7 +26,7 @@ Fast tokenizers optimized for research and production. Rust-based implementation
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # HuggingFace Tokenizers - Fast Tokenization for NLP
@@ -521,10 +521,10 @@ Browse all: https://huggingface.co/models?library=tokenizers
 
 ## References
 
-- **[Training Guide](https://github.com/Triibal/triibal/blob/main/optional-skills/mlops/huggingface-tokenizers/references/training.md)** - Train custom tokenizers, configure trainers, handle large datasets
-- **[Algorithms Deep Dive](https://github.com/Triibal/triibal/blob/main/optional-skills/mlops/huggingface-tokenizers/references/algorithms.md)** - BPE, WordPiece, Unigram explained in detail
-- **[Pipeline Components](https://github.com/Triibal/triibal/blob/main/optional-skills/mlops/huggingface-tokenizers/references/pipeline.md)** - Normalizers, pre-tokenizers, post-processors, decoders
-- **[Transformers Integration](https://github.com/Triibal/triibal/blob/main/optional-skills/mlops/huggingface-tokenizers/references/integration.md)** - AutoTokenizer, PreTrainedTokenizerFast, special tokens
+- **[Training Guide](https://github.com/Tribal/tribal/blob/main/optional-skills/mlops/huggingface-tokenizers/references/training.md)** - Train custom tokenizers, configure trainers, handle large datasets
+- **[Algorithms Deep Dive](https://github.com/Tribal/tribal/blob/main/optional-skills/mlops/huggingface-tokenizers/references/algorithms.md)** - BPE, WordPiece, Unigram explained in detail
+- **[Pipeline Components](https://github.com/Tribal/tribal/blob/main/optional-skills/mlops/huggingface-tokenizers/references/pipeline.md)** - Normalizers, pre-tokenizers, post-processors, decoders
+- **[Transformers Integration](https://github.com/Tribal/tribal/blob/main/optional-skills/mlops/huggingface-tokenizers/references/integration.md)** - AutoTokenizer, PreTrainedTokenizerFast, special tokens
 
 ## Resources
 

@@ -11,13 +11,13 @@ Context database by Volcengine (ByteDance) with filesystem-style knowledge hiera
 ## Setup
 
 ```bash
-triibal memory setup    # select "openviking"
+tribal memory setup    # select "openviking"
 ```
 
 Or manually:
 ```bash
-triibal config set memory.provider openviking
-echo "OPENVIKING_ENDPOINT=http://localhost:1933" >> ~/.triibal/.env
+tribal config set memory.provider openviking
+echo "OPENVIKING_ENDPOINT=http://localhost:1933" >> ~/.tribal/.env
 ```
 
 ## Config

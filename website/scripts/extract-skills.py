@@ -7,7 +7,7 @@ Two data sources:
    (official optional). These give us full metadata — overview prose, version,
    license, env vars, commands — that the unified index doesn't carry.
 
-2. The unified Triibal Skills Index at ``website/static/api/skills-index.json``,
+2. The unified Tribal Skills Index at ``website/static/api/skills-index.json``,
    built twice daily by ``scripts/build_skills_index.py`` (workflow
    ``.github/workflows/skills-index.yml``). Covers skills.sh, ClawHub, browse.sh,
    LobeHub, Claude Marketplace, well-known endpoints, and the GitHub taps
@@ -162,34 +162,34 @@ def _docs_page_path(rel_dir: str, source_label: str) -> str:
 
 
 def _install_command(source: str, identifier: str, name: str) -> str:
-    """Build the ``triibal skills install …`` command for a unified-index entry.
+    """Build the ``tribal skills install …`` command for a unified-index entry.
 
     These show up in the SkillCard panel so users can copy-paste them. We try
     to use the most idiomatic identifier per source.
     """
     if not identifier:
-        return f"triibal skills install {name}"
+        return f"tribal skills install {name}"
     src = source.lower()
     if src in {"official", "built-in", "optional"}:
         # OptionalSkillSource emits identifiers like "official/security/1password"
-        return f"triibal skills install {identifier}"
+        return f"tribal skills install {identifier}"
     if src in {"skills.sh", "skills-sh"}:
         # Already wrapped as "skills-sh/owner/repo/skill" by the source
-        return f"triibal skills install {identifier}"
+        return f"tribal skills install {identifier}"
     if src == "clawhub":
-        return f"triibal skills install clawhub/{identifier}"
+        return f"tribal skills install clawhub/{identifier}"
     if src == "browse-sh":
         # Identifier already includes the "browse-sh/" prefix from BrowseShSource
-        return f"triibal skills install {identifier}"
+        return f"tribal skills install {identifier}"
     if src == "lobehub":
-        return f"triibal skills install {identifier}"
+        return f"tribal skills install {identifier}"
     if src == "claude-marketplace":
-        return f"triibal skills install {identifier}"
+        return f"tribal skills install {identifier}"
     if src == "github":
-        return f"triibal skills install {identifier}"
+        return f"tribal skills install {identifier}"
     if src == "well-known":
-        return f"triibal skills install {identifier}"
-    return f"triibal skills install {identifier}"
+        return f"tribal skills install {identifier}"
+    return f"tribal skills install {identifier}"
 
 
 def extract_local_skills():
@@ -232,9 +232,9 @@ def extract_local_skills():
             tags = []
             metadata = fm.get("metadata")
             if isinstance(metadata, dict):
-                triibal_meta = metadata.get("triibal", {})
-                if isinstance(triibal_meta, dict):
-                    tags = triibal_meta.get("tags", [])
+                tribal_meta = metadata.get("tribal", {})
+                if isinstance(tribal_meta, dict):
+                    tags = tribal_meta.get("tags", [])
             if not tags:
                 tags = fm.get("tags", [])
             if isinstance(tags, str):

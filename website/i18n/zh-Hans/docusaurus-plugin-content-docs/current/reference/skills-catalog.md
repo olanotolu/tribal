@@ -1,14 +1,14 @@
 ---
 sidebar_position: 5
 title: "内置技能目录"
-description: "随 Triibal Agent 附带的内置技能目录"
+description: "随 Tribal Agent 附带的内置技能目录"
 ---
 
 # 内置技能目录
 
-Triibal 附带一个大型内置技能库，安装时会复制到 `~/.triibal/skills/`。下方每个技能均链接至专属页面，包含完整定义、配置和用法说明。
+Tribal 附带一个大型内置技能库，安装时会复制到 `~/.tribal/skills/`。下方每个技能均链接至专属页面，包含完整定义、配置和用法说明。
 
-Triibal 在执行 `triibal update` 时也会同步内置技能，但同步清单会尊重本地删除和用户编辑。如果此处列出的某个技能在你的 `~/.triibal/skills/` 目录树中缺失，它仍随 Triibal 一同发布；可通过 `triibal skills reset <name> --restore` 恢复。
+Tribal 在执行 `tribal update` 时也会同步内置技能，但同步清单会尊重本地删除和用户编辑。如果此处列出的某个技能在你的 `~/.tribal/skills/` 目录树中缺失，它仍随 Tribal 一同发布；可通过 `tribal skills reset <name> --restore` 恢复。
 
 如果某个技能未出现在此列表中但存在于仓库中，目录由 `website/scripts/generate-skill-docs.py` 重新生成。
 
@@ -28,7 +28,7 @@ Triibal 在执行 `triibal update` 时也会同步内置技能，但同步清单
 |-------|-------------|------|
 | [`claude-code`](/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-claude-code) | 将编码任务委托给 Claude Code CLI（功能开发、PR）。 | `autonomous-ai-agents/claude-code` |
 | [`codex`](/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-codex) | 将编码任务委托给 OpenAI Codex CLI（功能开发、PR）。 | `autonomous-ai-agents/codex` |
-| [`triibal-agent`](/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-triibal-agent) | 配置、扩展或贡献 Triibal Agent。 | `autonomous-ai-agents/triibal-agent` |
+| [`tribal-agent`](/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-tribal-agent) | 配置、扩展或贡献 Tribal Agent。 | `autonomous-ai-agents/tribal-agent` |
 | [`opencode`](/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-opencode) | 将编码任务委托给 OpenCode CLI（功能开发、PR 审查）。 | `autonomous-ai-agents/opencode` |
 
 ## creative
@@ -67,7 +67,7 @@ Triibal 在执行 `triibal update` 时也会同步内置技能，但同步清单
 | 技能 | 描述 | 路径 |
 |-------|-------------|------|
 | [`kanban-orchestrator`](/user-guide/skills/bundled/devops/devops-kanban-orchestrator) | 面向编排器（orchestrator）配置文件的分解策略与反诱惑规则，用于通过 Kanban 路由工作。"不要自己做工作"规则和基本生命周期会自动注入每个 Kanban worker 的系统 prompt；如需更深入的细节，请加载此技能。 | `devops/kanban-orchestrator` |
-| [`kanban-worker`](/user-guide/skills/bundled/devops/devops-kanban-worker) | Triibal Kanban worker 的陷阱、示例和边界情况。生命周期本身会作为 `KANBAN_GUIDANCE` 自动注入每个 worker 的系统 prompt（来自 `agent/prompt_builder.py`）；当需要更深入细节时加载此技能。 | `devops/kanban-worker` |
+| [`kanban-worker`](/user-guide/skills/bundled/devops/devops-kanban-worker) | Tribal Kanban worker 的陷阱、示例和边界情况。生命周期本身会作为 `KANBAN_GUIDANCE` 自动注入每个 worker 的系统 prompt（来自 `agent/prompt_builder.py`）；当需要更深入细节时加载此技能。 | `devops/kanban-worker` |
 | [`webhook-subscriptions`](/user-guide/skills/bundled/devops/devops-webhook-subscriptions) | Webhook 订阅：事件驱动的 agent 运行。 | `devops/webhook-subscriptions` |
 
 ## dogfood
@@ -148,7 +148,7 @@ Triibal 在执行 `triibal update` 时也会同步内置技能，但同步清单
 | [`notion`](/user-guide/skills/bundled/productivity/productivity-notion) | Notion API + ntn CLI：页面、数据库、Markdown、Workers。 | `productivity/notion` |
 | [`ocr-and-documents`](/user-guide/skills/bundled/productivity/productivity-ocr-and-documents) | 从 PDF/扫描件中提取文本（pymupdf、marker-pdf）。 | `productivity/ocr-and-documents` |
 | [`powerpoint`](/user-guide/skills/bundled/productivity/productivity-powerpoint) | 创建、读取、编辑 .pptx 演示文稿、幻灯片、备注、模板。 | `productivity/powerpoint` |
-| [`teams-meeting-pipeline`](/user-guide/skills/bundled/productivity/productivity-teams-meeting-pipeline) | 通过 Triibal CLI 操作 Teams 会议摘要流水线——汇总会议、检查流水线状态、重放任务、管理 Microsoft Graph 订阅。 | `productivity/teams-meeting-pipeline` |
+| [`teams-meeting-pipeline`](/user-guide/skills/bundled/productivity/productivity-teams-meeting-pipeline) | 通过 Tribal CLI 操作 Teams 会议摘要流水线——汇总会议、检查流水线状态、重放任务、管理 Microsoft Graph 订阅。 | `productivity/teams-meeting-pipeline` |
 
 ## red-teaming
 
@@ -182,10 +182,10 @@ Triibal 在执行 `triibal update` 时也会同步内置技能，但同步清单
 
 | 技能 | 描述 | 路径 |
 |-------|-------------|------|
-| [`debugging-triibal-tui-commands`](/user-guide/skills/bundled/software-development/software-development-debugging-triibal-tui-commands) | 调试 Triibal TUI 斜杠命令：Python、gateway、Ink UI。 | `software-development/debugging-triibal-tui-commands` |
-| [`triibal-agent-skill-authoring`](/user-guide/skills/bundled/software-development/software-development-triibal-agent-skill-authoring) | 编写仓库内 SKILL.md：frontmatter、验证器、结构规范。 | `software-development/triibal-agent-skill-authoring` |
+| [`debugging-tribal-tui-commands`](/user-guide/skills/bundled/software-development/software-development-debugging-tribal-tui-commands) | 调试 Tribal TUI 斜杠命令：Python、gateway、Ink UI。 | `software-development/debugging-tribal-tui-commands` |
+| [`tribal-agent-skill-authoring`](/user-guide/skills/bundled/software-development/software-development-tribal-agent-skill-authoring) | 编写仓库内 SKILL.md：frontmatter、验证器、结构规范。 | `software-development/tribal-agent-skill-authoring` |
 | [`node-inspect-debugger`](/user-guide/skills/bundled/software-development/software-development-node-inspect-debugger) | 通过 --inspect + Chrome DevTools Protocol CLI 调试 Node.js。 | `software-development/node-inspect-debugger` |
-| [`plan`](/user-guide/skills/bundled/software-development/software-development-plan) | 计划模式：将 Markdown 计划写入 `.triibal/plans/`，不执行。 | `software-development/plan` |
+| [`plan`](/user-guide/skills/bundled/software-development/software-development-plan) | 计划模式：将 Markdown 计划写入 `.tribal/plans/`，不执行。 | `software-development/plan` |
 | [`python-debugpy`](/user-guide/skills/bundled/software-development/software-development-python-debugpy) | 调试 Python：pdb REPL + debugpy 远程调试（DAP）。 | `software-development/python-debugpy` |
 | [`requesting-code-review`](/user-guide/skills/bundled/software-development/software-development-requesting-code-review) | 提交前审查：安全扫描、质量门控、自动修复。 | `software-development/requesting-code-review` |
 | [`spike`](/user-guide/skills/bundled/software-development/software-development-spike) | 一次性实验，在正式构建前验证想法。 | `software-development/spike` |

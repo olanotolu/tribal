@@ -10,11 +10,11 @@ import pytest
 @pytest.fixture
 def rate_guard_env(tmp_path, monkeypatch):
     """Isolate rate guard state to a temp directory."""
-    triibal_home = str(tmp_path / ".triibal")
-    os.makedirs(triibal_home, exist_ok=True)
-    monkeypatch.setenv("TRIIBAL_HOME", triibal_home)
+    tribal_home = str(tmp_path / ".tribal")
+    os.makedirs(tribal_home, exist_ok=True)
+    monkeypatch.setenv("TRIBAL_HOME", tribal_home)
     # Clear any cached module-level imports
-    return triibal_home
+    return tribal_home
 
 
 class TestRecordNousRateLimit:
@@ -256,7 +256,7 @@ class TestAuxiliaryClientIntegration:
 class TestIsGenuineNousRateLimit:
     """Tell a real account-level 429 apart from an upstream-capacity 429.
 
-    Nous Portal multiplexes upstreams (DeepSeek, Kimi, MiMo, Triibal).
+    Nous Portal multiplexes upstreams (DeepSeek, Kimi, MiMo, Tribal).
     A 429 from an upstream out of capacity should NOT trip the
     cross-session breaker; a real user-quota 429 should.
     """

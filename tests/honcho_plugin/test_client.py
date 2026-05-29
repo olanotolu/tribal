@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from triibal_cli.profiles import _get_default_triibal_home
+from tribal_cli.profiles import _get_default_tribal_home
 
 import pytest
 
@@ -24,8 +24,8 @@ from plugins.memory.honcho.client import (
 class TestHonchoClientConfigDefaults:
     def test_default_values(self):
         config = HonchoClientConfig()
-        assert config.host == "triibal"
-        assert config.workspace_id == "triibal"
+        assert config.host == "tribal"
+        assert config.workspace_id == "tribal"
         assert config.api_key is None
         assert config.environment == "production"
         assert config.timeout is None
@@ -103,7 +103,7 @@ class TestFromGlobalConfig:
             "workspace": "my-workspace",
             "environment": "staging",
             "peerName": "alice",
-            "aiPeer": "triibal-custom",
+            "aiPeer": "tribal-custom",
             "enabled": True,
             "saveMessages": False,
             "contextTokens": 2000,
@@ -111,14 +111,14 @@ class TestFromGlobalConfig:
             "sessionPeerPrefix": True,
             "sessions": {"/home/user/proj": "my-session"},
             "hosts": {
-                "triibal": {
+                "tribal": {
                     "workspace": "override-ws",
                     "aiPeer": "override-ai",
                 }
             }
         }))
-        # Isolate from real ~/.triibal/honcho.json
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path / "isolated"))
+        # Isolate from real ~/.tribal/honcho.json
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path / "isolated"))
 
         config = HonchoClientConfig.from_global_config(config_path=config_file)
         assert config.api_key == "***"
@@ -139,7 +139,7 @@ class TestFromGlobalConfig:
             "workspace": "root-ws",
             "aiPeer": "root-ai",
             "hosts": {
-                "triibal": {
+                "tribal": {
                     "workspace": "host-ws",
                     "aiPeer": "host-ai",
                 }
@@ -196,7 +196,7 @@ class TestFromGlobalConfig:
         config_file.write_text(json.dumps({
             "apiKey": "key",
             "contextTokens": 1000,
-            "hosts": {"triibal": {"contextTokens": 2000}},
+            "hosts": {"tribal": {"contextTokens": 2000}},
         }))
         config = HonchoClientConfig.from_global_config(config_path=config_file)
         assert config.context_tokens == 2000
@@ -207,7 +207,7 @@ class TestFromGlobalConfig:
         config_file.write_text(json.dumps({
             "apiKey": "key",
             "recallMode": "tools",
-            "hosts": {"triibal": {"recallMode": "context"}},
+            "hosts": {"tribal": {"recallMode": "context"}},
         }))
         config = HonchoClientConfig.from_global_config(config_path=config_file)
         assert config.recall_mode == "context"
@@ -258,7 +258,7 @@ class TestFromGlobalConfig:
         config_file = tmp_path / "config.json"
         config_file.write_text(json.dumps({
             "baseUrl": "http://root:9000",
-            "hosts": {"triibal": {"baseUrl": "http://host-block:9001"}},
+            "hosts": {"tribal": {"baseUrl": "http://host-block:9001"}},
         }))
 
         config = HonchoClientConfig.from_global_config(config_path=config_file)
@@ -308,10 +308,10 @@ class TestResolveSessionName:
     def test_per_repo_uses_git_root(self):
         config = HonchoClientConfig(session_strategy="per-repo")
         with patch.object(
-            HonchoClientConfig, "_git_repo_name", return_value="triibal-agent"
+            HonchoClientConfig, "_git_repo_name", return_value="tribal-agent"
         ):
-            result = config.resolve_session_name("/home/user/triibal-agent/subdir")
-        assert result == "triibal-agent"
+            result = config.resolve_session_name("/home/user/tribal-agent/subdir")
+        assert result == "tribal-agent"
 
     def test_per_repo_with_peer_prefix(self):
         config = HonchoClientConfig(
@@ -341,63 +341,63 @@ class TestResolveSessionName:
 
 
 class TestResolveConfigPath:
-    def test_prefers_triibal_home_when_exists(self, tmp_path):
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
-        local_cfg = triibal_home / "honcho.json"
+    def test_prefers_tribal_home_when_exists(self, tmp_path):
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
+        local_cfg = tribal_home / "honcho.json"
         local_cfg.write_text('{"apiKey": "local"}')
 
-        with patch.dict(os.environ, {"TRIIBAL_HOME": str(triibal_home)}):
+        with patch.dict(os.environ, {"TRIBAL_HOME": str(tribal_home)}):
             result = resolve_config_path()
         assert result == local_cfg
 
     def test_falls_back_to_default_profile_when_no_local(self, tmp_path, monkeypatch):
-        # Profile mode: TRIIBAL_HOME points at ~/.triibal/profiles/<name>, so
-        # _get_default_triibal_home() must resolve back to ~/.triibal — that's
+        # Profile mode: TRIBAL_HOME points at ~/.tribal/profiles/<name>, so
+        # _get_default_tribal_home() must resolve back to ~/.tribal — that's
         # the bug the HOME-anchored helper fixes (vs. blindly using Path.home()).
         fake_home = tmp_path / "fakehome"
         fake_home.mkdir()
-        default_home = fake_home / ".triibal"
+        default_home = fake_home / ".tribal"
         profile_home = default_home / "profiles" / "work"
         profile_home.mkdir(parents=True)
         default_cfg = default_home / "honcho.json"
         default_cfg.write_text('{"apiKey": "default-key"}')
 
         monkeypatch.setattr(Path, "home", lambda: fake_home)
-        monkeypatch.setenv("TRIIBAL_HOME", str(profile_home))
+        monkeypatch.setenv("TRIBAL_HOME", str(profile_home))
 
         result = resolve_config_path()
 
-        assert _get_default_triibal_home() == default_home
+        assert _get_default_tribal_home() == default_home
         assert result == default_cfg
 
-    def test_falls_back_to_global_without_triibal_home_env(self, tmp_path):
+    def test_falls_back_to_global_without_tribal_home_env(self, tmp_path):
         fake_home = tmp_path / "fakehome"
         fake_home.mkdir()
 
         with patch.dict(os.environ, {}, clear=False), \
              patch.object(Path, "home", return_value=fake_home):
-            os.environ.pop("TRIIBAL_HOME", None)
+            os.environ.pop("TRIBAL_HOME", None)
             result = resolve_config_path()
         assert result == fake_home / ".honcho" / "config.json"
 
     def test_global_fallback_uses_home_at_call_time(self, tmp_path):
         fake_home = tmp_path / "fakehome"
         fake_home.mkdir()
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
 
-        with patch.dict(os.environ, {"TRIIBAL_HOME": str(triibal_home)}), \
+        with patch.dict(os.environ, {"TRIBAL_HOME": str(tribal_home)}), \
              patch.object(Path, "home", return_value=fake_home):
             assert resolve_global_config_path() == fake_home / ".honcho" / "config.json"
             assert resolve_config_path() == fake_home / ".honcho" / "config.json"
 
     def test_from_global_config_uses_default_profile_fallback(self, tmp_path, monkeypatch):
         # Profile mode: from_global_config() reads the default-profile honcho.json
-        # via the HOME-anchored helper, not Path.home() / ".triibal".
+        # via the HOME-anchored helper, not Path.home() / ".tribal".
         fake_home = tmp_path / "fakehome"
         fake_home.mkdir()
-        default_home = fake_home / ".triibal"
+        default_home = fake_home / ".tribal"
         profile_home = default_home / "profiles" / "work"
         profile_home.mkdir(parents=True)
         default_cfg = default_home / "honcho.json"
@@ -407,7 +407,7 @@ class TestResolveConfigPath:
         }))
 
         monkeypatch.setattr(Path, "home", lambda: fake_home)
-        monkeypatch.setenv("TRIIBAL_HOME", str(profile_home))
+        monkeypatch.setenv("TRIBAL_HOME", str(profile_home))
 
         config = HonchoClientConfig.from_global_config()
 
@@ -415,15 +415,15 @@ class TestResolveConfigPath:
         assert config.workspace_id == "default-ws"
 
     def test_from_global_config_uses_local_path(self, tmp_path):
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
-        local_cfg = triibal_home / "honcho.json"
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
+        local_cfg = tribal_home / "honcho.json"
         local_cfg.write_text(json.dumps({
             "apiKey": "***",
             "workspace": "local-ws",
         }))
 
-        with patch.dict(os.environ, {"TRIIBAL_HOME": str(triibal_home)}), \
+        with patch.dict(os.environ, {"TRIBAL_HOME": str(tribal_home)}), \
              patch.object(Path, "home", return_value=tmp_path):
             config = HonchoClientConfig.from_global_config()
         assert config.api_key == "***"
@@ -431,83 +431,83 @@ class TestResolveConfigPath:
 
 
 class TestResolveActiveHost:
-    def test_default_returns_triibal(self):
+    def test_default_returns_tribal(self):
         with patch.dict(os.environ, {}, clear=True):
-            os.environ.pop("TRIIBAL_HONCHO_HOST", None)
-            os.environ.pop("TRIIBAL_HOME", None)
-            assert resolve_active_host() == "triibal"
+            os.environ.pop("TRIBAL_HONCHO_HOST", None)
+            os.environ.pop("TRIBAL_HOME", None)
+            assert resolve_active_host() == "tribal"
 
     def test_explicit_env_var_wins(self):
-        with patch.dict(os.environ, {"TRIIBAL_HONCHO_HOST": "triibal.coder"}):
-            assert resolve_active_host() == "triibal.coder"
+        with patch.dict(os.environ, {"TRIBAL_HONCHO_HOST": "tribal.coder"}):
+            assert resolve_active_host() == "tribal.coder"
 
     def test_profile_name_derives_host(self):
         with patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("TRIIBAL_HONCHO_HOST", None)
-            with patch("triibal_cli.profiles.get_active_profile_name", return_value="coder"):
-                assert resolve_active_host() == "triibal.coder"
+            os.environ.pop("TRIBAL_HONCHO_HOST", None)
+            with patch("tribal_cli.profiles.get_active_profile_name", return_value="coder"):
+                assert resolve_active_host() == "tribal.coder"
 
-    def test_default_profile_returns_triibal(self):
+    def test_default_profile_returns_tribal(self):
         with patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("TRIIBAL_HONCHO_HOST", None)
-            with patch("triibal_cli.profiles.get_active_profile_name", return_value="default"):
-                assert resolve_active_host() == "triibal"
+            os.environ.pop("TRIBAL_HONCHO_HOST", None)
+            with patch("tribal_cli.profiles.get_active_profile_name", return_value="default"):
+                assert resolve_active_host() == "tribal"
 
-    def test_custom_profile_returns_triibal(self):
+    def test_custom_profile_returns_tribal(self):
         with patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("TRIIBAL_HONCHO_HOST", None)
-            with patch("triibal_cli.profiles.get_active_profile_name", return_value="custom"):
-                assert resolve_active_host() == "triibal"
+            os.environ.pop("TRIBAL_HONCHO_HOST", None)
+            with patch("tribal_cli.profiles.get_active_profile_name", return_value="custom"):
+                assert resolve_active_host() == "tribal"
 
     def test_profiles_import_failure_falls_back(self):
         import sys
         with patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("TRIIBAL_HONCHO_HOST", None)
-            # Temporarily remove triibal_cli.profiles to simulate import failure
-            saved = sys.modules.get("triibal_cli.profiles")
-            sys.modules["triibal_cli.profiles"] = None  # type: ignore
+            os.environ.pop("TRIBAL_HONCHO_HOST", None)
+            # Temporarily remove tribal_cli.profiles to simulate import failure
+            saved = sys.modules.get("tribal_cli.profiles")
+            sys.modules["tribal_cli.profiles"] = None  # type: ignore
             try:
-                assert resolve_active_host() == "triibal"
+                assert resolve_active_host() == "tribal"
             finally:
                 if saved is not None:
-                    sys.modules["triibal_cli.profiles"] = saved
+                    sys.modules["tribal_cli.profiles"] = saved
                 else:
-                    sys.modules.pop("triibal_cli.profiles", None)
+                    sys.modules.pop("tribal_cli.profiles", None)
 
 
 class TestProfileScopedConfig:
     def test_from_env_uses_profile_host(self):
         with patch.dict(os.environ, {"HONCHO_API_KEY": "key"}):
-            config = HonchoClientConfig.from_env(host="triibal.coder")
-        assert config.host == "triibal.coder"
-        assert config.workspace_id == "triibal"  # shared workspace
-        assert config.ai_peer == "triibal.coder"
+            config = HonchoClientConfig.from_env(host="tribal.coder")
+        assert config.host == "tribal.coder"
+        assert config.workspace_id == "tribal"  # shared workspace
+        assert config.ai_peer == "tribal.coder"
 
     def test_from_env_default_workspace_preserved_for_default_host(self):
         with patch.dict(os.environ, {"HONCHO_API_KEY": "key"}):
-            config = HonchoClientConfig.from_env(host="triibal")
-        assert config.host == "triibal"
-        assert config.workspace_id == "triibal"
+            config = HonchoClientConfig.from_env(host="tribal")
+        assert config.host == "tribal"
+        assert config.workspace_id == "tribal"
 
     def test_from_global_config_reads_profile_host_block(self, tmp_path):
         config_file = tmp_path / "config.json"
         config_file.write_text(json.dumps({
             "apiKey": "shared-key",
             "hosts": {
-                "triibal": {"aiPeer": "triibal", "peerName": "alice"},
-                "triibal.coder": {
-                    "aiPeer": "triibal.coder",
+                "tribal": {"aiPeer": "tribal", "peerName": "alice"},
+                "tribal.coder": {
+                    "aiPeer": "tribal.coder",
                     "peerName": "alice-coder",
                     "workspace": "coder-ws",
                 },
             },
         }))
         config = HonchoClientConfig.from_global_config(
-            host="triibal.coder", config_path=config_file,
+            host="tribal.coder", config_path=config_file,
         )
-        assert config.host == "triibal.coder"
+        assert config.host == "tribal.coder"
         assert config.workspace_id == "coder-ws"
-        assert config.ai_peer == "triibal.coder"
+        assert config.ai_peer == "tribal.coder"
         assert config.peer_name == "alice-coder"
 
     def test_from_global_config_auto_resolves_host(self, tmp_path):
@@ -515,12 +515,12 @@ class TestProfileScopedConfig:
         config_file.write_text(json.dumps({
             "apiKey": "key",
             "hosts": {
-                "triibal.dreamer": {"peerName": "dreamer-user"},
+                "tribal.dreamer": {"peerName": "dreamer-user"},
             },
         }))
-        with patch("plugins.memory.honcho.client.resolve_active_host", return_value="triibal.dreamer"):
+        with patch("plugins.memory.honcho.client.resolve_active_host", return_value="tribal.dreamer"):
             config = HonchoClientConfig.from_global_config(config_path=config_file)
-        assert config.host == "triibal.dreamer"
+        assert config.host == "tribal.dreamer"
         assert config.peer_name == "dreamer-user"
 
 
@@ -532,7 +532,7 @@ class TestObservationModeMigration:
         cfg_file = tmp_path / "config.json"
         cfg_file.write_text(json.dumps({
             "apiKey": "k",
-            "hosts": {"triibal": {"enabled": True, "aiPeer": "triibal"}},
+            "hosts": {"tribal": {"enabled": True, "aiPeer": "tribal"}},
         }))
         cfg = HonchoClientConfig.from_global_config(config_path=cfg_file)
         assert cfg.observation_mode == "unified"
@@ -549,7 +549,7 @@ class TestObservationModeMigration:
         cfg_file = tmp_path / "config.json"
         cfg_file.write_text(json.dumps({
             "apiKey": "k",
-            "hosts": {"triibal": {"enabled": True, "observationMode": "directional"}},
+            "hosts": {"tribal": {"enabled": True, "observationMode": "directional"}},
         }))
         cfg = HonchoClientConfig.from_global_config(config_path=cfg_file)
         assert cfg.observation_mode == "directional"
@@ -560,7 +560,7 @@ class TestObservationModeMigration:
         cfg_file.write_text(json.dumps({
             "apiKey": "k",
             "observationMode": "unified",
-            "hosts": {"triibal": {"enabled": True}},
+            "hosts": {"tribal": {"enabled": True}},
         }))
         cfg = HonchoClientConfig.from_global_config(config_path=cfg_file)
         assert cfg.observation_mode == "unified"
@@ -570,7 +570,7 @@ class TestObservationModeMigration:
         cfg_file = tmp_path / "config.json"
         cfg_file.write_text(json.dumps({
             "apiKey": "k",
-            "hosts": {"triibal": {
+            "hosts": {"tribal": {
                 "enabled": True,
                 "observation": {
                     "user": {"observeMe": True, "observeOthers": False},
@@ -600,7 +600,7 @@ class TestGetHonchoClient:
         cfg = HonchoClientConfig(
             api_key="test-key",
             timeout=91.0,
-            workspace_id="triibal",
+            workspace_id="tribal",
             environment="production",
         )
 
@@ -615,16 +615,16 @@ class TestGetHonchoClient:
         not importlib.util.find_spec("honcho"),
         reason="honcho SDK not installed"
     )
-    def test_triibal_config_timeout_override_used_when_config_timeout_missing(self):
+    def test_tribal_config_timeout_override_used_when_config_timeout_missing(self):
         fake_honcho = MagicMock(name="Honcho")
         cfg = HonchoClientConfig(
             api_key="test-key",
-            workspace_id="triibal",
+            workspace_id="tribal",
             environment="production",
         )
 
         with patch("honcho.Honcho", return_value=fake_honcho) as mock_honcho, \
-             patch("triibal_cli.config.load_config", return_value={"honcho": {"timeout": 88}}):
+             patch("tribal_cli.config.load_config", return_value={"honcho": {"timeout": 88}}):
             client = get_honcho_client(cfg)
 
         assert client is fake_honcho
@@ -641,12 +641,12 @@ class TestGetHonchoClient:
         fake_honcho = MagicMock(name="Honcho")
         cfg = HonchoClientConfig(
             api_key="test-key",
-            workspace_id="triibal",
+            workspace_id="tribal",
             environment="production",
         )
 
         with patch("honcho.Honcho", return_value=fake_honcho) as mock_honcho, \
-             patch("triibal_cli.config.load_config", return_value={}):
+             patch("tribal_cli.config.load_config", return_value={}):
             client = get_honcho_client(cfg)
 
         assert client is fake_honcho
@@ -657,16 +657,16 @@ class TestGetHonchoClient:
         not importlib.util.find_spec("honcho"),
         reason="honcho SDK not installed"
     )
-    def test_triibal_request_timeout_alias_used(self):
+    def test_tribal_request_timeout_alias_used(self):
         fake_honcho = MagicMock(name="Honcho")
         cfg = HonchoClientConfig(
             api_key="test-key",
-            workspace_id="triibal",
+            workspace_id="tribal",
             environment="production",
         )
 
         with patch("honcho.Honcho", return_value=fake_honcho) as mock_honcho, \
-             patch("triibal_cli.config.load_config", return_value={"honcho": {"request_timeout": "77.5"}}):
+             patch("tribal_cli.config.load_config", return_value={"honcho": {"request_timeout": "77.5"}}):
             client = get_honcho_client(cfg)
 
         assert client is fake_honcho
@@ -826,7 +826,7 @@ class TestDialecticDepthParsing:
         config_file.write_text(json.dumps({
             "apiKey": "***",
             "dialecticDepth": 1,
-            "hosts": {"triibal": {"dialecticDepth": 3}},
+            "hosts": {"tribal": {"dialecticDepth": 3}},
         }))
         config = HonchoClientConfig.from_global_config(config_path=config_file)
         assert config.dialectic_depth == 3

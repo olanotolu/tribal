@@ -1,4 +1,4 @@
-"""Tests for ACP Registry metadata shipped with Triibal."""
+"""Tests for ACP Registry metadata shipped with Tribal."""
 
 from __future__ import annotations
 
@@ -28,13 +28,13 @@ def test_agent_json_matches_official_registry_required_fields():
     data = _manifest()
 
     assert FORBIDDEN_MANIFEST_KEYS.isdisjoint(data)
-    assert data["id"] == "triibal-agent"
+    assert data["id"] == "tribal-agent"
     assert re.fullmatch(r"[a-z][a-z0-9-]*", data["id"])
-    assert data["name"] == "Triibal Agent"
+    assert data["name"] == "Tribal Agent"
     assert data["description"]
-    assert data["repository"] == "https://github.com/Triibal/triibal"
-    assert data["website"].startswith("https://triibal.dev/")
-    assert data["authors"] == ["Triibal"]
+    assert data["repository"] == "https://github.com/Tribal/tribal"
+    assert data["website"].startswith("https://tribal.dev/")
+    assert data["authors"] == ["Tribal"]
     assert data["license"] == "MIT"
     assert set(data["distribution"]) <= ALLOWED_DISTRIBUTIONS
 
@@ -47,8 +47,8 @@ def test_agent_json_uses_uvx_distribution_without_local_command_fields():
     # Schema allows {package, args, env}; we use {package, args}.
     assert set(uvx) <= {"package", "args", "env"}
     assert "package" in uvx
-    assert uvx["package"] == f"triibal-agent[acp]=={data['version']}"
-    assert uvx["args"] == ["triibal-acp"]
+    assert uvx["package"] == f"tribal-agent[acp]=={data['version']}"
+    assert uvx["args"] == ["tribal-acp"]
     # Old command-shape fields must not leak back in.
     assert "type" not in data["distribution"]
     assert "command" not in data["distribution"]
@@ -62,7 +62,7 @@ def test_agent_json_pins_uvx_package_to_pyproject_version():
     """The registry CI rejects ``@latest`` and floating pins; the manifest must
     always reference the exact PyPI version listed in pyproject.toml."""
     assert _manifest()["distribution"]["uvx"]["package"] == (
-        f"triibal-agent[acp]=={_pyproject_version()}"
+        f"tribal-agent[acp]=={_pyproject_version()}"
     )
 
 

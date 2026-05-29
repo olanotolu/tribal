@@ -4,12 +4,12 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from cli import TriibalCLI
-from triibal_cli.commands import resolve_command
+from cli import TribalCLI
+from tribal_cli.commands import resolve_command
 
 
 def _make_cli():
-    cli_obj = TriibalCLI.__new__(TriibalCLI)
+    cli_obj = TribalCLI.__new__(TribalCLI)
     cli_obj.config = {}
     cli_obj.console = MagicMock()
     cli_obj.agent = None
@@ -70,13 +70,13 @@ def test_show_session_status_prints_gateway_style_summary():
         "started_at": 1775791440,
     }
 
-    with patch("cli.display_triibal_home", return_value="~/.triibal"):
+    with patch("cli.display_tribal_home", return_value="~/.tribal"):
         cli_obj._show_session_status()
 
     printed = "\n".join(str(call.args[0]) for call in cli_obj.console.print.call_args_list)
-    assert "Triibal CLI Status" in printed
+    assert "Tribal CLI Status" in printed
     assert "Session ID: session-123" in printed
-    assert "Path: ~/.triibal" in printed
+    assert "Path: ~/.tribal" in printed
     assert "Title: My titled session" in printed
     assert "Model: openai/gpt-5.4 (openai)" in printed
     assert "Tokens: 321" in printed
@@ -87,11 +87,11 @@ def test_show_session_status_prints_gateway_style_summary():
 
 
 def test_profile_command_reports_custom_root_profile(monkeypatch, tmp_path, capsys):
-    """Profile detection works for custom-root deployments (not under ~/.triibal)."""
+    """Profile detection works for custom-root deployments (not under ~/.tribal)."""
     cli_obj = _make_cli()
     profile_home = tmp_path / "profiles" / "coder"
 
-    monkeypatch.setenv("TRIIBAL_HOME", str(profile_home))
+    monkeypatch.setenv("TRIBAL_HOME", str(profile_home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path / "unrelated-home")
 
     cli_obj._handle_profile_command()

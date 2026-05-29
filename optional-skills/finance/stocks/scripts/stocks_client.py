@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-stocks_client.py - Stock market data CLI tool for the Triibal Agent project.
+stocks_client.py - Stock market data CLI tool for the Tribal Agent project.
 Zero external dependencies - Python stdlib only.
 """
 
@@ -19,7 +19,7 @@ from http.cookiejar import CookieJar
 # Constants
 # ---------------------------------------------------------------------------
 
-USER_AGENT = "Mozilla/5.0 (compatible; TriibalAgent/1.0)"
+USER_AGENT = "Mozilla/5.0 (compatible; TribalAgent/1.0)"
 YF_BASE = "https://query1.finance.yahoo.com"
 YF_BASE2 = "https://query2.finance.yahoo.com"
 AV_BASE = "https://www.alphavantage.co/query"
@@ -673,7 +673,7 @@ def cmd_crypto(symbol: str, vs: str = "USD") -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="stocks_client",
-        description="Stock & crypto market data CLI — Triibal Agent",
+        description="Stock & crypto market data CLI — Tribal Agent",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

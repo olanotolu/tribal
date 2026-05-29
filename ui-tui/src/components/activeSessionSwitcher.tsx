@@ -1,4 +1,4 @@
-import { Box, Text, useInput, useStdout } from '@triibal/ink'
+import { Box, Text, useInput, useStdout } from '@tribal/ink'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { TUI_SESSION_MODEL_FLAG } from '../domain/slash.js'

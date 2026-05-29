@@ -86,7 +86,7 @@ def adapter():
 
 @pytest.fixture(autouse=True)
 def _redirect_cache(tmp_path, monkeypatch):
-    """Point document cache to tmp_path so tests don't touch ~/.triibal."""
+    """Point document cache to tmp_path so tests don't touch ~/.tribal."""
     monkeypatch.setattr(
         "gateway.platforms.base.DOCUMENT_CACHE_DIR", tmp_path / "doc_cache"
     )
@@ -192,7 +192,7 @@ class TestAppMentionHandler:
         assert "assistant_thread_started" in registered_events
         assert "assistant_thread_context_changed" in registered_events
         # Slack slash commands are registered via a single regex matcher
-        # covering every COMMAND_REGISTRY entry (e.g. /triibal, /btw, /stop,
+        # covering every COMMAND_REGISTRY entry (e.g. /tribal, /btw, /stop,
         # /model, ...) so users get native-slash parity with Discord and
         # Telegram. Verify the regex matches the key expected slashes.
         assert len(registered_commands) == 1, (
@@ -201,7 +201,7 @@ class TestAppMentionHandler:
         slash_matcher = registered_commands[0]
         import re as _re
         assert isinstance(slash_matcher, _re.Pattern)
-        for expected in ("/triibal", "/btw", "/stop", "/model", "/help"):
+        for expected in ("/tribal", "/btw", "/stop", "/model", "/help"):
             assert slash_matcher.match(expected), (
                 f"Slack slash regex does not match {expected}"
             )
@@ -761,11 +761,11 @@ class TestBangPrefixCommands:
 
     @pytest.mark.asyncio
     async def test_bang_with_bot_suffix_resolves(self, adapter):
-        """``!stop@triibal`` matches the get_command() ``@suffix`` stripping."""
-        await adapter._handle_slack_message(self._make_event("!stop@triibal"))
+        """``!stop@tribal`` matches the get_command() ``@suffix`` stripping."""
+        await adapter._handle_slack_message(self._make_event("!stop@tribal"))
 
         msg_event = adapter.handle_message.call_args[0][0]
-        assert msg_event.text.startswith("/stop@triibal")
+        assert msg_event.text.startswith("/stop@tribal")
         assert msg_event.message_type == MessageType.COMMAND
 
     @pytest.mark.asyncio
@@ -2329,13 +2329,13 @@ class TestSlashCommands:
 
     # ------------------------------------------------------------------
     # Native slash commands — /btw, /stop, /model, ... dispatched directly
-    # instead of as /triibal subcommands. This is the Discord/Telegram parity
+    # instead of as /tribal subcommands. This is the Discord/Telegram parity
     # fix: the slash name itself becomes the command.
     # ------------------------------------------------------------------
 
     @pytest.mark.asyncio
     async def test_native_btw_slash(self, adapter):
-        """/btw with args must dispatch to /background, not /triibal btw."""
+        """/btw with args must dispatch to /background, not /tribal btw."""
         command = {
             "command": "/btw",
             "text": "fix the failing test",
@@ -2374,15 +2374,15 @@ class TestSlashCommands:
         assert msg.text == "/model anthropic/claude-sonnet-4"
 
     @pytest.mark.asyncio
-    async def test_legacy_triibal_prefix_still_works(self, adapter):
-        """Backward compat: /triibal btw foo must still route to /btw foo.
+    async def test_legacy_tribal_prefix_still_works(self, adapter):
+        """Backward compat: /tribal btw foo must still route to /btw foo.
 
-        Old workspace manifests only declared /triibal as the single slash.
+        Old workspace manifests only declared /tribal as the single slash.
         After users refresh their manifest they get /btw natively, but the
         legacy form must keep working during the transition.
         """
         command = {
-            "command": "/triibal",
+            "command": "/tribal",
             "text": "btw run the tests",
             "user_id": "U1",
             "channel_id": "C1",
@@ -2392,10 +2392,10 @@ class TestSlashCommands:
         assert msg.text == "/btw run the tests"
 
     @pytest.mark.asyncio
-    async def test_legacy_triibal_freeform_question(self, adapter):
-        """/triibal <free-form text> must stay as the raw text (non-command)."""
+    async def test_legacy_tribal_freeform_question(self, adapter):
+        """/tribal <free-form text> must stay as the raw text (non-command)."""
         command = {
-            "command": "/triibal",
+            "command": "/tribal",
             "text": "what's the weather today?",
             "user_id": "U1",
             "channel_id": "C1",
@@ -3085,10 +3085,10 @@ class TestSlashEphemeralAck:
         assert ("C_Q", "U_Q") in adapter._slash_command_contexts
 
     @pytest.mark.asyncio
-    async def test_legacy_triibal_slash_stashes_context(self, adapter):
-        """Legacy /triibal <subcommand> also stashes context."""
+    async def test_legacy_tribal_slash_stashes_context(self, adapter):
+        """Legacy /tribal <subcommand> also stashes context."""
         command = {
-            "command": "/triibal",
+            "command": "/tribal",
             "text": "help",
             "user_id": "U_H",
             "channel_id": "C_H",
@@ -3100,10 +3100,10 @@ class TestSlashEphemeralAck:
         assert ("C_H", "U_H") in adapter._slash_command_contexts
 
     @pytest.mark.asyncio
-    async def test_freeform_triibal_question_does_not_stash_context(self, adapter):
-        """Free-form /triibal <question> must NOT route agent reply ephemeral."""
+    async def test_freeform_tribal_question_does_not_stash_context(self, adapter):
+        """Free-form /tribal <question> must NOT route agent reply ephemeral."""
         command = {
-            "command": "/triibal",
+            "command": "/tribal",
             "text": "what's the weather",
             "user_id": "U_FREE",
             "channel_id": "C_FREE",

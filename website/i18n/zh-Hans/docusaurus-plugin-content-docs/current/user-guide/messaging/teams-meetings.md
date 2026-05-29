@@ -6,7 +6,7 @@ description: "使用 Microsoft Graph webhook 配置 Microsoft Teams 会议摘要
 
 # Microsoft Teams 会议
 
-当你希望 Triibal 接收 Microsoft Graph 会议事件、优先获取转录文本、在无可用转录时回退到录音加 STT（语音转文字），并将结构化摘要输出到下游 sink 时，请使用 Teams 会议流水线。
+当你希望 Tribal 接收 Microsoft Graph 会议事件、优先获取转录文本、在无可用转录时回退到录音加 STT（语音转文字），并将结构化摘要输出到下游 sink 时，请使用 Teams 会议流水线。
 
 本页重点介绍配置与启用：
 - Graph 凭据
@@ -25,19 +25,19 @@ description: "使用 Microsoft Graph webhook 配置 Microsoft Teams 会议摘要
 4. 在本地存储持久化任务状态和 sink 记录
 5. 可将摘要写入 Notion、Linear 和 Microsoft Teams
 
-运维操作通过 CLI 完成（`teams-pipeline` 子命令由 `teams_pipeline` 插件注册——通过 `triibal plugins enable teams_pipeline` 启用，或在 `config.yaml` 中设置 `plugins.enabled: [teams_pipeline]`）：
+运维操作通过 CLI 完成（`teams-pipeline` 子命令由 `teams_pipeline` 插件注册——通过 `tribal plugins enable teams_pipeline` 启用，或在 `config.yaml` 中设置 `plugins.enabled: [teams_pipeline]`）：
 
 ```bash
-triibal teams-pipeline validate
-triibal teams-pipeline list
-triibal teams-pipeline maintain-subscriptions
+tribal teams-pipeline validate
+tribal teams-pipeline list
+tribal teams-pipeline maintain-subscriptions
 ```
 
 ## 前提条件
 
 启用会议流水线前，请确保已具备：
 
-- 可正常运行的 Triibal 安装
+- 可正常运行的 Tribal 安装
 - 若需要 Teams 出站投递，需完成现有的 [Microsoft Teams bot 配置](/user-guide/messaging/teams)
 - 具备订阅所需会议资源权限的 Microsoft Graph 应用凭据
 - Microsoft Graph 可调用的公网 HTTPS URL，用于 webhook 投递
@@ -45,7 +45,7 @@ triibal teams-pipeline maintain-subscriptions
 
 ## 第一步：添加 Microsoft Graph 凭据
 
-将 Graph 应用凭据添加到 `~/.triibal/.env`：
+将 Graph 应用凭据添加到 `~/.tribal/.env`：
 
 ```bash
 MSGRAPH_TENANT_ID=<tenant-id>
@@ -84,7 +84,7 @@ https://ops.example.com/msgraph/webhook
 
 会议流水线从现有的 `teams` 平台条目读取运行时配置。流水线专属参数位于 `teams.extra.meeting_pipeline` 下。Teams 出站投递仍使用常规 Teams 平台配置。
 
-`~/.triibal/config.yaml` 示例：
+`~/.tribal/config.yaml` 示例：
 
 ```yaml
 platforms:
@@ -141,7 +141,7 @@ platforms:
 
 ### `graph`
 
-当你希望 Triibal 通过 Microsoft Graph 将摘要发送到 Teams 聊天或频道时，使用此模式。
+当你希望 Tribal 通过 Microsoft Graph 将摘要发送到 Teams 聊天或频道时，使用此模式。
 
 支持的目标：
 - `chat_id`
@@ -162,13 +162,13 @@ platforms:
 
 ## 第四步：启动 Gateway
 
-更新配置后正常启动 Triibal：
+更新配置后正常启动 Tribal：
 
 ```bash
-triibal gateway run
+tribal gateway run
 ```
 
-若你在 Docker 中运行 Triibal，按现有部署方式启动 gateway 即可。
+若你在 Docker 中运行 Tribal，按现有部署方式启动 gateway 即可。
 
 检查监听器：
 
@@ -183,12 +183,12 @@ curl http://localhost:8646/health
 示例：
 
 ```bash
-triibal teams-pipeline subscribe \
+tribal teams-pipeline subscribe \
   --resource communications/onlineMeetings/getAllTranscripts \
   --notification-url https://ops.example.com/msgraph/webhook \
   --client-state "$MSGRAPH_WEBHOOK_CLIENT_STATE"
 
-triibal teams-pipeline subscribe \
+tribal teams-pipeline subscribe \
   --resource communications/onlineMeetings/getAllRecordings \
   --notification-url https://ops.example.com/msgraph/webhook \
   --client-state "$MSGRAPH_WEBHOOK_CLIENT_STATE"
@@ -196,7 +196,7 @@ triibal teams-pipeline subscribe \
 
 :::warning Graph 订阅在 72 小时后过期
 
-Microsoft Graph 将 webhook 订阅上限设为 72 小时，且不会自动续期。你**必须**在上线前调度 `triibal teams-pipeline maintain-subscriptions`，否则通知将在手动创建订阅三天后静默停止。请参阅运维手册中的[自动化订阅续期](/guides/operate-teams-meeting-pipeline#automating-subscription-renewal-required-for-production)——提供三种方案（Triibal cron、systemd timer、普通 crontab）。
+Microsoft Graph 将 webhook 订阅上限设为 72 小时，且不会自动续期。你**必须**在上线前调度 `tribal teams-pipeline maintain-subscriptions`，否则通知将在手动创建订阅三天后静默停止。请参阅运维手册中的[自动化订阅续期](/guides/operate-teams-meeting-pipeline#automating-subscription-renewal-required-for-production)——提供三种方案（Tribal cron、systemd timer、普通 crontab）。
 
 :::
 
@@ -207,14 +207,14 @@ Microsoft Graph 将 webhook 订阅上限设为 72 小时，且不会自动续期
 运行内置验证快照：
 
 ```bash
-triibal teams-pipeline validate
+tribal teams-pipeline validate
 ```
 
 常用辅助检查：
 
 ```bash
-triibal teams-pipeline token-health
-triibal teams-pipeline subscriptions
+tribal teams-pipeline token-health
+tribal teams-pipeline subscriptions
 ```
 
 ## 故障排查
@@ -222,7 +222,7 @@ triibal teams-pipeline subscriptions
 | 问题 | 检查项 |
 |---------|---------------|
 | Graph webhook 验证失败 | 确认公网 URL 正确且可访问，并确认 Graph 调用的路径为 `/msgraph/webhook` |
-| `triibal teams-pipeline list` 中未出现任务 | 确认 `msgraph_webhook` 已启用，且订阅指向正确的通知 URL |
+| `tribal teams-pipeline list` 中未出现任务 | 确认 `msgraph_webhook` 已启用，且订阅指向正确的通知 URL |
 | 转录优先从未成功 | 检查转录资源的 Graph 权限，以及该会议是否存在转录文件 |
 | 录音回退失败 | 确认已安装 `ffmpeg`，且 Graph 应用可访问录音文件 |
 | Teams 摘要投递失败 | 重新检查 `delivery_mode`、目标 ID 及 Teams 认证配置 |

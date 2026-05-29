@@ -1,8 +1,8 @@
 """
-Session-scoped context variables for the Triibal gateway.
+Session-scoped context variables for the Tribal gateway.
 
 Replaces the previous ``os.environ``-based session state
-(``TRIIBAL_SESSION_PLATFORM``, ``TRIIBAL_SESSION_CHAT_ID``, etc.) with
+(``TRIBAL_SESSION_PLATFORM``, ``TRIBAL_SESSION_CHAT_ID``, etc.) with
 Python's ``contextvars.ContextVar``.
 
 **Why this matters**
@@ -10,7 +10,7 @@ Python's ``contextvars.ContextVar``.
 The gateway processes messages concurrently via ``asyncio``.  When two
 messages arrive at the same time the old code did:
 
-    os.environ["TRIIBAL_SESSION_THREAD_ID"] = str(context.source.thread_id)
+    os.environ["TRIBAL_SESSION_THREAD_ID"] = str(context.source.thread_id)
 
 Because ``os.environ`` is *process-global*, Message A's value was
 silently overwritten by Message B before Message A's agent finished
@@ -24,16 +24,16 @@ so concurrent messages never interfere.
 **Backward compatibility**
 
 The public helper ``get_session_env(name, default="")`` mirrors the old
-``os.getenv("TRIIBAL_SESSION_*", ...)`` calls.  Existing tool code only
+``os.getenv("TRIBAL_SESSION_*", ...)`` calls.  Existing tool code only
 needs to replace the import + call site:
 
     # before
     import os
-    platform = os.getenv("TRIIBAL_SESSION_PLATFORM", "")
+    platform = os.getenv("TRIBAL_SESSION_PLATFORM", "")
 
     # after
     from gateway.session_context import get_session_env
-    platform = get_session_env("TRIIBAL_SESSION_PLATFORM", "")
+    platform = get_session_env("TRIBAL_SESSION_PLATFORM", "")
 """
 
 from contextvars import ContextVar
@@ -48,53 +48,53 @@ _UNSET: Any = object()
 # Per-task session variables
 # ---------------------------------------------------------------------------
 
-_SESSION_PLATFORM: ContextVar = ContextVar("TRIIBAL_SESSION_PLATFORM", default=_UNSET)
-_SESSION_CHAT_ID: ContextVar = ContextVar("TRIIBAL_SESSION_CHAT_ID", default=_UNSET)
-_SESSION_CHAT_NAME: ContextVar = ContextVar("TRIIBAL_SESSION_CHAT_NAME", default=_UNSET)
-_SESSION_THREAD_ID: ContextVar = ContextVar("TRIIBAL_SESSION_THREAD_ID", default=_UNSET)
-_SESSION_USER_ID: ContextVar = ContextVar("TRIIBAL_SESSION_USER_ID", default=_UNSET)
-_SESSION_USER_NAME: ContextVar = ContextVar("TRIIBAL_SESSION_USER_NAME", default=_UNSET)
-_SESSION_KEY: ContextVar = ContextVar("TRIIBAL_SESSION_KEY", default=_UNSET)
-_SESSION_ID: ContextVar = ContextVar("TRIIBAL_SESSION_ID", default=_UNSET)
+_SESSION_PLATFORM: ContextVar = ContextVar("TRIBAL_SESSION_PLATFORM", default=_UNSET)
+_SESSION_CHAT_ID: ContextVar = ContextVar("TRIBAL_SESSION_CHAT_ID", default=_UNSET)
+_SESSION_CHAT_NAME: ContextVar = ContextVar("TRIBAL_SESSION_CHAT_NAME", default=_UNSET)
+_SESSION_THREAD_ID: ContextVar = ContextVar("TRIBAL_SESSION_THREAD_ID", default=_UNSET)
+_SESSION_USER_ID: ContextVar = ContextVar("TRIBAL_SESSION_USER_ID", default=_UNSET)
+_SESSION_USER_NAME: ContextVar = ContextVar("TRIBAL_SESSION_USER_NAME", default=_UNSET)
+_SESSION_KEY: ContextVar = ContextVar("TRIBAL_SESSION_KEY", default=_UNSET)
+_SESSION_ID: ContextVar = ContextVar("TRIBAL_SESSION_ID", default=_UNSET)
 # ID of the message that triggered the current turn. Used as a reply anchor
 # so background-process notifications stay inside the originating Telegram
 # private-chat topic (those lanes route only with thread id + reply anchor).
-_SESSION_MESSAGE_ID: ContextVar = ContextVar("TRIIBAL_SESSION_MESSAGE_ID", default=_UNSET)
+_SESSION_MESSAGE_ID: ContextVar = ContextVar("TRIBAL_SESSION_MESSAGE_ID", default=_UNSET)
 
 # Cron auto-delivery vars — set per-job in run_job() so concurrent jobs
 # don't clobber each other's delivery targets.
-_CRON_AUTO_DELIVER_PLATFORM: ContextVar = ContextVar("TRIIBAL_CRON_AUTO_DELIVER_PLATFORM", default=_UNSET)
-_CRON_AUTO_DELIVER_CHAT_ID: ContextVar = ContextVar("TRIIBAL_CRON_AUTO_DELIVER_CHAT_ID", default=_UNSET)
-_CRON_AUTO_DELIVER_THREAD_ID: ContextVar = ContextVar("TRIIBAL_CRON_AUTO_DELIVER_THREAD_ID", default=_UNSET)
+_CRON_AUTO_DELIVER_PLATFORM: ContextVar = ContextVar("TRIBAL_CRON_AUTO_DELIVER_PLATFORM", default=_UNSET)
+_CRON_AUTO_DELIVER_CHAT_ID: ContextVar = ContextVar("TRIBAL_CRON_AUTO_DELIVER_CHAT_ID", default=_UNSET)
+_CRON_AUTO_DELIVER_THREAD_ID: ContextVar = ContextVar("TRIBAL_CRON_AUTO_DELIVER_THREAD_ID", default=_UNSET)
 
 _VAR_MAP = {
-    "TRIIBAL_SESSION_PLATFORM": _SESSION_PLATFORM,
-    "TRIIBAL_SESSION_CHAT_ID": _SESSION_CHAT_ID,
-    "TRIIBAL_SESSION_CHAT_NAME": _SESSION_CHAT_NAME,
-    "TRIIBAL_SESSION_THREAD_ID": _SESSION_THREAD_ID,
-    "TRIIBAL_SESSION_USER_ID": _SESSION_USER_ID,
-    "TRIIBAL_SESSION_USER_NAME": _SESSION_USER_NAME,
-    "TRIIBAL_SESSION_KEY": _SESSION_KEY,
-    "TRIIBAL_SESSION_ID": _SESSION_ID,
-    "TRIIBAL_SESSION_MESSAGE_ID": _SESSION_MESSAGE_ID,
-    "TRIIBAL_CRON_AUTO_DELIVER_PLATFORM": _CRON_AUTO_DELIVER_PLATFORM,
-    "TRIIBAL_CRON_AUTO_DELIVER_CHAT_ID": _CRON_AUTO_DELIVER_CHAT_ID,
-    "TRIIBAL_CRON_AUTO_DELIVER_THREAD_ID": _CRON_AUTO_DELIVER_THREAD_ID,
+    "TRIBAL_SESSION_PLATFORM": _SESSION_PLATFORM,
+    "TRIBAL_SESSION_CHAT_ID": _SESSION_CHAT_ID,
+    "TRIBAL_SESSION_CHAT_NAME": _SESSION_CHAT_NAME,
+    "TRIBAL_SESSION_THREAD_ID": _SESSION_THREAD_ID,
+    "TRIBAL_SESSION_USER_ID": _SESSION_USER_ID,
+    "TRIBAL_SESSION_USER_NAME": _SESSION_USER_NAME,
+    "TRIBAL_SESSION_KEY": _SESSION_KEY,
+    "TRIBAL_SESSION_ID": _SESSION_ID,
+    "TRIBAL_SESSION_MESSAGE_ID": _SESSION_MESSAGE_ID,
+    "TRIBAL_CRON_AUTO_DELIVER_PLATFORM": _CRON_AUTO_DELIVER_PLATFORM,
+    "TRIBAL_CRON_AUTO_DELIVER_CHAT_ID": _CRON_AUTO_DELIVER_CHAT_ID,
+    "TRIBAL_CRON_AUTO_DELIVER_THREAD_ID": _CRON_AUTO_DELIVER_THREAD_ID,
 }
 
 
 def set_current_session_id(session_id: str) -> None:
-    """Synchronize ``TRIIBAL_SESSION_ID`` across ContextVar and ``os.environ``.
+    """Synchronize ``TRIBAL_SESSION_ID`` across ContextVar and ``os.environ``.
 
     Long-lived single-process entrypoints like the CLI can rotate sessions via
     ``/new``, ``/resume``, ``/branch``, or compression splits without
     reconstructing the entire agent. Tools still consult
-    ``get_session_env("TRIIBAL_SESSION_ID")`` with an ``os.environ`` fallback,
+    ``get_session_env("TRIBAL_SESSION_ID")`` with an ``os.environ`` fallback,
     so both storage paths must move together when the active session changes.
     """
     import os
 
-    os.environ["TRIIBAL_SESSION_ID"] = session_id
+    os.environ["TRIBAL_SESSION_ID"] = session_id
     _SESSION_ID.set(session_id)
 
 
@@ -154,9 +154,9 @@ def clear_session_vars(tokens: list) -> None:
 
 
 def get_session_env(name: str, default: str = "") -> str:
-    """Read a session context variable by its legacy ``TRIIBAL_SESSION_*`` name.
+    """Read a session context variable by its legacy ``TRIBAL_SESSION_*`` name.
 
-    Drop-in replacement for ``os.getenv("TRIIBAL_SESSION_*", default)``.
+    Drop-in replacement for ``os.getenv("TRIBAL_SESSION_*", default)``.
 
     Resolution order:
     1. Context variable (set by the gateway for concurrency-safe access).

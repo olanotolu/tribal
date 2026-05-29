@@ -28,20 +28,20 @@ def repo_tmp_dir():
 
 
 @pytest.fixture
-def triibal_home(monkeypatch, repo_tmp_dir):
-    """Isolate TRIIBAL_HOME and clear module-level caches afterward so the
+def tribal_home(monkeypatch, repo_tmp_dir):
+    """Isolate TRIBAL_HOME and clear module-level caches afterward so the
     real shell-out side effects from _handle_patch don't leak into
     subsequent tests (see test_line_ending_preservation.py for details)."""
     shell_home = repo_tmp_dir / "home"
     shell_home.mkdir()
-    home = repo_tmp_dir / "triibal"
+    home = repo_tmp_dir / "tribal"
     home.mkdir()
     (home / "config.yaml").write_text(
         "terminal:\n  auto_source_bashrc: false\n",
         encoding="utf-8",
     )
     monkeypatch.setenv("HOME", str(shell_home))
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
     yield home
     try:
         from tools.file_tools import clear_file_ops_cache, _read_tracker_lock, _read_tracker
@@ -73,7 +73,7 @@ def fresh_tracker():
 
 class TestPatchFailureEscalation:
     def test_first_two_failures_use_normal_hint(
-        self, triibal_home, repo_tmp_dir, fresh_tracker
+        self, tribal_home, repo_tmp_dir, fresh_tracker
     ):
         from tools.file_tools import _handle_patch
 
@@ -97,7 +97,7 @@ class TestPatchFailureEscalation:
             )
 
     def test_third_consecutive_failure_escalates(
-        self, triibal_home, repo_tmp_dir, fresh_tracker
+        self, tribal_home, repo_tmp_dir, fresh_tracker
     ):
         from tools.file_tools import _handle_patch
 
@@ -125,7 +125,7 @@ class TestPatchFailureEscalation:
         )
 
     def test_success_clears_failure_counter(
-        self, triibal_home, repo_tmp_dir, fresh_tracker
+        self, tribal_home, repo_tmp_dir, fresh_tracker
     ):
         from tools.file_tools import _handle_patch
 
@@ -174,7 +174,7 @@ class TestPatchFailureEscalation:
         )
 
     def test_different_paths_have_independent_counters(
-        self, triibal_home, repo_tmp_dir, fresh_tracker
+        self, tribal_home, repo_tmp_dir, fresh_tracker
     ):
         from tools.file_tools import _handle_patch
 
@@ -212,7 +212,7 @@ class TestPatchFailureEscalation:
         )
 
     def test_different_tasks_have_independent_counters(
-        self, triibal_home, repo_tmp_dir, fresh_tracker
+        self, tribal_home, repo_tmp_dir, fresh_tracker
     ):
         from tools.file_tools import _handle_patch
 

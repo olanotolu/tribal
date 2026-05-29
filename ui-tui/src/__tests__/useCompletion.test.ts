@@ -13,10 +13,10 @@ describe('completionRequestForInput', () => {
 
   it('does not route absolute paths through slash completion', () => {
     expect(
-      completionRequestForInput('/home/d/Desktop/agenda/CrimsonRed/.triibal/plans/2026-05-04-HANDOFF-NEXT.md')
+      completionRequestForInput('/home/d/Desktop/agenda/CrimsonRed/.tribal/plans/2026-05-04-HANDOFF-NEXT.md')
     ).toMatchObject({
       method: 'complete.path',
-      params: { word: '/home/d/Desktop/agenda/CrimsonRed/.triibal/plans/2026-05-04-HANDOFF-NEXT.md' },
+      params: { word: '/home/d/Desktop/agenda/CrimsonRed/.tribal/plans/2026-05-04-HANDOFF-NEXT.md' },
       replaceFrom: 0
     })
   })

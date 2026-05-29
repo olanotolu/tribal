@@ -1,4 +1,4 @@
-import { Box, Text } from '@triibal/ink'
+import { Box, Text } from '@tribal/ink'
 import { useState } from 'react'
 
 import type { Theme } from '../theme.js'

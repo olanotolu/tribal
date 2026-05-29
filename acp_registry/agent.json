@@ -1,16 +1,16 @@
 {
-  "id": "triibal-agent",
-  "name": "Triibal Agent",
+  "id": "tribal-agent",
+  "name": "Tribal Agent",
   "version": "0.15.0",
   "description": "Open-source runtime for autonomous agent collectives with ACP editor integration, persistent memory, skills, and rich tool support.",
-  "repository": "https://github.com/Triibal/triibal",
-  "website": "https://triibal.dev/docs/user-guide/features/acp",
-  "authors": ["Triibal"],
+  "repository": "https://github.com/Tribal/tribal",
+  "website": "https://tribal.dev/docs/user-guide/features/acp",
+  "authors": ["Tribal"],
   "license": "MIT",
   "distribution": {
     "uvx": {
-      "package": "triibal-agent[acp]==0.15.0",
-      "args": ["triibal-acp"]
+      "package": "tribal-agent[acp]==0.15.0",
+      "args": ["tribal-acp"]
     }
   }
 }

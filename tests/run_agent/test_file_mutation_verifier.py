@@ -308,23 +308,23 @@ class TestFormatFooter:
 
 class TestVerifierEnabled:
     def test_default_is_enabled(self, monkeypatch):
-        monkeypatch.delenv("TRIIBAL_FILE_MUTATION_VERIFIER", raising=False)
+        monkeypatch.delenv("TRIBAL_FILE_MUTATION_VERIFIER", raising=False)
         agent = _bare_agent()
         # With no env and no config present, safe default is True.
         # load_config may surface a user config.yaml in some envs — stub it.
-        import triibal_cli.config as _cfg_mod
+        import tribal_cli.config as _cfg_mod
         monkeypatch.setattr(_cfg_mod, "load_config", lambda: {})
         assert agent._file_mutation_verifier_enabled() is True
 
     @pytest.mark.parametrize("value", ["0", "false", "FALSE", "no", "off"])
     def test_env_disables(self, monkeypatch, value):
-        monkeypatch.setenv("TRIIBAL_FILE_MUTATION_VERIFIER", value)
+        monkeypatch.setenv("TRIBAL_FILE_MUTATION_VERIFIER", value)
         agent = _bare_agent()
         assert agent._file_mutation_verifier_enabled() is False
 
     def test_env_enables_over_config(self, monkeypatch):
-        monkeypatch.setenv("TRIIBAL_FILE_MUTATION_VERIFIER", "1")
-        import triibal_cli.config as _cfg_mod
+        monkeypatch.setenv("TRIBAL_FILE_MUTATION_VERIFIER", "1")
+        import tribal_cli.config as _cfg_mod
         monkeypatch.setattr(
             _cfg_mod, "load_config",
             lambda: {"display": {"file_mutation_verifier": False}},
@@ -333,8 +333,8 @@ class TestVerifierEnabled:
         assert agent._file_mutation_verifier_enabled() is True
 
     def test_config_disables_when_no_env(self, monkeypatch):
-        monkeypatch.delenv("TRIIBAL_FILE_MUTATION_VERIFIER", raising=False)
-        import triibal_cli.config as _cfg_mod
+        monkeypatch.delenv("TRIBAL_FILE_MUTATION_VERIFIER", raising=False)
+        import tribal_cli.config as _cfg_mod
         monkeypatch.setattr(
             _cfg_mod, "load_config",
             lambda: {"display": {"file_mutation_verifier": False}},

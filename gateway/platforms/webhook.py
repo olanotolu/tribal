@@ -294,9 +294,9 @@ class WebhookAdapter(BasePlatformAdapter):
 
     def _reload_dynamic_routes(self) -> None:
         """Reload agent-created subscriptions from disk if the file changed."""
-        from triibal_constants import get_triibal_home
-        triibal_home = get_triibal_home()
-        subs_path = triibal_home / _DYNAMIC_ROUTES_FILENAME
+        from tribal_constants import get_tribal_home
+        tribal_home = get_tribal_home()
+        subs_path = tribal_home / _DYNAMIC_ROUTES_FILENAME
         if not subs_path.exists():
             if self._dynamic_routes:
                 self._dynamic_routes = {}

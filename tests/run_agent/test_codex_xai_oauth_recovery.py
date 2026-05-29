@@ -22,7 +22,7 @@ Three distinct failure modes the user community hit during rollout:
    ``encrypted_content``) was briefly suppressed for ``is_xai_responses``
    in PR #26644 on the theory that xAI's OAuth/SuperGrok surface
    rejected replayed encrypted reasoning items.  That suppression was
-   reverted shortly after: xAI confirmed they explicitly want Triibal to
+   reverted shortly after: xAI confirmed they explicitly want Tribal to
    thread encrypted reasoning back across turns, and the original
    multi-turn failure mode was actually the prelude-SSE issue closed by
    Fix A above.  The remaining tests here lock in that xAI receives
@@ -177,7 +177,7 @@ def test_codex_stream_truncated_no_terminal_event_raises():
 # The original PR #26644 appended a hint that led with "X Premium+ does NOT
 # include xAI API access — only standalone SuperGrok subscribers can use this
 # provider."  xAI announced on 2026-05-16 that X Premium subs now work in
-# Triibal (https://x.ai/news/grok-triibal), making that hint actively wrong:
+# Tribal (https://x.ai/news/grok-tribal), making that hint actively wrong:
 # a Premium+ user hitting a real entitlement issue (no Grok sub, wrong tier,
 # exhausted quota) would be misdirected to switch subscriptions when their
 # Premium sub is in fact valid.  We now surface xAI's own body text verbatim
@@ -187,7 +187,7 @@ def test_codex_stream_truncated_no_terminal_event_raises():
 
 
 def test_summarize_api_error_surfaces_xai_entitlement_body_verbatim():
-    """xAI's OAuth 403 body must surface as-is, with no Triibal-side hint."""
+    """xAI's OAuth 403 body must surface as-is, with no Tribal-side hint."""
     from run_agent import AIAgent
 
     error = RuntimeError(
@@ -199,7 +199,7 @@ def test_summarize_api_error_surfaces_xai_entitlement_body_verbatim():
     summary = AIAgent._summarize_api_error(error)
     # xAI's own body text must reach the user — they need it to diagnose.
     assert "do not have an active Grok subscription" in summary
-    # No stale claim that X Premium is incompatible with Triibal.
+    # No stale claim that X Premium is incompatible with Tribal.
     assert "X Premium+ does NOT include" not in summary
     assert "standalone SuperGrok subscribers" not in summary
 
@@ -335,7 +335,7 @@ def test_codex_reasoning_replay_includes_encrypted_content_for_xai():
 
     Earlier we stripped these on the theory that the OAuth/SuperGrok
     surface rejected them.  xAI subsequently confirmed they explicitly
-    want Triibal to thread encrypted reasoning back across turns for
+    want Tribal to thread encrypted reasoning back across turns for
     cross-turn coherence — that's the whole point of the partnership
     integration.
     """
@@ -879,7 +879,7 @@ def test_recover_with_credential_pool_still_blocks_real_entitlement():
 def test_grok_4_3_context_length_is_1m():
     """grok-4.3 ships with 1M context per docs.x.ai/developers/models/grok-4.3.
 
-    Triibal' substring-match fallback used to return 256k (from the
+    Tribal' substring-match fallback used to return 256k (from the
     "grok-4" catch-all) which under-reported the model's real capacity.
     """
     from agent.model_metadata import DEFAULT_CONTEXT_LENGTHS
@@ -1060,7 +1060,7 @@ def test_transport_round_trip_drops_foreign_reasoning():
 
     transport = ResponsesApiTransport()
     messages = [
-        {"role": "system", "content": "you are triibal"},
+        {"role": "system", "content": "you are tribal"},
         {"role": "user", "content": "hi"},
         _stamped_assistant_msg("xai_responses", encrypted="grok_blob"),
         {"role": "user", "content": "엑스다임 프로젝트 파악, 스킬로 정리."},
@@ -1074,7 +1074,7 @@ def test_transport_round_trip_drops_foreign_reasoning():
         is_xai_responses=False,
         is_github_responses=False,
         base_url="https://chatgpt.com/backend-api/codex",
-        instructions="you are triibal",
+        instructions="you are tribal",
     )
 
     reasoning = [it for it in kwargs["input"] if it.get("type") == "reasoning"]

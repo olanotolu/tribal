@@ -1,13 +1,13 @@
 ---
 sidebar_position: 12
 title: "Pipe Script Output to Messaging Platforms"
-description: "Send text from any shell script, cron job, CI hook, or monitoring daemon to Telegram, Discord, Slack, Signal, and other platforms using `triibal send`."
+description: "Send text from any shell script, cron job, CI hook, or monitoring daemon to Telegram, Discord, Slack, Signal, and other platforms using `tribal send`."
 ---
 
 # Pipe Script Output to Messaging Platforms
 
-`triibal send` is a small, scriptable CLI that pushes a message to any
-messaging platform Triibal is already configured for. Think of it as a
+`tribal send` is a small, scriptable CLI that pushes a message to any
+messaging platform Tribal is already configured for. Think of it as a
 cross-platform `curl` for notifications — you don't need a running
 gateway, you don't need an LLM, and you don't need to re-paste bot tokens
 into each of your scripts.
@@ -18,9 +18,9 @@ Use it for:
 - CI/CD notifications (deploy done, test failure)
 - Cron scripts that need to ping you with results
 - Quick one-shot messages from a terminal
-- Piping any tool's output anywhere (`make | triibal send --to slack:#builds`)
+- Piping any tool's output anywhere (`make | tribal send --to slack:#builds`)
 
-The command reuses the same credentials and platform adapters that `triibal
+The command reuses the same credentials and platform adapters that `tribal
 gateway` already uses, so there's no second configuration surface to
 maintain.
 
@@ -30,25 +30,25 @@ maintain.
 
 ```bash
 # Plain text to the home channel for a platform
-triibal send --to telegram "deploy finished"
+tribal send --to telegram "deploy finished"
 
 # Pipe in stdout from anything
-echo "RAM 92%" | triibal send --to telegram:-1001234567890
+echo "RAM 92%" | tribal send --to telegram:-1001234567890
 
 # Send a file
-triibal send --to discord:#ops --file /tmp/report.md
+tribal send --to discord:#ops --file /tmp/report.md
 
 # Attach a subject/header line
-triibal send --to slack:#eng --subject "[CI] build.log" --file build.log
+tribal send --to slack:#eng --subject "[CI] build.log" --file build.log
 
 # Thread target (Telegram topic, Discord thread)
-triibal send --to telegram:-1001234567890:17585 "threaded reply"
+tribal send --to telegram:-1001234567890:17585 "threaded reply"
 
 # List every configured target
-triibal send --list
+tribal send --list
 
 # Filter by platform
-triibal send --list telegram
+tribal send --list telegram
 ```
 
 ---
@@ -76,7 +76,7 @@ triibal send --list telegram
 | `platform:#channel` | `discord:#ops` | Human-friendly channel name (resolved against the channel directory) |
 | `platform:+E164` | `signal:+15551234567` | Phone-addressed platforms: Signal, SMS, WhatsApp |
 
-Any platform Triibal ships adapters for works as a target:
+Any platform Tribal ships adapters for works as a target:
 `telegram`, `discord`, `slack`, `signal`, `sms`, `whatsapp`, `matrix`,
 `mattermost`, `feishu`, `dingtalk`, `wecom`, `weixin`, `email`, and
 others.
@@ -96,13 +96,13 @@ branch on them the same way they would on `curl` or `grep`.
 
 ## Message Body Resolution
 
-`triibal send` resolves the message body in this order:
+`tribal send` resolves the message body in this order:
 
-1. **Positional argument** — `triibal send --to telegram "hi"`
-2. **`--file PATH`** — `triibal send --to telegram --file msg.txt`
-3. **Piped stdin** — `echo hi | triibal send --to telegram`
+1. **Positional argument** — `tribal send --to telegram "hi"`
+2. **`--file PATH`** — `tribal send --to telegram --file msg.txt`
+3. **Piped stdin** — `echo hi | tribal send --to telegram`
 
-When stdin is a TTY (no pipe), Triibal does **not** wait for input — you'll
+When stdin is a TTY (no pipe), Tribal does **not** wait for input — you'll
 get a clear usage error instead. This keeps scripts from hanging if they
 accidentally omit the body.
 
@@ -119,19 +119,19 @@ with a single portable line:
 #!/usr/bin/env bash
 ram_pct=$(free | awk '/^Mem:/ {printf "%d", $3 * 100 / $2}')
 if [ "$ram_pct" -ge 85 ]; then
-  triibal send --to telegram --subject "⚠ MEMORY WARNING" \
+  tribal send --to telegram --subject "⚠ MEMORY WARNING" \
     "RAM ${ram_pct}% on $(hostname)"
 fi
 ```
 
-Because `triibal send` reuses your Triibal config, the same script works on
-any host where Triibal is installed — no need to export bot tokens into
+Because `tribal send` reuses your Tribal config, the same script works on
+any host where Tribal is installed — no need to export bot tokens into
 each machine's environment manually.
 
 :::tip Don't alert the gateway about itself
 For watchdogs that might fire when the gateway itself is struggling (OOM
 alerts, disk-full alerts), keep using a minimal `curl` call instead of
-`triibal send`. If the Python interpreter can't load because the box is
+`tribal send`. If the Python interpreter can't load because the box is
 thrashing, you still want that alert to go out.
 :::
 
@@ -140,9 +140,9 @@ thrashing, you still want that alert to go out.
 ```bash
 # In .github/workflows/deploy.yml or any CI script
 if ./scripts/deploy.sh; then
-  triibal send --to slack:#deploys "✅ ${CI_COMMIT_SHA:0:7} deployed"
+  tribal send --to slack:#deploys "✅ ${CI_COMMIT_SHA:0:7} deployed"
 else
-  tail -n 100 deploy.log | triibal send \
+  tail -n 100 deploy.log | tribal send \
     --to slack:#deploys --subject "❌ deploy failed"
   exit 1
 fi
@@ -153,7 +153,7 @@ fi
 ```bash
 # Crontab entry
 0 9 * * * /usr/local/bin/generate-metrics.sh \
-  | /home/me/.triibal/bin/triibal send \
+  | /home/me/.tribal/bin/tribal send \
       --to telegram --subject "Daily metrics $(date +%Y-%m-%d)"
 ```
 
@@ -161,38 +161,38 @@ fi
 
 ```bash
 ./train.py --epochs 200 && \
-  triibal send --to telegram "training done" || \
-  triibal send --to telegram "training failed (exit $?)"
+  tribal send --to telegram "training done" || \
+  tribal send --to telegram "training failed (exit $?)"
 ```
 
 ### Scripting with `--json` and `--quiet`
 
 ```bash
 # Hard-fail a script if delivery fails; don't clutter logs on success
-triibal send --to telegram --quiet "keepalive" || {
+tribal send --to telegram --quiet "keepalive" || {
   echo "Telegram delivery failed" >&2
   exit 1
 }
 
 # Capture the message ID for later editing / threading
-msg_id=$(triibal send --to discord:#ops --json "build started" \
+msg_id=$(tribal send --to discord:#ops --json "build started" \
   | jq -r .message_id)
 ```
 
 ---
 
-## Does `triibal send` Need the Gateway Running?
+## Does `tribal send` Need the Gateway Running?
 
 **Usually no.** For any bot-token platform — Telegram, Discord, Slack,
-Signal, SMS, WhatsApp Cloud API, and most others — `triibal send` calls
+Signal, SMS, WhatsApp Cloud API, and most others — `tribal send` calls
 the platform's REST endpoint directly using credentials from
-`~/.triibal/.env` and `~/.triibal/config.yaml`. It's a standalone subprocess
+`~/.tribal/.env` and `~/.tribal/config.yaml`. It's a standalone subprocess
 that exits as soon as the message is delivered.
 
 A live gateway is only required for **plugin platforms** that rely on a
 persistent adapter connection (for example, a custom plugin that keeps
 a long-lived WebSocket open). In that case you'll get a clear error
-pointing at the gateway; start it with `triibal gateway start` and retry.
+pointing at the gateway; start it with `tribal gateway start` and retry.
 
 ---
 
@@ -202,18 +202,18 @@ Before sending to a specific channel, you can inspect what's available:
 
 ```bash
 # Every target across every configured platform
-triibal send --list
+tribal send --list
 
 # Just Telegram targets
-triibal send --list telegram
+tribal send --list telegram
 
 # Machine-readable
-triibal send --list --json
+tribal send --list --json
 ```
 
-The listing is built from `~/.triibal/channel_directory.json`, which the
+The listing is built from `~/.tribal/channel_directory.json`, which the
 gateway refreshes every few minutes while it's running. If you see
-"no channels discovered yet", start the gateway once (`triibal gateway
+"no channels discovered yet", start the gateway once (`tribal gateway
 start`) so it can populate the cache.
 
 Human-friendly names (`discord:#ops`, `slack:#engineering`) are resolved
@@ -224,18 +224,18 @@ IDs.
 
 ## Comparison with Other Approaches
 
-| Approach | Multi-platform | Reuses Triibal creds | Needs gateway | Best for |
+| Approach | Multi-platform | Reuses Tribal creds | Needs gateway | Best for |
 |----------|----------------|---------------------|---------------|----------|
-| `triibal send` | ✅ | ✅ | No (bot-token) | Everything below |
+| `tribal send` | ✅ | ✅ | No (bot-token) | Everything below |
 | Raw `curl` to each platform | Each scripted separately | Manual | No | Critical watchdogs |
 | `cron` job with `--deliver` | ✅ | ✅ | No | Scheduled agent tasks |
 | `send_message` agent tool | ✅ | ✅ | No | Inside an agent loop |
 
-`triibal send` is intentionally the simplest possible surface. If you need
+`tribal send` is intentionally the simplest possible surface. If you need
 an agent to decide what to say, use the `send_message` tool from within a
 chat or cron job. If you need a scheduled run with LLM-generated content,
 use `cronjob(action='create', prompt=...)` with `deliver='telegram:...'`.
-If you just need to pipe a raw string, reach for `triibal send`.
+If you just need to pipe a raw string, reach for `tribal send`.
 
 ---
 
@@ -244,6 +244,6 @@ If you just need to pipe a raw string, reach for `triibal send`.
 - [Automate Anything with Cron](/guides/automate-with-cron) —
   scheduled jobs whose output auto-delivers to any platform.
 - [Gateway Internals](/developer-guide/gateway-internals) —
-  the delivery router that `triibal send` shares with cron delivery.
+  the delivery router that `tribal send` shares with cron delivery.
 - [Messaging Platform Setup](/user-guide/messaging/) —
   one-time configuration for each platform.

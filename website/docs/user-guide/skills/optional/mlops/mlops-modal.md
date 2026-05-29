@@ -14,7 +14,7 @@ Serverless GPU cloud platform for running ML workloads. Use when you need on-dem
 
 | | |
 |---|---|
-| Source | Optional — install with `triibal skills install official/mlops/modal` |
+| Source | Optional — install with `tribal skills install official/mlops/modal` |
 | Path | `optional-skills/mlops/modal` |
 | Version | `1.0.0` |
 | Author | Orchestra Research |
@@ -26,7 +26,7 @@ Serverless GPU cloud platform for running ML workloads. Use when you need on-dem
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # Modal Serverless GPU
@@ -351,8 +351,8 @@ if __name__ == "__main__":
 
 ## References
 
-- **[Advanced Usage](https://github.com/Triibal/triibal/blob/main/optional-skills/mlops/modal/references/advanced-usage.md)** - Multi-GPU, distributed training, cost optimization
-- **[Troubleshooting](https://github.com/Triibal/triibal/blob/main/optional-skills/mlops/modal/references/troubleshooting.md)** - Common issues and solutions
+- **[Advanced Usage](https://github.com/Tribal/tribal/blob/main/optional-skills/mlops/modal/references/advanced-usage.md)** - Multi-GPU, distributed training, cost optimization
+- **[Troubleshooting](https://github.com/Tribal/tribal/blob/main/optional-skills/mlops/modal/references/troubleshooting.md)** - Common issues and solutions
 
 ## Resources
 

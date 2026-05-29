@@ -1,4 +1,4 @@
-import { Box, Text, useInput, useStdout } from '@triibal/ink'
+import { Box, Text, useInput, useStdout } from '@tribal/ink'
 import { useEffect, useState } from 'react'
 
 import type { GatewayClient } from '../gatewayClient.js'

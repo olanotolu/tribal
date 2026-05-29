@@ -22,16 +22,16 @@ import pytest
 
 @pytest.fixture
 def curator_env(tmp_path, monkeypatch):
-    home = tmp_path / ".triibal"
+    home = tmp_path / ".tribal"
     home.mkdir()
     (home / "skills").mkdir()
     (home / "logs").mkdir()
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     import importlib
-    import triibal_constants
-    importlib.reload(triibal_constants)
+    import tribal_constants
+    importlib.reload(tribal_constants)
     from agent import curator
     importlib.reload(curator)
     yield curator
@@ -759,16 +759,16 @@ def test_reconcile_absorbed_into_beats_everything_else(curator_env):
         removed=["pr-review-format"],
         heuristic={"consolidated": [], "pruned": [{"name": "pr-review-format"}]},
         model_block={"consolidations": [], "prunings": []},  # model forgot YAML block
-        destinations={"triibal-agent-dev"},
+        destinations={"tribal-agent-dev"},
         absorbed_declarations={
-            "pr-review-format": {"into": "triibal-agent-dev", "declared": True},
+            "pr-review-format": {"into": "tribal-agent-dev", "declared": True},
         },
     )
     assert len(out["consolidated"]) == 1
     assert out["pruned"] == []
     e = out["consolidated"][0]
     assert e["name"] == "pr-review-format"
-    assert e["into"] == "triibal-agent-dev"
+    assert e["into"] == "tribal-agent-dev"
     assert "absorbed_into" in e["source"]
 
 
@@ -891,7 +891,7 @@ def test_reconcile_mixed_declarations_and_legacy_calls(curator_env):
 # ---------------------------------------------------------------------------
 # _build_rename_summary — surfaces the "where did my skills go?" map to the
 # user-visible curator summary (gateway 💾 line, CLI Rich panel,
-# `triibal curator status`). The full data has always been in REPORT.md on
+# `tribal curator status`). The full data has always been in REPORT.md on
 # disk; this helper makes it visible without digging.
 # ---------------------------------------------------------------------------
 
@@ -938,7 +938,7 @@ def test_rename_summary_consolidation_shows_target(curator_env):
     assert "archived 2 skill(s):" in result
     assert "pdf-extraction → document-tools" in result
     assert "docx-extraction → document-tools" in result
-    assert "full report: triibal curator status" in result
+    assert "full report: tribal curator status" in result
 
 
 def test_rename_summary_pruned_marked_explicitly(curator_env):
@@ -1023,7 +1023,7 @@ def test_rename_summary_mixed_consolidation_and_pruning(curator_env):
 
 
 # ---------------------------------------------------------------------------
-# Pin hint — surfaces `triibal curator pin <umbrella>` in the rename block so
+# Pin hint — surfaces `tribal curator pin <umbrella>` in the rename block so
 # users learn the command exists at the moment they care (a consolidation
 # just landed against their library). The hint is gated on having at least
 # one umbrella destination — pruned-only runs skip it.
@@ -1055,7 +1055,7 @@ def test_rename_summary_pin_hint_appears_when_consolidation_produced_umbrella(cu
         ],
         model_final="",
     )
-    assert "triibal curator pin document-tools" in result
+    assert "tribal curator pin document-tools" in result
     assert "keep an umbrella stable" in result
 
 
@@ -1086,7 +1086,7 @@ def test_rename_summary_pin_hint_skipped_for_pruned_only_runs(curator_env):
     )
     # Block still renders (skills were archived) but no pin hint.
     assert "archived 2 skill(s):" in result
-    assert "triibal curator pin" not in result
+    assert "tribal curator pin" not in result
     assert "keep an umbrella stable" not in result
 
 
@@ -1119,7 +1119,7 @@ def test_rename_summary_pin_hint_picks_one_umbrella_when_multiple_absorbed(curat
         model_final="",
     )
     # Sorted picks alphabetically first.
-    assert "triibal curator pin umbrella-alpha" in result
+    assert "tribal curator pin umbrella-alpha" in result
     # Exactly one hint line, not one per umbrella.
-    pin_lines = [ln for ln in result.splitlines() if "triibal curator pin" in ln]
+    pin_lines = [ln for ln in result.splitlines() if "tribal curator pin" in ln]
     assert len(pin_lines) == 1

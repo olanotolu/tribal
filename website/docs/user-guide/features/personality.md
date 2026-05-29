@@ -1,40 +1,40 @@
 ---
 sidebar_position: 9
 title: "Personality & SOUL.md"
-description: "Customize Triibal Agent's personality with a global SOUL.md, built-in personalities, and custom persona definitions"
+description: "Customize Tribal Agent's personality with a global SOUL.md, built-in personalities, and custom persona definitions"
 ---
 
 # Personality & SOUL.md
 
-Triibal Agent's personality is fully customizable. `SOUL.md` is the **primary identity** — it's the first thing in the system prompt and defines who the agent is.
+Tribal Agent's personality is fully customizable. `SOUL.md` is the **primary identity** — it's the first thing in the system prompt and defines who the agent is.
 
-- `SOUL.md` — a durable persona file that lives in `TRIIBAL_HOME` and serves as the agent's identity (slot #1 in the system prompt)
+- `SOUL.md` — a durable persona file that lives in `TRIBAL_HOME` and serves as the agent's identity (slot #1 in the system prompt)
 - built-in or custom `/personality` presets — session-level system-prompt overlays
 
-If you want to change who Triibal is — or replace it with an entirely different agent persona — edit `SOUL.md`.
+If you want to change who Tribal is — or replace it with an entirely different agent persona — edit `SOUL.md`.
 
 ## How SOUL.md works now
 
-Triibal now seeds a default `SOUL.md` automatically in:
+Tribal now seeds a default `SOUL.md` automatically in:
 
 ```text
-~/.triibal/SOUL.md
+~/.tribal/SOUL.md
 ```
 
-More precisely, it uses the current instance's `TRIIBAL_HOME`, so if you run Triibal with a custom home directory, it will use:
+More precisely, it uses the current instance's `TRIBAL_HOME`, so if you run Tribal with a custom home directory, it will use:
 
 ```text
-$TRIIBAL_HOME/SOUL.md
+$TRIBAL_HOME/SOUL.md
 ```
 
 ### Important behavior
 
 - **SOUL.md is the agent's primary identity.** It occupies slot #1 in the system prompt, replacing the hardcoded default identity.
-- Triibal creates a starter `SOUL.md` automatically if one does not exist yet
+- Tribal creates a starter `SOUL.md` automatically if one does not exist yet
 - Existing user `SOUL.md` files are never overwritten
-- Triibal loads `SOUL.md` only from `TRIIBAL_HOME`
-- Triibal does not look in the current working directory for `SOUL.md`
-- If `SOUL.md` exists but is empty, or cannot be loaded, Triibal falls back to a built-in default identity
+- Tribal loads `SOUL.md` only from `TRIBAL_HOME`
+- Tribal does not look in the current working directory for `SOUL.md`
+- If `SOUL.md` exists but is empty, or cannot be loaded, Tribal falls back to a built-in default identity
 - If `SOUL.md` has content, that content is injected verbatim after security scanning and truncation
 - SOUL.md is **not** duplicated in the context files section — it appears only once, as the identity
 
@@ -44,23 +44,23 @@ That makes `SOUL.md` a true per-user or per-instance identity, not just an addit
 
 This keeps personality predictable.
 
-If Triibal loaded `SOUL.md` from whatever directory you happened to launch it in, your personality could change unexpectedly between projects. By loading only from `TRIIBAL_HOME`, the personality belongs to the Triibal instance itself.
+If Tribal loaded `SOUL.md` from whatever directory you happened to launch it in, your personality could change unexpectedly between projects. By loading only from `TRIBAL_HOME`, the personality belongs to the Tribal instance itself.
 
 That also makes it easier to teach users:
-- "Edit `~/.triibal/SOUL.md` to change Triibal' default personality."
+- "Edit `~/.tribal/SOUL.md` to change Tribal' default personality."
 
 ## Where to edit it
 
 For most users:
 
 ```bash
-~/.triibal/SOUL.md
+~/.tribal/SOUL.md
 ```
 
 If you use a custom home:
 
 ```bash
-$TRIIBAL_HOME/SOUL.md
+$TRIBAL_HOME/SOUL.md
 ```
 
 ## What should go in SOUL.md?
@@ -71,7 +71,7 @@ Use it for durable voice and personality guidance, such as:
 - level of directness
 - default interaction style
 - what to avoid stylistically
-- how Triibal should handle uncertainty, disagreement, or ambiguity
+- how Tribal should handle uncertainty, disagreement, or ambiguity
 
 Use it less for:
 - one-off project instructions
@@ -116,7 +116,7 @@ You optimize for truth, clarity, and usefulness over politeness theater.
 - Treat edge cases as part of the design, not cleanup
 ```
 
-## What Triibal injects into the prompt
+## What Tribal injects into the prompt
 
 `SOUL.md` content goes directly into slot #1 of the system prompt — the agent identity position. No wrapper language is added around it.
 
@@ -124,7 +124,7 @@ The content goes through:
 - prompt-injection scanning
 - truncation if it is too large
 
-If the file is empty, whitespace-only, or cannot be read, Triibal falls back to a built-in default identity ("You are Triibal Agent, an intelligent AI assistant created by Triibal..."). This fallback also applies when `skip_context_files` is set (e.g., in subagent/delegation contexts).
+If the file is empty, whitespace-only, or cannot be read, Tribal falls back to a built-in default identity ("You are Tribal Agent, an intelligent AI assistant created by Tribal..."). This fallback also applies when `skip_context_files` is set (e.g., in subagent/delegation contexts).
 
 ## Security scanning
 
@@ -172,7 +172,7 @@ Examples:
 
 ## Built-in personalities
 
-Triibal ships with built-in personalities you can switch to with `/personality`.
+Tribal ships with built-in personalities you can switch to with `/personality`.
 
 | Name | Description |
 |------|-------------|
@@ -183,7 +183,7 @@ Triibal ships with built-in personalities you can switch to with `/personality`.
 | **teacher** | Patient educator with clear examples |
 | **kawaii** | Cute expressions, sparkles, and enthusiasm ★ |
 | **catgirl** | Neko-chan with cat-like expressions, nya~ |
-| **pirate** | Captain Triibal, tech-savvy buccaneer |
+| **pirate** | Captain Tribal, tech-savvy buccaneer |
 | **shakespeare** | Bardic prose with dramatic flair |
 | **surfer** | Totally chill bro vibes |
 | **noir** | Hard-boiled detective narration |
@@ -207,11 +207,11 @@ Triibal ships with built-in personalities you can switch to with `/personality`.
 /personality teacher
 ```
 
-These are convenient overlays, but your global `SOUL.md` still gives Triibal its persistent default personality unless the overlay meaningfully changes it.
+These are convenient overlays, but your global `SOUL.md` still gives Tribal its persistent default personality unless the overlay meaningfully changes it.
 
 ## Custom personalities in config
 
-You can also define named custom personalities in `~/.triibal/config.yaml` under `agent.personalities`.
+You can also define named custom personalities in `~/.tribal/config.yaml` under `agent.personalities`.
 
 ```yaml
 agent:
@@ -231,7 +231,7 @@ Then switch to it with:
 
 A strong default setup is:
 
-1. Keep a thoughtful global `SOUL.md` in `~/.triibal/SOUL.md`
+1. Keep a thoughtful global `SOUL.md` in `~/.tribal/SOUL.md`
 2. Put project instructions in `AGENTS.md`
 3. Use `/personality` only when you want a temporary mode shift
 
@@ -259,13 +259,13 @@ At a high level, the prompt stack includes:
 - [Context Files](/user-guide/features/context-files)
 - [Configuration](/user-guide/configuration)
 - [Tips & Best Practices](/guides/tips)
-- [SOUL.md Guide](/guides/use-soul-with-triibal)
+- [SOUL.md Guide](/guides/use-soul-with-tribal)
 
 ## CLI appearance vs conversational personality
 
 Conversational personality and CLI appearance are separate:
 
-- `SOUL.md`, `agent.system_prompt`, and `/personality` affect how Triibal speaks
-- `display.skin` and `/skin` affect how Triibal looks in the terminal
+- `SOUL.md`, `agent.system_prompt`, and `/personality` affect how Tribal speaks
+- `display.skin` and `/skin` affect how Tribal looks in the terminal
 
 For terminal appearance, see [Skins & Themes](./skins.md).

@@ -19,7 +19,7 @@ This page covers:
 ### Validate the config snapshot
 
 ```bash
-triibal teams-pipeline validate
+tribal teams-pipeline validate
 ```
 
 Use this first after any config change.
@@ -27,8 +27,8 @@ Use this first after any config change.
 ### Inspect token health
 
 ```bash
-triibal teams-pipeline token-health
-triibal teams-pipeline token-health --force-refresh
+tribal teams-pipeline token-health
+tribal teams-pipeline token-health --force-refresh
 ```
 
 Use `--force-refresh` when you suspect stale auth state.
@@ -36,14 +36,14 @@ Use `--force-refresh` when you suspect stale auth state.
 ### Inspect subscriptions
 
 ```bash
-triibal teams-pipeline subscriptions
+tribal teams-pipeline subscriptions
 ```
 
 ### Renew near-expiry subscriptions
 
 ```bash
-triibal teams-pipeline maintain-subscriptions
-triibal teams-pipeline maintain-subscriptions --dry-run
+tribal teams-pipeline maintain-subscriptions
+tribal teams-pipeline maintain-subscriptions --dry-run
 ```
 
 ### Automating subscription renewal (REQUIRED for production)
@@ -52,23 +52,23 @@ triibal teams-pipeline maintain-subscriptions --dry-run
 
 You MUST run `maintain-subscriptions` on a schedule. Pick one of these three options:
 
-#### Option 1: Triibal cron (recommended if you already run the Triibal gateway)
+#### Option 1: Tribal cron (recommended if you already run the Tribal gateway)
 
-Triibal ships a built-in cron scheduler. The `--no-agent` mode runs a script as the job (rather than using an LLM), and `--script` must point at a file under `~/.triibal/scripts/`. First create the script:
+Tribal ships a built-in cron scheduler. The `--no-agent` mode runs a script as the job (rather than using an LLM), and `--script` must point at a file under `~/.tribal/scripts/`. First create the script:
 
 ```bash
-mkdir -p ~/.triibal/scripts
-cat > ~/.triibal/scripts/maintain-teams-subscriptions.sh <<'EOF'
+mkdir -p ~/.tribal/scripts
+cat > ~/.tribal/scripts/maintain-teams-subscriptions.sh <<'EOF'
 #!/usr/bin/env bash
-exec triibal teams-pipeline maintain-subscriptions
+exec tribal teams-pipeline maintain-subscriptions
 EOF
-chmod +x ~/.triibal/scripts/maintain-teams-subscriptions.sh
+chmod +x ~/.tribal/scripts/maintain-teams-subscriptions.sh
 ```
 
 Then register a script-only cron job that runs every 12 hours (gives 6x headroom against the 72h expiry window):
 
 ```bash
-triibal cron create "0 */12 * * *" \
+tribal cron create "0 */12 * * *" \
   --name "teams-pipeline-maintain-subscriptions" \
   --no-agent \
   --script maintain-teams-subscriptions.sh \
@@ -78,31 +78,31 @@ triibal cron create "0 */12 * * *" \
 Verify it was registered and inspect the next run time:
 
 ```bash
-triibal cron list
-triibal cron status        # scheduler status
+tribal cron list
+tribal cron status        # scheduler status
 ```
 
 #### Option 2: systemd timer (recommended for Linux production deployments)
 
-Create `/etc/systemd/system/triibal-teams-pipeline-maintain.service`:
+Create `/etc/systemd/system/tribal-teams-pipeline-maintain.service`:
 
 ```ini
 [Unit]
-Description=Triibal Teams pipeline subscription maintenance
+Description=Tribal Teams pipeline subscription maintenance
 After=network-online.target
 
 [Service]
 Type=oneshot
-User=triibal
-EnvironmentFile=/etc/triibal/env
-ExecStart=/usr/local/bin/triibal teams-pipeline maintain-subscriptions
+User=tribal
+EnvironmentFile=/etc/tribal/env
+ExecStart=/usr/local/bin/tribal teams-pipeline maintain-subscriptions
 ```
 
-And `/etc/systemd/system/triibal-teams-pipeline-maintain.timer`:
+And `/etc/systemd/system/tribal-teams-pipeline-maintain.timer`:
 
 ```ini
 [Unit]
-Description=Run Triibal Teams pipeline subscription maintenance every 12 hours
+Description=Run Tribal Teams pipeline subscription maintenance every 12 hours
 
 [Timer]
 OnBootSec=5min
@@ -117,25 +117,25 @@ Enable:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now triibal-teams-pipeline-maintain.timer
-systemctl list-timers triibal-teams-pipeline-maintain.timer
+sudo systemctl enable --now tribal-teams-pipeline-maintain.timer
+systemctl list-timers tribal-teams-pipeline-maintain.timer
 ```
 
 #### Option 3: Plain crontab
 
 ```cron
-0 */12 * * * /usr/local/bin/triibal teams-pipeline maintain-subscriptions >> /var/log/triibal/teams-pipeline-maintain.log 2>&1
+0 */12 * * * /usr/local/bin/tribal teams-pipeline maintain-subscriptions >> /var/log/tribal/teams-pipeline-maintain.log 2>&1
 ```
 
-Make sure the cron environment has the `MSGRAPH_*` credentials. Simplest fix: source `~/.triibal/.env` at the top of a wrapper script that crontab calls.
+Make sure the cron environment has the `MSGRAPH_*` credentials. Simplest fix: source `~/.tribal/.env` at the top of a wrapper script that crontab calls.
 
 #### Verifying renewal is working
 
 After you've set up the schedule, check renewal activity after the first scheduled run:
 
 ```bash
-triibal teams-pipeline subscriptions   # should show expirationDateTime advanced
-triibal teams-pipeline maintain-subscriptions --dry-run   # should show "0 expiring soon" most of the time
+tribal teams-pipeline subscriptions   # should show expirationDateTime advanced
+tribal teams-pipeline maintain-subscriptions --dry-run   # should show "0 expiring soon" most of the time
 ```
 
 If you ever see your Graph webhook mysteriously "stop working" after exactly ~72 hours, this is the first thing to check: did the renewal job actually run?
@@ -143,22 +143,22 @@ If you ever see your Graph webhook mysteriously "stop working" after exactly ~72
 ### Inspect recent jobs
 
 ```bash
-triibal teams-pipeline list
-triibal teams-pipeline list --status failed
-triibal teams-pipeline show <job-id>
+tribal teams-pipeline list
+tribal teams-pipeline list --status failed
+tribal teams-pipeline show <job-id>
 ```
 
 ### Replay a stored job
 
 ```bash
-triibal teams-pipeline run <job-id>
+tribal teams-pipeline run <job-id>
 ```
 
 ### Dry-run meeting artifact fetches
 
 ```bash
-triibal teams-pipeline fetch --meeting-id <meeting-id>
-triibal teams-pipeline fetch --join-web-url "<join-url>"
+tribal teams-pipeline fetch --meeting-id <meeting-id>
+tribal teams-pipeline fetch --join-web-url "<join-url>"
 ```
 
 ## Routine Runbook
@@ -168,28 +168,28 @@ triibal teams-pipeline fetch --join-web-url "<join-url>"
 Run these in order:
 
 ```bash
-triibal teams-pipeline validate
-triibal teams-pipeline token-health --force-refresh
-triibal teams-pipeline subscriptions
+tribal teams-pipeline validate
+tribal teams-pipeline token-health --force-refresh
+tribal teams-pipeline subscriptions
 ```
 
 Then trigger or wait for a real meeting event and confirm:
 
 ```bash
-triibal teams-pipeline list
-triibal teams-pipeline show <job-id>
+tribal teams-pipeline list
+tribal teams-pipeline show <job-id>
 ```
 
 ### Daily or periodic checks
 
-- run `triibal teams-pipeline maintain-subscriptions --dry-run`
-- inspect `triibal teams-pipeline list --status failed`
+- run `tribal teams-pipeline maintain-subscriptions --dry-run`
+- inspect `tribal teams-pipeline list --status failed`
 - verify the Teams delivery target is still the correct chat or channel
 
 ### Before changing webhook URLs or delivery targets
 
 - update the public notification URL or Teams target config
-- run `triibal teams-pipeline validate`
+- run `tribal teams-pipeline validate`
 - renew or recreate affected subscriptions
 - confirm new events land in the expected sink
 
@@ -223,7 +223,7 @@ Check:
 ### Duplicate or unexpected replays
 
 Check:
-- whether you manually replayed a job with `triibal teams-pipeline run`
+- whether you manually replayed a job with `tribal teams-pipeline run`
 - whether the sink record already exists for that meeting
 - whether you intentionally enabled a resend path in your local config
 
@@ -237,9 +237,9 @@ Check:
 - [ ] `ffmpeg` is installed if recording fallback is enabled
 - [ ] Teams outbound delivery target is configured and verified
 - [ ] Notion and Linear sinks are configured only if actually needed
-- [ ] `triibal teams-pipeline validate` returns an OK snapshot
-- [ ] `triibal teams-pipeline token-health --force-refresh` succeeds
-- [ ] **`maintain-subscriptions` is scheduled** (Triibal cron, systemd timer, or crontab — see [Automating subscription renewal](#automating-subscription-renewal-required-for-production)). Without this, Graph subscriptions silently expire within 72 hours.
+- [ ] `tribal teams-pipeline validate` returns an OK snapshot
+- [ ] `tribal teams-pipeline token-health --force-refresh` succeeds
+- [ ] **`maintain-subscriptions` is scheduled** (Tribal cron, systemd timer, or crontab — see [Automating subscription renewal](#automating-subscription-renewal-required-for-production)). Without this, Graph subscriptions silently expire within 72 hours.
 - [ ] a real end-to-end meeting event has produced a stored job
 - [ ] at least one summary has reached the intended delivery sink
 

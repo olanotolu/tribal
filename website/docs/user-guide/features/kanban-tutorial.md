@@ -1,16 +1,16 @@
 # Kanban tutorial
 
-A walkthrough of the four use-cases the Triibal Kanban system was designed for, with the dashboard open in a browser. If you haven't read the [Kanban overview](./kanban) yet, start there — this assumes you know what a task, run, assignee, and dispatcher are.
+A walkthrough of the four use-cases the Tribal Kanban system was designed for, with the dashboard open in a browser. If you haven't read the [Kanban overview](./kanban) yet, start there — this assumes you know what a task, run, assignee, and dispatcher are.
 
 ## Setup
 
 ```bash
-triibal kanban init           # optional; first `triibal kanban <anything>` auto-inits
-triibal dashboard             # opens http://127.0.0.1:9119 in your browser
+tribal kanban init           # optional; first `tribal kanban <anything>` auto-inits
+tribal dashboard             # opens http://127.0.0.1:9119 in your browser
 # click Kanban in the left nav
 ```
 
-The dashboard is the most comfortable place for **you** to watch the system. Agent workers the dispatcher spawns never see the dashboard or the CLI — they drive the board through a dedicated `kanban_*` [toolset](./kanban#how-workers-interact-with-the-board) (`kanban_show`, `kanban_list`, `kanban_complete`, `kanban_block`, `kanban_heartbeat`, `kanban_comment`, `kanban_create`, `kanban_link`, `kanban_unblock`). All three surfaces — dashboard, CLI, worker tools — route through the same per-board SQLite DB (`~/.triibal/kanban.db` for the default board, `~/.triibal/kanban/boards/<slug>/kanban.db` for any board you create later), so each board is consistent no matter which side of the fence a change came from.
+The dashboard is the most comfortable place for **you** to watch the system. Agent workers the dispatcher spawns never see the dashboard or the CLI — they drive the board through a dedicated `kanban_*` [toolset](./kanban#how-workers-interact-with-the-board) (`kanban_show`, `kanban_list`, `kanban_complete`, `kanban_block`, `kanban_heartbeat`, `kanban_comment`, `kanban_create`, `kanban_link`, `kanban_unblock`). All three surfaces — dashboard, CLI, worker tools — route through the same per-board SQLite DB (`~/.tribal/kanban.db` for the default board, `~/.tribal/kanban/boards/<slug>/kanban.db` for any board you create later), so each board is consistent no matter which side of the fence a change came from.
 
 This tutorial uses the `default` board throughout. If you want multiple isolated queues (one per project / repo / domain), see [Boards (multi-project)](./kanban#boards-multi-project) in the overview — the same CLI / dashboard / worker flows apply per board, and workers physically cannot see tasks on other boards.
 
@@ -22,7 +22,7 @@ Throughout the tutorial, **code blocks labelled `bash` are commands *you* run.**
 
 Six columns, left to right:
 
-- **Triage** — raw ideas. By default the dispatcher auto-runs the **decomposer** (orchestrator-driven fan-out) on tasks here: it reads your profile roster + descriptions and produces a graph of child tasks routed to the best-fit specialists, with the original task held alive as the parent so the orchestrator wakes back up to judge completion when everything finishes. Flip the **Orchestration: Auto/Manual** pill at the top of the kanban page to switch modes. In Manual mode (or for setups without an orchestrator profile) click **⚗ Decompose** on a card, or run `triibal kanban decompose <id>` / `/kanban decompose <id>`. For single tasks that don't need fan-out, **✨ Specify** does a one-shot spec rewrite (goal, approach, acceptance criteria) and promotes to `todo`. Configure the models under `auxiliary.kanban_decomposer` and `auxiliary.triage_specifier` in `config.yaml`. See [Auto vs Manual orchestration](./kanban#auto-vs-manual-orchestration) in the main Kanban guide.
+- **Triage** — raw ideas. By default the dispatcher auto-runs the **decomposer** (orchestrator-driven fan-out) on tasks here: it reads your profile roster + descriptions and produces a graph of child tasks routed to the best-fit specialists, with the original task held alive as the parent so the orchestrator wakes back up to judge completion when everything finishes. Flip the **Orchestration: Auto/Manual** pill at the top of the kanban page to switch modes. In Manual mode (or for setups without an orchestrator profile) click **⚗ Decompose** on a card, or run `tribal kanban decompose <id>` / `/kanban decompose <id>`. For single tasks that don't need fan-out, **✨ Specify** does a one-shot spec rewrite (goal, approach, acceptance criteria) and promotes to `todo`. Configure the models under `auxiliary.kanban_decomposer` and `auxiliary.triage_specifier` in `config.yaml`. See [Auto vs Manual orchestration](./kanban#auto-vs-manual-orchestration) in the main Kanban guide.
 - **Todo** — created but waiting on dependencies, or not yet assigned.
 - **Ready** — assigned and waiting for the dispatcher to claim.
 - **In progress** — a worker is actively running the task. With "Lanes by profile" on (the default), this column sub-groups by assignee so you can see at a glance what each worker is doing.
@@ -42,18 +42,18 @@ If the profile lanes are noisy, toggle "Lanes by profile" off and the In Progres
 You're building a feature. Classic flow: design a schema, implement the API, write the tests. Three tasks with parent→child dependencies.
 
 ```bash
-SCHEMA=$(triibal kanban create "Design auth schema" \
+SCHEMA=$(tribal kanban create "Design auth schema" \
     --assignee backend-dev --tenant auth-project --priority 2 \
     --body "Design the user/session/token schema for the auth module." \
     --json | jq -r .id)
 
-API=$(triibal kanban create "Implement auth API endpoints" \
+API=$(tribal kanban create "Implement auth API endpoints" \
     --assignee backend-dev --tenant auth-project --priority 2 \
     --parent $SCHEMA \
     --body "POST /register, POST /login, POST /refresh, POST /logout." \
     --json | jq -r .id)
 
-triibal kanban create "Write auth integration tests" \
+tribal kanban create "Write auth integration tests" \
     --assignee qa-dev --tenant auth-project --priority 2 \
     --parent $API \
     --body "Cover happy path, wrong password, expired token, concurrent refresh."
@@ -61,7 +61,7 @@ triibal kanban create "Write auth integration tests" \
 
 Because `API` has `SCHEMA` as its parent, and `tests` has `API` as its parent, only `SCHEMA` starts in `ready`. The other two sit in `todo` until their parents complete. This is the dependency promotion engine doing its job — no other worker will pick up the test-writing until there's an API to test.
 
-On the next dispatcher tick (60s by default, or immediately if you hit **Nudge dispatcher**) the `backend-dev` profile spawns as a worker with `TRIIBAL_KANBAN_TASK=$SCHEMA` in its env. Here's what the worker's tool-call loop looks like from inside the agent:
+On the next dispatcher tick (60s by default, or immediately if you hit **Nudge dispatcher**) the `backend-dev` profile spawns as a worker with `TRIBAL_KANBAN_TASK=$SCHEMA` in its env. Here's what the worker's tool-call loop looks like from inside the agent:
 
 ```python
 # worker tool calls — NOT commands you run
@@ -84,7 +84,7 @@ kanban_complete(
 )
 ```
 
-`kanban_show` defaults `task_id` to `$TRIIBAL_KANBAN_TASK`, so the worker doesn't need to know its own id. `kanban_complete` writes the summary + metadata onto the current `task_runs` row, closes that run, and transitions the task to `done` — all in one atomic hop through `kanban_db`.
+`kanban_show` defaults `task_id` to `$TRIBAL_KANBAN_TASK`, so the worker doesn't need to know its own id. `kanban_complete` writes the summary + metadata onto the current `task_runs` row, closes that run, and transitions the task to `done` — all in one atomic hop through `kanban_db`.
 
 When `SCHEMA` hits `done`, the dependency engine promotes `API` to `ready` automatically. The API worker, when it picks up, will call `kanban_show()` and see `SCHEMA`'s summary and metadata attached to the parent handoff — so it knows the schema decisions without re-reading a long design doc.
 
@@ -97,8 +97,8 @@ The Run History section at the bottom is the key addition. One attempt: outcome 
 You can inspect the same data from your terminal at any time — these commands are **you** peeking at the board, not the worker:
 
 ```bash
-triibal kanban show $SCHEMA
-triibal kanban runs $SCHEMA
+tribal kanban show $SCHEMA
+tribal kanban runs $SCHEMA
 # #  OUTCOME       PROFILE       ELAPSED  STARTED
 # 1  completed     backend-dev        0s  2026-04-27 19:34
 #     → users(id, email, pw_hash), sessions(id, user_id, jti, expires_at); refresh tokens ...
@@ -112,15 +112,15 @@ Create the work:
 
 ```bash
 for lang in Spanish French German; do
-    triibal kanban create "Translate homepage to $lang" \
+    tribal kanban create "Translate homepage to $lang" \
         --assignee translator --tenant content-ops
 done
 for i in 1 2 3 4 5; do
-    triibal kanban create "Transcribe Q3 customer call #$i" \
+    tribal kanban create "Transcribe Q3 customer call #$i" \
         --assignee transcriber --tenant content-ops
 done
 for sku in 1001 1002 1003 1004; do
-    triibal kanban create "Generate product description: SKU-$sku" \
+    tribal kanban create "Generate product description: SKU-$sku" \
         --assignee copywriter --tenant content-ops
 done
 ```
@@ -130,7 +130,7 @@ that picks up all three specialist profiles' tasks on the same
 kanban.db:
 
 ```bash
-triibal gateway start
+tribal gateway start
 ```
 
 Now filter the board to `content-ops` (or just search for "Transcribe") and you get this:
@@ -183,7 +183,7 @@ kanban_block(
 Now you (the human, or a separate reviewer profile) read the block reason, decide the fix direction is clear, and unblock from the dashboard's "Unblock" button — or from the CLI / slash command:
 
 ```bash
-triibal kanban unblock $IMPL
+tribal kanban unblock $IMPL
 # or from a chat: /kanban unblock $IMPL
 ```
 
@@ -235,12 +235,12 @@ Real workers fail. Missing credentials, OOM kills, transient network errors. The
 A deploy task that can't spawn its worker because `AWS_ACCESS_KEY_ID` isn't set in the profile's environment:
 
 ```bash
-triibal kanban create "Deploy to staging (missing creds)" \
+tribal kanban create "Deploy to staging (missing creds)" \
     --assignee deploy-bot --tenant ops \
     --max-retries 3
 ```
 
-The dispatcher tries to spawn the worker. Spawn fails (`RuntimeError: AWS_ACCESS_KEY_ID not set`). The dispatcher releases the claim, increments a failure counter, and tries again next tick. Because this example sets `--max-retries 3`, the circuit trips after three consecutive failures: the task goes to `blocked` with outcome `gave_up`. If you omit the flag, Triibal uses `kanban.failure_limit` (default: 2). No more retries until a human unblocks it.
+The dispatcher tries to spawn the worker. Spawn fails (`RuntimeError: AWS_ACCESS_KEY_ID not set`). The dispatcher releases the claim, increments a failure counter, and tries again next tick. Because this example sets `--max-retries 3`, the circuit trips after three consecutive failures: the task goes to `blocked` with outcome `gave_up`. If you omit the flag, Tribal uses `kanban.failure_limit` (default: 2). No more retries until a human unblocks it.
 
 Click the blocked task:
 
@@ -251,7 +251,7 @@ Three runs, all with the same error on the `error` field. The first two are `spa
 On the terminal:
 
 ```bash
-triibal kanban runs t_ef5d
+tribal kanban runs t_ef5d
 # #   OUTCOME        PROFILE        ELAPSED  STARTED
 # 1   spawn_failed   deploy-bot          0s  2026-04-27 19:34
 #       ! AWS_ACCESS_KEY_ID not set in deploy-bot env
@@ -292,7 +292,7 @@ When a worker on task B is spawned and calls `kanban_show()`, the `worker_contex
 
 This replaces the "dig through comments and the work output" dance that plagues flat kanban systems. A PM writes acceptance criteria in the spec's metadata, and the engineer's worker sees them structurally in the parent handoff. An engineer records which tests they ran and how many passed, and the reviewer's worker has that list in hand before opening a diff.
 
-The bulk-close guard exists because this data is per-run. `triibal kanban complete a b c --summary X` (you, from the CLI) is refused — copy-pasting the same summary to three tasks is almost always wrong. Bulk close without the handoff flags still works for the common "I finished a pile of admin tasks" case. The tool surface doesn't expose a bulk variant at all; `kanban_complete` is always single-task-at-a-time for the same reason.
+The bulk-close guard exists because this data is per-run. `tribal kanban complete a b c --summary X` (you, from the CLI) is refused — copy-pasting the same summary to three tasks is almost always wrong. Bulk close without the handoff flags still works for the common "I finished a pile of admin tasks" case. The tool surface doesn't expose a bulk variant at all; `kanban_complete` is always single-task-at-a-time for the same reason.
 
 ## Inspecting a task currently running
 
@@ -305,6 +305,6 @@ Status is `Running`. The active run appears in the Run History section with outc
 ## Next steps
 
 - [Kanban overview](./kanban) — the full data model, event vocabulary, and CLI reference.
-- `triibal kanban --help` — every subcommand, every flag.
-- `triibal kanban watch --kinds completed,gave_up,timed_out` — live stream terminal events across the whole board.
-- `triibal kanban notify-subscribe <task> --platform telegram --chat-id <id>` — get a gateway ping when a specific task finishes.
+- `tribal kanban --help` — every subcommand, every flag.
+- `tribal kanban watch --kinds completed,gave_up,timed_out` — live stream terminal events across the whole board.
+- `tribal kanban notify-subscribe <task> --platform telegram --chat-id <id>` — get a gateway ping when a specific task finishes.

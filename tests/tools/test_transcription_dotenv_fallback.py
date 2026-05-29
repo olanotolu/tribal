@@ -2,7 +2,7 @@
 
 Same class of bug as ``tools/tts_tool.py`` (fixed in PR #17163): the STT
 provider call sites read API keys via ``os.getenv()``, which bypasses
-``~/.triibal/.env`` entries. These tests confirm each STT provider now
+``~/.tribal/.env`` entries. These tests confirm each STT provider now
 consults ``get_env_value()`` and the provider auto-detect + explicit
 selection gate (``_get_provider``) do the same.
 """
@@ -33,18 +33,18 @@ def isolate_env(monkeypatch):
 
 class TestProviderSelectionGate:
     """``_get_provider`` picks the STT backend. If it only consulted
-    ``os.environ`` a user with keys in ``~/.triibal/.env`` would be told
+    ``os.environ`` a user with keys in ``~/.tribal/.env`` would be told
     "no STT available" even though the actual transcribe call would
     succeed. The gate lives behind ``is_stt_enabled(stt_config)``, so
     configure ``{"enabled": True, "provider": ...}`` for explicit tests.
     """
 
     def test_import_after_config_env_patch_uses_restored_dotenv_loader(self):
-        """Importing STT while triibal_cli.config.get_env_value is patched must
+        """Importing STT while tribal_cli.config.get_env_value is patched must
         not freeze that temporary helper into this module forever.
         """
         import importlib
-        import triibal_cli.config as config_mod
+        import tribal_cli.config as config_mod
         from tools import transcription_tools as tt
 
         with pytest.MonkeyPatch.context() as mp:
@@ -55,7 +55,7 @@ class TestProviderSelectionGate:
             with patch.object(tt, "_HAS_FASTER_WHISPER", False), \
                  patch.object(tt, "_HAS_OPENAI", True), \
                  patch.object(tt, "_has_local_command", return_value=False), \
-                 patch("triibal_cli.config.load_env",
+                 patch("tribal_cli.config.load_env",
                        return_value={"GROQ_API_KEY": "dotenv-secret"}):
                 assert tt._get_provider({"enabled": True, "provider": "groq"}) == "groq"
         finally:
@@ -64,7 +64,7 @@ class TestProviderSelectionGate:
     def test_xai_resolver_import_after_config_env_patch_uses_restored_dotenv_loader(self):
         """xAI HTTP auth must not cache a temporarily patched env helper."""
         import importlib
-        import triibal_cli.config as config_mod
+        import tribal_cli.config as config_mod
         from tools import xai_http
 
         with pytest.MonkeyPatch.context() as mp:
@@ -73,13 +73,13 @@ class TestProviderSelectionGate:
 
         try:
             with patch(
-                "triibal_cli.runtime_provider.resolve_runtime_provider",
+                "tribal_cli.runtime_provider.resolve_runtime_provider",
                 side_effect=RuntimeError("no oauth"),
             ), patch(
-                "triibal_cli.auth.resolve_xai_oauth_runtime_credentials",
+                "tribal_cli.auth.resolve_xai_oauth_runtime_credentials",
                 return_value={},
             ), patch(
-                "triibal_cli.config.load_env",
+                "tribal_cli.config.load_env",
                 return_value={"XAI_API_KEY": "dotenv-secret"},
             ):
                 creds = xai_http.resolve_xai_http_credentials()
@@ -94,7 +94,7 @@ class TestProviderSelectionGate:
         with patch.object(tt, "_HAS_FASTER_WHISPER", False), \
              patch.object(tt, "_HAS_OPENAI", True), \
              patch.object(tt, "_has_local_command", return_value=False), \
-             patch("triibal_cli.config.load_env",
+             patch("tribal_cli.config.load_env",
                    return_value={"GROQ_API_KEY": "dotenv-secret"}):
             assert tt._get_provider({"enabled": True, "provider": "groq"}) == "groq"
 
@@ -110,7 +110,7 @@ class TestProviderSelectionGate:
         with patch.object(tt, "_HAS_FASTER_WHISPER", False), \
              patch.object(tt, "_HAS_MISTRAL", True), \
              patch.object(tt, "_has_local_command", return_value=False), \
-             patch("triibal_cli.config.load_env",
+             patch("tribal_cli.config.load_env",
                    return_value={"MISTRAL_API_KEY": "dotenv-secret"}):
             assert tt._get_provider({"enabled": True, "provider": "mistral"}) == "none"
 
@@ -119,7 +119,7 @@ class TestProviderSelectionGate:
 
         with patch.object(tt, "_HAS_FASTER_WHISPER", False), \
              patch.object(tt, "_has_local_command", return_value=False), \
-             patch("triibal_cli.config.load_env",
+             patch("tribal_cli.config.load_env",
                    return_value={"XAI_API_KEY": "dotenv-secret"}):
             assert tt._get_provider({"enabled": True, "provider": "xai"}) == "xai"
 
@@ -134,7 +134,7 @@ class TestProviderSelectionGate:
              patch.object(tt, "_HAS_MISTRAL", False), \
              patch.object(tt, "_has_local_command", return_value=False), \
              patch.object(tt, "_has_openai_audio_backend", return_value=False), \
-             patch("triibal_cli.config.load_env",
+             patch("tribal_cli.config.load_env",
                    return_value={"GROQ_API_KEY": "dotenv-secret"}):
             # No "provider" key → explicit=False → auto-detect branch
             assert tt._get_provider({"enabled": True}) == "groq"
@@ -236,8 +236,8 @@ class TestTranscribeCallSitesReadDotenv:
 
 
 class TestEndToEndRegressionGuard:
-    """End-to-end probe: patch ``triibal_cli.config.load_env`` to simulate
-    ``~/.triibal/.env`` carrying the key while ``os.environ`` does not.
+    """End-to-end probe: patch ``tribal_cli.config.load_env`` to simulate
+    ``~/.tribal/.env`` carrying the key while ``os.environ`` does not.
     Before the fix ``_transcribe_xai`` called ``os.getenv("XAI_API_KEY")``
     directly and returned ``XAI_API_KEY not set``."""
 
@@ -256,11 +256,11 @@ class TestEndToEndRegressionGuard:
             response.json.return_value = {"text": "ok"}
             return response
 
-        with patch("triibal_cli.config.load_env",
+        with patch("tribal_cli.config.load_env",
                    return_value={"XAI_API_KEY": "dotenv-secret"}):
             # Sanity: get_env_value resolves through load_env when
             # os.environ is empty.
-            from triibal_cli.config import get_env_value as live_get
+            from tribal_cli.config import get_env_value as live_get
             assert live_get("XAI_API_KEY") == "dotenv-secret"
 
             with patch("requests.post", side_effect=fake_post), \

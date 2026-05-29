@@ -9,11 +9,11 @@ from agent.skill_utils import (
 )
 
 
-def test_metadata_as_dict_with_triibal():
-    """Normal case: metadata is a dict containing triibal keys."""
+def test_metadata_as_dict_with_tribal():
+    """Normal case: metadata is a dict containing tribal keys."""
     frontmatter = {
         "metadata": {
-            "triibal": {
+            "tribal": {
                 "fallback_for_toolsets": ["toolset_a"],
                 "requires_toolsets": ["toolset_b"],
                 "fallback_for_tools": ["tool_x"],

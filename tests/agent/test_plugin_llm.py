@@ -724,9 +724,9 @@ class TestConfigDrivenPolicy:
     def test_policy_loaded_from_yaml(self, tmp_path, monkeypatch):
         from agent.plugin_llm import _resolve_trust_policy
 
-        triibal_home = tmp_path / ".triibal"
-        triibal_home.mkdir()
-        (triibal_home / "config.yaml").write_text(
+        tribal_home = tmp_path / ".tribal"
+        tribal_home.mkdir()
+        (tribal_home / "config.yaml").write_text(
             """
 plugins:
   entries:
@@ -742,8 +742,8 @@ plugins:
 """,
             encoding="utf-8",
         )
-        monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
-        from triibal_cli import config as _config_mod
+        monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
+        from tribal_cli import config as _config_mod
         _config_mod._config_cache = None  # type: ignore[attr-defined]
 
         policy = _resolve_trust_policy("my-plugin")
@@ -758,11 +758,11 @@ plugins:
     def test_missing_plugin_entry_yields_default_deny(self, tmp_path, monkeypatch):
         from agent.plugin_llm import _resolve_trust_policy
 
-        triibal_home = tmp_path / ".triibal"
-        triibal_home.mkdir()
-        (triibal_home / "config.yaml").write_text("plugins: {}\n", encoding="utf-8")
-        monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
-        from triibal_cli import config as _config_mod
+        tribal_home = tmp_path / ".tribal"
+        tribal_home.mkdir()
+        (tribal_home / "config.yaml").write_text("plugins: {}\n", encoding="utf-8")
+        monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
+        from tribal_cli import config as _config_mod
         _config_mod._config_cache = None  # type: ignore[attr-defined]
 
         policy = _resolve_trust_policy("never-configured")
@@ -779,7 +779,7 @@ plugins:
 
 class TestPluginContextIntegration:
     def test_ctx_llm_is_lazy_singleton(self):
-        from triibal_cli.plugins import PluginContext, PluginManifest, PluginManager
+        from tribal_cli.plugins import PluginContext, PluginManifest, PluginManager
 
         manifest = PluginManifest(name="test-plugin", source="test", key="test-plugin")
         manager = PluginManager()
@@ -791,7 +791,7 @@ class TestPluginContextIntegration:
         assert first._plugin_id == "test-plugin"  # type: ignore[attr-defined]
 
     def test_ctx_llm_uses_manifest_key_for_policy(self):
-        from triibal_cli.plugins import PluginContext, PluginManifest, PluginManager
+        from tribal_cli.plugins import PluginContext, PluginManifest, PluginManager
 
         manifest = PluginManifest(
             name="bare-name", source="test", key="image_gen/openai"
@@ -909,7 +909,7 @@ class TestHookMode:
     the real ``invoke_hook`` machinery, and check the call landed."""
 
     def test_complete_works_from_post_tool_call_hook(self):
-        from triibal_cli.plugins import PluginContext, PluginManifest, PluginManager
+        from tribal_cli.plugins import PluginContext, PluginManifest, PluginManager
 
         manifest = PluginManifest(name="hook-plugin", source="test", key="hook-plugin")
         manager = PluginManager()
@@ -965,7 +965,7 @@ class TestHookMode:
     def test_complete_works_from_post_tool_call_hook_when_async_caller_set(self):
         """Hooks fired synchronously should still work with sync
         ctx.llm.complete even if other callsites use async."""
-        from triibal_cli.plugins import PluginContext, PluginManifest, PluginManager
+        from tribal_cli.plugins import PluginContext, PluginManifest, PluginManager
 
         manifest = PluginManifest(name="hook-async", source="test", key="hook-async")
         manager = PluginManager()

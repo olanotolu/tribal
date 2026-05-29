@@ -96,6 +96,6 @@ let
         pythonPackageOverrides
       ]);
 in
-pythonSet.mkVirtualEnv "triibal-agent-env" {
-  triibal-agent = dependency-groups;
+pythonSet.mkVirtualEnv "tribal-agent-env" {
+  tribal-agent = dependency-groups;
 }

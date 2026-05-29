@@ -1,6 +1,6 @@
-"""Shared Triibal-side execution flow for Modal transports.
+"""Shared Tribal-side execution flow for Modal transports.
 
-This module deliberately stops at the Triibal boundary:
+This module deliberately stops at the Tribal boundary:
 - command preparation
 - cwd/timeout normalization
 - stdin/sudo shell wrapping
@@ -44,9 +44,9 @@ class ModalExecStart:
 
 def wrap_modal_stdin_heredoc(command: str, stdin_data: str) -> str:
     """Append stdin as a shell heredoc for transports without stdin piping."""
-    marker = f"TRIIBAL_EOF_{uuid.uuid4().hex[:8]}"
+    marker = f"TRIBAL_EOF_{uuid.uuid4().hex[:8]}"
     while marker in stdin_data:
-        marker = f"TRIIBAL_EOF_{uuid.uuid4().hex[:8]}"
+        marker = f"TRIBAL_EOF_{uuid.uuid4().hex[:8]}"
     return f"{command} << '{marker}'\n{stdin_data}\n{marker}"
 
 

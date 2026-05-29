@@ -2,7 +2,7 @@
 # Kill all running Modal apps (sandboxes, deployments, etc.)
 #
 # Usage:
-#   bash scripts/kill_modal.sh          # Stop triibal-agent sandboxes
+#   bash scripts/kill_modal.sh          # Stop tribal-agent sandboxes
 #   bash scripts/kill_modal.sh --all    # Stop ALL Modal apps
 
 set -uo pipefail
@@ -17,10 +17,10 @@ if [[ "${1:-}" == "--all" ]]; then
         modal app stop "$app_id" 2>/dev/null || true
     done
 else
-    echo "Stopping triibal-agent sandboxes..."
-    APPS=$(echo "$APP_LIST" | grep 'triibal-agent' | grep -oE 'ap-[A-Za-z0-9]+' || true)
+    echo "Stopping tribal-agent sandboxes..."
+    APPS=$(echo "$APP_LIST" | grep 'tribal-agent' | grep -oE 'ap-[A-Za-z0-9]+' || true)
     if [[ -z "$APPS" ]]; then
-        echo "  No triibal-agent apps found."
+        echo "  No tribal-agent apps found."
     else
         echo "$APPS" | while read app_id; do
             echo "  Stopping $app_id"
@@ -30,5 +30,5 @@ else
 fi
 
 echo ""
-echo "Current triibal-agent status:"
-modal app list 2>/dev/null | grep -E 'State|triibal-agent' || echo "  (none)"
+echo "Current tribal-agent status:"
+modal app list 2>/dev/null | grep -E 'State|tribal-agent' || echo "  (none)"

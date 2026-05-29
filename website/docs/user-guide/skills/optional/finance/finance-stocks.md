@@ -14,10 +14,10 @@ Stock quotes, history, search, compare, crypto via Yahoo.
 
 | | |
 |---|---|
-| Source | Optional — install with `triibal skills install official/finance/stocks` |
+| Source | Optional — install with `tribal skills install official/finance/stocks` |
 | Path | `optional-skills/finance/stocks` |
 | Version | `0.1.0` |
-| Author | Mibay (Mibayy), Triibal Agent |
+| Author | Mibay (Mibayy), Tribal Agent |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Stocks`, `Finance`, `Market`, `Crypto`, `Investing` |
@@ -26,7 +26,7 @@ Stock quotes, history, search, compare, crypto via Yahoo.
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # Stocks Skill
@@ -54,7 +54,7 @@ fields come back null. Free key: https://www.alphavantage.co/support/#api-key
 Invoke through the `terminal` tool. Once installed:
 
 ```
-SCRIPT=~/.triibal/skills/finance/stocks/scripts/stocks_client.py
+SCRIPT=~/.tribal/skills/finance/stocks/scripts/stocks_client.py
 python3 $SCRIPT quote AAPL
 ```
 
@@ -106,7 +106,7 @@ Crypto prices. Pass `BTC` (the script appends `-USD` automatically).
 ## Verification
 
 ```
-python3 ~/.triibal/skills/finance/stocks/scripts/stocks_client.py quote AAPL
+python3 ~/.tribal/skills/finance/stocks/scripts/stocks_client.py quote AAPL
 ```
 
 Returns a JSON object with `symbol: "AAPL"` and a numeric `price` field.

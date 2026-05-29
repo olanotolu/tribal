@@ -4,7 +4,7 @@ Tests in this directory build the image with the current ``Dockerfile``
 and exercise it via ``docker run``. They skip when Docker is unavailable
 (e.g. on developer laptops without a daemon).
 
-Override the image with ``TRIIBAL_TEST_IMAGE`` env var to point at a pre-built
+Override the image with ``TRIBAL_TEST_IMAGE`` env var to point at a pre-built
 image (faster local iteration); otherwise the ``built_image`` fixture builds
 the repo's Dockerfile once per session.
 
@@ -21,7 +21,7 @@ from collections.abc import Iterator
 
 import pytest
 
-IMAGE_TAG = os.environ.get("TRIIBAL_TEST_IMAGE", "triibal-agent-harness:latest")
+IMAGE_TAG = os.environ.get("TRIBAL_TEST_IMAGE", "tribal-agent-harness:latest")
 
 
 def _docker_available() -> bool:
@@ -56,10 +56,10 @@ def pytest_collection_modifyitems(config, items):  # noqa: D401 - pytest hook
 def built_image() -> str:
     """Build the image once per test session.
 
-    Override with ``TRIIBAL_TEST_IMAGE`` env var to point at a pre-built
+    Override with ``TRIBAL_TEST_IMAGE`` env var to point at a pre-built
     image (faster local iteration).
     """
-    if os.environ.get("TRIIBAL_TEST_IMAGE"):
+    if os.environ.get("TRIBAL_TEST_IMAGE"):
         return IMAGE_TAG
     repo_root = os.path.abspath(
         os.path.join(os.path.dirname(__file__), "..", ".."),
@@ -78,7 +78,7 @@ def built_image() -> str:
 def container_name(request) -> Iterator[str]:
     """Generate a unique container name and ensure cleanup on test exit."""
     safe = request.node.name.replace("[", "_").replace("]", "_")
-    name = f"triibal-test-{safe}"
+    name = f"tribal-test-{safe}"
     yield name
     subprocess.run(
         ["docker", "rm", "-f", name],
@@ -87,19 +87,19 @@ def container_name(request) -> Iterator[str]:
 
 
 # ---------------------------------------------------------------------------
-# docker_exec — default to the unprivileged triibal user
+# docker_exec — default to the unprivileged tribal user
 # ---------------------------------------------------------------------------
 #
-# Background: every Triibal runtime path inside the container drops to UID
-# 10000 (the ``triibal`` user) via ``s6-setuidgid triibal``. ``docker exec``
+# Background: every Tribal runtime path inside the container drops to UID
+# 10000 (the ``tribal`` user) via ``s6-setuidgid tribal``. ``docker exec``
 # without ``-u`` runs as root, which is **not** representative of how
 # production code executes. PR #30136 review caught a real regression
 # this way — ``Path('/proc/1/exe').resolve()`` works as root and silently
-# fails (PermissionError swallowed) for triibal, so a test that ran as root
+# fails (PermissionError swallowed) for tribal, so a test that ran as root
 # couldn't catch a feature that was inert for the actual runtime user.
 #
 # Tests in this directory MUST exercise the realistic user context. The
-# helpers below run every probe under ``-u triibal`` unless a specific
+# helpers below run every probe under ``-u tribal`` unless a specific
 # test explicitly opts into ``user="root"`` (rare — e.g. inspecting
 # /proc/1/exe itself, chowning a volume).
 # ---------------------------------------------------------------------------
@@ -108,11 +108,11 @@ def container_name(request) -> Iterator[str]:
 def docker_exec(
     container: str,
     *args: str,
-    user: str = "triibal",
+    user: str = "tribal",
     timeout: int = 30,
     extra_docker_args: tuple[str, ...] = (),
 ) -> subprocess.CompletedProcess[str]:
-    """Run a command inside ``container`` as ``user`` (default: triibal).
+    """Run a command inside ``container`` as ``user`` (default: tribal).
 
     Returns the CompletedProcess with text=True, capture_output=True.
 
@@ -130,7 +130,7 @@ def docker_exec_sh(
     container: str,
     command: str,
     *,
-    user: str = "triibal",
+    user: str = "tribal",
     timeout: int = 30,
 ) -> subprocess.CompletedProcess[str]:
     """Run ``sh -c <command>`` inside the container as ``user``."""

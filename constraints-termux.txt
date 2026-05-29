@@ -1,4 +1,4 @@
-# Termux / Android dependency constraints for Triibal Agent.
+# Termux / Android dependency constraints for Tribal Agent.
 #
 # Usage:
 #   python -m pip install -e '.[termux]' -c constraints-termux.txt

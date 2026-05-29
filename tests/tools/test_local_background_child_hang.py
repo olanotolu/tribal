@@ -27,14 +27,14 @@ def _pkill(pattern: str) -> None:
 def local_env(tmp_path, monkeypatch):
     home = tmp_path / "home"
     home.mkdir()
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    (triibal_home / "config.yaml").write_text(
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    (tribal_home / "config.yaml").write_text(
         "terminal:\n  auto_source_bashrc: false\n",
         encoding="utf-8",
     )
     monkeypatch.setenv("HOME", str(home))
-    monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
+    monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
 
     env = LocalEnvironment(cwd=str(tmp_path))
     try:
@@ -48,7 +48,7 @@ class TestBackgroundChildDoesNotHang:
 
     def test_plain_background_returns_promptly(self, local_env):
         """``cmd &`` with no output redirection must not hang on pipe inherit."""
-        marker = "triibal_8340_plain_bg"
+        marker = "tribal_8340_plain_bg"
         cmd = f'python3 -c "import time; time.sleep(60)" & echo {marker}'
         try:
             t0 = time.monotonic()

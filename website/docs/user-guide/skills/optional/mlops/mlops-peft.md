@@ -14,7 +14,7 @@ Parameter-efficient fine-tuning for LLMs using LoRA, QLoRA, and 25+ methods. Use
 
 | | |
 |---|---|
-| Source | Optional — install with `triibal skills install official/mlops/peft` |
+| Source | Optional — install with `tribal skills install official/mlops/peft` |
 | Path | `optional-skills/mlops/peft` |
 | Version | `1.0.0` |
 | Author | Orchestra Research |
@@ -26,7 +26,7 @@ Parameter-efficient fine-tuning for LLMs using LoRA, QLoRA, and 25+ methods. Use
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # PEFT (Parameter-Efficient Fine-Tuning)
@@ -440,8 +440,8 @@ TrainingArguments(learning_rate=1e-4)
 
 ## References
 
-- **[Advanced Usage](https://github.com/Triibal/triibal/blob/main/optional-skills/mlops/peft/references/advanced-usage.md)** - DoRA, LoftQ, rank stabilization, custom modules
-- **[Troubleshooting](https://github.com/Triibal/triibal/blob/main/optional-skills/mlops/peft/references/troubleshooting.md)** - Common errors, debugging, optimization
+- **[Advanced Usage](https://github.com/Tribal/tribal/blob/main/optional-skills/mlops/peft/references/advanced-usage.md)** - DoRA, LoftQ, rank stabilization, custom modules
+- **[Troubleshooting](https://github.com/Tribal/tribal/blob/main/optional-skills/mlops/peft/references/troubleshooting.md)** - Common errors, debugging, optimization
 
 ## Resources
 

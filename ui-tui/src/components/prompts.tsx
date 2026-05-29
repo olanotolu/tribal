@@ -1,4 +1,4 @@
-import { Box, Text, useInput } from '@triibal/ink'
+import { Box, Text, useInput } from '@tribal/ink'
 import { useState } from 'react'
 
 import { isMac } from '../lib/platform.js'

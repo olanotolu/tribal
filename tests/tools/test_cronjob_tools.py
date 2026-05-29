@@ -123,11 +123,11 @@ class TestScanCronSkillAssembled:
     def test_descriptive_attack_command_prose_allowed(self):
         """Security postmortems and runbooks routinely describe attack
         commands in prose — that's not a payload, it's documentation.
-        Real example: the `triibal-agent-dev` skill contains a postmortem
-        section saying 'the attacker could just cat ~/.triibal/.env'.
+        Real example: the `tribal-agent-dev` skill contains a postmortem
+        section saying 'the attacker could just cat ~/.tribal/.env'.
         """
         assert _scan_cron_skill_assembled(
-            "the attacker could just cat ~/.triibal/.env to steal credentials"
+            "the attacker could just cat ~/.tribal/.env to steal credentials"
         ) == ""
         assert _scan_cron_skill_assembled(
             "this rule writes to authorized_keys for persistence"
@@ -149,59 +149,59 @@ class TestScanCronSkillAssembled:
 class TestCronjobRequirements:
     def test_requires_no_crontab_binary(self, monkeypatch):
         """Cron is internal (JSON-based scheduler), no system crontab needed."""
-        monkeypatch.setenv("TRIIBAL_INTERACTIVE", "1")
-        monkeypatch.delenv("TRIIBAL_GATEWAY_SESSION", raising=False)
-        monkeypatch.delenv("TRIIBAL_EXEC_ASK", raising=False)
+        monkeypatch.setenv("TRIBAL_INTERACTIVE", "1")
+        monkeypatch.delenv("TRIBAL_GATEWAY_SESSION", raising=False)
+        monkeypatch.delenv("TRIBAL_EXEC_ASK", raising=False)
         # Even with no crontab in PATH, the cronjob tool should be available
-        # because triibal uses an internal scheduler, not system crontab.
+        # because tribal uses an internal scheduler, not system crontab.
         assert check_cronjob_requirements() is True
 
     def test_accepts_interactive_mode(self, monkeypatch):
-        monkeypatch.setenv("TRIIBAL_INTERACTIVE", "1")
-        monkeypatch.delenv("TRIIBAL_GATEWAY_SESSION", raising=False)
-        monkeypatch.delenv("TRIIBAL_EXEC_ASK", raising=False)
+        monkeypatch.setenv("TRIBAL_INTERACTIVE", "1")
+        monkeypatch.delenv("TRIBAL_GATEWAY_SESSION", raising=False)
+        monkeypatch.delenv("TRIBAL_EXEC_ASK", raising=False)
 
         assert check_cronjob_requirements() is True
 
     def test_accepts_gateway_session(self, monkeypatch):
-        monkeypatch.delenv("TRIIBAL_INTERACTIVE", raising=False)
-        monkeypatch.setenv("TRIIBAL_GATEWAY_SESSION", "1")
-        monkeypatch.delenv("TRIIBAL_EXEC_ASK", raising=False)
+        monkeypatch.delenv("TRIBAL_INTERACTIVE", raising=False)
+        monkeypatch.setenv("TRIBAL_GATEWAY_SESSION", "1")
+        monkeypatch.delenv("TRIBAL_EXEC_ASK", raising=False)
 
         assert check_cronjob_requirements() is True
 
     def test_accepts_exec_ask(self, monkeypatch):
-        monkeypatch.delenv("TRIIBAL_INTERACTIVE", raising=False)
-        monkeypatch.delenv("TRIIBAL_GATEWAY_SESSION", raising=False)
-        monkeypatch.setenv("TRIIBAL_EXEC_ASK", "1")
+        monkeypatch.delenv("TRIBAL_INTERACTIVE", raising=False)
+        monkeypatch.delenv("TRIBAL_GATEWAY_SESSION", raising=False)
+        monkeypatch.setenv("TRIBAL_EXEC_ASK", "1")
 
         assert check_cronjob_requirements() is True
 
     def test_rejects_when_no_session_env(self, monkeypatch):
         """Without any session env vars, cronjob tool should not be available."""
-        monkeypatch.delenv("TRIIBAL_INTERACTIVE", raising=False)
-        monkeypatch.delenv("TRIIBAL_GATEWAY_SESSION", raising=False)
-        monkeypatch.delenv("TRIIBAL_EXEC_ASK", raising=False)
+        monkeypatch.delenv("TRIBAL_INTERACTIVE", raising=False)
+        monkeypatch.delenv("TRIBAL_GATEWAY_SESSION", raising=False)
+        monkeypatch.delenv("TRIBAL_EXEC_ASK", raising=False)
 
         assert check_cronjob_requirements() is False
 
     @pytest.mark.parametrize("false_like_value", ["0", "false", "no", "off"])
     def test_rejects_false_like_interactive_env(self, monkeypatch, false_like_value):
-        monkeypatch.setenv("TRIIBAL_INTERACTIVE", false_like_value)
-        monkeypatch.delenv("TRIIBAL_GATEWAY_SESSION", raising=False)
-        monkeypatch.delenv("TRIIBAL_EXEC_ASK", raising=False)
+        monkeypatch.setenv("TRIBAL_INTERACTIVE", false_like_value)
+        monkeypatch.delenv("TRIBAL_GATEWAY_SESSION", raising=False)
+        monkeypatch.delenv("TRIBAL_EXEC_ASK", raising=False)
         assert check_cronjob_requirements() is False
 
     @pytest.mark.parametrize(
         "var_name",
-        ["TRIIBAL_INTERACTIVE", "TRIIBAL_GATEWAY_SESSION", "TRIIBAL_EXEC_ASK"],
+        ["TRIBAL_INTERACTIVE", "TRIBAL_GATEWAY_SESSION", "TRIBAL_EXEC_ASK"],
     )
     @pytest.mark.parametrize("false_like_value", ["0", "false", "no", "off"])
     def test_rejects_false_like_any_session_env(
         self, monkeypatch, var_name, false_like_value
     ):
         """All three session env vars share the same truthy semantics."""
-        for v in ("TRIIBAL_INTERACTIVE", "TRIIBAL_GATEWAY_SESSION", "TRIIBAL_EXEC_ASK"):
+        for v in ("TRIBAL_INTERACTIVE", "TRIBAL_GATEWAY_SESSION", "TRIBAL_EXEC_ASK"):
             monkeypatch.delenv(v, raising=False)
         monkeypatch.setenv(var_name, false_like_value)
         assert check_cronjob_requirements() is False

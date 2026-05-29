@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 
-from cli import TriibalCLI
+from cli import TribalCLI
 
 
 class _FakeBuffer:
@@ -21,7 +21,7 @@ class _FakeApp:
 
 
 def _make_cli(with_app=True):
-    cli_obj = TriibalCLI.__new__(TriibalCLI)
+    cli_obj = TribalCLI.__new__(TribalCLI)
     cli_obj._app = _FakeApp() if with_app else None
     cli_obj._command_running = False
     cli_obj._command_status = ""

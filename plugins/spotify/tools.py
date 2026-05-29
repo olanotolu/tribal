@@ -1,10 +1,10 @@
-"""Native Spotify tools for Triibal (registered via plugins/spotify)."""
+"""Native Spotify tools for Tribal (registered via plugins/spotify)."""
 
 from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from triibal_cli.auth import get_auth_status
+from tribal_cli.auth import get_auth_status
 from plugins.spotify.client import (
     SpotifyAPIError,
     SpotifyAuthRequiredError,

@@ -2,12 +2,12 @@
 name: architecture-diagram
 description: "Dark-themed SVG architecture/cloud/infra diagrams as HTML."
 version: 1.0.0
-author: Cocoon AI (hello@cocoon-ai.com), ported by Triibal Agent
+author: Cocoon AI (hello@cocoon-ai.com), ported by Tribal Agent
 license: MIT
 dependencies: []
 platforms: [linux, macos, windows]
 metadata:
-  triibal:
+  tribal:
     tags: [architecture, diagrams, SVG, HTML, visualization, infrastructure, cloud]
     related_skills: [concept-diagrams, excalidraw]
 ---

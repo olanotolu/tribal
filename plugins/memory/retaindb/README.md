@@ -10,13 +10,13 @@ Cloud memory API with hybrid search (Vector + BM25 + Reranking) and 7 memory typ
 ## Setup
 
 ```bash
-triibal memory setup    # select "retaindb"
+tribal memory setup    # select "retaindb"
 ```
 
 Or manually:
 ```bash
-triibal config set memory.provider retaindb
-echo "RETAINDB_API_KEY=your-key" >> ~/.triibal/.env
+tribal config set memory.provider retaindb
+echo "RETAINDB_API_KEY=your-key" >> ~/.tribal/.env
 ```
 
 ## Config

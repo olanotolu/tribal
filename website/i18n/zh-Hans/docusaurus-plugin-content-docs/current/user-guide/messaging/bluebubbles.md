@@ -1,13 +1,13 @@
 # BlueBubbles（iMessage）
 
-通过 [BlueBubbles](https://bluebubbles.app/) 将 Triibal 连接至 Apple iMessage——这是一款免费、开源的 macOS 服务端，可将 iMessage 桥接至任意设备。
+通过 [BlueBubbles](https://bluebubbles.app/) 将 Tribal 连接至 Apple iMessage——这是一款免费、开源的 macOS 服务端，可将 iMessage 桥接至任意设备。
 
 ## 前提条件
 
 - 一台**始终开机的 Mac**，运行 [BlueBubbles Server](https://bluebubbles.app/)
 - 该 Mac 上的 Messages.app 已登录 Apple ID
 - BlueBubbles Server v1.0.0+（webhook 需要此版本）
-- Triibal 与 BlueBubbles 服务端之间的网络连通性
+- Tribal 与 BlueBubbles 服务端之间的网络连通性
 
 ## 配置步骤
 
@@ -21,17 +21,17 @@
 - **Server URL**（例如 `http://192.168.1.10:1234`）
 - **Server Password**
 
-### 3. 配置 Triibal
+### 3. 配置 Tribal
 
 运行设置向导：
 
 ```bash
-triibal gateway setup
+tribal gateway setup
 ```
 
 选择 **BlueBubbles (iMessage)** 并输入服务端 URL 和密码。
 
-或直接在 `~/.triibal/.env` 中设置环境变量：
+或直接在 `~/.tribal/.env` 中设置环境变量：
 
 ```bash
 BLUEBUBBLES_SERVER_URL=http://192.168.1.10:1234
@@ -43,18 +43,18 @@ BLUEBUBBLES_PASSWORD=your-server-password
 选择以下任一方式：
 
 **DM 配对（推荐）：**
-当有人向你的 iMessage 发送消息时，Triibal 会自动向其发送配对码。使用以下命令批准：
+当有人向你的 iMessage 发送消息时，Tribal 会自动向其发送配对码。使用以下命令批准：
 ```bash
-triibal pairing approve bluebubbles <CODE>
+tribal pairing approve bluebubbles <CODE>
 ```
-使用 `triibal pairing list` 查看待处理的配对码和已授权用户。
+使用 `tribal pairing list` 查看待处理的配对码和已授权用户。
 
-**预授权特定用户**（在 `~/.triibal/.env` 中）：
+**预授权特定用户**（在 `~/.tribal/.env` 中）：
 ```bash
 BLUEBUBBLES_ALLOWED_USERS=user@icloud.com,+15551234567
 ```
 
-**开放访问**（在 `~/.triibal/.env` 中）：
+**开放访问**（在 `~/.tribal/.env` 中）：
 ```bash
 BLUEBUBBLES_ALLOW_ALL_USERS=true
 ```
@@ -62,20 +62,20 @@ BLUEBUBBLES_ALLOW_ALL_USERS=true
 ### 5. 启动 Gateway
 
 ```bash
-triibal gateway run
+tribal gateway run
 ```
 
-Triibal 将连接至你的 BlueBubbles 服务端，注册 webhook，并开始监听 iMessage 消息。
+Tribal 将连接至你的 BlueBubbles 服务端，注册 webhook，并开始监听 iMessage 消息。
 
 ## 工作原理
 
 ```
-iMessage → Messages.app → BlueBubbles Server → Webhook → Triibal
-Triibal → BlueBubbles REST API → Messages.app → iMessage
+iMessage → Messages.app → BlueBubbles Server → Webhook → Tribal
+Tribal → BlueBubbles REST API → Messages.app → iMessage
 ```
 
 - **入站：** 新消息到达时，BlueBubbles 向本地监听器发送 webhook 事件。无需轮询——即时送达。
-- **出站：** Triibal 通过 BlueBubbles REST API 发送消息。
+- **出站：** Tribal 通过 BlueBubbles REST API 发送消息。
 - **媒体：** 双向支持图片、语音消息、视频和文档。入站附件会被下载并在本地缓存，供 Agent 处理。
 
 ## 环境变量
@@ -91,7 +91,7 @@ Triibal → BlueBubbles REST API → Messages.app → iMessage
 | `BLUEBUBBLES_ALLOWED_USERS` | 否 | — | 逗号分隔的授权用户列表 |
 | `BLUEBUBBLES_ALLOW_ALL_USERS` | 否 | `false` | 允许所有用户 |
 
-自动将消息标记为已读由 `~/.triibal/config.yaml` 中 `platforms.bluebubbles.extra` 下的 `send_read_receipts` 键控制（默认值：`true`）。该选项没有对应的环境变量。
+自动将消息标记为已读由 `~/.tribal/config.yaml` 中 `platforms.bluebubbles.extra` 下的 `send_read_receipts` 键控制（默认值：`true`）。该选项没有对应的环境变量。
 
 ## 功能特性
 
@@ -114,7 +114,7 @@ Agent 处理消息期间，iMessage 对话中会显示"正在输入……"。需
 处理消息后自动标记为已读。需要 Private API。
 
 ### 聊天寻址
-你可以通过邮箱或手机号寻址聊天——Triibal 会自动将其解析为 BlueBubbles 聊天 GUID，无需使用原始 GUID 格式。
+你可以通过邮箱或手机号寻址聊天——Tribal 会自动将其解析为 BlueBubbles 聊天 GUID，无需使用原始 GUID 格式。
 
 ## Private API
 
@@ -136,7 +136,7 @@ Agent 处理消息期间，iMessage 对话中会显示"正在输入……"。需
 ### 消息未送达
 - 检查 webhook 是否已在 BlueBubbles Server → Settings → API → Webhooks 中注册
 - 确认 webhook URL 可从 Mac 访问
-- 查看 `triibal logs gateway` 中的 webhook 错误（或使用 `triibal logs -f` 实时跟踪）
+- 查看 `tribal logs gateway` 中的 webhook 错误（或使用 `tribal logs -f` 实时跟踪）
 
 ### "Private API helper not connected"
 - 安装 Private API helper：[docs.bluebubbles.app](https://docs.bluebubbles.app/helper-bundle/installation)

@@ -1,13 +1,13 @@
 # BlueBubbles (iMessage)
 
-Connect Triibal to Apple iMessage via [BlueBubbles](https://bluebubbles.app/) — a free, open-source macOS server that bridges iMessage to any device.
+Connect Tribal to Apple iMessage via [BlueBubbles](https://bluebubbles.app/) — a free, open-source macOS server that bridges iMessage to any device.
 
 ## Prerequisites
 
 - A **Mac** (always on) running [BlueBubbles Server](https://bluebubbles.app/)
 - Apple ID signed into Messages.app on that Mac
 - BlueBubbles Server v1.0.0+ (webhooks require this version)
-- Network connectivity between Triibal and the BlueBubbles server
+- Network connectivity between Tribal and the BlueBubbles server
 
 ## Setup
 
@@ -21,17 +21,17 @@ In BlueBubbles Server → **Settings → API**, note:
 - **Server URL** (e.g., `http://192.168.1.10:1234`)
 - **Server Password**
 
-### 3. Configure Triibal
+### 3. Configure Tribal
 
 Run the setup wizard:
 
 ```bash
-triibal gateway setup
+tribal gateway setup
 ```
 
 Select **BlueBubbles (iMessage)** and enter your server URL and password.
 
-Or set environment variables directly in `~/.triibal/.env`:
+Or set environment variables directly in `~/.tribal/.env`:
 
 ```bash
 BLUEBUBBLES_SERVER_URL=http://192.168.1.10:1234
@@ -43,18 +43,18 @@ BLUEBUBBLES_PASSWORD=your-server-password
 Choose one approach:
 
 **DM Pairing (recommended):**
-When someone messages your iMessage, Triibal automatically sends them a pairing code. Approve it with:
+When someone messages your iMessage, Tribal automatically sends them a pairing code. Approve it with:
 ```bash
-triibal pairing approve bluebubbles <CODE>
+tribal pairing approve bluebubbles <CODE>
 ```
-Use `triibal pairing list` to see pending codes and approved users.
+Use `tribal pairing list` to see pending codes and approved users.
 
-**Pre-authorize specific users** (in `~/.triibal/.env`):
+**Pre-authorize specific users** (in `~/.tribal/.env`):
 ```bash
 BLUEBUBBLES_ALLOWED_USERS=user@icloud.com,+15551234567
 ```
 
-**Open access** (in `~/.triibal/.env`):
+**Open access** (in `~/.tribal/.env`):
 ```bash
 BLUEBUBBLES_ALLOW_ALL_USERS=true
 ```
@@ -62,20 +62,20 @@ BLUEBUBBLES_ALLOW_ALL_USERS=true
 ### 5. Start the Gateway
 
 ```bash
-triibal gateway run
+tribal gateway run
 ```
 
-Triibal will connect to your BlueBubbles server, register a webhook, and start listening for iMessage messages.
+Tribal will connect to your BlueBubbles server, register a webhook, and start listening for iMessage messages.
 
 ## How It Works
 
 ```
-iMessage → Messages.app → BlueBubbles Server → Webhook → Triibal
-Triibal → BlueBubbles REST API → Messages.app → iMessage
+iMessage → Messages.app → BlueBubbles Server → Webhook → Tribal
+Tribal → BlueBubbles REST API → Messages.app → iMessage
 ```
 
 - **Inbound:** BlueBubbles sends webhook events to a local listener when new messages arrive. No polling — instant delivery.
-- **Outbound:** Triibal sends messages via the BlueBubbles REST API.
+- **Outbound:** Tribal sends messages via the BlueBubbles REST API.
 - **Media:** Images, voice messages, videos, and documents are supported in both directions. Inbound attachments are downloaded and cached locally for the agent to process.
 
 ## Environment Variables
@@ -91,7 +91,7 @@ Triibal → BlueBubbles REST API → Messages.app → iMessage
 | `BLUEBUBBLES_ALLOWED_USERS` | No | — | Comma-separated authorized users |
 | `BLUEBUBBLES_ALLOW_ALL_USERS` | No | `false` | Allow all users |
 
-Auto-marking messages as read is controlled by the `send_read_receipts` key under `platforms.bluebubbles.extra` in `~/.triibal/config.yaml` (default: `true`). There is no corresponding environment variable.
+Auto-marking messages as read is controlled by the `send_read_receipts` key under `platforms.bluebubbles.extra` in `~/.tribal/config.yaml` (default: `true`). There is no corresponding environment variable.
 
 ## Features
 
@@ -114,7 +114,7 @@ Shows "typing..." in the iMessage conversation while the agent is processing. Re
 Automatically marks messages as read after processing. Requires Private API.
 
 ### Chat Addressing
-You can address chats by email or phone number — Triibal resolves them to BlueBubbles chat GUIDs automatically. No need to use raw GUID format.
+You can address chats by email or phone number — Tribal resolves them to BlueBubbles chat GUIDs automatically. No need to use raw GUID format.
 
 ## Private API
 
@@ -136,7 +136,7 @@ Without the Private API, basic text messaging and media still work.
 ### Messages not arriving
 - Check that the webhook is registered in BlueBubbles Server → Settings → API → Webhooks
 - Verify the webhook URL is reachable from the Mac
-- Check `triibal logs gateway` for webhook errors (or `triibal logs -f` to follow in real-time)
+- Check `tribal logs gateway` for webhook errors (or `tribal logs -f` to follow in real-time)
 
 ### "Private API helper not connected"
 - Install the Private API helper: [docs.bluebubbles.app](https://docs.bluebubbles.app/helper-bundle/installation)

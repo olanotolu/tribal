@@ -21,20 +21,20 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 @pytest.fixture
 def cron_env(tmp_path, monkeypatch):
-    """Isolated cron environment with temp TRIIBAL_HOME."""
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    (triibal_home / "cron").mkdir()
-    (triibal_home / "cron" / "output").mkdir()
-    monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
+    """Isolated cron environment with temp TRIBAL_HOME."""
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    (tribal_home / "cron").mkdir()
+    (tribal_home / "cron" / "output").mkdir()
+    monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
 
     import cron.jobs as jobs_mod
-    monkeypatch.setattr(jobs_mod, "TRIIBAL_DIR", triibal_home)
-    monkeypatch.setattr(jobs_mod, "CRON_DIR", triibal_home / "cron")
-    monkeypatch.setattr(jobs_mod, "JOBS_FILE", triibal_home / "cron" / "jobs.json")
-    monkeypatch.setattr(jobs_mod, "OUTPUT_DIR", triibal_home / "cron" / "output")
+    monkeypatch.setattr(jobs_mod, "TRIBAL_DIR", tribal_home)
+    monkeypatch.setattr(jobs_mod, "CRON_DIR", tribal_home / "cron")
+    monkeypatch.setattr(jobs_mod, "JOBS_FILE", tribal_home / "cron" / "jobs.json")
+    monkeypatch.setattr(jobs_mod, "OUTPUT_DIR", tribal_home / "cron" / "output")
 
-    return triibal_home
+    return tribal_home
 
 
 class TestRewriteSkillRefsNoop:

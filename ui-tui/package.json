@@ -1,10 +1,10 @@
 {
-  "name": "triibal-tui",
+  "name": "tribal-tui",
   "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npm run build --prefix packages/triibal-ink && tsx --watch src/entry.tsx",
+    "dev": "npm run build --prefix packages/tribal-ink && tsx --watch src/entry.tsx",
     "start": "tsx src/entry.tsx",
     "build": "node scripts/build.mjs",
     "type-check": "tsc --noEmit -p tsconfig.json",
@@ -16,7 +16,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@triibal/ink": "file:./packages/triibal-ink",
+    "@tribal/ink": "file:./packages/tribal-ink",
     "@nanostores/react": "^1.1.0",
     "ink": "^6.8.0",
     "ink-text-input": "^6.0.0",

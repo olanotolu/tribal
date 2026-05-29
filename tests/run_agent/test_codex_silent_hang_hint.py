@@ -31,8 +31,8 @@ def _make_agent(tmp_path: Path, **overrides):
 
 
 @pytest.fixture(autouse=True)
-def _isolate_triibal_home(monkeypatch, tmp_path):
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+def _isolate_tribal_home(monkeypatch, tmp_path):
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
     (tmp_path / ".env").write_text("", encoding="utf-8")
 
 

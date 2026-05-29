@@ -73,9 +73,9 @@ def test_session_search_lazily_opens_db_when_entrypoint_did_not_pass_one(monkeyp
         def __new__(cls):
             return sentinel_db
 
-    triibal_state = ModuleType("triibal_state")
-    triibal_state.SessionDB = FakeSessionDB
-    monkeypatch.setitem(sys.modules, "triibal_state", triibal_state)
+    tribal_state = ModuleType("tribal_state")
+    tribal_state.SessionDB = FakeSessionDB
+    monkeypatch.setitem(sys.modules, "tribal_state", tribal_state)
 
     session_search_mod = ModuleType("tools.session_search_tool")
 
@@ -87,9 +87,9 @@ def test_session_search_lazily_opens_db_when_entrypoint_did_not_pass_one(monkeyp
     monkeypatch.setitem(sys.modules, "tools.session_search_tool", session_search_mod)
 
     agent = _make_agent(None, platform="acp")
-    result = json.loads(agent._invoke_tool("session_search", {"query": "Triibal"}, "task-id"))
+    result = json.loads(agent._invoke_tool("session_search", {"query": "Tribal"}, "task-id"))
 
     assert result["success"] is True
     assert captured["db"] is sentinel_db
-    assert captured["query"] == "Triibal"
+    assert captured["query"] == "Tribal"
     assert agent._session_db is sentinel_db

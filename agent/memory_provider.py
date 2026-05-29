@@ -65,8 +65,8 @@ class MemoryProvider(ABC):
         establish connections, start background threads, etc.
 
         kwargs always include:
-          - triibal_home (str): The active TRIIBAL_HOME directory path. Use this
-            for profile-scoped storage instead of hardcoding ``~/.triibal``.
+          - tribal_home (str): The active TRIBAL_HOME directory path. Use this
+            for profile-scoped storage instead of hardcoding ``~/.tribal``.
           - platform (str): "cli", "telegram", "discord", "cron", etc.
 
         kwargs may also include:
@@ -75,7 +75,7 @@ class MemoryProvider(ABC):
             prompts would corrupt user representations).
           - agent_identity (str): Profile name (e.g. "coder"). Use for
             per-profile provider identity scoping.
-          - agent_workspace (str): Shared workspace name (e.g. "triibal").
+          - agent_workspace (str): Shared workspace name (e.g. "tribal").
           - parent_session_id (str): For subagents, the parent's session_id.
           - user_id (str): Platform user identifier (gateway sessions).
           - user_id_alt (str): Optional alternate stable platform user identifier.
@@ -239,7 +239,7 @@ class MemoryProvider(ABC):
     def get_config_schema(self) -> List[Dict[str, Any]]:
         """Return config fields this provider needs for setup.
 
-        Used by 'triibal memory setup' to walk the user through configuration.
+        Used by 'tribal memory setup' to walk the user through configuration.
         Each field is a dict with:
           key:         config key name (e.g. 'api_key', 'mode')
           description: human-readable description
@@ -254,12 +254,12 @@ class MemoryProvider(ABC):
         """
         return []
 
-    def save_config(self, values: Dict[str, Any], triibal_home: str) -> None:
+    def save_config(self, values: Dict[str, Any], tribal_home: str) -> None:
         """Write non-secret config to the provider's native location.
 
-        Called by 'triibal memory setup' after collecting user inputs.
+        Called by 'tribal memory setup' after collecting user inputs.
         ``values`` contains only non-secret fields (secrets go to .env).
-        ``triibal_home`` is the active TRIIBAL_HOME directory path.
+        ``tribal_home`` is the active TRIBAL_HOME directory path.
 
         Providers with native config files (JSON, YAML) should override
         this to write to their expected location. Providers that use only

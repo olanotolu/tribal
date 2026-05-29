@@ -1,7 +1,7 @@
 # Design System: Stripe
 
 
-> **Triibal Agent — Implementation Notes**
+> **Tribal Agent — Implementation Notes**
 >
 > The original site uses proprietary fonts. For self-contained HTML output, use these CDN substitutes:
 > - **Primary:** `Source Sans 3` | **Mono:** `Source Code Pro`

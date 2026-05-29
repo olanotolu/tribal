@@ -1,6 +1,6 @@
-"""CLI entry point for the triibal-agent ACP adapter.
+"""CLI entry point for the tribal-agent ACP adapter.
 
-Loads environment variables from ``~/.triibal/.env``, configures logging
+Loads environment variables from ``~/.tribal/.env``, configures logging
 to write to stderr (so stdout is reserved for ACP JSON-RPC transport),
 and starts the ACP agent server.
 
@@ -8,18 +8,18 @@ Usage::
 
     python -m acp_adapter.entry
     # or
-    triibal acp
+    tribal acp
     # or
-    triibal-acp
+    tribal-acp
 """
 
-# IMPORTANT: triibal_bootstrap must be the very first import — UTF-8 stdio
-# on Windows.  No-op on POSIX.  See triibal_bootstrap.py for full rationale.
+# IMPORTANT: tribal_bootstrap must be the very first import — UTF-8 stdio
+# on Windows.  No-op on POSIX.  See tribal_bootstrap.py for full rationale.
 try:
-    import triibal_bootstrap  # noqa: F401
+    import tribal_bootstrap  # noqa: F401
 except ModuleNotFoundError:
-    # Graceful fallback when triibal_bootstrap isn't registered in the venv
-    # yet — happens during partial ``triibal update`` where git-reset landed
+    # Graceful fallback when tribal_bootstrap isn't registered in the venv
+    # yet — happens during partial ``tribal update`` where git-reset landed
     # new code but ``uv pip install -e .`` didn't finish.  Missing bootstrap
     # means UTF-8 stdio setup is skipped on Windows; POSIX is unaffected.
     pass
@@ -29,7 +29,7 @@ import asyncio
 import logging
 import sys
 from pathlib import Path
-from triibal_constants import get_triibal_home
+from tribal_constants import get_tribal_home
 
 
 # Methods clients send as periodic liveness probes. They are not part of the
@@ -94,26 +94,26 @@ def _setup_logging() -> None:
 
 
 def _load_env() -> None:
-    """Load .env from TRIIBAL_HOME (default ``~/.triibal``)."""
-    from triibal_cli.env_loader import load_triibal_dotenv
+    """Load .env from TRIBAL_HOME (default ``~/.tribal``)."""
+    from tribal_cli.env_loader import load_tribal_dotenv
 
-    triibal_home = get_triibal_home()
-    loaded = load_triibal_dotenv(triibal_home=triibal_home)
+    tribal_home = get_tribal_home()
+    loaded = load_tribal_dotenv(tribal_home=tribal_home)
     if loaded:
         for env_file in loaded:
             logging.getLogger(__name__).info("Loaded env from %s", env_file)
     else:
         logging.getLogger(__name__).info(
-            "No .env found at %s, using system env", triibal_home / ".env"
+            "No .env found at %s, using system env", tribal_home / ".env"
         )
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        prog="triibal-acp",
-        description="Run Triibal Agent as an ACP stdio server.",
+        prog="tribal-acp",
+        description="Run Tribal Agent as an ACP stdio server.",
     )
-    parser.add_argument("--version", action="store_true", help="Print Triibal version and exit")
+    parser.add_argument("--version", action="store_true", help="Print Tribal version and exit")
     parser.add_argument(
         "--check",
         action="store_true",
@@ -122,12 +122,12 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--setup",
         action="store_true",
-        help="Run interactive Triibal provider/model setup for ACP terminal auth",
+        help="Run interactive Tribal provider/model setup for ACP terminal auth",
     )
     parser.add_argument(
         "--setup-browser",
         action="store_true",
-        help="Install agent-browser + Playwright Chromium into ~/.triibal/node/ "
+        help="Install agent-browser + Playwright Chromium into ~/.tribal/node/ "
              "for browser tool support. Idempotent.",
     )
     parser.add_argument(
@@ -142,25 +142,25 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def _print_version() -> None:
-    from triibal_cli import __version__ as triibal_version
+    from tribal_cli import __version__ as tribal_version
 
-    print(triibal_version)
+    print(tribal_version)
 
 
 def _run_check() -> None:
     import acp  # noqa: F401
-    from acp_adapter.server import TriibalACPAgent  # noqa: F401
+    from acp_adapter.server import TribalACPAgent  # noqa: F401
 
-    print("Triibal ACP check OK")
+    print("Tribal ACP check OK")
 
 
 def _run_setup() -> None:
-    from triibal_cli.main import main as triibal_main
+    from tribal_cli.main import main as tribal_main
 
     old_argv = sys.argv[:]
     try:
-        sys.argv = [old_argv[0] if old_argv else "triibal", "model"]
-        triibal_main()
+        sys.argv = [old_argv[0] if old_argv else "tribal", "model"]
+        tribal_main()
     finally:
         sys.argv = old_argv
 
@@ -185,11 +185,11 @@ def _run_setup_browser(assume_yes: bool = False) -> int:
     """Bootstrap agent-browser + Chromium.
 
     Routes through dep_ensure -> install.{sh,ps1} --ensure, sharing code
-    with ``triibal postinstall`` and the runtime lazy installer.
+    with ``tribal postinstall`` and the runtime lazy installer.
 
     Returns 0 on success, 1 on failure.
     """
-    from triibal_cli.dep_ensure import ensure_dependency
+    from tribal_cli.dep_ensure import ensure_dependency
 
     try:
         node_ok = ensure_dependency("node", interactive=not assume_yes)
@@ -231,7 +231,7 @@ def main(argv: list[str] | None = None) -> None:
     _load_env()
 
     logger = logging.getLogger(__name__)
-    logger.info("Starting triibal-agent ACP adapter")
+    logger.info("Starting tribal-agent ACP adapter")
 
     # Ensure the project root is on sys.path so ``from run_agent import AIAgent`` works
     project_root = str(Path(__file__).resolve().parent.parent)
@@ -239,7 +239,7 @@ def main(argv: list[str] | None = None) -> None:
         sys.path.insert(0, project_root)
 
     import acp
-    from .server import TriibalACPAgent
+    from .server import TribalACPAgent
 
     # MCP tool discovery from config.yaml — run before asyncio.run() so
     # it's safe to use blocking waits.  (ACP also registers per-session
@@ -252,7 +252,7 @@ def main(argv: list[str] | None = None) -> None:
     except Exception:
         logger.debug("MCP tool discovery failed at ACP startup", exc_info=True)
 
-    agent = TriibalACPAgent()
+    agent = TribalACPAgent()
     try:
         asyncio.run(acp.run_agent(agent, use_unstable_protocol=True))
     except KeyboardInterrupt:

@@ -13,7 +13,7 @@
  *   await gw.request("prompt.submit", { session_id, text: "hi" })
  */
 
-import { TRIIBAL_BASE_PATH, getWsTicket } from "@/lib/api";
+import { TRIBAL_BASE_PATH, getWsTicket } from "@/lib/api";
 
 export type GatewayEventName =
   | "gateway.ready"
@@ -117,24 +117,24 @@ export class GatewayClient {
     if (token) {
       authParamName = "token";
       authParamValue = token;
-    } else if (window.__TRIIBAL_AUTH_REQUIRED__) {
+    } else if (window.__TRIBAL_AUTH_REQUIRED__) {
       const { ticket } = await getWsTicket();
       authParamName = "ticket";
       authParamValue = ticket;
     } else {
       authParamName = "token";
-      authParamValue = window.__TRIIBAL_SESSION_TOKEN__ ?? "";
+      authParamValue = window.__TRIBAL_SESSION_TOKEN__ ?? "";
       if (!authParamValue) {
         this.setState("error");
         throw new Error(
-          "Session token not available — page must be served by the Triibal dashboard",
+          "Session token not available — page must be served by the Tribal dashboard",
         );
       }
     }
 
     const scheme = location.protocol === "https:" ? "wss:" : "ws:";
     const ws = new WebSocket(
-      `${scheme}//${location.host}${TRIIBAL_BASE_PATH}/api/ws?${authParamName}=${encodeURIComponent(authParamValue)}`,
+      `${scheme}//${location.host}${TRIBAL_BASE_PATH}/api/ws?${authParamName}=${encodeURIComponent(authParamValue)}`,
     );
     this.ws = ws;
 
@@ -247,7 +247,7 @@ export class GatewayClient {
 
 declare global {
   interface Window {
-    __TRIIBAL_SESSION_TOKEN__?: string;
-    __TRIIBAL_AUTH_REQUIRED__?: boolean;
+    __TRIBAL_SESSION_TOKEN__?: string;
+    __TRIBAL_AUTH_REQUIRED__?: boolean;
   }
 }

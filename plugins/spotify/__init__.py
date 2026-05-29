@@ -2,8 +2,8 @@
 
 Registers 7 tools (playback, devices, queue, search, playlists, albums,
 library) into the ``spotify`` toolset. Each tool's handler is gated by
-``_check_spotify_available()`` — when the user has not run ``triibal auth
-spotify``, the tools remain registered (so they appear in ``triibal
+``_check_spotify_available()`` — when the user has not run ``tribal auth
+spotify``, the tools remain registered (so they appear in ``tribal
 tools``) but the runtime check prevents dispatch.
 
 Why a plugin instead of a top-level ``tools/`` file?
@@ -18,7 +18,7 @@ Why a plugin instead of a top-level ``tools/`` file?
 - Bundled + ``kind: backend`` auto-loads on startup just like image_gen
   backends — no user opt-in needed, no ``plugins.enabled`` config.
 
-The Spotify auth flow (``triibal auth spotify``), CLI plumbing, and docs
+The Spotify auth flow (``tribal auth spotify``), CLI plumbing, and docs
 are unchanged. This move is purely structural.
 """
 

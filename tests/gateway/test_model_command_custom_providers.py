@@ -27,9 +27,9 @@ def _make_event(text="/model"):
 
 @pytest.mark.asyncio
 async def test_handle_model_command_lists_saved_custom_provider(tmp_path, monkeypatch):
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    (triibal_home / "config.yaml").write_text(
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    (tribal_home / "config.yaml").write_text(
         yaml.safe_dump(
             {
                 "model": {
@@ -52,7 +52,7 @@ async def test_handle_model_command_lists_saved_custom_provider(tmp_path, monkey
 
     import gateway.run as gateway_run
 
-    monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+    monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
     monkeypatch.setattr("agent.models_dev.fetch_models_dev", lambda: {})
 
     result = await _make_runner()._handle_model_command(_make_event())

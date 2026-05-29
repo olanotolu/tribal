@@ -95,10 +95,10 @@ class TestSlackExecApproval:
         elements = blocks[1]["elements"]
         assert len(elements) == 4
         action_ids = [e["action_id"] for e in elements]
-        assert "triibal_approve_once" in action_ids
-        assert "triibal_approve_session" in action_ids
-        assert "triibal_approve_always" in action_ids
-        assert "triibal_deny" in action_ids
+        assert "tribal_approve_once" in action_ids
+        assert "tribal_approve_session" in action_ids
+        assert "tribal_approve_always" in action_ids
+        assert "tribal_deny" in action_ids
         # Each button carries the session key as value
         for e in elements:
             assert e["value"] == "agent:main:slack:group:C1:1111"
@@ -170,7 +170,7 @@ class TestSlackApprovalAction:
             "user": {"name": "norbert"},
         }
         action = {
-            "action_id": "triibal_approve_once",
+            "action_id": "tribal_approve_once",
             "value": "agent:main:slack:group:C1:1111",
         }
 
@@ -200,7 +200,7 @@ class TestSlackApprovalAction:
             "user": {"name": "norbert"},
         }
         action = {
-            "action_id": "triibal_approve_once",
+            "action_id": "tribal_approve_once",
             "value": "some-session",
         }
 
@@ -224,7 +224,7 @@ class TestSlackApprovalAction:
             "channel": {"id": "C1"},
             "user": {"name": "alice"},
         }
-        action = {"action_id": "triibal_deny", "value": "session-key"}
+        action = {"action_id": "tribal_deny", "value": "session-key"}
 
         mock_client = adapter._team_clients["T1"]
         mock_client.chat_update = AsyncMock()

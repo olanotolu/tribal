@@ -14,10 +14,10 @@ Evolve prompts/regex/SQL/code with Imbue's evolution loop.
 
 | | |
 |---|---|
-| Source | Optional — install with `triibal skills install official/research/darwinian-evolver` |
+| Source | Optional — install with `tribal skills install official/research/darwinian-evolver` |
 | Path | `optional-skills/research/darwinian-evolver` |
 | Version | `0.1.0` |
-| Author | Bihruze (Asahi0x), Triibal Agent |
+| Author | Bihruze (Asahi0x), Tribal Agent |
 | License | MIT |
 | Platforms | linux, macos |
 | Tags | `evolution`, `optimization`, `prompt-engineering`, `research` |
@@ -26,7 +26,7 @@ Evolve prompts/regex/SQL/code with Imbue's evolution loop.
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # Darwinian Evolver
@@ -41,7 +41,7 @@ and drives the loop via the upstream CLI or a small custom Python driver.
 
 **License:** the upstream tool is **AGPL-3.0**. The skill ONLY ever invokes it
 via the upstream CLI or a `subprocess`/`uv run` call (mere aggregation). Do NOT
-import upstream classes into Triibal itself.
+import upstream classes into Tribal itself.
 
 ## When to Use
 
@@ -73,7 +73,7 @@ hardcodes Anthropic and needs `ANTHROPIC_API_KEY`.
 Run via the `terminal` tool:
 
 ```bash
-mkdir -p ~/.triibal/cache/darwinian-evolver && cd ~/.triibal/cache/darwinian-evolver
+mkdir -p ~/.tribal/cache/darwinian-evolver && cd ~/.tribal/cache/darwinian-evolver
 [ -d darwinian_evolver ] || git clone --depth 1 https://github.com/imbue-ai/darwinian_evolver.git
 cd darwinian_evolver && uv sync
 ```
@@ -81,7 +81,7 @@ cd darwinian_evolver && uv sync
 Verify:
 
 ```bash
-cd ~/.triibal/cache/darwinian-evolver/darwinian_evolver \
+cd ~/.tribal/cache/darwinian-evolver/darwinian_evolver \
   && uv run darwinian_evolver --help | head -5
 ```
 
@@ -90,7 +90,7 @@ cd ~/.triibal/cache/darwinian-evolver/darwinian_evolver \
 Tiny smoke test (requires `ANTHROPIC_API_KEY`):
 
 ```bash
-cd ~/.triibal/cache/darwinian-evolver/darwinian_evolver
+cd ~/.tribal/cache/darwinian-evolver/darwinian_evolver
 uv run darwinian_evolver parrot \
   --num_iterations 2 \
   --num_parents_per_iteration 2 \
@@ -102,7 +102,7 @@ Outputs:
 - `/tmp/parrot_demo/snapshots/iteration_N.pkl` — pickled population per iteration
 - `/tmp/parrot_demo/<jsonl>` — per-iteration JSON log (path printed at end)
 
-Open `~/.triibal/cache/darwinian-evolver/darwinian_evolver/darwinian_evolver/lineage_visualizer.html`
+Open `~/.tribal/cache/darwinian-evolver/darwinian_evolver/darwinian_evolver/lineage_visualizer.html`
 in a browser and load the JSON log to see the evolutionary tree.
 
 ## Quick Start — OpenRouter Driver (No Anthropic Key)
@@ -112,8 +112,8 @@ LLM call goes through OpenRouter so any provider works.
 
 ```bash
 # From wherever the skill is installed:
-SKILL_DIR=~/.triibal/skills/research/darwinian-evolver
-DE_DIR=~/.triibal/cache/darwinian-evolver/darwinian_evolver
+SKILL_DIR=~/.tribal/skills/research/darwinian-evolver
+DE_DIR=~/.tribal/cache/darwinian-evolver/darwinian_evolver
 
 cd "$DE_DIR" && \
   EVOLVER_MODEL='openai/gpt-4o-mini' \
@@ -192,8 +192,8 @@ shipped `scripts/parrot_openrouter.py` is the reference.
 6. **CLI is hardcoded to Anthropic.** `uv run darwinian_evolver <problem>`
    reaches for `ANTHROPIC_API_KEY` and uses Claude Sonnet. To use any other
    provider, write a driver like `parrot_openrouter.py`.
-7. **AGPL.** Never `from darwinian_evolver import ...` inside Triibal core.
-   Custom driver scripts under `~/.triibal/skills/...` are user-side and fine.
+7. **AGPL.** Never `from darwinian_evolver import ...` inside Tribal core.
+   Custom driver scripts under `~/.tribal/skills/...` are user-side and fine.
 8. **No PyPI package.** `pip install darwinian-evolver` will pull the wrong
    thing. Always install from the GitHub repo.
 
@@ -202,7 +202,7 @@ shipped `scripts/parrot_openrouter.py` is the reference.
 After install + a parrot run, exit code 0 from this is sufficient:
 
 ```bash
-DE_DIR=~/.triibal/cache/darwinian-evolver/darwinian_evolver
+DE_DIR=~/.tribal/cache/darwinian-evolver/darwinian_evolver
 ls "$DE_DIR/darwinian_evolver/lineage_visualizer.html" >/dev/null && \
 cd "$DE_DIR" && uv run darwinian_evolver --help >/dev/null && \
 echo "darwinian-evolver: OK"

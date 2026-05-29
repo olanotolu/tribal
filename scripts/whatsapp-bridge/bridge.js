@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Triibal Agent WhatsApp Bridge
+ * Tribal Agent WhatsApp Bridge
  *
  * Standalone Node.js process that connects to WhatsApp via Baileys
  * and exposes HTTP endpoints for the Python gateway adapter.
@@ -15,7 +15,7 @@
  *   GET  /health         - Health check
  *
  * Usage:
- *   node bridge.js --port 3000 --session ~/.triibal/whatsapp/session
+ *   node bridge.js --port 3000 --session ~/.tribal/whatsapp/session
  */
 
 import { makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, downloadMediaMessage } from '@whiskeysockets/baileys';
@@ -44,14 +44,14 @@ const WHATSAPP_DEBUG =
   ['1', 'true', 'yes', 'on'].includes(process.env.WHATSAPP_DEBUG.toLowerCase());
 
 const PORT = parseInt(getArg('port', '3000'), 10);
-const SESSION_DIR = getArg('session', path.join(process.env.HOME || '~', '.triibal', 'whatsapp', 'session'));
-const IMAGE_CACHE_DIR = path.join(process.env.HOME || '~', '.triibal', 'image_cache');
-const DOCUMENT_CACHE_DIR = path.join(process.env.HOME || '~', '.triibal', 'document_cache');
-const AUDIO_CACHE_DIR = path.join(process.env.HOME || '~', '.triibal', 'audio_cache');
+const SESSION_DIR = getArg('session', path.join(process.env.HOME || '~', '.tribal', 'whatsapp', 'session'));
+const IMAGE_CACHE_DIR = path.join(process.env.HOME || '~', '.tribal', 'image_cache');
+const DOCUMENT_CACHE_DIR = path.join(process.env.HOME || '~', '.tribal', 'document_cache');
+const AUDIO_CACHE_DIR = path.join(process.env.HOME || '~', '.tribal', 'audio_cache');
 const PAIR_ONLY = args.includes('--pair-only');
 const WHATSAPP_MODE = getArg('mode', process.env.WHATSAPP_MODE || 'self-chat'); // "bot" or "self-chat"
 const ALLOWED_USERS = parseAllowedUsers(process.env.WHATSAPP_ALLOWED_USERS || '');
-const DEFAULT_REPLY_PREFIX = '⚕ *Triibal Agent*\n────────────\n';
+const DEFAULT_REPLY_PREFIX = '⚕ *Tribal Agent*\n────────────\n';
 const REPLY_PREFIX = process.env.WHATSAPP_REPLY_PREFIX === undefined
   ? DEFAULT_REPLY_PREFIX
   : process.env.WHATSAPP_REPLY_PREFIX.replace(/\\n/g, '\n');
@@ -186,7 +186,7 @@ async function startSocket() {
     auth: state,
     logger,
     printQRInTerminal: false,
-    browser: ['Triibal Agent', 'Chrome', '120.0'],
+    browser: ['Tribal Agent', 'Chrome', '120.0'],
     syncFullHistory: false,
     markOnlineOnConnect: false,
     // Required for Baileys 7.x: without this, incoming messages that need
@@ -400,7 +400,7 @@ async function startSocket() {
         body = `[${mediaType} received]`;
       }
 
-      // Ignore Triibal' own reply messages in self-chat mode to avoid loops.
+      // Ignore Tribal' own reply messages in self-chat mode to avoid loops.
       if (msg.key.fromMe && ((REPLY_PREFIX && body.startsWith(REPLY_PREFIX)) || recentlySentIds.has(msg.key.id))) {
         if (WHATSAPP_DEBUG) {
           try { console.log(JSON.stringify({ event: 'ignored', reason: 'agent_echo', chatId, messageId: msg.key.id })); } catch {}
@@ -612,7 +612,7 @@ app.post('/send-media', async (req, res) => {
         const needsConversion = !['ogg', 'opus'].includes(ext);
         let tmpPath = null;
         if (needsConversion) {
-          tmpPath = path.join(tmpdir(), `triibal_voice_${randomBytes(6).toString('hex')}.ogg`);
+          tmpPath = path.join(tmpdir(), `tribal_voice_${randomBytes(6).toString('hex')}.ogg`);
           try {
             execSync(
               `ffmpeg -y -i ${JSON.stringify(filePath)} -ar 48000 -ac 1 -c:a libopus ${JSON.stringify(tmpPath)}`,

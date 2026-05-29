@@ -17,7 +17,7 @@ Clone/create/fork repos; manage remotes, releases.
 | Source | Bundled (installed by default) |
 | Path | `skills/github/github-repo-management` |
 | Version | `1.1.0` |
-| Author | Triibal Agent |
+| Author | Tribal Agent |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `GitHub`, `Repositories`, `Git`, `Releases`, `Secrets`, `Configuration` |
@@ -26,7 +26,7 @@ Clone/create/fork repos; manage remotes, releases.
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # GitHub Repository Management
@@ -45,8 +45,8 @@ if command -v gh &>/dev/null && gh auth status &>/dev/null; then
 else
   AUTH="git"
   if [ -z "$GITHUB_TOKEN" ]; then
-    if [ -f ~/.triibal/.env ] && grep -q "^GITHUB_TOKEN=" ~/.triibal/.env; then
-      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.triibal/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
+    if [ -f ~/.tribal/.env ] && grep -q "^GITHUB_TOKEN=" ~/.tribal/.env; then
+      GITHUB_TOKEN=$(grep "^GITHUB_TOKEN=" ~/.tribal/.env | head -1 | cut -d= -f2 | tr -d '\n\r')
     elif grep -q "github.com" ~/.git-credentials 2>/dev/null; then
       GITHUB_TOKEN=$(grep "github.com" ~/.git-credentials 2>/dev/null | head -1 | sed 's|https://[^:]*:\([^@]*\)@.*|\1|')
     fi

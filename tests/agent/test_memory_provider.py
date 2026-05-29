@@ -433,7 +433,7 @@ class TestPluginMemoryDiscovery:
 
 
 class TestUserInstalledProviderDiscovery:
-    """Memory providers installed to $TRIIBAL_HOME/plugins/ should be found.
+    """Memory providers installed to $TRIBAL_HOME/plugins/ should be found.
 
     Regression test for issues #4956 and #9099: load_memory_provider() and
     discover_memory_providers() only scanned the bundled plugins/memory/
@@ -474,7 +474,7 @@ class TestUserInstalledProviderDiscovery:
         assert "holographic" in names  # bundled still found
 
     def test_load_user_plugin(self, tmp_path, monkeypatch):
-        """load_memory_provider() can load from $TRIIBAL_HOME/plugins/."""
+        """load_memory_provider() can load from $TRIBAL_HOME/plugins/."""
         from plugins.memory import load_memory_provider
         self._make_user_memory_plugin(tmp_path, "myexternal")
         monkeypatch.setattr(
@@ -646,7 +646,7 @@ class TestSequentialDispatchRouting:
 
 class TestSetupFieldFiltering:
     """Test the 'when' clause and 'default_from' logic used by the
-    memory setup wizard in triibal_cli/memory_setup.py.
+    memory setup wizard in tribal_cli/memory_setup.py.
 
     These features are generic — any memory plugin can use them in
     get_config_schema(). Currently used by the hindsight plugin.
@@ -705,7 +705,7 @@ class TestSetupFieldFiltering:
     def test_when_clause_no_condition_always_shown(self):
         """Fields without 'when' are always included."""
         schema = [
-            {"key": "bank_id", "default": "triibal"},
+            {"key": "bank_id", "default": "tribal"},
             {"key": "budget", "default": "mid"},
         ]
         fields = self._filter_fields(schema, {"mode": "cloud"})

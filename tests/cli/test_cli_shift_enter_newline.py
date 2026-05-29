@@ -12,7 +12,7 @@ from prompt_toolkit.input.ansi_escape_sequences import ANSI_SEQUENCES
 from prompt_toolkit.input.vt100_parser import Vt100Parser
 from prompt_toolkit.keys import Keys
 
-from triibal_cli.pt_input_extras import install_shift_enter_alias
+from tribal_cli.pt_input_extras import install_shift_enter_alias
 
 
 SHIFT_ENTER_SEQUENCES = (

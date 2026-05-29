@@ -7,7 +7,7 @@ description: "Inline @-syntax for attaching files, folders, git diffs, and URLs 
 
 # Context References
 
-Type `@` followed by a reference to inject content directly into your message. Triibal expands the reference inline and appends the content under an `--- Attached Context ---` section.
+Type `@` followed by a reference to inject content directly into your message. Tribal expands the reference inline and appends the content under an `--- Attached Context ---` section.
 
 ## Supported References
 
@@ -82,10 +82,10 @@ These paths are always blocked from `@file:` references to prevent credential ex
 - SSH keys and config: `~/.ssh/id_rsa`, `~/.ssh/id_ed25519`, `~/.ssh/authorized_keys`, `~/.ssh/config`
 - Shell profiles: `~/.bashrc`, `~/.zshrc`, `~/.profile`, `~/.bash_profile`, `~/.zprofile`
 - Credential files: `~/.netrc`, `~/.pgpass`, `~/.npmrc`, `~/.pypirc`
-- Triibal env: `$TRIIBAL_HOME/.env`
+- Tribal env: `$TRIBAL_HOME/.env`
 
 These directories are fully blocked (any file inside):
-- `~/.ssh/`, `~/.aws/`, `~/.gnupg/`, `~/.kube/`, `$TRIIBAL_HOME/skills/.hub/`
+- `~/.ssh/`, `~/.aws/`, `~/.gnupg/`, `~/.kube/`, `$TRIBAL_HOME/skills/.hub/`
 
 ### Path Traversal Protection
 

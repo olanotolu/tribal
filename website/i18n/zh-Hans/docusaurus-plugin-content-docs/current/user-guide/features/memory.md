@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: "持久化记忆"
-description: "Triibal Agent 如何跨会话记忆——MEMORY.md、USER.md 与会话搜索"
+description: "Tribal Agent 如何跨会话记忆——MEMORY.md、USER.md 与会话搜索"
 ---
 
 # 持久化记忆
 
-Triibal Agent 拥有有界、经过整理的记忆，可跨会话持久保存。这使它能够记住你的偏好、项目、环境以及已学到的内容。
+Tribal Agent 拥有有界、经过整理的记忆，可跨会话持久保存。这使它能够记住你的偏好、项目、环境以及已学到的内容。
 
 ## 工作原理
 
@@ -17,7 +17,7 @@ Triibal Agent 拥有有界、经过整理的记忆，可跨会话持久保存。
 | **MEMORY.md** | Agent 的个人笔记——环境事实、约定、已学内容 | 2,200 字符（约 800 tokens） |
 | **USER.md** | 用户档案——你的偏好、沟通风格、期望 | 1,375 字符（约 500 tokens） |
 
-两个文件均存储于 `~/.triibal/memories/`，在会话开始时以冻结快照的形式注入系统 prompt（提示词）。Agent 通过 `memory` 工具管理自身记忆——可添加、替换或删除条目。
+两个文件均存储于 `~/.tribal/memories/`，在会话开始时以冻结快照的形式注入系统 prompt（提示词）。Agent 通过 `memory` 工具管理自身记忆——可添加、替换或删除条目。
 
 :::info
 字符上限使记忆保持聚焦。当记忆已满时，Agent 会整合或替换条目以腾出空间存放新信息。
@@ -176,13 +176,13 @@ located at ~/code/api. I discovered it uses Go version 1.22 and...
 
 除 MEMORY.md 和 USER.md 之外，Agent 还可以使用 `session_search` 工具搜索过去的对话：
 
-- 所有 CLI 和消息会话均存储在 SQLite（`~/.triibal/state.db`）中，支持 FTS5 全文搜索
+- 所有 CLI 和消息会话均存储在 SQLite（`~/.tribal/state.db`）中，支持 FTS5 全文搜索
 - 搜索查询返回数据库中的实际消息——无 LLM 摘要，无截断
 - Agent 可以找到数周前讨论过的内容，即使它们不在活跃记忆中
 - Agent 还可以在找到的任意会话中向前或向后滚动
 
 ```bash
-triibal sessions list    # 浏览过去的会话
+tribal sessions list    # 浏览过去的会话
 ```
 
 有关三种调用形式（发现 / 滚动 / 浏览）和响应格式，请参阅[会话搜索工具](/user-guide/sessions#session-search-tool)。
@@ -203,7 +203,7 @@ triibal sessions list    # 浏览过去的会话
 ## 配置
 
 ```yaml
-# In ~/.triibal/config.yaml
+# In ~/.tribal/config.yaml
 memory:
   memory_enabled: true
   user_profile_enabled: true
@@ -213,13 +213,13 @@ memory:
 
 ## 外部记忆提供商
 
-对于超出 MEMORY.md 和 USER.md 范围的更深层持久化记忆，Triibal 内置了 8 个外部记忆提供商插件——包括 Honcho、OpenViking、Mem0、Hindsight、Holographic、RetainDB、ByteRover 和 Supermemory。
+对于超出 MEMORY.md 和 USER.md 范围的更深层持久化记忆，Tribal 内置了 8 个外部记忆提供商插件——包括 Honcho、OpenViking、Mem0、Hindsight、Holographic、RetainDB、ByteRover 和 Supermemory。
 
 外部提供商与内置记忆**并行**运行（而非替代），并增加了知识图谱、语义搜索、自动事实提取和跨会话用户建模等能力。
 
 ```bash
-triibal memory setup      # 选择并配置提供商
-triibal memory status     # 查看当前激活状态
+tribal memory setup      # 选择并配置提供商
+tribal memory status     # 查看当前激活状态
 ```
 
 有关每个提供商的完整详情、设置说明和对比，请参阅[记忆提供商](./memory-providers.md)指南。

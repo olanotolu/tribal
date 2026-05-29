@@ -55,9 +55,9 @@ def check_sms_requirements() -> bool:
 
 class SmsAdapter(BasePlatformAdapter):
     """
-    Twilio SMS <-> Triibal gateway adapter.
+    Twilio SMS <-> Tribal gateway adapter.
 
-    Each inbound phone number gets its own Triibal session (multi-tenant).
+    Each inbound phone number gets its own Tribal session (multi-tenant).
     Replies are always sent from the configured TWILIO_PHONE_NUMBER.
     """
 

@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
 title: "Architecture"
-description: "Triibal Agent internals — major subsystems, execution paths, data flow, and where to read next"
+description: "Tribal Agent internals — major subsystems, execution paths, data flow, and where to read next"
 ---
 
 # Architecture
 
-This page is the top-level map of Triibal Agent internals. Use it to orient yourself in the codebase, then dive into subsystem-specific docs for implementation details.
+This page is the top-level map of Tribal Agent internals. Use it to orient yourself in the codebase, then dive into subsystem-specific docs for implementation details.
 
 ## System Overview
 
@@ -41,7 +41,7 @@ This page is the top-level map of Triibal Agent internals. Use it to orient your
 ┌───────────────────┐              ┌──────────────────────┐
 │ Session Storage   │              │ Tool Backends         │
 │ (SQLite + FTS5)   │              │ Terminal (6 backends) │
-│ triibal_state.py   │              │ Browser (5 backends)  │
+│ tribal_state.py   │              │ Browser (5 backends)  │
 │ gateway/session.py│              │ Web (4 backends)      │
 └───────────────────┘              │ MCP (dynamic)         │
                                    │ File, Vision, etc.    │
@@ -51,13 +51,13 @@ This page is the top-level map of Triibal Agent internals. Use it to orient your
 ## Directory Structure
 
 ```text
-triibal-agent/
+tribal-agent/
 ├── run_agent.py              # AIAgent — core conversation loop (large file)
-├── cli.py                    # TriibalCLI — interactive terminal UI (large file)
+├── cli.py                    # TribalCLI — interactive terminal UI (large file)
 ├── model_tools.py            # Tool discovery, schema collection, dispatch
 ├── toolsets.py               # Tool groupings and platform presets
-├── triibal_state.py           # SQLite session/state database with FTS5
-├── triibal_constants.py       # TRIIBAL_HOME, profile-aware paths
+├── tribal_state.py           # SQLite session/state database with FTS5
+├── tribal_constants.py       # TRIBAL_HOME, profile-aware paths
 ├── batch_runner.py           # Batch trajectory generation
 │
 ├── agent/                    # Agent internals
@@ -75,8 +75,8 @@ triibal-agent/
 │   ├── memory_provider.py   # Memory provider ABC
 │   └── trajectory.py         # Trajectory saving helpers
 │
-├── triibal_cli/               # CLI subcommands and setup
-│   ├── main.py               # Entry point — all `triibal` subcommands (large file)
+├── tribal_cli/               # CLI subcommands and setup
+│   ├── main.py               # Entry point — all `tribal` subcommands (large file)
 │   ├── config.py             # DEFAULT_CONFIG, OPTIONAL_ENV_VARS, migration
 │   ├── commands.py           # COMMAND_REGISTRY — central slash command definitions
 │   ├── auth.py               # PROVIDER_REGISTRY, credential resolution
@@ -85,12 +85,12 @@ triibal-agent/
 │   ├── model_switch.py       # /model command logic (CLI + gateway shared)
 │   ├── setup.py              # Interactive setup wizard (large file)
 │   ├── skin_engine.py        # CLI theming engine
-│   ├── skills_config.py      # triibal skills — enable/disable per platform
+│   ├── skills_config.py      # tribal skills — enable/disable per platform
 │   ├── skills_hub.py         # /skills slash command
-│   ├── tools_config.py       # triibal tools — enable/disable per platform
+│   ├── tools_config.py       # tribal tools — enable/disable per platform
 │   ├── plugins.py            # PluginManager — discovery, loading, hooks
 │   ├── callbacks.py          # Terminal callbacks (clarify, sudo, approval)
-│   └── gateway.py            # triibal gateway start/stop
+│   └── gateway.py            # tribal gateway start/stop
 │
 ├── tools/                    # Tool implementations (one file per tool)
 │   ├── registry.py           # Central tool registry
@@ -138,7 +138,7 @@ triibal-agent/
 ### CLI Session
 
 ```text
-User input → TriibalCLI.process_input()
+User input → TribalCLI.process_input()
   → AIAgent.run_conversation()
     → prompt_builder.build_system_prompt()
     → runtime_provider.resolve_runtime_provider()
@@ -197,7 +197,7 @@ The synchronous orchestration engine (`AIAgent` in `run_agent.py`). Handles prov
 
 Prompt construction and maintenance across the conversation lifecycle:
 
-- **`prompt_builder.py`** — Assembles the system prompt from: personality (SOUL.md), memory (MEMORY.md, USER.md), skills, context files (AGENTS.md, .triibal.md), tool-use guidance, and model-specific instructions
+- **`prompt_builder.py`** — Assembles the system prompt from: personality (SOUL.md), memory (MEMORY.md, USER.md), skills, context files (AGENTS.md, .tribal.md), tool-use guidance, and model-specific instructions
 - **`prompt_caching.py`** — Applies Anthropic cache breakpoints for prefix caching
 - **`context_compressor.py`** — Summarizes middle conversation turns when context exceeds thresholds
 
@@ -229,9 +229,9 @@ Long-running process with 20 platform adapters, unified session routing, user au
 
 ### Plugin System
 
-Three discovery sources: `~/.triibal/plugins/` (user), `.triibal/plugins/` (project), and pip entry points. Plugins register tools, hooks, and CLI commands through a context API. Two specialized plugin types exist: memory providers (`plugins/memory/`) and context engines (`plugins/context_engine/`). Both are single-select — only one of each can be active at a time, configured via `triibal plugins` or `config.yaml`.
+Three discovery sources: `~/.tribal/plugins/` (user), `.tribal/plugins/` (project), and pip entry points. Plugins register tools, hooks, and CLI commands through a context API. Two specialized plugin types exist: memory providers (`plugins/memory/`) and context engines (`plugins/context_engine/`). Both are single-select — only one of each can be active at a time, configured via `tribal plugins` or `config.yaml`.
 
-→ [Plugin Guide](/guides/build-a-triibal-plugin), [Memory Provider Plugin](./memory-provider-plugin.md)
+→ [Plugin Guide](/guides/build-a-tribal-plugin), [Memory Provider Plugin](./memory-provider-plugin.md)
 
 ### Cron
 
@@ -241,7 +241,7 @@ First-class agent tasks (not shell tasks). Jobs store in JSON, support multiple 
 
 ### ACP Integration
 
-Exposes Triibal as an editor-native agent over stdio/JSON-RPC for VS Code, Zed, and JetBrains.
+Exposes Tribal as an editor-native agent over stdio/JSON-RPC for VS Code, Zed, and JetBrains.
 
 → [ACP Internals](./acp-internals.md)
 
@@ -260,7 +260,7 @@ Generates ShareGPT-format trajectories from agent sessions for training data gen
 | **Interruptible** | API calls and tool execution can be cancelled mid-flight by user input or signals. |
 | **Platform-agnostic core** | One AIAgent class serves CLI, gateway, ACP, batch, and API server. Platform differences live in the entry point, not the agent. |
 | **Loose coupling** | Optional subsystems (MCP, plugins, memory providers, RL environments) use registry patterns and check_fn gating, not hard dependencies. |
-| **Profile isolation** | Each profile (`triibal -p <name>`) gets its own TRIIBAL_HOME, config, memory, sessions, and gateway PID. Multiple profiles run concurrently. |
+| **Profile isolation** | Each profile (`tribal -p <name>`) gets its own TRIBAL_HOME, config, memory, sessions, and gateway PID. Multiple profiles run concurrently. |
 
 ## File Dependency Chain
 

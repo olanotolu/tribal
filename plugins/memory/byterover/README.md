@@ -14,14 +14,14 @@ npm install -g byterover-cli
 ## Setup
 
 ```bash
-triibal memory setup    # select "byterover"
+tribal memory setup    # select "byterover"
 ```
 
 Or manually:
 ```bash
-triibal config set memory.provider byterover
+tribal config set memory.provider byterover
 # Optional cloud sync:
-echo "BRV_API_KEY=your-key" >> ~/.triibal/.env
+echo "BRV_API_KEY=your-key" >> ~/.tribal/.env
 ```
 
 ## Config
@@ -30,7 +30,7 @@ echo "BRV_API_KEY=your-key" >> ~/.triibal/.env
 |---------|----------|-------------|
 | `BRV_API_KEY` | No | Cloud sync key (optional, local-first by default) |
 
-Working directory: `$TRIIBAL_HOME/byterover/` (profile-scoped).
+Working directory: `$TRIBAL_HOME/byterover/` (profile-scoped).
 
 ## Tools
 

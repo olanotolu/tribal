@@ -48,12 +48,12 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_disabled_by_default(self, tmp_path, monkeypatch):
         """When tool_progress_command is false, /verbose returns an info message."""
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
-        config_path = triibal_home / "config.yaml"
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
+        config_path = tribal_home / "config.yaml"
         config_path.write_text("display:\n  tool_progress: all\n", encoding="utf-8")
 
-        monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+        monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())
@@ -64,15 +64,15 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_enabled_cycles_mode(self, tmp_path, monkeypatch):
         """When enabled, /verbose cycles tool_progress mode per-platform."""
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
-        config_path = triibal_home / "config.yaml"
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
+        config_path = tribal_home / "config.yaml"
         config_path.write_text(
             "display:\n  tool_progress_command: true\n  tool_progress: all\n",
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+        monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())
@@ -88,15 +88,15 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_quoted_false_keeps_command_disabled(self, tmp_path, monkeypatch):
         """Quoted false must not enable the /verbose gateway command."""
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
-        config_path = triibal_home / "config.yaml"
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
+        config_path = tribal_home / "config.yaml"
         config_path.write_text(
             'display:\n  tool_progress_command: "false"\n  tool_progress: all\n',
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+        monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())
@@ -107,15 +107,15 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_cycles_through_all_modes(self, tmp_path, monkeypatch):
         """Calling /verbose repeatedly cycles through all four modes."""
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
-        config_path = triibal_home / "config.yaml"
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
+        config_path = tribal_home / "config.yaml"
         config_path.write_text(
             "display:\n  tool_progress_command: true\n  tool_progress: 'off'\n",
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+        monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
         runner = _make_runner()
 
         # off -> new -> all -> verbose -> off
@@ -136,15 +136,15 @@ class TestVerboseCommand:
         first ``/verbose`` invocation therefore cycles ``off → new``, not
         ``all → ...``.
         """
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
-        config_path = triibal_home / "config.yaml"
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
+        config_path = tribal_home / "config.yaml"
         config_path.write_text(
             "display:\n  tool_progress_command: true\n",
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+        monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())
@@ -162,16 +162,16 @@ class TestVerboseCommand:
         default — Telegram = 'off' (tier-1 inbox override), Slack = 'off'
         (quiet Slack default). Both cycle to 'new' on first /verbose.
         """
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
-        config_path = triibal_home / "config.yaml"
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
+        config_path = tribal_home / "config.yaml"
         # No global tool_progress → built-in platform defaults apply
         config_path.write_text(
             "display:\n  tool_progress_command: true\n",
             encoding="utf-8",
         )
 
-        monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+        monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
         runner = _make_runner()
 
         # Cycle on Telegram
@@ -193,11 +193,11 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_no_config_file_returns_disabled(self, tmp_path, monkeypatch):
         """When config.yaml doesn't exist, command reports disabled."""
-        triibal_home = tmp_path / "triibal"
-        triibal_home.mkdir()
+        tribal_home = tmp_path / "tribal"
+        tribal_home.mkdir()
         # No config.yaml
 
-        monkeypatch.setattr(gateway_run, "_triibal_home", triibal_home)
+        monkeypatch.setattr(gateway_run, "_tribal_home", tribal_home)
 
         runner = _make_runner()
         result = await runner._handle_verbose_command(_make_event())
@@ -205,5 +205,5 @@ class TestVerboseCommand:
 
     def test_verbose_is_in_gateway_known_commands(self):
         """The /verbose command is recognized by the gateway dispatch."""
-        from triibal_cli.commands import GATEWAY_KNOWN_COMMANDS
+        from tribal_cli.commands import GATEWAY_KNOWN_COMMANDS
         assert "verbose" in GATEWAY_KNOWN_COMMANDS

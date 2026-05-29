@@ -1,6 +1,6 @@
 """Shared gateway restart constants and parsing helpers."""
 
-from triibal_cli.config import DEFAULT_CONFIG
+from tribal_cli.config import DEFAULT_CONFIG
 
 # EX_TEMPFAIL from sysexits.h — used to ask the service manager to restart
 # the gateway after a graceful drain/reload path completes.

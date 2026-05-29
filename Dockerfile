@@ -14,22 +14,22 @@ ENV PYTHONUNBUFFERED=1
 
 # Store Playwright browsers outside the volume mount so the build-time
 # install survives the /opt/data volume overlay at runtime.
-ENV PLAYWRIGHT_BROWSERS_PATH=/opt/triibal/.playwright
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/tribal/.playwright
 
 # Install system dependencies in one layer, clear APT cache.
 # tini was previously PID 1 to reap orphaned zombie processes (MCP stdio
-# subprocesses, git, bun, etc.) that would otherwise accumulate when triibal
+# subprocesses, git, bun, etc.) that would otherwise accumulate when tribal
 # ran as PID 1. See #15012. Phase 2 of the s6-overlay supervision plan
 # replaces tini with s6-overlay's /init (PID 1 = s6-svscan), which reaps
 # zombies non-blockingly on SIGCHLD and additionally supervises the main
-# triibal process, the dashboard, and per-profile gateways.
+# tribal process, the dashboard, and per-profile gateways.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     ca-certificates curl python3 python-is-python3 ripgrep ffmpeg gcc python3-dev libffi-dev procps git openssh-client docker-cli xz-utils && \
     rm -rf /var/lib/apt/lists/*
 
 # ---------- s6-overlay install ----------
-# s6-overlay provides supervision for the main triibal process, the dashboard,
+# s6-overlay provides supervision for the main tribal process, the dashboard,
 # and per-profile gateways. /init becomes PID 1 below — see ENTRYPOINT.
 #
 # Multi-arch: BuildKit auto-populates TARGETARCH (amd64 / arm64). s6-overlay
@@ -75,8 +75,8 @@ RUN set -eu; \
     tar -C / -Jxpf /tmp/s6-overlay-symlinks-noarch.tar.xz; \
     rm /tmp/s6-overlay-*.tar.xz /tmp/s6-overlay.sha256
 
-# Non-root user for runtime; UID can be overridden via TRIIBAL_UID at runtime
-RUN useradd -u 10000 -m -d /opt/data triibal
+# Non-root user for runtime; UID can be overridden via TRIBAL_UID at runtime
+RUN useradd -u 10000 -m -d /opt/data tribal
 
 COPY --chmod=0755 --from=uv_source /usr/local/bin/uv /usr/local/bin/uvx /usr/local/bin/
 
@@ -92,20 +92,20 @@ RUN ln -sf /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && 
     ln -sf /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx && \
     ln -sf /usr/local/lib/node_modules/corepack/dist/corepack.js /usr/local/bin/corepack
 
-WORKDIR /opt/triibal
+WORKDIR /opt/tribal
 
 # ---------- Layer-cached dependency install ----------
 # Copy only package manifests first so npm install + Playwright are cached
 # unless the lockfiles themselves change.
 #
-# ui-tui/packages/triibal-ink/ is copied IN FULL (not just its manifests)
+# ui-tui/packages/tribal-ink/ is copied IN FULL (not just its manifests)
 # because it is referenced as a `file:` workspace dependency from
 # ui-tui/package.json.  Copying the tree up front lets npm resolve the
 # workspace to real content instead of stopping at a bare package.json.
 COPY package.json package-lock.json ./
 COPY web/package.json web/package-lock.json web/
 COPY ui-tui/package.json ui-tui/package-lock.json ui-tui/
-COPY ui-tui/packages/triibal-ink/ ui-tui/packages/triibal-ink/
+COPY ui-tui/packages/tribal-ink/ ui-tui/packages/tribal-ink/
 
 # `npm_config_install_links=false` forces npm to install `file:` deps as
 # symlinks instead of copies.  This is the default since npm 10+, which is
@@ -113,7 +113,7 @@ COPY ui-tui/packages/triibal-ink/ ui-tui/packages/triibal-ink/
 # explicitly anyway as defense-in-depth: the previous Debian-bundled npm
 # 9.x defaulted to install-as-copy, which produced a hidden
 # node_modules/.package-lock.json that permanently disagreed with the root
-# lock on the @triibal/ink entry, tripped the TUI launcher's
+# lock on the @tribal/ink entry, tripped the TUI launcher's
 # `_tui_need_npm_install()` check on every startup, and triggered a
 # runtime `npm install` that then failed with EACCES.  Keeping the env
 # guards against a future regression if the source npm version changes.
@@ -156,47 +156,47 @@ RUN uv sync --frozen --no-install-project --extra all --extra messaging --extra 
 
 # ---------- Source code ----------
 # .dockerignore excludes node_modules, so the installs above survive.
-COPY --chown=triibal:triibal . .
+COPY --chown=tribal:tribal . .
 
 # Build browser dashboard and terminal UI assets.
 RUN cd web && npm run build && \
     cd ../ui-tui && npm run build
 
 # ---------- Permissions ----------
-# Make install dir world-readable so any TRIIBAL_UID can read it at runtime.
+# Make install dir world-readable so any TRIBAL_UID can read it at runtime.
 # The venv needs to be traversable too.
-# node_modules trees additionally need to be writable by the triibal user
+# node_modules trees additionally need to be writable by the tribal user
 # so the runtime `npm install` triggered by _tui_need_npm_install() in
-# triibal_cli/main.py succeeds (see #18800). /opt/triibal/web is build-time
-# only (TRIIBAL_WEB_DIST points at triibal_cli/web_dist) and is intentionally
+# tribal_cli/main.py succeeds (see #18800). /opt/tribal/web is build-time
+# only (TRIBAL_WEB_DIST points at tribal_cli/web_dist) and is intentionally
 # not chowned here.
-# The .venv MUST remain triibal-writable so lazy_deps.py can install
+# The .venv MUST remain tribal-writable so lazy_deps.py can install
 # remaining optional platform packages and future pin bumps at first use.
 # Without this, `uv pip install` fails with EACCES and adapters silently
 # fail to load.  See tools/lazy_deps.py.
 USER root
-RUN chmod -R a+rX /opt/triibal && \
-    chown -R triibal:triibal /opt/triibal/.venv /opt/triibal/ui-tui /opt/triibal/node_modules
+RUN chmod -R a+rX /opt/tribal && \
+    chown -R tribal:tribal /opt/tribal/.venv /opt/tribal/ui-tui /opt/tribal/node_modules
 # Start as root so the s6-overlay stage2 hook can usermod/groupmod and chown
-# the data volume. Each supervised service then drops to the triibal user via
-# `s6-setuidgid triibal` in its run script. If TRIIBAL_UID is unset, services
-# run as the default triibal user (UID 10000).
+# the data volume. Each supervised service then drops to the tribal user via
+# `s6-setuidgid tribal` in its run script. If TRIBAL_UID is unset, services
+# run as the default tribal user (UID 10000).
 
-# ---------- Link triibal-agent itself (editable) ----------
+# ---------- Link tribal-agent itself (editable) ----------
 # Deps are already installed in the cached layer above; `--no-deps` makes
 # this a fast (~1s) egg-link creation with no resolution or downloads.
 RUN uv pip install --no-cache-dir --no-deps -e "."
 
 # ---------- Bake build-time git revision ----------
 # .dockerignore excludes .git, so `git rev-parse HEAD` from inside the
-# container always returns nothing — meaning `triibal dump` reports
+# container always returns nothing — meaning `tribal dump` reports
 # "(unknown)" and the startup banner drops its `· upstream <sha>` suffix.
 # That makes support triage from container bug reports impossible:
 # we can't tell which commit the user is actually running.
 #
-# Fix: write the commit SHA passed via the TRIIBAL_GIT_SHA build-arg to
-# /opt/triibal/.triibal_build_sha at build time, and have
-# triibal_cli/build_info.py read it at runtime.  Both `triibal dump` and
+# Fix: write the commit SHA passed via the TRIBAL_GIT_SHA build-arg to
+# /opt/tribal/.tribal_build_sha at build time, and have
+# tribal_cli/build_info.py read it at runtime.  Both `tribal dump` and
 # banner.get_git_banner_state() try the baked SHA first, then fall back
 # to live `git rev-parse` for source installs (unchanged behaviour).
 #
@@ -204,14 +204,14 @@ RUN uv pip install --no-cache-dir --no-deps -e "."
 # omits the file, and the runtime falls back to live-git lookup.  CI
 # (.github/workflows/docker-publish.yml) passes ${{ github.sha }} so
 # every published image has it.
-ARG TRIIBAL_GIT_SHA=
-RUN if [ -n "${TRIIBAL_GIT_SHA}" ]; then \
-        printf '%s\n' "${TRIIBAL_GIT_SHA}" > /opt/triibal/.triibal_build_sha && \
-        chown triibal:triibal /opt/triibal/.triibal_build_sha; \
+ARG TRIBAL_GIT_SHA=
+RUN if [ -n "${TRIBAL_GIT_SHA}" ]; then \
+        printf '%s\n' "${TRIBAL_GIT_SHA}" > /opt/tribal/.tribal_build_sha && \
+        chown tribal:tribal /opt/tribal/.tribal_build_sha; \
     fi
 
 # ---------- s6-overlay service wiring ----------
-# Static services declared at build time: main-triibal + dashboard.
+# Static services declared at build time: main-tribal + dashboard.
 # Per-profile gateway services are registered dynamically at runtime by
 # the profile create/delete hooks (Phase 4); they live under
 # /run/service/ (tmpfs) and are reconciled on container restart by
@@ -220,48 +220,48 @@ COPY docker/s6-rc.d/ /etc/s6-overlay/s6-rc.d/
 
 # stage2-hook handles UID/GID remap, volume chown, config seeding,
 # skills sync — all the work the old entrypoint.sh did before
-# `exec triibal`. Wired in as cont-init.d/01- so it
+# `exec tribal`. Wired in as cont-init.d/01- so it
 # runs before user services start.
 #
 # 02-reconcile-profiles re-creates per-profile gateway s6 service
-# slots from $TRIIBAL_HOME/profiles/<name>/ after a container restart
+# slots from $TRIBAL_HOME/profiles/<name>/ after a container restart
 # (the /run/service/ scandir is tmpfs and wiped on restart). Phase 4.
 RUN mkdir -p /etc/cont-init.d && \
-    printf '#!/command/with-contenv sh\nexec /opt/triibal/docker/stage2-hook.sh\n' \
-        > /etc/cont-init.d/01-triibal-setup && \
-    chmod +x /etc/cont-init.d/01-triibal-setup
+    printf '#!/command/with-contenv sh\nexec /opt/tribal/docker/stage2-hook.sh\n' \
+        > /etc/cont-init.d/01-tribal-setup && \
+    chmod +x /etc/cont-init.d/01-tribal-setup
 COPY --chmod=0755 docker/cont-init.d/015-supervise-perms /etc/cont-init.d/015-supervise-perms
 COPY --chmod=0755 docker/cont-init.d/02-reconcile-profiles /etc/cont-init.d/02-reconcile-profiles
 
 # ---------- Runtime ----------
-ENV TRIIBAL_WEB_DIST=/opt/triibal/triibal_cli/web_dist
-ENV TRIIBAL_HOME=/opt/data
+ENV TRIBAL_WEB_DIST=/opt/tribal/tribal_cli/web_dist
+ENV TRIBAL_HOME=/opt/data
 
 # `docker exec` privilege-drop shim. When operators run
-# `docker exec <c> triibal ...` they default to root, and any file the
-# command writes under $TRIIBAL_HOME (auth.json, .env, config.yaml) ends
+# `docker exec <c> tribal ...` they default to root, and any file the
+# command writes under $TRIBAL_HOME (auth.json, .env, config.yaml) ends
 # up root-owned and unreadable to the supervised gateway (UID 10000).
-# The shim lives at /opt/triibal/bin/triibal, sits earliest on PATH, and
-# transparently re-exec's the real venv binary via `s6-setuidgid triibal`
+# The shim lives at /opt/tribal/bin/tribal, sits earliest on PATH, and
+# transparently re-exec's the real venv binary via `s6-setuidgid tribal`
 # when invoked as root. Non-root callers (supervised processes,
-# `--user triibal`, etc.) hit the short-circuit path with no overhead.
+# `--user tribal`, etc.) hit the short-circuit path with no overhead.
 # Recursion is impossible because the shim exec's the venv binary by
-# absolute path (/opt/triibal/.venv/bin/triibal). See the shim source for
-# the opt-out env var (TRIIBAL_DOCKER_EXEC_AS_ROOT=1).
-COPY --chmod=0755 docker/triibal-exec-shim.sh /opt/triibal/bin/triibal
+# absolute path (/opt/tribal/.venv/bin/tribal). See the shim source for
+# the opt-out env var (TRIBAL_DOCKER_EXEC_AS_ROOT=1).
+COPY --chmod=0755 docker/tribal-exec-shim.sh /opt/tribal/bin/tribal
 
 # Pre-s6 entrypoint.sh did `source .venv/bin/activate` which exported
 # the venv bin onto PATH; Architecture B's main-wrapper.sh does the
 # same for the container's main process, but `docker exec` and our
 # cont-init.d scripts don't pass through the wrapper. Expose the venv
-# bin globally so `docker exec <container> triibal ...` and any
-# subprocess that doesn't activate the venv first still find triibal.
+# bin globally so `docker exec <container> tribal ...` and any
+# subprocess that doesn't activate the venv first still find tribal.
 #
-# /opt/triibal/bin is prepended ahead of the venv so the privilege-drop
+# /opt/tribal/bin is prepended ahead of the venv so the privilege-drop
 # shim wins PATH resolution. The shim's last act is to exec the venv
 # binary by absolute path, so this PATH ordering is transparent to
 # every other consumer.
-ENV PATH="/opt/triibal/bin:/opt/triibal/.venv/bin:/opt/data/.local/bin:${PATH}"
+ENV PATH="/opt/tribal/bin:/opt/tribal/.venv/bin:/opt/data/.local/bin:${PATH}"
 RUN mkdir -p /opt/data
 VOLUME [ "/opt/data" ]
 
@@ -282,10 +282,10 @@ VOLUME [ "/opt/data" ]
 #   docker run <image> sleep infinity   → /init main-wrapper.sh sleep infinity
 #   docker run <image> --tui            → /init main-wrapper.sh --tui
 #
-# main-wrapper.sh handles arg routing (bare-exec vs. triibal
-# subcommand vs. no-args), drops to the triibal user via s6-setuidgid,
+# main-wrapper.sh handles arg routing (bare-exec vs. tribal
+# subcommand vs. no-args), drops to the tribal user via s6-setuidgid,
 # and exec's the final program so its exit code becomes the container
 # exit code. Without the wrapper-as-ENTRYPOINT, leading-dash args
 # like `--version` would be intercepted by /init's POSIX shell.
-ENTRYPOINT [ "/init", "/opt/triibal/docker/main-wrapper.sh" ]
+ENTRYPOINT [ "/init", "/opt/tribal/docker/main-wrapper.sh" ]
 CMD [ ]

@@ -2,23 +2,23 @@
 name: native-mcp
 description: "MCP client: connect servers, register tools (stdio/HTTP)."
 version: 1.0.0
-author: Triibal Agent
+author: Tribal Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  triibal:
+  tribal:
     tags: [MCP, Tools, Integrations]
     related_skills: [mcporter]
 ---
 
 # Native MCP Client
 
-Triibal Agent has a built-in MCP client that connects to MCP servers at startup, discovers their tools, and makes them available as first-class tools the agent can call directly. No bridge CLI needed -- tools from MCP servers appear alongside built-in tools like `terminal`, `read_file`, etc.
+Tribal Agent has a built-in MCP client that connects to MCP servers at startup, discovers their tools, and makes them available as first-class tools the agent can call directly. No bridge CLI needed -- tools from MCP servers appear alongside built-in tools like `terminal`, `read_file`, etc.
 
 ## When to Use
 
 Use this whenever you want to:
-- Connect to MCP servers and use their tools from within Triibal Agent
+- Connect to MCP servers and use their tools from within Tribal Agent
 - Add external capabilities (filesystem access, GitHub, databases, APIs) via MCP
 - Run local stdio-based MCP servers (npx, uvx, or any command)
 - Connect to remote HTTP/StreamableHTTP MCP servers
@@ -42,7 +42,7 @@ uv pip install mcp
 
 ## Quick Start
 
-Add MCP servers to `~/.triibal/config.yaml` under the `mcp_servers` key:
+Add MCP servers to `~/.tribal/config.yaml` under the `mcp_servers` key:
 
 ```yaml
 mcp_servers:
@@ -51,7 +51,7 @@ mcp_servers:
     args: ["mcp-server-time"]
 ```
 
-Restart Triibal Agent. On startup it will:
+Restart Tribal Agent. On startup it will:
 1. Connect to the server
 2. Discover available tools
 3. Register them with the prefix `mcp_time_*`
@@ -106,12 +106,12 @@ Note: A server config must have either `command` (stdio) or `url` (HTTP), not bo
 
 ### Startup Discovery
 
-When Triibal Agent starts, `discover_mcp_tools()` is called during tool initialization:
+When Tribal Agent starts, `discover_mcp_tools()` is called during tool initialization:
 
-1. Reads `mcp_servers` from `~/.triibal/config.yaml`
+1. Reads `mcp_servers` from `~/.tribal/config.yaml`
 2. For each server, spawns a connection in a dedicated background event loop
 3. Initializes the MCP session and calls `list_tools()` to discover available tools
-4. Registers each tool in the Triibal tool registry
+4. Registers each tool in the Tribal tool registry
 
 ### Tool Naming Convention
 
@@ -130,7 +130,7 @@ Examples:
 
 ### Auto-Injection
 
-After discovery, MCP tools are automatically injected into all `triibal-*` platform toolsets (CLI, Discord, Telegram, etc.). This means MCP tools are available in every conversation without any additional configuration.
+After discovery, MCP tools are automatically injected into all `tribal-*` platform toolsets (CLI, Discord, Telegram, etc.). This means MCP tools are available in every conversation without any additional configuration.
 
 ### Connection Lifecycle
 
@@ -147,7 +147,7 @@ After discovery, MCP tools are automatically injected into all `triibal-*` platf
 
 ### Stdio Transport
 
-The most common transport. Triibal launches the MCP server as a subprocess and communicates over stdin/stdout.
+The most common transport. Tribal launches the MCP server as a subprocess and communicates over stdin/stdout.
 
 ```yaml
 mcp_servers:
@@ -176,7 +176,7 @@ If HTTP support is not available in your installed `mcp` version, the server wil
 
 ### Environment Variable Filtering
 
-For stdio servers, Triibal does NOT pass your full shell environment to MCP subprocesses. Only safe baseline variables are inherited:
+For stdio servers, Tribal does NOT pass your full shell environment to MCP subprocesses. Only safe baseline variables are inherited:
 
 - `PATH`, `HOME`, `USER`, `LANG`, `LC_ALL`, `TERM`, `SHELL`, `TMPDIR`
 - Any `XDG_*` variables
@@ -214,7 +214,7 @@ pip install mcp
 
 ### "No MCP servers configured"
 
-No `mcp_servers` key in `~/.triibal/config.yaml`, or it's empty. Add at least one server.
+No `mcp_servers` key in `~/.tribal/config.yaml`, or it's empty. Add at least one server.
 
 ### "Failed to connect to MCP server 'X'"
 
@@ -236,7 +236,7 @@ pip install --upgrade mcp
 
 - Check that the server is listed under `mcp_servers` (not `mcp` or `servers`)
 - Ensure the YAML indentation is correct
-- Look at Triibal Agent startup logs for connection messages
+- Look at Tribal Agent startup logs for connection messages
 - Tool names are prefixed with `mcp_{server}_{tool}` -- look for that pattern
 
 ### Connection keeps dropping
@@ -324,7 +324,7 @@ All tools from all servers are registered and available simultaneously. Each ser
 
 ## Sampling (Server-Initiated LLM Requests)
 
-Triibal supports MCP's `sampling/createMessage` capability — MCP servers can request LLM completions through the agent during tool execution. This enables agent-in-the-loop workflows (data analysis, content generation, decision-making).
+Tribal supports MCP's `sampling/createMessage` capability — MCP servers can request LLM completions through the agent during tool execution. This enables agent-in-the-loop workflows (data analysis, content generation, decision-making).
 
 Sampling is **enabled by default**. Configure per server:
 

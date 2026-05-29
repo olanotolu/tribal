@@ -12,13 +12,13 @@ __pycache__/
 .env.production.local
 .env.development
 .env.test
-.triibal-docker/
+.tribal-docker/
 .notebooklm-home/
 .notebooklm-cli-venv/
 .notebooklm-playwright/
 .pip-cache/
 .uv-cache/
-compose.triibal.local.yml
+compose.tribal.local.yml
 export*
 __pycache__/model_tools.cpython-310.pyc
 __pycache__/web_tools.cpython-310.pyc
@@ -29,7 +29,7 @@ test_durations.json
 .pytest-cache/
 tmp/
 temp_vision_images/
-triibal-*/*
+tribal-*/*
 examples/
 tests/quick_test_dataset.jsonl
 tests/sample_dataset.jsonl
@@ -48,21 +48,21 @@ agent-browser/
 privvy*
 images/
 __pycache__/
-triibal_agent.egg-info/
+tribal_agent.egg-info/
 wandb/
 testlogs
 
 # CLI config (may contain sensitive SSH paths)
 cli-config.yaml
 
-# Skills Hub state (lives in ~/.triibal/skills/.hub/ at runtime, but just in case)
+# Skills Hub state (lives in ~/.tribal/skills/.hub/ at runtime, but just in case)
 skills/.hub/
 ignored/
 .worktrees/
 environments/benchmarks/evals/
 
 # Web UI build output
-triibal_cli/web_dist/
+tribal_cli/web_dist/
 
 # Web UI assets — synced from @nous-research/ui at build time via
 # `npm run sync-assets` (see web/package.json).
@@ -85,10 +85,10 @@ website/static/api/skills-index.json
 website/static/api/skills.json
 website/static/api/skills-meta.json
 models-dev-upstream/
-triibal_cli/tui_dist/*
-triibal_cli/scripts/
+tribal_cli/tui_dist/*
+tribal_cli/scripts/
 docs/superpowers/*
-# Working directory for the Triibal Agent's session state (~/.triibal/ at runtime;
+# Working directory for the Tribal Agent's session state (~/.tribal/ at runtime;
 # also created in-repo when an agent operates in this checkout). Plans, audit
 # logs, and per-session caches are never artifacts of the codebase.
-.triibal/
+.tribal/

@@ -25,9 +25,9 @@ from agent.skill_utils import (
 
 
 @pytest.fixture
-def triibal_home_with_config(tmp_path, monkeypatch):
-    """Isolated ``~/.triibal/`` with a config.yaml referencing one external dir."""
-    home = tmp_path / ".triibal"
+def tribal_home_with_config(tmp_path, monkeypatch):
+    """Isolated ``~/.tribal/`` with a config.yaml referencing one external dir."""
+    home = tmp_path / ".tribal"
     home.mkdir()
     external = tmp_path / "external_skills"
     external.mkdir()
@@ -40,22 +40,22 @@ def triibal_home_with_config(tmp_path, monkeypatch):
         encoding="utf-8",
     )
 
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
     _external_dirs_cache_clear()
     yield home, external, config
     _external_dirs_cache_clear()
 
 
-def test_returns_configured_external_dir(triibal_home_with_config):
-    _home, external, _cfg = triibal_home_with_config
+def test_returns_configured_external_dir(tribal_home_with_config):
+    _home, external, _cfg = tribal_home_with_config
     result = get_external_skills_dirs()
     assert result == [external.resolve()]
 
 
-def test_cache_reuses_result_without_reparsing(triibal_home_with_config):
+def test_cache_reuses_result_without_reparsing(tribal_home_with_config):
     """Subsequent calls hit the cache and skip YAML parsing entirely."""
-    _home, _external, _cfg = triibal_home_with_config
+    _home, _external, _cfg = tribal_home_with_config
 
     # Prime cache
     get_external_skills_dirs()
@@ -71,9 +71,9 @@ def test_cache_reuses_result_without_reparsing(triibal_home_with_config):
             get_external_skills_dirs()
 
 
-def test_cache_invalidates_on_mtime_change(triibal_home_with_config):
+def test_cache_invalidates_on_mtime_change(tribal_home_with_config):
     """A config.yaml edit invalidates the cache on the next call."""
-    _home, external, config = triibal_home_with_config
+    _home, external, config = tribal_home_with_config
     other = external.parent / "other_skills"
     other.mkdir()
 
@@ -100,16 +100,16 @@ def test_cache_invalidates_on_mtime_change(triibal_home_with_config):
 
 def test_returns_empty_when_config_missing(tmp_path, monkeypatch):
     """No config file → empty list, cached as empty."""
-    home = tmp_path / ".triibal"
+    home = tmp_path / ".tribal"
     home.mkdir()
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
     _external_dirs_cache_clear()
 
     assert get_external_skills_dirs() == []
 
 
-def test_returned_list_is_a_copy(triibal_home_with_config):
+def test_returned_list_is_a_copy(tribal_home_with_config):
     """Callers can't poison the cache by mutating the returned list."""
     first = get_external_skills_dirs()
     first.append(Path("/tmp/should-not-persist"))
@@ -119,8 +119,8 @@ def test_returned_list_is_a_copy(triibal_home_with_config):
 
 
 def test_cache_key_is_per_config_path(tmp_path, monkeypatch):
-    """Two different TRIIBAL_HOMEs keep separate cache entries."""
-    home_a = tmp_path / "home_a" / ".triibal"
+    """Two different TRIBAL_HOMEs keep separate cache entries."""
+    home_a = tmp_path / "home_a" / ".tribal"
     home_a.mkdir(parents=True)
     ext_a = tmp_path / "ext_a"
     ext_a.mkdir()
@@ -128,7 +128,7 @@ def test_cache_key_is_per_config_path(tmp_path, monkeypatch):
         f"skills:\n  external_dirs:\n    - {ext_a}\n", encoding="utf-8"
     )
 
-    home_b = tmp_path / "home_b" / ".triibal"
+    home_b = tmp_path / "home_b" / ".tribal"
     home_b.mkdir(parents=True)
     ext_b = tmp_path / "ext_b"
     ext_b.mkdir()
@@ -138,12 +138,12 @@ def test_cache_key_is_per_config_path(tmp_path, monkeypatch):
 
     _external_dirs_cache_clear()
 
-    monkeypatch.setenv("TRIIBAL_HOME", str(home_a))
+    monkeypatch.setenv("TRIBAL_HOME", str(home_a))
     assert get_external_skills_dirs() == [ext_a.resolve()]
 
-    monkeypatch.setenv("TRIIBAL_HOME", str(home_b))
+    monkeypatch.setenv("TRIBAL_HOME", str(home_b))
     assert get_external_skills_dirs() == [ext_b.resolve()]
 
     # And switching back still works — both entries coexist in the cache.
-    monkeypatch.setenv("TRIIBAL_HOME", str(home_a))
+    monkeypatch.setenv("TRIBAL_HOME", str(home_a))
     assert get_external_skills_dirs() == [ext_a.resolve()]

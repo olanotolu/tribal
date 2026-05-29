@@ -18,10 +18,10 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def _isolate_home(tmp_path, monkeypatch):
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
-    yield triibal_home
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
+    yield tribal_home
 
 
 # ---------------------------------------------------------------------------

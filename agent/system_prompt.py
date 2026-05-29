@@ -2,7 +2,7 @@
 
 The agent's system prompt is built once per session and reused across all
 turns — only context compression triggers a rebuild.  This keeps the
-upstream prefix cache warm.  See ``triibal-agent-dev``'s
+upstream prefix cache warm.  See ``tribal-agent-dev``'s
 ``references/system-prompt-invariant.md`` for the invariants and
 ``references/self-improvement-loop.md`` for how the background-review
 fork inherits the cached prompt verbatim.
@@ -30,7 +30,7 @@ from typing import Any, Dict, List, Optional
 from agent.prompt_builder import (
     DEFAULT_AGENT_IDENTITY,
     GOOGLE_MODEL_OPERATIONAL_GUIDANCE,
-    TRIIBAL_AGENT_HELP_GUIDANCE,
+    TRIBAL_AGENT_HELP_GUIDANCE,
     KANBAN_GUIDANCE,
     MEMORY_GUIDANCE,
     OPENAI_MODEL_EXECUTION_GUIDANCE,
@@ -71,7 +71,7 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
 
     Joined into a single string by :func:`build_system_prompt` and
     cached on ``agent._cached_system_prompt`` for the lifetime of the
-    AIAgent.  Triibal never re-renders parts of this string mid-
+    AIAgent.  Tribal never re-renders parts of this string mid-
     session — that's the only way to keep upstream prompt caches
     warm across turns.
     """
@@ -84,7 +84,7 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
     stable_parts: List[str] = []
 
     # Try SOUL.md as primary identity unless the caller explicitly skipped it.
-    # Some execution modes (cron) still want TRIIBAL_HOME persona while keeping
+    # Some execution modes (cron) still want TRIBAL_HOME persona while keeping
     # cwd project instructions disabled.
     _soul_loaded = False
     if agent.load_soul_identity or not agent.skip_context_files:
@@ -97,8 +97,8 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
         # Fallback to hardcoded identity
         stable_parts.append(DEFAULT_AGENT_IDENTITY)
 
-    # Pointer to the triibal-agent skill + docs for user questions about Triibal itself.
-    stable_parts.append(TRIIBAL_AGENT_HELP_GUIDANCE)
+    # Pointer to the tribal-agent skill + docs for user questions about Tribal itself.
+    stable_parts.append(TRIBAL_AGENT_HELP_GUIDANCE)
 
     # Tool-aware behavioral guidance: only inject when the tools are loaded
     tool_guidance = []
@@ -110,7 +110,7 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
         tool_guidance.append(SKILLS_GUIDANCE)
     # Kanban worker/orchestrator lifecycle — only present when the
     # dispatcher spawned this process (kanban_show check_fn gates on
-    # TRIIBAL_KANBAN_TASK env var). Normal chat sessions never see
+    # TRIBAL_KANBAN_TASK env var). Normal chat sessions never see
     # this block. Resolved once at __init__ (see _kanban_worker_guidance).
     _kanban_guidance = getattr(agent, "_kanban_worker_guidance", None)
     if _kanban_guidance:
@@ -205,9 +205,9 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
     if _env_hints:
         stable_parts.append(_env_hints)
 
-    # Active-profile hint — names the Triibal profile the agent is running
-    # under so it doesn't conflate ~/.triibal/skills/ (default profile) with
-    # ~/.triibal/profiles/<active>/skills/ (this profile's). Deterministic
+    # Active-profile hint — names the Tribal profile the agent is running
+    # under so it doesn't conflate ~/.tribal/skills/ (default profile) with
+    # ~/.tribal/profiles/<active>/skills/ (this profile's). Deterministic
     # for the lifetime of the agent — profile name doesn't change
     # mid-session, so this doesn't break the prompt cache.
     # See file_safety._resolve_active_profile_name + classify_cross_profile_target
@@ -219,8 +219,8 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
         active_profile = "default"
     if active_profile == "default":
         stable_parts.append(
-            "Active Triibal profile: default. Other profiles (if any) live "
-            "under ~/.triibal/profiles/<name>/. Each profile has its own "
+            "Active Tribal profile: default. Other profiles (if any) live "
+            "under ~/.tribal/profiles/<name>/. Each profile has its own "
             "skills/, plugins/, cron/, and memories/ that affect a different "
             "session than this one. Do not modify another profile's "
             "skills/plugins/cron/memories unless the user explicitly directs "
@@ -228,10 +228,10 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
         )
     else:
         stable_parts.append(
-            f"Active Triibal profile: {active_profile}. This session reads "
-            f"and writes ~/.triibal/profiles/{active_profile}/. The default "
-            f"profile's data lives at ~/.triibal/skills/, ~/.triibal/plugins/, "
-            f"~/.triibal/cron/, ~/.triibal/memories/ — those belong to a "
+            f"Active Tribal profile: {active_profile}. This session reads "
+            f"and writes ~/.tribal/profiles/{active_profile}/. The default "
+            f"profile's data lives at ~/.tribal/skills/, ~/.tribal/plugins/, "
+            f"~/.tribal/cron/, ~/.tribal/memories/ — those belong to a "
             f"different session run from a different shell. Do NOT modify "
             f"another profile's skills/plugins/cron/memories unless the user "
             f"explicitly directs you to. The cross-profile write guard will "
@@ -262,7 +262,7 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
 
     if not agent.skip_context_files:
         # Use TERMINAL_CWD for context file discovery when set (gateway
-        # mode).  The gateway process runs from the triibal-agent install
+        # mode).  The gateway process runs from the tribal-agent install
         # dir, so os.getcwd() would pick up the repo's AGENTS.md and
         # other dev files — inflating token usage by ~10k for no benefit.
         _context_cwd = os.getenv("TERMINAL_CWD") or None
@@ -294,8 +294,8 @@ def build_system_prompt_parts(agent: Any, system_message: Optional[str] = None) 
         except Exception:
             pass
 
-    from triibal_time import now as _triibal_now
-    now = _triibal_now()
+    from tribal_time import now as _tribal_now
+    now = _tribal_now()
     # Date-only (not minute-precision) so the system prompt is byte-stable
     # for the full day.  Minute-precision changes invalidate prefix-cache KV
     # on every rebuild path (compression boundary, fresh-agent gateway turns,
@@ -329,7 +329,7 @@ def build_system_prompt(agent: Any, system_message: Optional[str] = None) -> str
     Layers are ordered cache-friendly: stable identity/guidance first,
     then session-stable context files, then per-call volatile content
     (memory, USER profile, timestamp).  The whole string is treated as
-    one cached block — Triibal never rebuilds or reinjects parts of it
+    one cached block — Tribal never rebuilds or reinjects parts of it
     mid-session, which is the only way to keep upstream prompt caches
     warm across turns.
     """

@@ -7,7 +7,7 @@ sidebar_position: 8
 
 # Fallback Providers
 
-Triibal Agent has three layers of resilience that keep your sessions running when providers hit issues:
+Tribal Agent has three layers of resilience that keep your sessions running when providers hit issues:
 
 1. **[Credential pools](./credential-pools.md)** — rotate across multiple API keys for the *same* provider (tried first)
 2. **Primary model fallback** — automatically switches to a *different* provider:model when your main model fails
@@ -17,19 +17,19 @@ Credential pools handle same-provider rotation (e.g., multiple OpenRouter keys).
 
 ## Primary Model Fallback
 
-When your main LLM provider encounters errors — rate limits, server overload, auth failures, connection drops — Triibal can automatically switch to a backup provider:model pair mid-session without losing your conversation.
+When your main LLM provider encounters errors — rate limits, server overload, auth failures, connection drops — Tribal can automatically switch to a backup provider:model pair mid-session without losing your conversation.
 
 ### Configuration
 
 The easiest path is the interactive manager:
 
 ```bash
-triibal fallback
+tribal fallback
 ```
 
-`triibal fallback` reuses the provider picker from `triibal model` — same provider list, same credential prompts, same validation. Use the subcommands `add`, `list` (alias `ls`), `remove` (alias `rm`), and `clear` to manage the chain. Changes persist under the top-level `fallback_providers:` list in `config.yaml`.
+`tribal fallback` reuses the provider picker from `tribal model` — same provider list, same credential prompts, same validation. Use the subcommands `add`, `list` (alias `ls`), `remove` (alias `rm`), and `clear` to manage the chain. Changes persist under the top-level `fallback_providers:` list in `config.yaml`.
 
-If you'd rather edit the YAML directly, add a `fallback_model` section to `~/.triibal/config.yaml`:
+If you'd rather edit the YAML directly, add a `fallback_model` section to `~/.tribal/config.yaml`:
 
 ```yaml
 fallback_model:
@@ -40,7 +40,7 @@ fallback_model:
 Both `provider` and `model` are **required**. If either is missing, the fallback is disabled.
 
 :::note `fallback_model` vs `fallback_providers`
-`fallback_model` (singular) is the legacy single-fallback key — Triibal still honors it for back-compat. `fallback_providers` (plural, list) supports multiple fallbacks tried in order; `triibal fallback` writes to this key. When both are set, Triibal merges them with `fallback_providers` taking priority.
+`fallback_model` (singular) is the legacy single-fallback key — Tribal still honors it for back-compat. `fallback_providers` (plural, list) supports multiple fallbacks tried in order; `tribal fallback` writes to this key. When both are set, Tribal merges them with `fallback_providers` taking priority.
 :::
 
 ### Supported Providers
@@ -48,8 +48,8 @@ Both `provider` and `model` are **required**. If either is missing, the fallback
 | Provider | Value | Requirements |
 |----------|-------|-------------|
 | OpenRouter | `openrouter` | `OPENROUTER_API_KEY` |
-| Nous Portal | `nous` | `triibal setup --portal` (fresh) or `triibal auth add nous` (OAuth) |
-| OpenAI Codex | `openai-codex` | `triibal model` (ChatGPT OAuth) |
+| Nous Portal | `nous` | `tribal setup --portal` (fresh) or `tribal auth add nous` (OAuth) |
+| OpenAI Codex | `openai-codex` | `tribal model` (ChatGPT OAuth) |
 | GitHub Copilot | `copilot` | `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `GITHUB_TOKEN` |
 | GitHub Copilot ACP | `copilot-acp` | External process (editor integration) |
 | Anthropic | `anthropic` | `ANTHROPIC_API_KEY` or Claude Code credentials |
@@ -62,13 +62,13 @@ Both `provider` and `model` are **required**. If either is missing, the fallback
 | GMI Cloud | `gmi` | `GMI_API_KEY` (optional: `GMI_BASE_URL`) |
 | StepFun | `stepfun` | `STEPFUN_API_KEY` (optional: `STEPFUN_BASE_URL`) |
 | Ollama Cloud | `ollama-cloud` | `OLLAMA_API_KEY` |
-| Google Gemini (OAuth) | `google-gemini-cli` | `triibal model` (Google OAuth; optional: `TRIIBAL_GEMINI_PROJECT_ID`) |
+| Google Gemini (OAuth) | `google-gemini-cli` | `tribal model` (Google OAuth; optional: `TRIBAL_GEMINI_PROJECT_ID`) |
 | Google AI Studio | `gemini` | `GOOGLE_API_KEY` (alias: `GEMINI_API_KEY`) |
 | xAI (Grok) | `xai` (alias `grok`) | `XAI_API_KEY` (optional: `XAI_BASE_URL`) |
-| xAI Grok OAuth (SuperGrok) | `xai-oauth` (alias `grok-oauth`) | `triibal model` → xAI Grok OAuth (browser login; SuperGrok subscription) |
+| xAI Grok OAuth (SuperGrok) | `xai-oauth` (alias `grok-oauth`) | `tribal model` → xAI Grok OAuth (browser login; SuperGrok subscription) |
 | AWS Bedrock | `bedrock` | Standard boto3 auth (`AWS_REGION` + `AWS_PROFILE` or `AWS_ACCESS_KEY_ID`) |
-| Qwen Portal (OAuth) | `qwen-oauth` | `triibal model` (Qwen Portal OAuth; optional: `TRIIBAL_QWEN_BASE_URL`) |
-| MiniMax (OAuth) | `minimax-oauth` | `triibal model` (MiniMax portal OAuth) |
+| Qwen Portal (OAuth) | `qwen-oauth` | `tribal model` (Qwen Portal OAuth; optional: `TRIBAL_QWEN_BASE_URL`) |
+| MiniMax (OAuth) | `minimax-oauth` | `tribal model` (MiniMax portal OAuth) |
 | OpenCode Zen | `opencode-zen` | `OPENCODE_ZEN_API_KEY` |
 | OpenCode Go | `opencode-go` | `OPENCODE_GO_API_KEY` |
 | Kilo Code | `kilocode` | `KILOCODE_API_KEY` |
@@ -107,7 +107,7 @@ The fallback activates automatically when the primary model fails with:
 - **Not found** (HTTP 404) — immediately
 - **Invalid responses** — when the API returns malformed or empty responses repeatedly
 
-When triggered, Triibal:
+When triggered, Tribal:
 
 1. Resolves credentials for the fallback provider
 2. Builds a new API client
@@ -117,7 +117,7 @@ When triggered, Triibal:
 The switch is seamless — your conversation history, tool calls, and context are preserved. The agent continues from exactly where it left off, just using a different model.
 
 :::info Per-Turn, Not Per-Session
-Fallback is **turn-scoped**: each new user message starts with the primary model restored. If the primary fails mid-turn, fallback activates for that turn only. On the next message, Triibal tries the primary again. Within a single turn, fallback activates at most once — if the fallback also fails, normal error handling takes over (retries, then error message). This prevents cascading failover loops within a turn while giving the primary model a fresh chance every turn.
+Fallback is **turn-scoped**: each new user message starts with the primary model restored. If the primary fails mid-turn, fallback activates for that turn only. On the next message, Tribal tries the primary again. Within a single turn, fallback activates at most once — if the fallback also fails, normal error handling takes over (retries, then error message). This prevents cascading failover loops within a turn while giving the primary model a fresh chance every turn.
 :::
 
 ### Examples
@@ -141,7 +141,7 @@ model:
 
 fallback_model:
   provider: nous
-  model: nous-triibal-3
+  model: nous-tribal-3
 ```
 
 **Local model as fallback for cloud:**
@@ -178,7 +178,7 @@ There are no environment variables for `fallback_model` — it is configured exc
 
 ## Auxiliary Task Fallback
 
-Triibal uses separate lightweight models for side tasks. Each task has its own provider resolution chain that acts as a built-in fallback system.
+Tribal uses separate lightweight models for side tasks. Each task has its own provider resolution chain that acts as a built-in fallback system.
 
 ### Tasks with Independent Provider Resolution
 
@@ -191,11 +191,11 @@ Triibal uses separate lightweight models for side tasks. Each task has its own p
 | MCP | MCP helper operations | `auxiliary.mcp` |
 | Approval | Smart command-approval classification | `auxiliary.approval` |
 | Title Generation | Session title summaries | `auxiliary.title_generation` |
-| Triage Specifier | `triibal kanban specify` / dashboard ✨ button — fleshes out a one-liner triage task into a real spec | `auxiliary.triage_specifier` |
+| Triage Specifier | `tribal kanban specify` / dashboard ✨ button — fleshes out a one-liner triage task into a real spec | `auxiliary.triage_specifier` |
 
 ### Auto-Detection Chain
 
-When a task's provider is set to `"auto"` (the default), Triibal tries providers in order until one works:
+When a task's provider is set to `"auto"` (the default), Tribal tries providers in order until one works:
 
 **For text tasks (compression, web extract, etc.):**
 
@@ -211,7 +211,7 @@ Main provider (if vision-capable) → OpenRouter → Nous Portal →
 Codex OAuth → Anthropic → Custom endpoint → give up
 ```
 
-If the resolved provider fails at call time, Triibal also has an internal retry: if the provider is not OpenRouter and no explicit `base_url` is set, it tries OpenRouter as a last-resort fallback.
+If the resolved provider fails at call time, Tribal also has an internal retry: if the provider is not OpenRouter and no explicit `base_url` is set, it tries OpenRouter as a last-resort fallback.
 
 ### Configuring Auxiliary Providers
 
@@ -271,8 +271,8 @@ These options apply to `auxiliary:`, `compression:`, and `fallback_model:` confi
 |----------|-------------|-------------|
 | `"auto"` | Try providers in order until one works (default) | At least one provider configured |
 | `"openrouter"` | Force OpenRouter | `OPENROUTER_API_KEY` |
-| `"nous"` | Force Nous Portal | `triibal auth` |
-| `"codex"` | Force Codex OAuth | `triibal model` → Codex |
+| `"nous"` | Force Nous Portal | `tribal auth` |
+| `"codex"` | Force Codex OAuth | `tribal model` → Codex |
 | `"main"` | Use whatever provider the main agent uses (auxiliary tasks only) | Active main provider configured |
 | `"anthropic"` | Force Anthropic native | `ANTHROPIC_API_KEY` or Claude Code credentials |
 
@@ -288,18 +288,18 @@ auxiliary:
     model: "qwen2.5-vl"
 ```
 
-`base_url` takes precedence over `provider`. Triibal uses the configured `api_key` for authentication, falling back to `OPENAI_API_KEY` if not set. It does **not** reuse `OPENROUTER_API_KEY` for custom endpoints.
+`base_url` takes precedence over `provider`. Tribal uses the configured `api_key` for authentication, falling back to `OPENAI_API_KEY` if not set. It does **not** reuse `OPENROUTER_API_KEY` for custom endpoints.
 
 ---
 
 ## Auxiliary Capacity-Error Fallback
 
-When you set an explicit auxiliary provider (e.g. `auxiliary.vision.provider: glm`), Triibal treats that as your preferred choice — but if the provider literally cannot serve the request because of a **capacity error** (HTTP 402 payment required, HTTP 429 daily-quota exhaustion, connection failure), Triibal falls back through a layered chain instead of failing silently:
+When you set an explicit auxiliary provider (e.g. `auxiliary.vision.provider: glm`), Tribal treats that as your preferred choice — but if the provider literally cannot serve the request because of a **capacity error** (HTTP 402 payment required, HTTP 429 daily-quota exhaustion, connection failure), Tribal falls back through a layered chain instead of failing silently:
 
 1. **Primary aux provider** — the one you configured (tried first, always)
 2. **`auxiliary.<task>.fallback_chain`** — your per-task override list, if you wrote one
 3. **Main agent provider + model** — last-resort safety net (always tried, even if you didn't write a chain)
-4. **Warn + re-raise** — if every layer fails, Triibal logs `Auxiliary <task>: ... all fallbacks exhausted` at WARNING level and re-raises the original error
+4. **Warn + re-raise** — if every layer fails, Tribal logs `Auxiliary <task>: ... all fallbacks exhausted` at WARNING level and re-raises the original error
 
 Transient HTTP 429 rate limits (`Retry-After: ...`) are treated as request constraints, not capacity problems — they respect your explicit provider choice and do **not** trigger the fallback ladder. Only daily/monthly quota exhaustion, payment errors, and connection failures bypass the explicit-provider gate.
 
@@ -331,13 +331,13 @@ You do **not** need to configure `fallback_chain` to get fallback — the main-a
 
 ### Provider quota errors that trigger fallback
 
-Triibal recognizes these as capacity-equivalent to 402 credit exhaustion (not transient rate limits):
+Tribal recognizes these as capacity-equivalent to 402 credit exhaustion (not transient rate limits):
 
 - Bedrock / LiteLLM: `Too many tokens per day`, `daily limit`, `tokens per day`
 - Vertex AI / GCP: `quota exceeded`, `resource exhausted`, `RESOURCE_EXHAUSTED`
 - Generic: `daily quota`, `quota_exceeded`
 
-If your provider returns a different phrase for daily-quota exhaustion and Triibal doesn't trigger fallback, that's a bug — open an issue with the exact error string.
+If your provider returns a different phrase for daily-quota exhaustion and Tribal doesn't trigger fallback, that's a bug — open an issue with the exact error string.
 
 ---
 
@@ -356,7 +356,7 @@ auxiliary:
 Older configs with `compression.summary_model` / `compression.summary_provider` / `compression.summary_base_url` are automatically migrated to `auxiliary.compression.*` on first load (config version 17).
 :::
 
-If no provider is available for compression, Triibal drops middle conversation turns without generating a summary rather than failing the session.
+If no provider is available for compression, Tribal drops middle conversation turns without generating a summary rather than failing the session.
 
 ---
 

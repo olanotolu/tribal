@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs'
 
-import type { ScrollBoxHandle } from '@triibal/ink'
-import { evictInkCaches } from '@triibal/ink'
+import type { ScrollBoxHandle } from '@tribal/ink'
+import { evictInkCaches } from '@tribal/ink'
 import { type RefObject, useCallback } from 'react'
 
 import { buildSetupRequiredSections, SETUP_REQUIRED_TITLE } from '../content/setup.js'
@@ -40,7 +40,7 @@ const statusFromLiveSession = (status?: string, running = false) => {
   return running || status === 'working' ? 'running…' : 'ready'
 }
 
-export const writeActiveSessionFile = (sessionId: null | string, file = process.env.TRIIBAL_TUI_ACTIVE_SESSION_FILE) => {
+export const writeActiveSessionFile = (sessionId: null | string, file = process.env.TRIBAL_TUI_ACTIVE_SESSION_FILE) => {
   if (!file || !sessionId) {
     return
   }

@@ -1,5 +1,5 @@
 {
-  description = "Triibal Agent - runtime for autonomous agent collectives";
+  description = "Tribal Agent - runtime for autonomous agent collectives";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

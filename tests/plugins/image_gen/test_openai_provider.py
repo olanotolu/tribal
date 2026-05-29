@@ -30,8 +30,8 @@ def _fake_response(*, b64=None, url=None, revised_prompt=None):
 
 
 @pytest.fixture(autouse=True)
-def _tmp_triibal_home(tmp_path, monkeypatch):
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+def _tmp_tribal_home(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
     yield tmp_path
 
 

@@ -1,6 +1,6 @@
 """OpenAI-compatible facade that talks to Google's Cloud Code Assist backend.
 
-This adapter lets Triibal use the ``google-gemini-cli`` provider as if it were
+This adapter lets Tribal use the ``google-gemini-cli`` provider as if it were
 a standard OpenAI-shaped chat completion endpoint, while the underlying HTTP
 traffic goes to ``cloudcode-pa.googleapis.com/v1internal:{generateContent,
 streamGenerateContent}`` with a Bearer access token obtained via OAuth PKCE.
@@ -705,8 +705,8 @@ class GeminiCloudCodeClient:
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Authorization": f"Bearer {access_token}",
-            "User-Agent": "triibal-agent (gemini-cli-compat)",
-            "X-Goog-Api-Client": "gl-python/triibal",
+            "User-Agent": "tribal-agent (gemini-cli-compat)",
+            "X-Goog-Api-Client": "gl-python/tribal",
             "x-activity-request-id": str(uuid.uuid4()),
         }
         headers.update(self._default_headers)
@@ -867,7 +867,7 @@ def _gemini_http_error(response: httpx.Response) -> CodeAssistError:
         target = model_hint or "this Gemini model"
         message = (
             f"Gemini capacity exhausted for {target} (Google-side throttle, "
-            f"not a Triibal issue). Try a different Gemini model or set a "
+            f"not a Tribal issue). Try a different Gemini model or set a "
             f"fallback_providers entry to a non-Gemini provider."
         )
         if retry_delay_seconds is not None:
@@ -885,7 +885,7 @@ def _gemini_http_error(response: httpx.Response) -> CodeAssistError:
         message = (
             f"Code Assist 404: {target} is not available at "
             f"cloudcode-pa.googleapis.com. It may have been renamed or "
-            f"retired. Check triibal_cli/models.py for the current list."
+            f"retired. Check tribal_cli/models.py for the current list."
         )
     elif err_message:
         # Generic fallback with the parsed message.

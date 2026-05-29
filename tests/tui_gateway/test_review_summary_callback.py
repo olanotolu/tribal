@@ -22,12 +22,12 @@ def server():
     with patch.dict(
         "sys.modules",
         {
-            "triibal_constants": MagicMock(
-                get_triibal_home=MagicMock(return_value="/tmp/triibal_test_review_summary")
+            "tribal_constants": MagicMock(
+                get_tribal_home=MagicMock(return_value="/tmp/tribal_test_review_summary")
             ),
-            "triibal_cli.env_loader": MagicMock(),
-            "triibal_cli.banner": MagicMock(),
-            "triibal_state": MagicMock(),
+            "tribal_cli.env_loader": MagicMock(),
+            "tribal_cli.banner": MagicMock(),
+            "tribal_state": MagicMock(),
         },
     ):
         import importlib
@@ -81,7 +81,7 @@ def test_init_session_attaches_background_review_callback(server, monkeypatch):
     captured_emits.clear()
 
     # Invoke the callback the way AIAgent._spawn_background_review would.
-    cb("💾 Self-improvement review: Skill 'triibal-release' patched")
+    cb("💾 Self-improvement review: Skill 'tribal-release' patched")
 
     # Exactly one review.summary event should have been emitted, bound to
     # the session id we passed in, carrying the full message text.
@@ -90,7 +90,7 @@ def test_init_session_attaches_background_review_callback(server, monkeypatch):
     event, sid, payload = matched[0]
     assert sid == "sid-abc"
     assert payload == {
-        "text": "💾 Self-improvement review: Skill 'triibal-release' patched"
+        "text": "💾 Self-improvement review: Skill 'tribal-release' patched"
     }
 
 

@@ -1,6 +1,6 @@
 # QQ Bot
 
-Connect Triibal to QQ via the **Official QQ Bot API (v2)** — supporting private (C2C), group @-mentions, guild, and direct messages with voice transcription.
+Connect Tribal to QQ via the **Official QQ Bot API (v2)** — supporting private (C2C), group @-mentions, guild, and direct messages with voice transcription.
 
 ## Overview
 
@@ -28,14 +28,14 @@ The QQ Bot adapter uses the [Official QQ Bot API](https://bot.q.qq.com/wiki/deve
 ### Interactive setup
 
 ```bash
-triibal gateway setup
+tribal gateway setup
 ```
 
 Select **QQ Bot** from the platform list and follow the prompts.
 
 ### Manual configuration
 
-Set the required environment variables in `~/.triibal/.env`:
+Set the required environment variables in `~/.tribal/.env`:
 
 ```bash
 QQ_APP_ID=your-app-id
@@ -60,7 +60,7 @@ QQ_CLIENT_SECRET=your-app-secret
 
 ## Advanced Configuration
 
-For fine-grained control, add platform settings to `~/.triibal/config.yaml`:
+For fine-grained control, add platform settings to `~/.tribal/config.yaml`:
 
 ```yaml
 platforms:

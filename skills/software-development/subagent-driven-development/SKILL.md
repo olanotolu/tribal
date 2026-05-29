@@ -2,11 +2,11 @@
 name: subagent-driven-development
 description: "Execute plans via delegate_task subagents (2-stage review)."
 version: 1.1.0
-author: Triibal Agent (adapted from obra/superpowers)
+author: Tribal Agent (adapted from obra/superpowers)
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  triibal:
+  tribal:
     tags: [delegation, subagent, implementation, workflow, parallel]
     related_skills: [writing-plans, requesting-code-review, test-driven-development]
 ---

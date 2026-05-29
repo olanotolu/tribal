@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "Adding Tools"
-description: "How to add a new tool to Triibal Agent — schemas, handlers, registration, and toolsets"
+description: "How to add a new tool to Tribal Agent — schemas, handlers, registration, and toolsets"
 ---
 
 # Adding Tools
@@ -9,12 +9,12 @@ description: "How to add a new tool to Triibal Agent — schemas, handlers, regi
 Before writing a tool, ask yourself: **should this be a [skill](creating-skills.md) instead?**
 
 :::warning Built-in Core Tools Only
-This page is for adding a **built-in Triibal tool** to the repository itself.
+This page is for adding a **built-in Tribal tool** to the repository itself.
 If you want a personal, project-local, or otherwise custom tool without
-modifying Triibal core, use the plugin route instead:
+modifying Tribal core, use the plugin route instead:
 
 - [Plugins](/user-guide/features/plugins)
-- [Build a Triibal Plugin](/guides/build-a-triibal-plugin)
+- [Build a Tribal Plugin](/guides/build-a-tribal-plugin)
 
 Default to plugins for most custom tool creation. Only follow this page when
 you explicitly want to ship a new built-in tool in `tools/` and `toolsets.py`.
@@ -29,7 +29,7 @@ Make it a **Tool** when it requires end-to-end integration with API keys, custom
 Adding a tool touches **2 files**:
 
 1. **`tools/your_tool.py`** — handler, schema, check function, `registry.register()` call
-2. **`toolsets.py`** — add tool name to `_TRIIBAL_CORE_TOOLS` (or a specific toolset)
+2. **`toolsets.py`** — add tool name to `_TRIBAL_CORE_TOOLS` (or a specific toolset)
 
 Any `tools/*.py` file with a top-level `registry.register()` call is auto-discovered at startup — no manual import list required.
 
@@ -124,7 +124,7 @@ In `toolsets.py`, add the tool name:
 
 ```python
 # If it should be available on all platforms (CLI + messaging):
-_TRIIBAL_CORE_TOOLS = [
+_TRIBAL_CORE_TOOLS = [
     ...
     "weather",  # <-- add here
 ]
@@ -185,7 +185,7 @@ Some tools (`todo`, `memory`, `session_search`, `delegate_task`) need access to 
 
 ## Optional: Setup Wizard Integration
 
-If your tool requires an API key, add it to `triibal_cli/config.py`:
+If your tool requires an API key, add it to `tribal_cli/config.py`:
 
 ```python
 OPTIONAL_ENV_VARS = {
@@ -206,6 +206,6 @@ OPTIONAL_ENV_VARS = {
 - [ ] Added to appropriate toolset in `toolsets.py`
 - [ ] Confirmed this really should be a built-in/core tool and not a plugin
 - [ ] Handler returns JSON strings, errors returned as `{"error": "..."}`
-- [ ] Optional: API key added to `OPTIONAL_ENV_VARS` in `triibal_cli/config.py`
+- [ ] Optional: API key added to `OPTIONAL_ENV_VARS` in `tribal_cli/config.py`
 - [ ] Optional: Added to `toolset_distributions.py` for batch processing
-- [ ] Tested with `triibal chat -q "Use the weather tool for London"`
+- [ ] Tested with `tribal chat -q "Use the weather tool for London"`

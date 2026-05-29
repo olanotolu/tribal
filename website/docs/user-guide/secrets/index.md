@@ -1,6 +1,6 @@
 # Secrets
 
-Triibal can pull API keys from external secret managers at process startup instead of storing them in `~/.triibal/.env`. The bootstrap token for the secret manager lives in `.env`; every other provider key (OpenAI, Anthropic, OpenRouter, etc.) can stay in the manager and rotate centrally.
+Tribal can pull API keys from external secret managers at process startup instead of storing them in `~/.tribal/.env`. The bootstrap token for the secret manager lives in `.env`; every other provider key (OpenAI, Anthropic, OpenRouter, etc.) can stay in the manager and rotate centrally.
 
 Supported:
 

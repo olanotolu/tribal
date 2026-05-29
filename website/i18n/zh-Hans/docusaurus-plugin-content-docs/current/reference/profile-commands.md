@@ -4,15 +4,15 @@ sidebar_position: 7
 
 # Profile 命令参考
 
-本页涵盖所有与 [Triibal profiles](../user-guide/profiles.md) 相关的命令。通用 CLI 命令请参阅 [CLI 命令参考](./cli-commands.md)。
+本页涵盖所有与 [Tribal profiles](../user-guide/profiles.md) 相关的命令。通用 CLI 命令请参阅 [CLI 命令参考](./cli-commands.md)。
 
-## `triibal profile`
+## `tribal profile`
 
 ```bash
-triibal profile <subcommand>
+tribal profile <subcommand>
 ```
 
-管理 profile 的顶级命令。不带子命令运行 `triibal profile` 将显示帮助信息。
+管理 profile 的顶级命令。不带子命令运行 `tribal profile` 将显示帮助信息。
 
 | 子命令 | 描述 |
 |------------|-------------|
@@ -29,10 +29,10 @@ triibal profile <subcommand>
 | `update` | 重新拉取发行版管理的 profile 并重新应用其 bundle。 |
 | `info` | 显示 profile 的发行版元数据（来源 URL、commit、最后更新时间）。 |
 
-## `triibal profile list`
+## `tribal profile list`
 
 ```bash
-triibal profile list
+tribal profile list
 ```
 
 列出所有 profile。当前活跃的 profile 以 `*` 标记。
@@ -40,7 +40,7 @@ triibal profile list
 **示例：**
 
 ```bash
-$ triibal profile list
+$ tribal profile list
   default
 * work
   dev
@@ -49,13 +49,13 @@ $ triibal profile list
 
 无选项。
 
-## `triibal profile use`
+## `tribal profile use`
 
 ```bash
-triibal profile use <name>
+tribal profile use <name>
 ```
 
-将 `<name>` 设为活跃 profile。此后所有 `triibal` 命令（不带 `-p`）都将使用该 profile。
+将 `<name>` 设为活跃 profile。此后所有 `tribal` 命令（不带 `-p`）都将使用该 profile。
 
 | 参数 | 描述 |
 |----------|-------------|
@@ -64,14 +64,14 @@ triibal profile use <name>
 **示例：**
 
 ```bash
-triibal profile use work
-triibal profile use default
+tribal profile use work
+tribal profile use default
 ```
 
-## `triibal profile create`
+## `tribal profile create`
 
 ```bash
-triibal profile create <name> [options]
+tribal profile create <name> [options]
 ```
 
 创建新 profile。
@@ -83,8 +83,8 @@ triibal profile create <name> [options]
 | `--clone-all` | 从当前 profile 复制所有内容（config、memories、skills、sessions、state）。 |
 | `--clone-from <profile>` | 从指定 profile 克隆，而非当前 profile。与 `--clone` 或 `--clone-all` 配合使用。 |
 | `--no-alias` | 跳过 wrapper 脚本创建。 |
-| `--description "<text>"` | 一到两句话描述该 profile 的用途。供 kanban 编排器根据角色而非仅凭 profile 名称来路由任务。可跳过，稍后通过 `triibal profile describe` 添加。持久化保存在 `<profile_dir>/profile.yaml` 中。 |
-| `--no-skills` | 创建一个**空** profile，不启用任何内置 skill。会在 profile 目录中写入 `.no-skills` 标记，使后续 `triibal update` 不再重新植入内置 skill 集，且拒绝与 `--clone` / `--clone-all` 组合使用（因为后者会复制 skill）。适用于不应继承完整 skill 目录的窄化编排器 profile 或沙箱 profile。 |
+| `--description "<text>"` | 一到两句话描述该 profile 的用途。供 kanban 编排器根据角色而非仅凭 profile 名称来路由任务。可跳过，稍后通过 `tribal profile describe` 添加。持久化保存在 `<profile_dir>/profile.yaml` 中。 |
+| `--no-skills` | 创建一个**空** profile，不启用任何内置 skill。会在 profile 目录中写入 `.no-skills` 标记，使后续 `tribal update` 不再重新植入内置 skill 集，且拒绝与 `--clone` / `--clone-all` 组合使用（因为后者会复制 skill）。适用于不应继承完整 skill 目录的窄化编排器 profile 或沙箱 profile。 |
 
 创建 profile **不会**将该 profile 目录设为终端命令的默认项目/工作目录。如需让某个 profile 从特定项目目录启动，请在该 profile 的 `config.yaml` 中设置 `terminal.cwd`。
 
@@ -92,22 +92,22 @@ triibal profile create <name> [options]
 
 ```bash
 # 空白 profile — 需要完整配置
-triibal profile create mybot
+tribal profile create mybot
 
 # 仅从当前 profile 克隆 config
-triibal profile create work --clone
+tribal profile create work --clone
 
 # 从当前 profile 克隆所有内容
-triibal profile create backup --clone-all
+tribal profile create backup --clone-all
 
 # 从指定 profile 克隆 config
-triibal profile create work2 --clone --clone-from work
+tribal profile create work2 --clone --clone-from work
 ```
 
-## `triibal profile describe`
+## `tribal profile describe`
 
 ```bash
-triibal profile describe [<name>] [options]
+tribal profile describe [<name>] [options]
 ```
 
 读取或设置 profile 的描述。描述由 kanban 编排器使用，用于根据每个 profile 的能力路由任务，而非仅凭 profile 名称猜测。持久化保存在 `<profile_dir>/profile.yaml` 中，重启后仍有效，并与 gateway 共享。
@@ -126,22 +126,22 @@ triibal profile describe [<name>] [options]
 
 ```bash
 # 读取当前描述
-triibal profile describe researcher
+tribal profile describe researcher
 
 # 显式设置描述
-triibal profile describe researcher --text "Reads source code and writes findings."
+tribal profile describe researcher --text "Reads source code and writes findings."
 
 # 让 LLM 生成描述
-triibal profile describe researcher --auto
+tribal profile describe researcher --auto
 
 # 为所有没有描述的 profile 填充描述
-triibal profile describe --all --auto
+tribal profile describe --all --auto
 ```
 
-## `triibal profile delete`
+## `tribal profile delete`
 
 ```bash
-triibal profile delete <name> [options]
+tribal profile delete <name> [options]
 ```
 
 删除 profile 并移除其 shell alias。
@@ -154,23 +154,23 @@ triibal profile delete <name> [options]
 **示例：**
 
 ```bash
-triibal profile delete mybot
-triibal profile delete mybot --yes
+tribal profile delete mybot
+tribal profile delete mybot --yes
 ```
 
 :::warning
 此操作将永久删除 profile 的整个目录，包括所有 config、memories、sessions 和 skills。无法删除当前活跃的 profile。
 :::
 
-## `triibal profile show`
+## `tribal profile show`
 
 ```bash
-triibal profile show <name>
+tribal profile show <name>
 ```
 
 显示 profile 的详细信息，包括其主目录、配置的模型、gateway 状态、skill 数量和配置文件状态。
 
-此处显示的是 profile 的 Triibal 主目录，而非终端工作目录。终端命令从 `terminal.cwd` 启动（或在本地后端 `cwd: "."` 时从启动目录启动）。
+此处显示的是 profile 的 Tribal 主目录，而非终端工作目录。终端命令从 `terminal.cwd` 启动（或在本地后端 `cwd: "."` 时从启动目录启动）。
 
 | 参数 | 描述 |
 |----------|-------------|
@@ -179,9 +179,9 @@ triibal profile show <name>
 **示例：**
 
 ```bash
-$ triibal profile show work
+$ tribal profile show work
 Profile: work
-Path:    ~/.triibal/profiles/work
+Path:    ~/.tribal/profiles/work
 Model:   anthropic/claude-sonnet-4 (anthropic)
 Gateway: stopped
 Skills:  12
@@ -190,13 +190,13 @@ SOUL.md: exists
 Alias:   ~/.local/bin/work
 ```
 
-## `triibal profile alias`
+## `tribal profile alias`
 
 ```bash
-triibal profile alias <name> [options]
+tribal profile alias <name> [options]
 ```
 
-重新生成位于 `~/.local/bin/<name>` 的 shell alias 脚本。适用于 alias 被意外删除，或移动 Triibal 安装目录后需要更新的情况。
+重新生成位于 `~/.local/bin/<name>` 的 shell alias 脚本。适用于 alias 被意外删除，或移动 Tribal 安装目录后需要更新的情况。
 
 | 参数 / 选项 | 描述 |
 |-------------------|-------------|
@@ -207,20 +207,20 @@ triibal profile alias <name> [options]
 **示例：**
 
 ```bash
-triibal profile alias work
+tribal profile alias work
 # 创建/更新 ~/.local/bin/work
 
-triibal profile alias work --name mywork
+tribal profile alias work --name mywork
 # 创建 ~/.local/bin/mywork
 
-triibal profile alias work --remove
+tribal profile alias work --remove
 # 移除 wrapper 脚本
 ```
 
-## `triibal profile rename`
+## `tribal profile rename`
 
 ```bash
-triibal profile rename <old-name> <new-name>
+tribal profile rename <old-name> <new-name>
 ```
 
 重命名 profile，同时更新目录和 shell alias。
@@ -233,15 +233,15 @@ triibal profile rename <old-name> <new-name>
 **示例：**
 
 ```bash
-triibal profile rename mybot assistant
-# ~/.triibal/profiles/mybot → ~/.triibal/profiles/assistant
+tribal profile rename mybot assistant
+# ~/.tribal/profiles/mybot → ~/.tribal/profiles/assistant
 # ~/.local/bin/mybot → ~/.local/bin/assistant
 ```
 
-## `triibal profile export`
+## `tribal profile export`
 
 ```bash
-triibal profile export <name> [options]
+tribal profile export <name> [options]
 ```
 
 将 profile 导出为压缩的 tar.gz 归档文件。
@@ -254,16 +254,16 @@ triibal profile export <name> [options]
 **示例：**
 
 ```bash
-triibal profile export work
+tribal profile export work
 # 在当前目录创建 work.tar.gz
 
-triibal profile export work -o ./work-2026-03-29.tar.gz
+tribal profile export work -o ./work-2026-03-29.tar.gz
 ```
 
-## `triibal profile import`
+## `tribal profile import`
 
 ```bash
-triibal profile import <archive> [options]
+tribal profile import <archive> [options]
 ```
 
 从 tar.gz 归档文件导入 profile。
@@ -276,10 +276,10 @@ triibal profile import <archive> [options]
 **示例：**
 
 ```bash
-triibal profile import ./work-2026-03-29.tar.gz
+tribal profile import ./work-2026-03-29.tar.gz
 # 从归档文件推断 profile 名称
 
-triibal profile import ./work-2026-03-29.tar.gz --name work-restored
+tribal profile import ./work-2026-03-29.tar.gz --name work-restored
 ```
 
 ## 发行版命令
@@ -295,13 +295,13 @@ triibal profile import ./work-2026-03-29.tar.gz --name work-restored
 接收方的用户数据（memories、sessions、auth、对 `.env` 的自有编辑）在初次安装和后续更新中始终得到保留。
 
 :::info
-`triibal profile export` / `import` 仍是在**本机进行 profile 本地备份和恢复**的正确命令。发行版（`install` / `update` / `info`）是独立概念：通过 git 分发 profile，供他人安装。
+`tribal profile export` / `import` 仍是在**本机进行 profile 本地备份和恢复**的正确命令。发行版（`install` / `update` / `info`）是独立概念：通过 git 分发 profile，供他人安装。
 :::
 
-### `triibal profile install`
+### `tribal profile install`
 
 ```bash
-triibal profile install <source> [--name <name>] [--alias] [--force] [--yes]
+tribal profile install <source> [--name <name>] [--alias] [--force] [--yes]
 ```
 
 从 git URL 或本地目录安装 profile 发行版。
@@ -310,7 +310,7 @@ triibal profile install <source> [--name <name>] [--alias] [--force] [--yes]
 |--------|-------------|
 | `<source>` | Git URL（`github.com/user/repo`、`https://...`、`git@...`、`ssh://`、`git://`）或包含 `distribution.yaml` 的本地目录根路径。 |
 | `--name NAME` | 覆盖 manifest 中的 profile 名称。 |
-| `--alias` | 同时创建 shell wrapper（例如 `telemetry` → `triibal -p telemetry`）。 |
+| `--alias` | 同时创建 shell wrapper（例如 `telemetry` → `tribal -p telemetry`）。 |
 | `--force` | 覆盖同名的已有 profile。用户数据仍会保留。 |
 | `-y`, `--yes` | 跳过 manifest 预览确认提示。 |
 
@@ -320,37 +320,37 @@ triibal profile install <source> [--name <name>] [--alias] [--force] [--yes]
 
 ```bash
 # 从 GitHub 仓库安装（简写）
-triibal profile install github.com/kyle/telemetry-distribution --alias
+tribal profile install github.com/kyle/telemetry-distribution --alias
 
 # 从完整 HTTPS git URL 安装
-triibal profile install https://github.com/kyle/telemetry-distribution.git
+tribal profile install https://github.com/kyle/telemetry-distribution.git
 
 # 从 SSH 安装
-triibal profile install git@github.com:kyle/telemetry-distribution.git
+tribal profile install git@github.com:kyle/telemetry-distribution.git
 
 # 开发时从本地目录安装
-triibal profile install ./telemetry/
+tribal profile install ./telemetry/
 ```
 
-### `triibal profile update`
+### `tribal profile update`
 
 ```bash
-triibal profile update <name> [--force-config] [--yes]
+tribal profile update <name> [--force-config] [--yes]
 ```
 
 从记录的来源重新克隆发行版并应用更新。发行版所有的文件（SOUL.md、skills/、cron/、mcp.json）会被覆盖；用户数据（memories、sessions、auth、.env）不会被修改。
 
 默认保留 `config.yaml` 以保持本地覆盖设置。传入 `--force-config` 可将其重置为发行版附带的 config。
 
-### `triibal profile info`
+### `tribal profile info`
 
 ```bash
-triibal profile info <name>
+tribal profile info <name>
 ```
 
-打印 profile 的发行版 manifest — 名称、版本、所需 Triibal 版本、作者、环境变量要求、来源 URL/路径，以及发行版最后一次 `install` 或 `update` 时记录的 `Installed:` 时间戳。适用于安装前检查共享 profile 的需求，以及发现"该 profile 已安装 6 个月未更新"等情况。
+打印 profile 的发行版 manifest — 名称、版本、所需 Tribal 版本、作者、环境变量要求、来源 URL/路径，以及发行版最后一次 `install` 或 `update` 时记录的 `Installed:` 时间戳。适用于安装前检查共享 profile 的需求，以及发现"该 profile 已安装 6 个月未更新"等情况。
 
-`triibal profile list` 也会在 `Distribution` 列中显示发行版名称和版本，`triibal profile show <name>` / `delete <name>` 会显示来源 URL，让你一眼看出哪些 profile 来自 git 仓库，哪些是本地创建的。
+`tribal profile list` 也会在 `Distribution` 列中显示发行版名称和版本，`tribal profile show <name>` / `delete <name>` 会显示来源 URL，让你一眼看出哪些 profile 来自 git 仓库，哪些是本地创建的。
 
 ### 私有发行版
 
@@ -358,10 +358,10 @@ triibal profile info <name>
 
 ```bash
 # 使用 SSH 密钥，与普通 `git clone` 相同
-triibal profile install git@github.com:your-org/internal-assistant.git
+tribal profile install git@github.com:your-org/internal-assistant.git
 
 # 使用 git credential helper
-triibal profile install https://github.com/your-org/internal-assistant.git
+tribal profile install https://github.com/your-org/internal-assistant.git
 ```
 
 如果克隆时在终端交互式提示输入凭据，该提示会正常显示。请先按照对同一仓库执行 `git clone` 的方式配置好认证，再执行安装。
@@ -374,7 +374,7 @@ triibal profile install https://github.com/your-org/internal-assistant.git
 name: telemetry
 version: 0.1.0
 description: "Compliance monitoring harness"
-triibal_requires: ">=0.12.0"
+tribal_requires: ">=0.12.0"
 author: "Your Name"
 license: "MIT"
 env_requires:
@@ -392,7 +392,7 @@ distribution_owned:   # optional; defaults to SOUL.md, config.yaml,
   - cron/
 ```
 
-`triibal_requires` 支持 `>=`、`<=`、`==`、`!=`、`>`、`<`，或裸版本号（视为 `>=`）。若当前 Triibal 版本不满足规格，安装将失败并给出明确错误。
+`tribal_requires` 支持 `>=`、`<=`、`==`、`!=`、`>`、`<`，或裸版本号（视为 `>=`）。若当前 Tribal 版本不满足规格，安装将失败并给出明确错误。
 
 `distribution_owned` 为可选项。若设置，更新时仅替换这些路径；profile 中的其他内容保持用户所有。若省略，则应用上述默认值。
 
@@ -401,19 +401,19 @@ distribution_owned:   # optional; defaults to SOUL.md, config.yaml,
 编写发行版就是一次 git push：
 
 1. 在你的 profile 目录中创建 `distribution.yaml`，至少包含 `name` 和 `version`。
-2. 初始化 git 仓库（或使用已有仓库），推送到 GitHub / GitLab / 任何 Triibal 可克隆的托管平台。
-3. 告知接收方运行 `triibal profile install <your-repo-url>`。
+2. 初始化 git 仓库（或使用已有仓库），推送到 GitHub / GitLab / 任何 Tribal 可克隆的托管平台。
+3. 告知接收方运行 `tribal profile install <your-repo-url>`。
 
 使用 git tag 进行版本化发布 — 克隆 `HEAD` 的接收方将获得最新状态，你也可以随时在 manifest 中更新 `version:`。
 
-## `triibal -p` / `triibal --profile`
+## `tribal -p` / `tribal --profile`
 
 ```bash
-triibal -p <name> <command> [options]
-triibal --profile <name> <command> [options]
+tribal -p <name> <command> [options]
+tribal --profile <name> <command> [options]
 ```
 
-全局标志，用于在不更改默认 profile 的情况下，在指定 profile 下运行任意 Triibal 命令。仅在该命令执行期间覆盖活跃 profile。
+全局标志，用于在不更改默认 profile 的情况下，在指定 profile 下运行任意 Tribal 命令。仅在该命令执行期间覆盖活跃 profile。
 
 | 选项 | 描述 |
 |--------|-------------|
@@ -422,16 +422,16 @@ triibal --profile <name> <command> [options]
 **示例：**
 
 ```bash
-triibal -p work chat -q "Check the server status"
-triibal --profile dev gateway start
-triibal -p personal skills list
-triibal -p work config edit
+tribal -p work chat -q "Check the server status"
+tribal --profile dev gateway start
+tribal -p personal skills list
+tribal -p work config edit
 ```
 
-## `triibal completion`
+## `tribal completion`
 
 ```bash
-triibal completion <shell>
+tribal completion <shell>
 ```
 
 生成 shell 补全脚本。包含对 profile 名称和 profile 子命令的补全。
@@ -444,18 +444,18 @@ triibal completion <shell>
 
 ```bash
 # 安装补全脚本
-triibal completion bash >> ~/.bashrc
-triibal completion zsh >> ~/.zshrc
-triibal completion fish > ~/.config/fish/completions/triibal.fish
+tribal completion bash >> ~/.bashrc
+tribal completion zsh >> ~/.zshrc
+tribal completion fish > ~/.config/fish/completions/tribal.fish
 
 # 重新加载 shell
 source ~/.bashrc
 ```
 
 安装后，Tab 补全适用于：
-- `triibal profile <TAB>` — 子命令（list、use、create 等）
-- `triibal profile use <TAB>` — profile 名称
-- `triibal -p <TAB>` — profile 名称
+- `tribal profile <TAB>` — 子命令（list、use、create 等）
+- `tribal profile use <TAB>` — profile 名称
+- `tribal -p <TAB>` — profile 名称
 
 ## 另请参阅
 

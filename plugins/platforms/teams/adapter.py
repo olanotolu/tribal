@@ -1,5 +1,5 @@
 """
-Microsoft Teams platform adapter for Triibal Agent.
+Microsoft Teams platform adapter for Tribal Agent.
 
 Uses the microsoft-teams-apps SDK for authentication and activity processing.
 Runs an aiohttp webhook server to receive messages from Teams.
@@ -505,8 +505,8 @@ async def _standalone_send(
     """Acquire a Bot Framework bearer token and POST a single message activity.
 
     Used by ``tools/send_message_tool._send_via_adapter`` when the gateway
-    runner is not in this process (e.g. ``triibal cron`` running as a
-    separate process from ``triibal gateway``).  Without this hook,
+    runner is not in this process (e.g. ``tribal cron`` running as a
+    separate process from ``tribal gateway``).  Without this hook,
     ``deliver=teams`` cron jobs fail with ``No live adapter for platform``.
 
     Configuration: requires ``TEAMS_CLIENT_ID``, ``TEAMS_CLIENT_SECRET``,
@@ -675,7 +675,7 @@ class TeamsAdapter(BasePlatformAdapter):
                 client_secret=self._client_secret,
                 tenant_id=self._tenant_id,
                 http_server_adapter=_AiohttpBridgeAdapter(aiohttp_app),
-                client=ClientOptions(headers={"User-Agent": "Triibal"}),
+                client=ClientOptions(headers={"User-Agent": "Tribal"}),
             )
 
             # Register message handler before initialize()
@@ -826,10 +826,10 @@ class TeamsAdapter(BasePlatformAdapter):
 
         action = ctx.activity.value.action
         data = action.data or {}
-        triibal_action = data.get("triibal_action", "")
+        tribal_action = data.get("tribal_action", "")
         session_key = data.get("session_key", "")
 
-        if not triibal_action or not session_key:
+        if not tribal_action or not session_key:
             return InvokeResponse(
                 status=200,
                 body=AdaptiveCardActionMessageResponse(value="Unknown action."),
@@ -871,7 +871,7 @@ class TeamsAdapter(BasePlatformAdapter):
             "approve_always": "always",
             "deny": "deny",
         }
-        choice = choice_map.get(triibal_action)
+        choice = choice_map.get(tribal_action)
         if not choice:
             return InvokeResponse(
                 status=200,
@@ -944,24 +944,24 @@ class TeamsAdapter(BasePlatformAdapter):
             .with_actions([
                 ExecuteAction(
                     title="Allow Once",
-                    verb="triibal_approve",
-                    data={**btn_data_base, "triibal_action": "approve_once"},
+                    verb="tribal_approve",
+                    data={**btn_data_base, "tribal_action": "approve_once"},
                     style="positive",
                 ),
                 ExecuteAction(
                     title="Allow Session",
-                    verb="triibal_approve",
-                    data={**btn_data_base, "triibal_action": "approve_session"},
+                    verb="tribal_approve",
+                    data={**btn_data_base, "tribal_action": "approve_session"},
                 ),
                 ExecuteAction(
                     title="Always Allow",
-                    verb="triibal_approve",
-                    data={**btn_data_base, "triibal_action": "approve_always"},
+                    verb="tribal_approve",
+                    data={**btn_data_base, "tribal_action": "approve_always"},
                 ),
                 ExecuteAction(
                     title="Deny",
-                    verb="triibal_approve",
-                    data={**btn_data_base, "triibal_action": "deny"},
+                    verb="tribal_approve",
+                    data={**btn_data_base, "tribal_action": "deny"},
                     style="destructive",
                 ),
             ])
@@ -1084,11 +1084,11 @@ class TeamsAdapter(BasePlatformAdapter):
 
 def interactive_setup() -> None:
     """Guide the user through Teams setup using the Teams CLI."""
-    from triibal_cli.config import (
+    from tribal_cli.config import (
         get_env_value,
         save_env_value,
     )
-    from triibal_cli.cli_output import (
+    from tribal_cli.cli_output import (
         prompt,
         prompt_yes_no,
         print_info,
@@ -1108,7 +1108,7 @@ def interactive_setup() -> None:
     print()
     print_info("Then expose port 3978 publicly (devtunnel / ngrok / cloudflared),")
     print_info("and create your bot:")
-    print_info("  teams app create --name \"Triibal\" --endpoint \"https://<tunnel>/api/messages\"")
+    print_info("  teams app create --name \"Tribal\" --endpoint \"https://<tunnel>/api/messages\"")
     print()
     print_info("The CLI will print CLIENT_ID, CLIENT_SECRET, and TENANT_ID. Paste them below.")
     print()
@@ -1148,15 +1148,15 @@ def interactive_setup() -> None:
         print_warning("⚠️  Open access — anyone who can message the bot can command it.")
 
     print()
-    print_success("Teams configuration saved to ~/.triibal/.env")
+    print_success("Teams configuration saved to ~/.tribal/.env")
     print_info("Install the app in Teams:  teams app install --id <teamsAppId>")
-    print_info("Restart the gateway:       triibal gateway restart")
+    print_info("Restart the gateway:       tribal gateway restart")
 
 
 # ── Plugin entry point ────────────────────────────────────────────────────────
 
 def register(ctx) -> None:
-    """Plugin entry point — called by the Triibal plugin system."""
+    """Plugin entry point — called by the Tribal plugin system."""
     ctx.register_platform(
         name="teams",
         label="Microsoft Teams",

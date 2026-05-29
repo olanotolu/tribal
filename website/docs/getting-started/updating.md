@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "Updating & Uninstalling"
-description: "How to update Triibal Agent to the latest version or uninstall it"
+description: "How to update Tribal Agent to the latest version or uninstall it"
 ---
 
 # Updating & Uninstalling
@@ -13,7 +13,7 @@ description: "How to update Triibal Agent to the latest version or uninstall it"
 Update to the latest version with a single command:
 
 ```bash
-triibal update
+tribal update
 ```
 
 This pulls the latest code from `main`, updates dependencies, and prompts you to configure any new options that were added since your last update.
@@ -23,79 +23,79 @@ This pulls the latest code from `main`, updates dependencies, and prompts you to
 PyPI releases track **tagged versions** (major and minor releases), not every commit on `main`. Check for updates and upgrade with:
 
 ```bash
-triibal update --check    # see if a newer release is on PyPI
-triibal update            # runs pip install --upgrade triibal-agent
+tribal update --check    # see if a newer release is on PyPI
+tribal update            # runs pip install --upgrade tribal-agent
 ```
 
 Or manually:
 
 ```bash
-pip install --upgrade triibal-agent    # or: uv pip install --upgrade triibal-agent
+pip install --upgrade tribal-agent    # or: uv pip install --upgrade tribal-agent
 ```
 
 :::tip
-`triibal update` automatically detects new configuration options and prompts you to add them. If you skipped that prompt, you can manually run `triibal config check` to see missing options, then `triibal config migrate` to interactively add them.
+`tribal update` automatically detects new configuration options and prompts you to add them. If you skipped that prompt, you can manually run `tribal config check` to see missing options, then `tribal config migrate` to interactively add them.
 :::
 
 ### What happens during an update (git installs)
 
-When you run `triibal update`, the following steps occur:
+When you run `tribal update`, the following steps occur:
 
-1. **Pairing-data snapshot** — a lightweight pre-update state snapshot is saved (covers `~/.triibal/pairing/`, Feishu comment rules, and other state files that get modified at runtime). Recoverable via the snapshot restore flow described under [Snapshots and rollback](../user-guide/checkpoints-and-rollback.md), or by extracting the most recent quick-snapshot zip Triibal wrote next to your `~/.triibal/` directory.
+1. **Pairing-data snapshot** — a lightweight pre-update state snapshot is saved (covers `~/.tribal/pairing/`, Feishu comment rules, and other state files that get modified at runtime). Recoverable via the snapshot restore flow described under [Snapshots and rollback](../user-guide/checkpoints-and-rollback.md), or by extracting the most recent quick-snapshot zip Tribal wrote next to your `~/.tribal/` directory.
 2. **Git pull** — pulls the latest code from the `main` branch and updates submodules
-3. **Post-pull syntax validation + auto-rollback** — after the pull, Triibal compiles the eight critical files every `triibal` invocation imports at startup. If any fails to parse (e.g. an orphan merge-conflict marker, an accidentally truncated file), Triibal runs `git reset --hard <pre-pull-sha>` to roll the install back so your shell stays bootable. Re-run `triibal update` once the upstream fix lands.
+3. **Post-pull syntax validation + auto-rollback** — after the pull, Tribal compiles the eight critical files every `tribal` invocation imports at startup. If any fails to parse (e.g. an orphan merge-conflict marker, an accidentally truncated file), Tribal runs `git reset --hard <pre-pull-sha>` to roll the install back so your shell stays bootable. Re-run `tribal update` once the upstream fix lands.
 4. **Dependency install** — runs `uv pip install -e ".[all]"` to pick up new or changed dependencies
 5. **Config migration** — detects new config options added since your version and prompts you to set them
-6. **Gateway auto-restart** — running gateways are refreshed after the update completes so the new code takes effect immediately. Service-managed gateways (systemd on Linux, launchd on macOS) are restarted through the service manager. Manual gateways are relaunched automatically when Triibal can map the running PID back to a profile.
+6. **Gateway auto-restart** — running gateways are refreshed after the update completes so the new code takes effect immediately. Service-managed gateways (systemd on Linux, launchd on macOS) are restarted through the service manager. Manual gateways are relaunched automatically when Tribal can map the running PID back to a profile.
 
 ### Updating against a non-default branch: `--branch`
 
-By default `triibal update` tracks `origin/main`. Pass `--branch <name>` to update against a different branch — useful for QA channels, feature branches, or release-candidate testing:
+By default `tribal update` tracks `origin/main`. Pass `--branch <name>` to update against a different branch — useful for QA channels, feature branches, or release-candidate testing:
 
 ```bash
-triibal update --branch release-candidate
-triibal update --check --branch experimental   # preview behindness only
+tribal update --branch release-candidate
+tribal update --check --branch experimental   # preview behindness only
 ```
 
-If your local checkout is on a different branch, Triibal auto-stashes any uncommitted work, switches HEAD to the target branch, and then pulls. Branches that don't exist locally are auto-tracked from `origin/<name>` (`git checkout -B <name> origin/<name>`). Branches that don't exist anywhere fail cleanly — your stashed changes are restored before exit so you're never stranded in a weird state. The `main`-only fork-upstream sync logic is automatically skipped on non-`main` branches.
+If your local checkout is on a different branch, Tribal auto-stashes any uncommitted work, switches HEAD to the target branch, and then pulls. Branches that don't exist locally are auto-tracked from `origin/<name>` (`git checkout -B <name> origin/<name>`). Branches that don't exist anywhere fail cleanly — your stashed changes are restored before exit so you're never stranded in a weird state. The `main`-only fork-upstream sync logic is automatically skipped on non-`main` branches.
 
-### Preview-only: `triibal update --check`
+### Preview-only: `tribal update --check`
 
-Want to know if an update is available before pulling? Run `triibal update --check` — for git installs it fetches and compares commits against `origin/main`; for pip installs it queries PyPI for the latest release. No files are modified, no gateway is restarted. Useful in scripts and cron jobs that gate on "is there an update".
+Want to know if an update is available before pulling? Run `tribal update --check` — for git installs it fetches and compares commits against `origin/main`; for pip installs it queries PyPI for the latest release. No files are modified, no gateway is restarted. Useful in scripts and cron jobs that gate on "is there an update".
 
 ### Full pre-update backup: `--backup`
 
-For high-value profiles (production gateways, shared team installs) you can opt into a full pre-pull backup of `TRIIBAL_HOME` (config, auth, sessions, skills, pairing):
+For high-value profiles (production gateways, shared team installs) you can opt into a full pre-pull backup of `TRIBAL_HOME` (config, auth, sessions, skills, pairing):
 
 ```bash
-triibal update --backup
+tribal update --backup
 ```
 
 Or make it the default for every run:
 
 ```yaml
-# ~/.triibal/config.yaml
+# ~/.tribal/config.yaml
 updates:
   pre_update_backup: true
 ```
 
 `--backup` was the always-on behavior in earlier builds, but it was adding minutes to every update on large homes, so it's now opt-in. The lightweight pairing-data snapshot above still runs unconditionally.
 
-### Windows: another `triibal.exe` is running
+### Windows: another `tribal.exe` is running
 
-On Windows, `triibal update` will refuse to run if it detects another `triibal.exe` process holding the venv's entry-point executable open — most commonly the Triibal Desktop app's spawned backend, an open `triibal` REPL in another terminal, or a running gateway:
+On Windows, `tribal update` will refuse to run if it detects another `tribal.exe` process holding the venv's entry-point executable open — most commonly the Tribal Desktop app's spawned backend, an open `tribal` REPL in another terminal, or a running gateway:
 
 ```
-$ triibal update
-✗ Another triibal.exe is running:
-    PID 12345  triibal.exe
+$ tribal update
+✗ Another tribal.exe is running:
+    PID 12345  tribal.exe
 
-  Updating now would fail to overwrite ...\venv\Scripts\triibal.exe because
+  Updating now would fail to overwrite ...\venv\Scripts\tribal.exe because
   Windows blocks REPLACE on a running executable.
 
-  Close Triibal Desktop, exit any open `triibal` REPLs, and
-  stop the gateway (`triibal gateway stop`) before retrying.
-  Override with `triibal update --force` if you've already
+  Close Tribal Desktop, exit any open `tribal` REPLs, and
+  stop the gateway (`tribal gateway stop`) before retrying.
+  Override with `tribal update --force` if you've already
   confirmed those processes will not write to the venv.
 ```
 
@@ -104,8 +104,8 @@ Close the listed processes and re-run. If you're sure the concurrent process won
 Expected output looks like:
 
 ```
-$ triibal update
-Updating Triibal Agent...
+$ tribal update
+Updating Tribal Agent...
 📥 Pulling latest code...
 Already up to date.  (or: Updating abc1234..def5678)
 📦 Updating dependencies...
@@ -114,45 +114,45 @@ Already up to date.  (or: Updating abc1234..def5678)
 ✅ Config is up to date  (or: Found 2 new options — running migration...)
 🔄 Restarting gateways...
 ✅ Gateway restarted
-✅ Triibal Agent updated successfully!
+✅ Tribal Agent updated successfully!
 ```
 
 ### Recommended Post-Update Validation
 
-`triibal update` handles the main update path, but a quick validation confirms everything landed cleanly:
+`tribal update` handles the main update path, but a quick validation confirms everything landed cleanly:
 
 1. `git status --short` — if the tree is unexpectedly dirty, inspect before continuing
-2. `triibal doctor` — checks config, dependencies, and service health
-3. `triibal --version` — confirm the version bumped as expected
-4. If you use the gateway: `triibal gateway status`
+2. `tribal doctor` — checks config, dependencies, and service health
+3. `tribal --version` — confirm the version bumped as expected
+4. If you use the gateway: `tribal gateway status`
 5. If `doctor` reports npm audit issues: run `npm audit fix` in the flagged directory
 
 :::warning Dirty working tree after update
-If `git status --short` shows unexpected changes after `triibal update`, stop and inspect them before continuing. This usually means local modifications were reapplied on top of the updated code, or a dependency step refreshed lockfiles.
+If `git status --short` shows unexpected changes after `tribal update`, stop and inspect them before continuing. This usually means local modifications were reapplied on top of the updated code, or a dependency step refreshed lockfiles.
 :::
 
 ### If your terminal disconnects mid-update
 
-`triibal update` protects itself against accidental terminal loss:
+`tribal update` protects itself against accidental terminal loss:
 
 - The update ignores `SIGHUP`, so closing your SSH session or terminal window no longer kills it mid-install. `pip` and `git` child processes inherit this protection, so the Python environment cannot be left half-installed by a dropped connection.
-- All output is mirrored to `~/.triibal/logs/update.log` while the update runs. If your terminal disappears, reconnect and inspect the log to see whether the update finished and whether the gateway restart succeeded:
+- All output is mirrored to `~/.tribal/logs/update.log` while the update runs. If your terminal disappears, reconnect and inspect the log to see whether the update finished and whether the gateway restart succeeded:
 
 ```bash
-tail -f ~/.triibal/logs/update.log
+tail -f ~/.tribal/logs/update.log
 ```
 
 - `Ctrl-C` (SIGINT) and system shutdown (SIGTERM) are still honored — those are deliberate cancellations, not accidents.
 
-You no longer need to wrap `triibal update` in `screen` or `tmux` to survive a terminal drop.
+You no longer need to wrap `tribal update` in `screen` or `tmux` to survive a terminal drop.
 
 ### Checking your current version
 
 ```bash
-triibal version
+tribal version
 ```
 
-Compare against the latest release at the [GitHub releases page](https://github.com/Triibal/triibal/releases).
+Compare against the latest release at the [GitHub releases page](https://github.com/Tribal/tribal/releases).
 
 ### Updating from Messaging Platforms
 
@@ -169,7 +169,7 @@ This pulls the latest code, updates dependencies, and restarts running gateways.
 If you installed manually (not via the quick installer):
 
 ```bash
-cd /path/to/triibal-agent
+cd /path/to/tribal-agent
 export VIRTUAL_ENV="$(pwd)/venv"
 
 # Pull latest code
@@ -179,8 +179,8 @@ git pull origin main
 uv pip install -e ".[all]"
 
 # Check for new config options
-triibal config check
-triibal config migrate   # Interactively add any missing options
+tribal config check
+tribal config migrate   # Interactively add any missing options
 ```
 
 ### Rollback instructions
@@ -188,7 +188,7 @@ triibal config migrate   # Interactively add any missing options
 If an update introduces a problem, you can roll back to a previous version:
 
 ```bash
-cd /path/to/triibal-agent
+cd /path/to/tribal-agent
 
 # List recent versions
 git log --oneline -10
@@ -199,7 +199,7 @@ git submodule update --init --recursive
 uv pip install -e ".[all]"
 
 # Restart the gateway if running
-triibal gateway restart
+tribal gateway restart
 ```
 
 To roll back to a specific release tag (substitute your previous tag — e.g. a recent release like `v2026.5.16`, or any earlier tag from `git tag --sort=-version:refname`):
@@ -211,7 +211,7 @@ uv pip install -e ".[all]"
 ```
 
 :::warning
-Rolling back may cause config incompatibilities if new options were added. Run `triibal config check` after rolling back and remove any unrecognized options from `config.yaml` if you encounter errors.
+Rolling back may cause config incompatibilities if new options were added. Run `tribal config check` after rolling back and remove any unrecognized options from `config.yaml` if you encounter errors.
 :::
 
 ### Note for Nix users
@@ -220,10 +220,10 @@ If you installed via Nix flake, updates are managed through the Nix package mana
 
 ```bash
 # Update the flake input
-nix flake update triibal-agent
+nix flake update tribal-agent
 
 # Or rebuild with the latest
-nix profile upgrade triibal-agent
+nix profile upgrade tribal-agent
 ```
 
 Nix installations are immutable — rollback is handled by Nix's generation system:
@@ -241,31 +241,31 @@ See [Nix Setup](./nix-setup.md) for more details.
 ### Git installs
 
 ```bash
-triibal uninstall
+tribal uninstall
 ```
 
-The uninstaller gives you the option to keep your configuration files (`~/.triibal/`) for a future reinstall.
+The uninstaller gives you the option to keep your configuration files (`~/.tribal/`) for a future reinstall.
 
 ### pip installs
 
 ```bash
-pip uninstall triibal-agent
-rm -rf ~/.triibal            # Optional — keep if you plan to reinstall
+pip uninstall tribal-agent
+rm -rf ~/.tribal            # Optional — keep if you plan to reinstall
 ```
 
 ### Manual Uninstall
 
 ```bash
-rm -f ~/.local/bin/triibal
-rm -rf /path/to/triibal-agent
-rm -rf ~/.triibal            # Optional — keep if you plan to reinstall
+rm -f ~/.local/bin/tribal
+rm -rf /path/to/tribal-agent
+rm -rf ~/.tribal            # Optional — keep if you plan to reinstall
 ```
 
 :::info
 If you installed the gateway as a system service, stop and disable it first:
 ```bash
-triibal gateway stop
-# Linux: systemctl --user disable triibal-gateway
-# macOS: launchctl remove ai.triibal.gateway
+tribal gateway stop
+# Linux: systemctl --user disable tribal-gateway
+# macOS: launchctl remove ai.tribal.gateway
 ```
 :::

@@ -1,15 +1,15 @@
 # Optional Skills
 
-Official skills maintained by Triibal that are **not activated by default**.
+Official skills maintained by Tribal that are **not activated by default**.
 
-These skills ship with the triibal-agent repository but are not copied to
-`~/.triibal/skills/` during setup. They are discoverable via the Skills Hub:
+These skills ship with the tribal-agent repository but are not copied to
+`~/.tribal/skills/` during setup. They are discoverable via the Skills Hub:
 
 ```bash
-triibal skills browse               # browse all skills, official shown first
-triibal skills browse --source official  # browse only official optional skills
-triibal skills search <query>       # finds optional skills labeled "official"
-triibal skills install <identifier> # copies to ~/.triibal/skills/ and activates
+tribal skills browse               # browse all skills, official shown first
+tribal skills browse --source official  # browse only official optional skills
+tribal skills search <query>       # finds optional skills labeled "official"
+tribal skills install <identifier> # copies to ~/.tribal/skills/ and activates
 ```
 
 ## Why optional?

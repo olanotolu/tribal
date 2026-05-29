@@ -9,15 +9,15 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def _isolate_triibal(tmp_path, monkeypatch):
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path / ".triibal"))
-    (tmp_path / ".triibal").mkdir(exist_ok=True)
+def _isolate_tribal(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path / ".tribal"))
+    (tmp_path / ".tribal").mkdir(exist_ok=True)
 
 
 def _make_agent(monkeypatch):
     """Create a minimal AIAgent-like object with just the methods under test."""
     monkeypatch.setenv("OPENROUTER_API_KEY", "")
-    monkeypatch.setenv("TRIIBAL_INFERENCE_PROVIDER", "")
+    monkeypatch.setenv("TRIBAL_INFERENCE_PROVIDER", "")
     # Avoid full AIAgent init — just import the class and build a stub
     import run_agent as _ra
 

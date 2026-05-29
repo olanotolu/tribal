@@ -3,9 +3,9 @@ from unittest.mock import MagicMock, patch
 
 def test_gquota_uses_chat_console_when_tui_is_live():
     from agent.google_oauth import GoogleOAuthError
-    from cli import TriibalCLI
+    from cli import TribalCLI
 
-    cli = TriibalCLI.__new__(TriibalCLI)
+    cli = TribalCLI.__new__(TribalCLI)
     cli.console = MagicMock()
     cli._app = object()
 

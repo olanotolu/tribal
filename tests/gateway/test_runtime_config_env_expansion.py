@@ -15,12 +15,12 @@ def _write_config(home, body: str) -> None:
 
 @pytest.fixture
 def gateway_home(monkeypatch, tmp_path):
-    monkeypatch.setattr(gateway_run, "_triibal_home", tmp_path)
-    monkeypatch.delenv("TRIIBAL_PREFILL_MESSAGES_FILE", raising=False)
-    monkeypatch.delenv("TRIIBAL_EPHEMERAL_SYSTEM_PROMPT", raising=False)
-    monkeypatch.delenv("TRIIBAL_GATEWAY_BUSY_INPUT_MODE", raising=False)
-    monkeypatch.delenv("TRIIBAL_RESTART_DRAIN_TIMEOUT", raising=False)
-    monkeypatch.delenv("TRIIBAL_BACKGROUND_NOTIFICATIONS", raising=False)
+    monkeypatch.setattr(gateway_run, "_tribal_home", tmp_path)
+    monkeypatch.delenv("TRIBAL_PREFILL_MESSAGES_FILE", raising=False)
+    monkeypatch.delenv("TRIBAL_EPHEMERAL_SYSTEM_PROMPT", raising=False)
+    monkeypatch.delenv("TRIBAL_GATEWAY_BUSY_INPUT_MODE", raising=False)
+    monkeypatch.delenv("TRIBAL_RESTART_DRAIN_TIMEOUT", raising=False)
+    monkeypatch.delenv("TRIBAL_BACKGROUND_NOTIFICATIONS", raising=False)
     return tmp_path
 
 

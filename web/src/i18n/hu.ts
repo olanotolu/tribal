@@ -50,7 +50,7 @@ export const hu: Translations = {
   },
 
   app: {
-    brand: "Triibal Agent",
+    brand: "Tribal Agent",
     brandShort: "HA",
     closeNavigation: "Navigáció bezárása",
     closeModelTools: "Modell és eszközök bezárása",
@@ -120,8 +120,8 @@ export const hu: Translations = {
     starting: "Indul",
     startedInBackground: "Háttérben elindítva — kövesse a naplókat a folyamathoz",
     stopped: "Leállítva",
-    updateTriibal: "Triibal frissítése",
-    updatingTriibal: "Triibal frissítése…",
+    updateTribal: "Tribal frissítése",
+    updatingTribal: "Tribal frissítése…",
     waitingForOutput: "Várakozás a kimenetre…",
   },
 
@@ -268,7 +268,7 @@ export const hu: Translations = {
     enableRuntime: "Engedélyezés",
     forceReinstall: "Kényszerített újratelepítés (a meglévő mappa előbb törlődik)",
     headline:
-      "Triibal-bővítmények felfedezése, telepítése, engedélyezése és frissítése (a `triibal plugins` paritás).",
+      "Tribal-bővítmények felfedezése, telepítése, engedélyezése és frissítése (a `tribal plugins` paritás).",
     identifierLabel: "Git URL vagy owner/repo",
     inactive: "inaktív",
     installBtn: "Telepítés",
@@ -285,8 +285,8 @@ export const hu: Translations = {
     providersHint:
       "A memory.provider (üres = beépített) és a context.engine értékét írja a config.yaml fájlba. A következő munkamenetben lép életbe.",
     refreshDashboard: "Vezérlőpult-bővítmények újraolvasása",
-    removeConfirm: "Eltávolítja ezt a bővítményt a ~/.triibal/plugins/ mappából?",
-    removeHint: "Csak a felhasználó által a ~/.triibal/plugins alá telepített bővítmények távolíthatók el.",
+    removeConfirm: "Eltávolítja ezt a bővítményt a ~/.tribal/plugins/ mappából?",
+    removeHint: "Csak a felhasználó által a ~/.tribal/plugins alá telepített bővítmények távolíthatók el.",
     rescanHeading: "SPA-bővítményregiszter",
     rescanHint: "Olvassa újra a fájlokat a lemezen történő hozzáadás után, hogy az oldalsáv felvegye az új manifesteket.",
     runtimeHeading: "Átjáró-futási idő (YAML-bővítmények)",
@@ -308,7 +308,7 @@ export const hu: Translations = {
     all: "Összes",
     categories: "Kategóriák",
     filters: "Szűrők",
-    noSkills: "Nem található készség. A készségek a ~/.triibal/skills/ mappából töltődnek be",
+    noSkills: "Nem található készség. A készségek a ~/.tribal/skills/ mappából töltődnek be",
     noSkillsMatch: "Nincs a keresésnek vagy szűrőnek megfelelő készség.",
     skillCount: "{count} készség{s}",
     resultCount: "{count} találat{s}",
@@ -322,7 +322,7 @@ export const hu: Translations = {
   },
 
   config: {
-    configPath: "~/.triibal/config.yaml",
+    configPath: "~/.tribal/config.yaml",
     filters: "Szűrők",
     sections: "Szakaszok",
     exportConfig: "Konfiguráció exportálása JSON-ba",
@@ -434,11 +434,11 @@ export const hu: Translations = {
   achievements: {
     hero: {
       kicker: "Agentic Gamerscore",
-      title: "Triibal Achievements",
+      title: "Tribal Achievements",
       subtitle:
-        "Gyűjthető Triibal-jelvények, valós munkamenet-előzmények alapján szerezve. Az ismert, de még nem szerzett teljesítmények Felfedezettként jelennek meg; a Titkos teljesítmények rejtve maradnak az első egyező viselkedésig.",
+        "Gyűjthető Tribal-jelvények, valós munkamenet-előzmények alapján szerezve. Az ismert, de még nem szerzett teljesítmények Felfedezettként jelennek meg; a Titkos teljesítmények rejtve maradnak az első egyező viselkedésig.",
       scan_subtitle:
-        "Triibal munkamenet-előzmények vizsgálata. Az első vizsgálat 5–10 másodpercig is eltarthat nagy előzmények esetén.",
+        "Tribal munkamenet-előzmények vizsgálata. Az első vizsgálat 5–10 másodpercig is eltarthat nagy előzmények esetén.",
     },
     actions: {
       rescan: "Újravizsgálat",
@@ -453,7 +453,7 @@ export const hu: Translations = {
       highest_tier: "Legmagasabb szint",
       highest_tier_hint: "Copper → Silver → Gold → Diamond → Olympian",
       latest: "Legutóbbi",
-      latest_hint_empty: "futtasd többet a Triibalt",
+      latest_hint_empty: "futtasd többet a Tribalt",
       none_yet: "Még semmi",
     },
     state: {
@@ -484,10 +484,10 @@ export const hu: Translations = {
       tiers_header: "Szintek",
       secret_header: "Titkos teljesítmények",
       secret_body:
-        "A titkos teljesítmények elrejtik a pontos kiváltó eseményt. Amint a Triibal kapcsolódó jelet észlel, a kártya Felfedezettre vált, és megjeleníti a követelményt.",
+        "A titkos teljesítmények elrejtik a pontos kiváltó eseményt. Amint a Tribal kapcsolódó jelet észlel, a kártya Felfedezettre vált, és megjeleníti a követelményt.",
       scan_status_header: "Vizsgálat állapota",
       scan_status_body:
-        "A Triibal egyszer átvizsgálja a helyi előzményeket, majd a kártyák automatikusan megjelennek. Semmi sem akadt el, ha ez néhány másodpercig tart.",
+        "A Tribal egyszer átvizsgálja a helyi előzményeket, majd a kártyák automatikusan megjelennek. Semmi sem akadt el, ha ez néhány másodpercig tart.",
       what_scanned_header: "Mit vizsgálunk",
       what_scanned_body:
         "Munkamenetek, eszközhívások, modell-metaadatok, hibák, teljesítmények és helyi feloldási állapot.",
@@ -534,7 +534,7 @@ export const hu: Translations = {
         "A „Megosztás az X-en” új lapon nyit meg egy előre kitöltött bejegyzést. Először kattints a „Kép másolása” gombra, ha az 1200×630-as jelvényt is csatolnád — az X engedi, hogy közvetlenül beillesszd a bejegyzésszerkesztőbe. A „PNG letöltése” bárhol felhasználható fájlként menti.",
       clipboard_unsupported:
         "A kép vágólapra másolása nem támogatott ebben a böngészőben — használd inkább a Letöltést.",
-      tweet_text: "Just unlocked {tier_part}\"{name}\" in Triibal Agent ☤",
+      tweet_text: "Just unlocked {tier_part}\"{name}\" in Tribal Agent ☤",
     },
   },
   kanban: {

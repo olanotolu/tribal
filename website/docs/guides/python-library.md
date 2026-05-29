@@ -1,44 +1,44 @@
 ---
 sidebar_position: 5
-title: "Using Triibal as a Python Library"
+title: "Using Tribal as a Python Library"
 description: "Embed AIAgent in your own Python scripts, web apps, or automation pipelines — no CLI required"
 ---
 
-# Using Triibal as a Python Library
+# Using Tribal as a Python Library
 
-Triibal isn't just a CLI tool. You can import `AIAgent` directly and use it programmatically in your own Python scripts, web applications, or automation pipelines. This guide shows you how.
+Tribal isn't just a CLI tool. You can import `AIAgent` directly and use it programmatically in your own Python scripts, web applications, or automation pipelines. This guide shows you how.
 
 ---
 
 ## Installation
 
-Install Triibal directly from the repository:
+Install Tribal directly from the repository:
 
 ```bash
-pip install git+https://github.com/Triibal/triibal.git
+pip install git+https://github.com/Tribal/tribal.git
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv pip install git+https://github.com/Triibal/triibal.git
+uv pip install git+https://github.com/Tribal/tribal.git
 ```
 
 You can also pin it in your `requirements.txt`:
 
 ```text
-triibal-agent @ git+https://github.com/Triibal/triibal.git
+tribal-agent @ git+https://github.com/Tribal/tribal.git
 ```
 
 :::tip
-The same environment variables used by the CLI are required when using Triibal as a library. At minimum, set `OPENROUTER_API_KEY` (or `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` if using direct provider access).
+The same environment variables used by the CLI are required when using Tribal as a library. At minimum, set `OPENROUTER_API_KEY` (or `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` if using direct provider access).
 :::
 
 ---
 
 ## Basic Usage
 
-The simplest way to use Triibal is the `chat()` method — pass a message, get a string back:
+The simplest way to use Tribal is the `chat()` method — pass a message, get a string back:
 
 ```python
 from run_agent import AIAgent
@@ -54,7 +54,7 @@ print(response)
 `chat()` handles the full conversation loop internally — tool calls, retries, everything — and returns just the final text response.
 
 :::warning
-Always set `quiet_mode=True` when embedding Triibal in your own code. Without it, the agent prints CLI spinners, progress indicators, and other terminal output that will clutter your application's output.
+Always set `quiet_mode=True` when embedding Tribal in your own code. Without it, the agent prints CLI spinners, progress indicators, and other terminal output that will clutter your application's output.
 :::
 
 ---
@@ -187,7 +187,7 @@ This is ideal for building specialized agents — a code reviewer, a documentati
 
 ## Batch Processing
 
-For running many prompts in parallel, Triibal includes `batch_runner.py`. It manages concurrent `AIAgent` instances with proper resource isolation:
+For running many prompts in parallel, Tribal includes `batch_runner.py`. It manages concurrent `AIAgent` instances with proper resource isolation:
 
 ```bash
 python batch_runner.py --input prompts.jsonl --output results.jsonl
@@ -266,7 +266,7 @@ client = discord.Client(intents=discord.Intents.default())
 async def on_message(message):
     if message.author == client.user:
         return
-    if message.content.startswith("!triibal "):
+    if message.content.startswith("!tribal "):
         query = message.content[8:]
         agent = AIAgent(
             model="anthropic/claude-sonnet-4",
@@ -311,7 +311,7 @@ print(review)
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `model` | `str` | `""` | Model in OpenRouter format (defaults to empty; resolved from your triibal config at runtime) |
+| `model` | `str` | `""` | Model in OpenRouter format (defaults to empty; resolved from your tribal config at runtime) |
 | `quiet_mode` | `bool` | `False` | Suppress CLI output |
 | `enabled_toolsets` | `List[str]` | `None` | Whitelist specific toolsets |
 | `disabled_toolsets` | `List[str]` | `None` | Blacklist specific toolsets |

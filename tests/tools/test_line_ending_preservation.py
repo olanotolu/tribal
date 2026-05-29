@@ -27,8 +27,8 @@ def repo_tmp_dir():
 
 
 @pytest.fixture
-def triibal_home(monkeypatch, repo_tmp_dir):
-    """Isolate TRIIBAL_HOME so the tests don't pollute the real config.
+def tribal_home(monkeypatch, repo_tmp_dir):
+    """Isolate TRIBAL_HOME so the tests don't pollute the real config.
 
     Also clears module-level caches (file_ops, active_environments,
     file-staleness state) after the test so subsequent tests in the
@@ -38,14 +38,14 @@ def triibal_home(monkeypatch, repo_tmp_dir):
     """
     shell_home = repo_tmp_dir / "home"
     shell_home.mkdir()
-    home = repo_tmp_dir / "triibal"
+    home = repo_tmp_dir / "tribal"
     home.mkdir()
     (home / "config.yaml").write_text(
         "terminal:\n  auto_source_bashrc: false\n",
         encoding="utf-8",
     )
     monkeypatch.setenv("HOME", str(shell_home))
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
     yield home
     # Cleanup: drop the cached file_ops and active environment so the
     # next test sees a fresh state.  Without this, _get_live_tracking_cwd
@@ -75,7 +75,7 @@ def _bare_lf_count(b: bytes) -> int:
 
 
 class TestPatchCRLFPreservation:
-    def test_patch_on_crlf_file_stays_pure_crlf(self, triibal_home, repo_tmp_dir):
+    def test_patch_on_crlf_file_stays_pure_crlf(self, tribal_home, repo_tmp_dir):
         """LLM sends LF old/new; file has CRLF.  Result must be all CRLF,
         no mixed endings."""
         from tools.file_tools import _handle_patch
@@ -103,7 +103,7 @@ class TestPatchCRLFPreservation:
         assert _crlf_count(raw) == 5
         assert b"key=99\r\n" in raw
 
-    def test_patch_on_lf_file_stays_lf(self, triibal_home, repo_tmp_dir):
+    def test_patch_on_lf_file_stays_lf(self, tribal_home, repo_tmp_dir):
         """LF file with LF new_string stays LF — no spurious CRLF added."""
         from tools.file_tools import _handle_patch
 
@@ -127,7 +127,7 @@ class TestPatchCRLFPreservation:
             f"Spurious CRLF added to LF file: {raw!r}"
         )
 
-    def test_patch_multiline_replacement_on_crlf(self, triibal_home, repo_tmp_dir):
+    def test_patch_multiline_replacement_on_crlf(self, tribal_home, repo_tmp_dir):
         """Multi-line new_string with bare LFs should be CRLF-converted
         before write."""
         from tools.file_tools import _handle_patch
@@ -156,7 +156,7 @@ class TestPatchCRLFPreservation:
 
 class TestWriteFileCRLFPreservation:
     def test_overwrite_crlf_file_with_lf_content_preserves_crlf(
-        self, triibal_home, repo_tmp_dir
+        self, tribal_home, repo_tmp_dir
     ):
         """The agent typically sends bare-LF content; if the file existed
         with CRLF, the write should convert to CRLF rather than silently
@@ -182,7 +182,7 @@ class TestWriteFileCRLFPreservation:
         )
         assert _crlf_count(raw) == 3
 
-    def test_new_file_written_as_is(self, triibal_home, repo_tmp_dir):
+    def test_new_file_written_as_is(self, tribal_home, repo_tmp_dir):
         """No pre-existing file → write content verbatim (LF by default)."""
         from tools.file_tools import _handle_write_file
 
@@ -196,7 +196,7 @@ class TestWriteFileCRLFPreservation:
 
         assert target.read_bytes() == b"a\nb\nc\n"
 
-    def test_overwrite_lf_file_stays_lf(self, triibal_home, repo_tmp_dir):
+    def test_overwrite_lf_file_stays_lf(self, tribal_home, repo_tmp_dir):
         """Pre-existing LF file should not get spurious CRLFs."""
         from tools.file_tools import _handle_write_file
 

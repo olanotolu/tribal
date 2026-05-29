@@ -1,4 +1,4 @@
-import { Box, Text } from '@triibal/ink'
+import { Box, Text } from '@tribal/ink'
 
 import { compactPreview } from '../lib/text.js'
 import type { Theme } from '../theme.js'

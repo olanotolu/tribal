@@ -3,9 +3,9 @@
 
 Usage (via cron with --no-agent):
 
-    triibal cron create api-events \\
+    tribal cron create api-events \\
       --schedule "*/1 * * * *" --no-agent \\
-      --script "$TRIIBAL_HOME/skills/devops/watchers/scripts/watch_http_json.py" \\
+      --script "$TRIBAL_HOME/skills/devops/watchers/scripts/watch_http_json.py" \\
       --script-args "--name api --url https://api.example.com/events \\
                      --id-field event_id --items-path data.events"
 
@@ -76,7 +76,7 @@ def main() -> int:
                    help="HTTP timeout in seconds (default: 20)")
     args = p.parse_args()
 
-    req = urllib.request.Request(args.url, headers={"User-Agent": "Triibal-Watcher/1.0"})
+    req = urllib.request.Request(args.url, headers={"User-Agent": "Tribal-Watcher/1.0"})
     for k, v in args.header:
         req.add_header(k, v)
 

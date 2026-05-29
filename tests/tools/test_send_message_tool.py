@@ -73,7 +73,7 @@ async def _send_discord(
 def _discord_entry():
     """Return the live Discord PlatformEntry, importing lazily so plugin
     discovery is forced exactly once and patches survive across tests."""
-    from triibal_cli.plugins import discover_plugins
+    from tribal_cli.plugins import discover_plugins
     from gateway.platform_registry import platform_registry
     discover_plugins()
     return platform_registry.get("discord")
@@ -173,8 +173,8 @@ class TestSendMessageTool:
         with patch.dict(
             os.environ,
             {
-                "TRIIBAL_CRON_AUTO_DELIVER_PLATFORM": "telegram",
-                "TRIIBAL_CRON_AUTO_DELIVER_CHAT_ID": "-1001",
+                "TRIBAL_CRON_AUTO_DELIVER_PLATFORM": "telegram",
+                "TRIBAL_CRON_AUTO_DELIVER_CHAT_ID": "-1001",
             },
             clear=False,
         ), \
@@ -354,8 +354,8 @@ class TestSendMessageTool:
              patch("gateway.session_context.get_session_env") as get_session_env_mock, \
              patch("gateway.mirror.mirror_to_session", return_value=True) as mirror_mock:
             get_session_env_mock.side_effect = lambda name, default="": {
-                "TRIIBAL_SESSION_PLATFORM": "telegram",
-                "TRIIBAL_SESSION_USER_ID": "user-123",
+                "TRIBAL_SESSION_PLATFORM": "telegram",
+                "TRIBAL_SESSION_USER_ID": "user-123",
             }.get(name, default)
             result = json.loads(
                 send_message_tool(
@@ -383,8 +383,8 @@ class TestSendMessageTool:
         # not auto-accepted by the trust window. (Recency trust is covered
         # in test_platform_base.py. The public default flipped to non-strict
         # in 2026-05; this test pins strict on explicitly.)
-        monkeypatch.setenv("TRIIBAL_MEDIA_DELIVERY_STRICT", "1")
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_FILES", "0")
+        monkeypatch.setenv("TRIBAL_MEDIA_DELIVERY_STRICT", "1")
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_FILES", "0")
         config, telegram_cfg = _make_config()
         secret = tmp_path / "secret.pdf"
         secret.write_bytes(b"%PDF secret")
@@ -588,7 +588,7 @@ class TestSendToPlatformChunking:
                     Platform.SLACK,
                     SimpleNamespace(enabled=True, token="***", extra={}),
                     "C123",
-                    "**hello** from [Triibal](<https://example.com>)",
+                    "**hello** from [Tribal](<https://example.com>)",
                 )
             )
 
@@ -596,7 +596,7 @@ class TestSendToPlatformChunking:
         send.assert_awaited_once_with(
             "***",
             "C123",
-            "*hello* from <https://example.com|Triibal>",
+            "*hello* from <https://example.com|Tribal>",
         )
 
     def test_slack_bold_italic_formatted_before_send(self, monkeypatch):
@@ -816,12 +816,12 @@ class TestSendToPlatformWhatsapp:
                     Platform.WHATSAPP,
                     SimpleNamespace(enabled=True, token=None, extra={"bridge_port": 3000}),
                     chat_id,
-                    "hello from triibal",
+                    "hello from tribal",
                 )
             )
 
         assert result["success"] is True
-        async_mock.assert_awaited_once_with({"bridge_port": 3000}, chat_id, "hello from triibal")
+        async_mock.assert_awaited_once_with({"bridge_port": 3000}, chat_id, "hello from tribal")
 
 
 class TestSendTelegramHtmlDetection:
@@ -1118,8 +1118,8 @@ class TestParseTargetRefMatrix:
 
     def test_matrix_user_mxid_is_explicit(self):
         """Matrix user MXIDs (@) are recognized as explicit targets."""
-        chat_id, thread_id, is_explicit = _parse_target_ref("matrix", "@triibal:matrix.org")
-        assert chat_id == "@triibal:matrix.org"
+        chat_id, thread_id, is_explicit = _parse_target_ref("matrix", "@tribal:matrix.org")
+        assert chat_id == "@tribal:matrix.org"
         assert thread_id is None
         assert is_explicit is True
 
@@ -2336,8 +2336,8 @@ class _FakePlatform:
 class TestSendViaAdapterStandaloneFallback:
     """Coverage for the out-of-process plugin-platform send path.
 
-    When the gateway runner is not in this process (e.g. ``triibal cron``
-    runs separately from ``triibal gateway``), ``_send_via_adapter`` should
+    When the gateway runner is not in this process (e.g. ``tribal cron``
+    runs separately from ``tribal gateway``), ``_send_via_adapter`` should
     fall through to the plugin's ``standalone_sender_fn`` registered on
     its ``PlatformEntry``.  Without the hook, the existing error string
     is returned (with a more helpful tail).
@@ -2507,61 +2507,61 @@ class TestCheckSendMessage:
     """The tool's check_fn governs whether the model sees ``send_message`` as
     callable for a given session. The four passing conditions are:
 
-    1. ``TRIIBAL_KANBAN_TASK`` is set (worker spawned by the kanban dispatcher
+    1. ``TRIBAL_KANBAN_TASK`` is set (worker spawned by the kanban dispatcher
        — parent gateway is by definition running, but the worker's
-       ``TRIIBAL_HOME`` may be a profile dir without a ``gateway.pid``).
-    2. ``TRIIBAL_SESSION_PLATFORM`` resolves to a non-empty, non-``local`` value
+       ``TRIBAL_HOME`` may be a profile dir without a ``gateway.pid``).
+    2. ``TRIBAL_SESSION_PLATFORM`` resolves to a non-empty, non-``local`` value
        (the session is wired to a messaging platform like Telegram).
     3. ``is_gateway_running()`` returns True (CLI / orchestrator profile with
-       a live gateway colocated under the same ``TRIIBAL_HOME``).
+       a live gateway colocated under the same ``TRIBAL_HOME``).
     4. None of the above → False, tool is hidden.
     """
 
     def test_kanban_task_env_grants_access(self, monkeypatch):
-        """Workers spawned by the dispatcher (TRIIBAL_KANBAN_TASK set) must be
+        """Workers spawned by the dispatcher (TRIBAL_KANBAN_TASK set) must be
         allowed regardless of session_platform / gateway-pid state."""
         from tools.send_message_tool import _check_send_message
 
-        monkeypatch.setenv("TRIIBAL_KANBAN_TASK", "t_abc12345")
-        monkeypatch.delenv("TRIIBAL_SESSION_PLATFORM", raising=False)
+        monkeypatch.setenv("TRIBAL_KANBAN_TASK", "t_abc12345")
+        monkeypatch.delenv("TRIBAL_SESSION_PLATFORM", raising=False)
 
         with patch("gateway.session_context.get_session_env", return_value=""), \
              patch("gateway.status.is_gateway_running", return_value=False):
             assert _check_send_message() is True
 
     def test_kanban_task_env_short_circuits_before_gateway_check(self, monkeypatch):
-        """Honoring TRIIBAL_KANBAN_TASK must not depend on importing or calling
-        gateway.status — the worker may run with a TRIIBAL_HOME that has no
+        """Honoring TRIBAL_KANBAN_TASK must not depend on importing or calling
+        gateway.status — the worker may run with a TRIBAL_HOME that has no
         gateway.pid, and we don't want that import path to be load-bearing."""
         from tools.send_message_tool import _check_send_message
 
-        monkeypatch.setenv("TRIIBAL_KANBAN_TASK", "t_abc12345")
+        monkeypatch.setenv("TRIBAL_KANBAN_TASK", "t_abc12345")
 
         with patch("gateway.session_context.get_session_env",
                    side_effect=AssertionError("session_context not consulted "
-                                              "when TRIIBAL_KANBAN_TASK is set")), \
+                                              "when TRIBAL_KANBAN_TASK is set")), \
              patch("gateway.status.is_gateway_running",
                    side_effect=AssertionError("gateway.status not consulted "
-                                              "when TRIIBAL_KANBAN_TASK is set")):
+                                              "when TRIBAL_KANBAN_TASK is set")):
             assert _check_send_message() is True
 
     def test_messaging_platform_session_grants_access(self, monkeypatch):
         """Telegram/Discord/etc. sessions pass via the platform branch even
-        without TRIIBAL_KANBAN_TASK."""
+        without TRIBAL_KANBAN_TASK."""
         from tools.send_message_tool import _check_send_message
 
-        monkeypatch.delenv("TRIIBAL_KANBAN_TASK", raising=False)
+        monkeypatch.delenv("TRIBAL_KANBAN_TASK", raising=False)
 
         with patch("gateway.session_context.get_session_env", return_value="telegram"), \
              patch("gateway.status.is_gateway_running", return_value=False):
             assert _check_send_message() is True
 
     def test_local_platform_falls_through_to_gateway_check(self, monkeypatch):
-        """``TRIIBAL_SESSION_PLATFORM=local`` means CLI-style — must defer to
+        """``TRIBAL_SESSION_PLATFORM=local`` means CLI-style — must defer to
         is_gateway_running() rather than auto-grant."""
         from tools.send_message_tool import _check_send_message
 
-        monkeypatch.delenv("TRIIBAL_KANBAN_TASK", raising=False)
+        monkeypatch.delenv("TRIBAL_KANBAN_TASK", raising=False)
 
         with patch("gateway.session_context.get_session_env", return_value="local"), \
              patch("gateway.status.is_gateway_running", return_value=True) as gw_mock:
@@ -2573,7 +2573,7 @@ class TestCheckSendMessage:
         gateway: tool is callable."""
         from tools.send_message_tool import _check_send_message
 
-        monkeypatch.delenv("TRIIBAL_KANBAN_TASK", raising=False)
+        monkeypatch.delenv("TRIBAL_KANBAN_TASK", raising=False)
 
         with patch("gateway.session_context.get_session_env", return_value=""), \
              patch("gateway.status.is_gateway_running", return_value=True):
@@ -2583,7 +2583,7 @@ class TestCheckSendMessage:
         """No kanban task, no platform, no gateway: tool is hidden."""
         from tools.send_message_tool import _check_send_message
 
-        monkeypatch.delenv("TRIIBAL_KANBAN_TASK", raising=False)
+        monkeypatch.delenv("TRIBAL_KANBAN_TASK", raising=False)
 
         with patch("gateway.session_context.get_session_env", return_value=""), \
              patch("gateway.status.is_gateway_running", return_value=False):
@@ -2594,7 +2594,7 @@ class TestCheckSendMessage:
         install), the check returns False rather than raising."""
         from tools.send_message_tool import _check_send_message
 
-        monkeypatch.delenv("TRIIBAL_KANBAN_TASK", raising=False)
+        monkeypatch.delenv("TRIBAL_KANBAN_TASK", raising=False)
 
         with patch("gateway.session_context.get_session_env", return_value=""), \
              patch("gateway.status.is_gateway_running",

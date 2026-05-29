@@ -10,23 +10,23 @@ Server-side LLM fact extraction with semantic search, reranking, and automatic d
 ## Setup
 
 ```bash
-triibal memory setup    # select "mem0"
+tribal memory setup    # select "mem0"
 ```
 
 Or manually:
 ```bash
-triibal config set memory.provider mem0
-echo "MEM0_API_KEY=your-key" >> ~/.triibal/.env
+tribal config set memory.provider mem0
+echo "MEM0_API_KEY=your-key" >> ~/.tribal/.env
 ```
 
 ## Config
 
-Config file: `$TRIIBAL_HOME/mem0.json`
+Config file: `$TRIBAL_HOME/mem0.json`
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `user_id` | `triibal-user` | User identifier on Mem0 |
-| `agent_id` | `triibal` | Agent identifier |
+| `user_id` | `tribal-user` | User identifier on Mem0 |
+| `agent_id` | `tribal` | Agent identifier |
 | `rerank` | `true` | Enable reranking for recall |
 
 ## Tools

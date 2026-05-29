@@ -13,7 +13,7 @@ which would be a real regression for users on the existing config keys.
 
 Run from the PR worktree:
 
-    cd ~/.triibal/triibal-agent/.worktrees/browser-providers-plugin
+    cd ~/.tribal/tribal-agent/.worktrees/browser-providers-plugin
     python tests/plugins/browser/check_parity_vs_main.py
 """
 from __future__ import annotations
@@ -29,14 +29,14 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 # Pin one path to current main, one to the PR worktree.
 # ``REPO_ROOT`` is ``.../.worktrees/browser-providers-plugin``; the main
-# checkout lives two levels up at ``~/.triibal/triibal-agent``.
-MAIN_DIR = REPO_ROOT.parent.parent  # ~/.triibal/triibal-agent
+# checkout lives two levels up at ``~/.tribal/tribal-agent``.
+MAIN_DIR = REPO_ROOT.parent.parent  # ~/.tribal/tribal-agent
 PR_DIR = REPO_ROOT  # the worktree we're in
 assert (MAIN_DIR / "tools" / "browser_tool.py").exists(), (
-    f"MAIN_DIR={MAIN_DIR} doesn't look like a triibal-agent checkout"
+    f"MAIN_DIR={MAIN_DIR} doesn't look like a tribal-agent checkout"
 )
 assert (PR_DIR / "tools" / "browser_tool.py").exists(), (
-    f"PR_DIR={PR_DIR} doesn't look like a triibal-agent checkout"
+    f"PR_DIR={PR_DIR} doesn't look like a tribal-agent checkout"
 )
 
 
@@ -46,9 +46,9 @@ SUBPROCESS_SCRIPT = r"""
 import json, os, sys, tempfile
 sys.path.insert(0, sys.argv[1])
 
-# Isolated TRIIBAL_HOME for the config write.
+# Isolated TRIBAL_HOME for the config write.
 home = tempfile.mkdtemp()
-os.environ["TRIIBAL_HOME"] = home
+os.environ["TRIBAL_HOME"] = home
 
 # Clear every browser-related env var so is_available() is deterministic.
 for k in (

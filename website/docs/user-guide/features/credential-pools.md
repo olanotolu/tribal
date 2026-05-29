@@ -7,7 +7,7 @@ sidebar_position: 9
 
 # Credential Pools
 
-Credential pools let you register multiple API keys or OAuth tokens for the same provider. When one key hits a rate limit or billing quota, Triibal automatically rotates to the next healthy key — keeping your session alive without switching providers.
+Credential pools let you register multiple API keys or OAuth tokens for the same provider. When one key hits a rate limit or billing quota, Tribal automatically rotates to the next healthy key — keeping your session alive without switching providers.
 
 This is different from [fallback providers](./fallback-providers.md), which switch to a *different* provider entirely. Credential pools are same-provider rotation; fallback providers are cross-provider failover. Pools are tried first — if all pool keys are exhausted, *then* the fallback provider activates.
 
@@ -35,24 +35,24 @@ Your request
 
 ## Quick Start
 
-If you already have an API key set in `.env`, Triibal auto-discovers it as a 1-key pool. To benefit from pooling, add more keys:
+If you already have an API key set in `.env`, Tribal auto-discovers it as a 1-key pool. To benefit from pooling, add more keys:
 
 ```bash
 # Add a second OpenRouter key
-triibal auth add openrouter --api-key sk-or-v1-your-second-key
+tribal auth add openrouter --api-key sk-or-v1-your-second-key
 
 # Add a second Anthropic key
-triibal auth add anthropic --type api-key --api-key sk-ant-api03-your-second-key
+tribal auth add anthropic --type api-key --api-key sk-ant-api03-your-second-key
 
 # Add an Anthropic OAuth credential (requires Claude Max plan + extra usage credits)
-triibal auth add anthropic --type oauth
+tribal auth add anthropic --type oauth
 # Opens browser for OAuth login
 ```
 
 Check your pools:
 
 ```bash
-triibal auth list
+tribal auth list
 ```
 
 Output:
@@ -62,7 +62,7 @@ openrouter (2 credentials):
   #2  backup-key           api_key manual
 
 anthropic (3 credentials):
-  #1  triibal_pkce          oauth   triibal_pkce ←
+  #1  tribal_pkce          oauth   tribal_pkce ←
   #2  claude_code          oauth   claude_code
   #3  ANTHROPIC_API_KEY    api_key env:ANTHROPIC_API_KEY
 ```
@@ -71,10 +71,10 @@ The `←` marks the currently selected credential.
 
 ## Interactive Management
 
-Run `triibal auth` with no subcommand for an interactive wizard:
+Run `tribal auth` with no subcommand for an interactive wizard:
 
 ```bash
-triibal auth
+tribal auth
 ```
 
 This shows your full pool status and offers a menu:
@@ -101,18 +101,18 @@ Type [1/2]:
 
 | Command | Description |
 |---------|-------------|
-| `triibal auth` | Interactive pool management wizard |
-| `triibal auth list` | Show all pools and credentials |
-| `triibal auth list <provider>` | Show a specific provider's pool |
-| `triibal auth add <provider>` | Add a credential (prompts for type and key) |
-| `triibal auth add <provider> --type api-key --api-key <key>` | Add an API key non-interactively |
-| `triibal auth add <provider> --type oauth` | Add an OAuth credential via browser login |
-| `triibal auth remove <provider> <index>` | Remove credential by 1-based index |
-| `triibal auth reset <provider>` | Clear all cooldowns/exhaustion status |
+| `tribal auth` | Interactive pool management wizard |
+| `tribal auth list` | Show all pools and credentials |
+| `tribal auth list <provider>` | Show a specific provider's pool |
+| `tribal auth add <provider>` | Add a credential (prompts for type and key) |
+| `tribal auth add <provider> --type api-key --api-key <key>` | Add an API key non-interactively |
+| `tribal auth add <provider> --type oauth` | Add an OAuth credential via browser login |
+| `tribal auth remove <provider> <index>` | Remove credential by 1-based index |
+| `tribal auth reset <provider>` | Clear all cooldowns/exhaustion status |
 
 ## Rotation Strategies
 
-Configure via `triibal auth` → "Set rotation strategy" or in `config.yaml`:
+Configure via `tribal auth` → "Set rotation strategy" or in `config.yaml`:
 
 ```yaml
 credential_pool_strategies:
@@ -144,17 +144,17 @@ The `has_retried_429` flag resets on every successful API call, so a single tran
 
 Custom OpenAI-compatible endpoints (Together.ai, RunPod, local servers) get their own pools, keyed by the endpoint name from `custom_providers` in config.yaml.
 
-When you set up a custom endpoint via `triibal model`, it auto-generates a name like "Together.ai" or "Local (localhost:8080)". This name becomes the pool key.
+When you set up a custom endpoint via `tribal model`, it auto-generates a name like "Together.ai" or "Local (localhost:8080)". This name becomes the pool key.
 
 ```bash
-# After setting up a custom endpoint via triibal model:
-triibal auth list
+# After setting up a custom endpoint via tribal model:
+tribal auth list
 # Shows:
 #   Together.ai (1 credential):
 #     #1  config key    api_key config:Together.ai ←
 
 # Add a second key for the same endpoint:
-triibal auth add Together.ai --api-key sk-together-second-key
+tribal auth add Together.ai --api-key sk-together-second-key
 ```
 
 Custom endpoint pools are stored in `auth.json` under `credential_pool` with a `custom:` prefix:
@@ -170,20 +170,20 @@ Custom endpoint pools are stored in `auth.json` under `credential_pool` with a `
 
 ## Auto-Discovery
 
-Triibal automatically discovers credentials from multiple sources and seeds the pool on startup:
+Tribal automatically discovers credentials from multiple sources and seeds the pool on startup:
 
 | Source | Example | Auto-seeded? |
 |--------|---------|-------------|
 | Environment variables | `OPENROUTER_API_KEY`, `ANTHROPIC_API_KEY` | Yes |
 | OAuth tokens (auth.json) | Codex device code, Nous device code | Yes |
 | Claude Code credentials | `~/.claude/.credentials.json` | Yes (Anthropic) |
-| Triibal PKCE OAuth | `~/.triibal/auth.json` | Yes (Anthropic) |
+| Tribal PKCE OAuth | `~/.tribal/auth.json` | Yes (Anthropic) |
 | Custom endpoint config | `model.api_key` in config.yaml | Yes (custom endpoints) |
-| Manual entries | Added via `triibal auth add` | Persisted in auth.json |
+| Manual entries | Added via `tribal auth add` | Persisted in auth.json |
 
-Auto-seeded entries are updated on each pool load — if you remove an env var, its pool entry is automatically pruned. Manual entries (added via `triibal auth add`) are never auto-pruned.
+Auto-seeded entries are updated on each pool load — if you remove an env var, its pool entry is automatically pruned. Manual entries (added via `tribal auth add`) are never auto-pruned.
 
-Borrowed runtime secrets (for example env vars, Bitwarden/Vault/keyring/systemd references, and custom config values) are reference-only at the `auth.json` boundary. Triibal can use the resolved value in memory for the current run, but it persists only metadata such as the source ref, label, status, request counters, and a non-reversible fingerprint. Manual entries and Triibal-owned OAuth/device-code state keep the durable tokens they need to refresh.
+Borrowed runtime secrets (for example env vars, Bitwarden/Vault/keyring/systemd references, and custom config values) are reference-only at the `auth.json` boundary. Tribal can use the resolved value in memory for the current run, but it persists only metadata such as the source ref, label, status, request counters, and a non-reversible fingerprint. Manual entries and Tribal-owned OAuth/device-code state keep the durable tokens they need to refresh.
 
 ## Delegation & Subagent Sharing
 
@@ -206,13 +206,13 @@ For the full data flow diagram, see [`docs/credential-pool-flow.excalidraw`](htt
 The credential pool integrates at the provider resolution layer:
 
 1. **`agent/credential_pool.py`** — Pool manager: storage, selection, rotation, cooldowns
-2. **`triibal_cli/auth_commands.py`** — CLI commands and interactive wizard
-3. **`triibal_cli/runtime_provider.py`** — Pool-aware credential resolution
+2. **`tribal_cli/auth_commands.py`** — CLI commands and interactive wizard
+3. **`tribal_cli/runtime_provider.py`** — Pool-aware credential resolution
 4. **`run_agent.py`** — Error recovery: 429/402/401 → pool rotation → fallback
 
 ## Storage
 
-Pool state is stored in `~/.triibal/auth.json` under the `credential_pool` key:
+Pool state is stored in `~/.tribal/auth.json` under the `credential_pool` key:
 
 ```json
 {
@@ -245,7 +245,7 @@ Pool state is stored in `~/.triibal/auth.json` under the `credential_pool` key:
 }
 ```
 
-The OpenRouter entry above was borrowed from an external source, so the raw key is not stored in `auth.json`. The manual Anthropic entry was intentionally added to Triibal' credential store, so its token remains persistable.
+The OpenRouter entry above was borrowed from an external source, so the raw key is not stored in `auth.json`. The manual Anthropic entry was intentionally added to Tribal' credential store, so its token remains persistable.
 
 Strategies are stored in `config.yaml` (not `auth.json`):
 

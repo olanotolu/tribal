@@ -1,12 +1,12 @@
 ---
 sidebar_position: 4
 title: "Contributing"
-description: "How to contribute to Triibal Agent — dev setup, code style, PR process"
+description: "How to contribute to Tribal Agent — dev setup, code style, PR process"
 ---
 
 # Contributing
 
-Thank you for contributing to Triibal Agent! This guide covers setting up your dev environment, understanding the codebase, and getting your PR merged.
+Thank you for contributing to Tribal Agent! This guide covers setting up your dev environment, understanding the codebase, and getting your PR merged.
 
 ## Contribution Priorities
 
@@ -22,8 +22,8 @@ We value contributions in this order:
 
 ## Common contribution paths
 
-- Building a custom/local tool without modifying Triibal core? Start with [Build a Triibal Plugin](../guides/build-a-triibal-plugin.md)
-- Building a new built-in core tool for Triibal itself? Start with [Adding Tools](./adding-tools.md)
+- Building a custom/local tool without modifying Tribal core? Start with [Build a Tribal Plugin](../guides/build-a-tribal-plugin.md)
+- Building a new built-in core tool for Tribal itself? Start with [Adding Tools](./adding-tools.md)
 - Building a new skill? Start with [Creating Skills](./creating-skills.md)
 - Building a new inference provider? Start with [Adding Providers](./adding-providers.md)
 
@@ -41,8 +41,8 @@ We value contributions in this order:
 ### Clone and Install
 
 ```bash
-git clone --recurse-submodules https://github.com/Triibal/triibal.git
-cd triibal-agent
+git clone --recurse-submodules https://github.com/Tribal/tribal.git
+cd tribal-agent
 
 # Create venv with Python 3.11
 uv venv venv --python 3.11
@@ -58,12 +58,12 @@ npm install
 ### Configure for Development
 
 ```bash
-mkdir -p ~/.triibal/{cron,sessions,logs,memories,skills}
-cp cli-config.yaml.example ~/.triibal/config.yaml
-touch ~/.triibal/.env
+mkdir -p ~/.tribal/{cron,sessions,logs,memories,skills}
+cp cli-config.yaml.example ~/.tribal/config.yaml
+touch ~/.tribal/.env
 
 # Add at minimum an LLM provider key:
-echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.triibal/.env
+echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.tribal/.env
 ```
 
 ### Run
@@ -71,11 +71,11 @@ echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.triibal/.env
 ```bash
 # Symlink for global access
 mkdir -p ~/.local/bin
-ln -sf "$(pwd)/venv/bin/triibal" ~/.local/bin/triibal
+ln -sf "$(pwd)/venv/bin/tribal" ~/.local/bin/tribal
 
 # Verify
-triibal doctor
-triibal chat -q "Hello"
+tribal doctor
+tribal chat -q "Hello"
 ```
 
 ### Run Tests
@@ -90,11 +90,11 @@ pytest tests/ -v
 - **Comments**: Only when explaining non-obvious intent, trade-offs, or API quirks
 - **Error handling**: Catch specific exceptions. Use `logger.warning()`/`logger.error()` with `exc_info=True` for unexpected errors
 - **Cross-platform**: Never assume Unix (see below)
-- **Profile-safe paths**: Never hardcode `~/.triibal` — use `get_triibal_home()` from `triibal_constants` for code paths and `display_triibal_home()` for user-facing messages. See [AGENTS.md](https://github.com/Triibal/triibal/blob/main/AGENTS.md#profiles-multi-instance-support) for full rules.
+- **Profile-safe paths**: Never hardcode `~/.tribal` — use `get_tribal_home()` from `tribal_constants` for code paths and `display_tribal_home()` for user-facing messages. See [AGENTS.md](https://github.com/Tribal/tribal/blob/main/AGENTS.md#profiles-multi-instance-support) for full rules.
 
 ## Cross-Platform Compatibility
 
-Triibal officially supports **Linux, macOS, WSL2, and native Windows (early beta — via PowerShell install)**.  Native Windows uses Git Bash (from [Git for Windows](https://git-scm.com/download/win)) for shell commands.  A few features require POSIX kernel primitives and are gated: the dashboard's embedded PTY terminal pane (`/chat` tab) is WSL2-only. The native-Windows path is new and moves fast — if you're doing Windows-heavy dev, expect to hit and fix rough edges.
+Tribal officially supports **Linux, macOS, WSL2, and native Windows (early beta — via PowerShell install)**.  Native Windows uses Git Bash (from [Git for Windows](https://git-scm.com/download/win)) for shell commands.  A few features require POSIX kernel primitives and are gated: the dashboard's embedded PTY terminal pane (`/chat` tab) is WSL2-only. The native-Windows path is new and moves fast — if you're doing Windows-heavy dev, expect to hit and fix rough edges.
 
 When contributing code, keep these rules in mind:
 
@@ -149,7 +149,7 @@ Use `pathlib.Path` instead of string concatenation with `/`.
 
 ## Security Considerations
 
-Triibal has terminal access. Security matters.
+Tribal has terminal access. Security matters.
 
 ### Existing Protections
 
@@ -186,7 +186,7 @@ refactor/description   # Code restructuring
 ### Before Submitting
 
 1. **Run tests**: `pytest tests/ -v`
-2. **Test manually**: Run `triibal` and exercise the code path you changed
+2. **Test manually**: Run `tribal` and exercise the code path you changed
 3. **Check cross-platform impact**: Consider macOS and different Linux distros
 4. **Keep PRs focused**: One logical change per PR
 
@@ -226,8 +226,8 @@ fix(security): prevent shell injection in sudo password piping
 
 ## Reporting Issues
 
-- Use [GitHub Issues](https://github.com/Triibal/triibal/issues)
-- Include: OS, Python version, Triibal version (`triibal version`), full error traceback
+- Use [GitHub Issues](https://github.com/Tribal/tribal/issues)
+- Include: OS, Python version, Tribal version (`tribal version`), full error traceback
 - Include steps to reproduce
 - Check existing issues before creating duplicates
 - For security vulnerabilities, please report privately
@@ -240,4 +240,4 @@ fix(security): prevent shell injection in sudo password piping
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the [MIT License](https://github.com/Triibal/triibal/blob/main/LICENSE).
+By contributing, you agree that your contributions will be licensed under the [MIT License](https://github.com/Tribal/tribal/blob/main/LICENSE).

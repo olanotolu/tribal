@@ -137,14 +137,14 @@ class TestFirecrawlClientConfig:
                     api_url="https://firecrawl-gateway.nousresearch.com",
                 )
 
-    def test_nous_auth_token_respects_triibal_home_override(self, tmp_path):
-        """Auth lookup should read from TRIIBAL_HOME/auth.json, not ~/.triibal/auth.json."""
+    def test_nous_auth_token_respects_tribal_home_override(self, tmp_path):
+        """Auth lookup should read from TRIBAL_HOME/auth.json, not ~/.tribal/auth.json."""
         real_home = tmp_path / "real-home"
-        (real_home / ".triibal").mkdir(parents=True)
+        (real_home / ".tribal").mkdir(parents=True)
 
-        triibal_home = tmp_path / "triibal-home"
-        triibal_home.mkdir()
-        (triibal_home / "auth.json").write_text(json.dumps({
+        tribal_home = tmp_path / "tribal-home"
+        tribal_home.mkdir()
+        (tribal_home / "auth.json").write_text(json.dumps({
             "providers": {
                 "nous": {
                     "access_token": "nous-token",
@@ -154,7 +154,7 @@ class TestFirecrawlClientConfig:
 
         with patch.dict(os.environ, {
             "HOME": str(real_home),
-            "TRIIBAL_HOME": str(triibal_home),
+            "TRIBAL_HOME": str(tribal_home),
         }, clear=False):
             import tools.web_tools
             importlib.reload(tools.web_tools)
@@ -245,7 +245,7 @@ class TestBackendSelection:
     """Test suite for _get_backend() backend selection logic.
 
     The backend is configured via config.yaml (web.backend), set by
-    ``triibal tools``.  Falls back to key-based detection for legacy/manual
+    ``tribal tools``.  Falls back to key-based detection for legacy/manual
     setups.
     """
 

@@ -1,6 +1,6 @@
 """Local JSON registry of approved remote meet nodes.
 
-Lives at ``$TRIIBAL_HOME/workspace/meetings/nodes.json``. The gateway
+Lives at ``$TRIBAL_HOME/workspace/meetings/nodes.json``. The gateway
 consults it to resolve a ``chrome_node`` name to a ``(url, token)`` pair
 before opening a WebSocket to the remote bot host.
 
@@ -24,11 +24,11 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from triibal_constants import get_triibal_home
+from tribal_constants import get_tribal_home
 
 
 def _default_path() -> Path:
-    return Path(get_triibal_home()) / "workspace" / "meetings" / "nodes.json"
+    return Path(get_tribal_home()) / "workspace" / "meetings" / "nodes.json"
 
 
 class NodeRegistry:

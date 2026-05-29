@@ -1,9 +1,9 @@
 """Tests for OAuth server metadata persistence across process restarts.
 
 Covers:
-- :class:`TriibalTokenStorage` ``.meta.json`` roundtrip (save / load / remove)
+- :class:`TribalTokenStorage` ``.meta.json`` roundtrip (save / load / remove)
 - The production manager provider
-  (:class:`tools.mcp_oauth_manager.TriibalMCPOAuthProvider`) restoring metadata
+  (:class:`tools.mcp_oauth_manager.TribalMCPOAuthProvider`) restoring metadata
   on cold-load init and persisting metadata at the end of ``async_auth_flow``.
 
 Context
@@ -26,8 +26,8 @@ import pytest
 
 from mcp.shared.auth import OAuthMetadata
 
-from tools.mcp_oauth import TriibalTokenStorage
-from tools.mcp_oauth_manager import _TRIIBAL_PROVIDER_CLS
+from tools.mcp_oauth import TribalTokenStorage
+from tools.mcp_oauth_manager import _TRIBAL_PROVIDER_CLS
 
 
 def _make_metadata(token_endpoint: str = "https://auth.example.com/oauth/token") -> OAuthMetadata:
@@ -42,14 +42,14 @@ def _make_metadata(token_endpoint: str = "https://auth.example.com/oauth/token")
 
 
 # ---------------------------------------------------------------------------
-# TriibalTokenStorage metadata roundtrip
+# TribalTokenStorage metadata roundtrip
 # ---------------------------------------------------------------------------
 
 
 class TestMetadataStorage:
     def test_save_and_load_roundtrip(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        storage = TriibalTokenStorage("example-server")
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        storage = TribalTokenStorage("example-server")
 
         meta = _make_metadata()
         storage.save_oauth_metadata(meta)
@@ -63,13 +63,13 @@ class TestMetadataStorage:
         assert str(loaded.issuer).rstrip("/") == "https://auth.example.com"
 
     def test_load_missing_returns_none(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        storage = TriibalTokenStorage("nonexistent")
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        storage = TribalTokenStorage("nonexistent")
         assert storage.load_oauth_metadata() is None
 
     def test_load_corrupt_returns_none(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        storage = TriibalTokenStorage("corrupt-server")
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        storage = TribalTokenStorage("corrupt-server")
 
         # Write something that doesn't validate as OAuthMetadata
         meta_path = storage._meta_path()
@@ -79,8 +79,8 @@ class TestMetadataStorage:
         assert storage.load_oauth_metadata() is None
 
     def test_remove_deletes_meta_file(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        storage = TriibalTokenStorage("cleanup-server")
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        storage = TribalTokenStorage("cleanup-server")
 
         storage.save_oauth_metadata(_make_metadata())
         assert storage._meta_path().exists()
@@ -90,20 +90,20 @@ class TestMetadataStorage:
 
 
 # ---------------------------------------------------------------------------
-# Manager-path provider (TriibalMCPOAuthProvider) — production code path
+# Manager-path provider (TribalMCPOAuthProvider) — production code path
 # ---------------------------------------------------------------------------
 
 
-def _manager_provider_with_context(storage: TriibalTokenStorage, **context_attrs):
+def _manager_provider_with_context(storage: TribalTokenStorage, **context_attrs):
     """Build an uninitialized manager provider with a mocked context.
 
     Bypasses the full OAuthClientProvider init so we can exercise the
     override logic in isolation.
     """
-    if _TRIIBAL_PROVIDER_CLS is None:
+    if _TRIBAL_PROVIDER_CLS is None:
         pytest.skip("MCP SDK auth not available")
-    provider = _TRIIBAL_PROVIDER_CLS.__new__(_TRIIBAL_PROVIDER_CLS)
-    provider._triibal_server_name = context_attrs.get("server_name", "srv")
+    provider = _TRIBAL_PROVIDER_CLS.__new__(_TRIBAL_PROVIDER_CLS)
+    provider._tribal_server_name = context_attrs.get("server_name", "srv")
     context = MagicMock()
     context.storage = storage
     context.oauth_metadata = context_attrs.get("oauth_metadata")
@@ -117,13 +117,13 @@ def _manager_provider_with_context(storage: TriibalTokenStorage, **context_attrs
 class TestManagerOAuthProviderMetadata:
     def test_initialize_restores_metadata_from_disk(self, tmp_path, monkeypatch):
         """Cold-load: if we have no in-memory metadata but disk has some, restore it."""
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        storage = TriibalTokenStorage("mgr-srv")
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        storage = TribalTokenStorage("mgr-srv")
         storage.save_oauth_metadata(_make_metadata("https://mgr.example.com/token"))
         provider = _manager_provider_with_context(storage, oauth_metadata=None)
 
         with patch.object(
-            _TRIIBAL_PROVIDER_CLS.__bases__[0], "_initialize", new=AsyncMock()
+            _TRIBAL_PROVIDER_CLS.__bases__[0], "_initialize", new=AsyncMock()
         ):
             asyncio.run(provider._initialize())
 
@@ -133,15 +133,15 @@ class TestManagerOAuthProviderMetadata:
 
     def test_initialize_skips_restore_when_in_memory_present(self, tmp_path, monkeypatch):
         """If SDK already has metadata in memory, don't overwrite from disk."""
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        storage = TriibalTokenStorage("mgr-srv2")
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        storage = TribalTokenStorage("mgr-srv2")
         storage.save_oauth_metadata(_make_metadata("https://disk.example.com/token"))
         in_memory = _make_metadata("https://memory.example.com/token")
 
         provider = _manager_provider_with_context(storage, oauth_metadata=in_memory)
 
         with patch.object(
-            _TRIIBAL_PROVIDER_CLS.__bases__[0], "_initialize", new=AsyncMock()
+            _TRIBAL_PROVIDER_CLS.__bases__[0], "_initialize", new=AsyncMock()
         ):
             asyncio.run(provider._initialize())
 
@@ -150,8 +150,8 @@ class TestManagerOAuthProviderMetadata:
 
     def test_persist_metadata_if_changed_writes_on_first_discover(self, tmp_path, monkeypatch):
         """When nothing on disk yet, persist what the SDK discovered in-memory."""
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        storage = TriibalTokenStorage("persist-srv")
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        storage = TribalTokenStorage("persist-srv")
         assert storage.load_oauth_metadata() is None
 
         discovered = _make_metadata("https://discovered.example.com/token")
@@ -165,23 +165,23 @@ class TestManagerOAuthProviderMetadata:
 
     def test_persist_metadata_noop_when_unchanged(self, tmp_path, monkeypatch):
         """No-op write when disk already matches in-memory metadata."""
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        storage = TriibalTokenStorage("noop-srv")
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        storage = TribalTokenStorage("noop-srv")
         meta = _make_metadata("https://same.example.com/token")
         storage.save_oauth_metadata(meta)
 
         provider = _manager_provider_with_context(storage, oauth_metadata=meta)
 
         with patch.object(
-            TriibalTokenStorage, "save_oauth_metadata"
+            TribalTokenStorage, "save_oauth_metadata"
         ) as save_spy:
             provider._persist_oauth_metadata_if_changed()
             save_spy.assert_not_called()
 
     def test_async_auth_flow_persists_on_completion(self, tmp_path, monkeypatch):
         """End-to-end: running the wrapped auth_flow persists discovered metadata."""
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
-        storage = TriibalTokenStorage("flow-srv")
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
+        storage = TribalTokenStorage("flow-srv")
         provider = _manager_provider_with_context(
             storage,
             oauth_metadata=_make_metadata("https://flow.example.com/token"),
@@ -197,7 +197,7 @@ class TestManagerOAuthProviderMetadata:
         manager.invalidate_if_disk_changed = AsyncMock(return_value=False)
 
         with patch.object(
-            _TRIIBAL_PROVIDER_CLS.__bases__[0],
+            _TRIBAL_PROVIDER_CLS.__bases__[0],
             "async_auth_flow",
             new=fake_parent_flow,
         ), patch("tools.mcp_oauth_manager.get_manager", return_value=manager):

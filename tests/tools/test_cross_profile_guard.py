@@ -31,19 +31,19 @@ def repo_tmp_dir():
 
 
 @pytest.fixture
-def fake_triibal(repo_tmp_dir, monkeypatch):
-    """Build a two-profile Triibal layout and point TRIIBAL_HOME at
-    the triibal-security profile (matching the original-incident shape).
+def fake_tribal(repo_tmp_dir, monkeypatch):
+    """Build a two-profile Tribal layout and point TRIBAL_HOME at
+    the tribal-security profile (matching the original-incident shape).
     """
     home = repo_tmp_dir / "home"
     home.mkdir()
-    root = repo_tmp_dir / "fake-triibal"
+    root = repo_tmp_dir / "fake-tribal"
     (root / "skills" / "shared-skill").mkdir(parents=True)
     (root / "skills" / "shared-skill" / "SKILL.md").write_text(
         "---\nname: shared-skill\ndescription: default copy.\n---\n"
     )
 
-    sec_home = root / "profiles" / "triibal-security"
+    sec_home = root / "profiles" / "tribal-security"
     (sec_home / "skills").mkdir(parents=True)
 
     coder_home = root / "profiles" / "coder"
@@ -54,14 +54,14 @@ def fake_triibal(repo_tmp_dir, monkeypatch):
         encoding="utf-8",
     )
     monkeypatch.setenv("HOME", str(home))
-    monkeypatch.setenv("TRIIBAL_HOME", str(sec_home))
+    monkeypatch.setenv("TRIBAL_HOME", str(sec_home))
 
-    import triibal_constants
-    monkeypatch.setattr(triibal_constants, "get_default_triibal_root", lambda: root)
+    import tribal_constants
+    monkeypatch.setattr(tribal_constants, "get_default_tribal_root", lambda: root)
 
     import agent.file_safety as fs
-    monkeypatch.setattr(fs, "_triibal_home_path", lambda: sec_home)
-    monkeypatch.setattr(fs, "_triibal_root_path", lambda: root)
+    monkeypatch.setattr(fs, "_tribal_home_path", lambda: sec_home)
+    monkeypatch.setattr(fs, "_tribal_root_path", lambda: root)
 
     return {
         "root": root,
@@ -76,9 +76,9 @@ def fake_triibal(repo_tmp_dir, monkeypatch):
 
 
 class TestWriteFileCrossProfileGuard:
-    def test_in_profile_write_allowed(self, fake_triibal):
+    def test_in_profile_write_allowed(self, fake_tribal):
         from tools.file_tools import write_file_tool
-        target = fake_triibal["sec_home"] / "skills" / "new-skill" / "SKILL.md"
+        target = fake_tribal["sec_home"] / "skills" / "new-skill" / "SKILL.md"
         target.parent.mkdir(parents=True)
         result_json = write_file_tool(str(target), "in-profile content")
         result = json.loads(result_json)
@@ -86,25 +86,25 @@ class TestWriteFileCrossProfileGuard:
         assert target.exists()
         assert target.read_text() == "in-profile content"
 
-    def test_cross_profile_write_blocked_by_default(self, fake_triibal):
+    def test_cross_profile_write_blocked_by_default(self, fake_tribal):
         """The May 2026 incident — security-profile session edits default
         profile's skill. Must be blocked."""
         from tools.file_tools import write_file_tool
-        target = fake_triibal["root"] / "skills" / "shared-skill" / "SKILL.md"
+        target = fake_tribal["root"] / "skills" / "shared-skill" / "SKILL.md"
         original = target.read_text()
         result_json = write_file_tool(str(target), "OVERWRITTEN")
         result = json.loads(result_json)
         assert result.get("error"), "Cross-profile write should be refused"
         assert "cross-profile" in result["error"].lower()
         assert "default" in result["error"]
-        assert "triibal-security" in result["error"]
+        assert "tribal-security" in result["error"]
         # File untouched.
         assert target.read_text() == original
 
-    def test_cross_profile_True_bypass(self, fake_triibal):
+    def test_cross_profile_True_bypass(self, fake_tribal):
         """Explicit override after user direction must succeed."""
         from tools.file_tools import write_file_tool
-        target = fake_triibal["root"] / "skills" / "shared-skill" / "SKILL.md"
+        target = fake_tribal["root"] / "skills" / "shared-skill" / "SKILL.md"
         result_json = write_file_tool(
             str(target), "user-directed override", cross_profile=True
         )
@@ -112,9 +112,9 @@ class TestWriteFileCrossProfileGuard:
         assert not result.get("error"), f"cross_profile=True must succeed: {result}"
         assert target.read_text() == "user-directed override"
 
-    def test_non_triibal_path_unaffected(self, fake_triibal):
+    def test_non_tribal_path_unaffected(self, fake_tribal):
         from tools.file_tools import write_file_tool
-        target = fake_triibal["root"].parent / "outside" / "main.py"
+        target = fake_tribal["root"].parent / "outside" / "main.py"
         target.parent.mkdir()
         result_json = write_file_tool(str(target), "print('hello')")
         result = json.loads(result_json)
@@ -128,9 +128,9 @@ class TestWriteFileCrossProfileGuard:
 
 
 class TestPatchCrossProfileGuard:
-    def test_cross_profile_patch_blocked(self, fake_triibal):
+    def test_cross_profile_patch_blocked(self, fake_tribal):
         from tools.file_tools import patch_tool
-        target = fake_triibal["root"] / "skills" / "shared-skill" / "SKILL.md"
+        target = fake_tribal["root"] / "skills" / "shared-skill" / "SKILL.md"
         original = target.read_text()
         result_json = patch_tool(
             mode="replace",
@@ -143,9 +143,9 @@ class TestPatchCrossProfileGuard:
         assert "cross-profile" in result["error"].lower()
         assert target.read_text() == original
 
-    def test_cross_profile_patch_bypass(self, fake_triibal):
+    def test_cross_profile_patch_bypass(self, fake_tribal):
         from tools.file_tools import patch_tool
-        target = fake_triibal["root"] / "skills" / "shared-skill" / "SKILL.md"
+        target = fake_tribal["root"] / "skills" / "shared-skill" / "SKILL.md"
         result_json = patch_tool(
             mode="replace",
             path=str(target),
@@ -157,11 +157,11 @@ class TestPatchCrossProfileGuard:
         assert not result.get("error"), f"cross_profile=True bypass: {result}"
         assert "user-directed update." in target.read_text()
 
-    def test_v4a_patch_extracts_path_for_guard(self, fake_triibal):
+    def test_v4a_patch_extracts_path_for_guard(self, fake_tribal):
         """V4A patches embed the target paths in the patch body, not in
         a ``path`` kwarg. The guard must still apply."""
         from tools.file_tools import patch_tool
-        target = fake_triibal["root"] / "skills" / "shared-skill" / "SKILL.md"
+        target = fake_tribal["root"] / "skills" / "shared-skill" / "SKILL.md"
         original = target.read_text()
         v4a = (
             "*** Begin Patch\n"
@@ -192,13 +192,13 @@ class TestSkillManageCrossProfileErrorUX:
         )
 
     def test_error_names_other_profile_when_skill_lives_there(
-        self, fake_triibal, monkeypatch
+        self, fake_tribal, monkeypatch
     ):
         """The original incident shape — model expects 'foo' in active
         profile, but 'foo' lives in default. Error must point at default."""
-        self._make_skill_in_profile(fake_triibal["root"], "default-only-skill")
+        self._make_skill_in_profile(fake_tribal["root"], "default-only-skill")
 
-        # Re-import the module so SKILLS_DIR picks up TRIIBAL_HOME (set in
+        # Re-import the module so SKILLS_DIR picks up TRIBAL_HOME (set in
         # the fixture). Skill_manager_tool computes SKILLS_DIR at import.
         import importlib
         import tools.skill_manager_tool
@@ -206,14 +206,14 @@ class TestSkillManageCrossProfileErrorUX:
         from tools.skill_manager_tool import _skill_not_found_error
 
         err = _skill_not_found_error("default-only-skill")
-        assert "not found in active profile 'triibal-security'" in err
+        assert "not found in active profile 'tribal-security'" in err
         assert "default" in err
         assert "cross_profile=True" in err
 
-    def test_error_names_multiple_profiles(self, fake_triibal, monkeypatch):
+    def test_error_names_multiple_profiles(self, fake_tribal, monkeypatch):
         """When the skill exists in TWO other profiles, both should be named."""
-        self._make_skill_in_profile(fake_triibal["root"], "everywhere-skill")
-        self._make_skill_in_profile(fake_triibal["coder_home"], "everywhere-skill")
+        self._make_skill_in_profile(fake_tribal["root"], "everywhere-skill")
+        self._make_skill_in_profile(fake_tribal["coder_home"], "everywhere-skill")
 
         import importlib
         import tools.skill_manager_tool
@@ -224,10 +224,10 @@ class TestSkillManageCrossProfileErrorUX:
         assert "default" in err
         assert "coder" in err
         # Switch-profiles hint
-        assert "triibal -p" in err
+        assert "tribal -p" in err
 
     def test_genuinely_missing_skill_keeps_helpful_hint(
-        self, fake_triibal, monkeypatch
+        self, fake_tribal, monkeypatch
     ):
         """When no profile has the skill, error falls back to skills_list hint."""
         import importlib
@@ -236,7 +236,7 @@ class TestSkillManageCrossProfileErrorUX:
         from tools.skill_manager_tool import _skill_not_found_error
 
         err = _skill_not_found_error("totally-imaginary-skill")
-        assert "not found in active profile 'triibal-security'" in err
+        assert "not found in active profile 'tribal-security'" in err
         assert "skills_list" in err
 
 
@@ -248,11 +248,11 @@ class TestSkillManageCrossProfileErrorUX:
 class TestSystemPromptActiveProfile:
     def test_default_profile_line_in_prompt(self, tmp_path, monkeypatch):
         """When active profile is 'default', the prompt names it and warns
-        about ~/.triibal/profiles/<name>/."""
-        # Don't set TRIIBAL_HOME — falls back to default.
+        about ~/.tribal/profiles/<name>/."""
+        # Don't set TRIBAL_HOME — falls back to default.
         import agent.file_safety as fs
-        monkeypatch.setattr(fs, "_triibal_home_path", lambda: tmp_path / "fake")
-        monkeypatch.setattr(fs, "_triibal_root_path", lambda: tmp_path / "fake")
+        monkeypatch.setattr(fs, "_tribal_home_path", lambda: tmp_path / "fake")
+        monkeypatch.setattr(fs, "_tribal_root_path", lambda: tmp_path / "fake")
 
         from agent.file_safety import _resolve_active_profile_name
         assert _resolve_active_profile_name() == "default"
@@ -260,8 +260,8 @@ class TestSystemPromptActiveProfile:
         # is too heavy to instantiate end-to-end in a unit test.
         # See agent/system_prompt.py for the exact wording.
 
-    def test_named_profile_line_in_prompt_text(self, fake_triibal):
-        """When active profile is 'triibal-security', the prompt warns
+    def test_named_profile_line_in_prompt_text(self, fake_tribal):
+        """When active profile is 'tribal-security', the prompt warns
         explicitly about NOT modifying default's skills/plugins/cron/memories."""
         # Spot-check by reading the source — the contract is:
         # (1) names the active profile, (2) names the default-profile
@@ -269,9 +269,9 @@ class TestSystemPromptActiveProfile:
         # explicit user direction.
         from pathlib import Path
         src = Path("agent/system_prompt.py").read_text()
-        assert "Active Triibal profile" in src
+        assert "Active Tribal profile" in src
         assert "cross_profile=True" in src
-        assert "~/.triibal/profiles/" in src
+        assert "~/.tribal/profiles/" in src
         # Both branches present (default and named profile).
-        assert "Active Triibal profile: default" in src
-        assert "Active Triibal profile: {active_profile}" in src
+        assert "Active Tribal profile: default" in src
+        assert "Active Tribal profile: {active_profile}" in src

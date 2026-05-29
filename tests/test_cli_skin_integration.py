@@ -1,12 +1,12 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from cli import TriibalCLI, _build_compact_banner, _rich_text_from_ansi
-from triibal_cli.skin_engine import get_active_skin, set_active_skin
+from cli import TribalCLI, _build_compact_banner, _rich_text_from_ansi
+from tribal_cli.skin_engine import get_active_skin, set_active_skin
 
 
 def _make_cli_stub():
-    cli = TriibalCLI.__new__(TriibalCLI)
+    cli = TribalCLI.__new__(TribalCLI)
     cli._sudo_state = None
     cli._secret_state = None
     cli._approval_state = None
@@ -53,7 +53,7 @@ class TestCliSkinPromptIntegration:
         cli = _make_cli_stub()
         cli._secret_state = {"response_queue": object()}
 
-        with patch("triibal_cli.skin_engine.get_active_prompt_symbol", return_value="⚔ "):
+        with patch("tribal_cli.skin_engine.get_active_prompt_symbol", return_value="⚔ "):
             assert cli._get_tui_prompt_fragments() == [("class:sudo-prompt", "🔑 ⚔ ")]
 
     def test_build_tui_style_dict_uses_skin_overrides(self):
@@ -92,31 +92,31 @@ class TestCliSkinPromptIntegration:
 
 
 class TestCompactBannerSkinIntegration:
-    def test_default_compact_banner_uses_triibal_genesis_branding(self):
+    def test_default_compact_banner_uses_tribal_genesis_branding(self):
         set_active_skin("default")
 
         with patch("cli.shutil.get_terminal_size", return_value=SimpleNamespace(columns=90)), \
-             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Triibal Agent v0.1.0 (test)"}):
+             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Tribal Agent v0.1.0 (test)"}):
             banner = _build_compact_banner()
 
-        assert "TRIIBAL GENESIS" in banner
+        assert "TRIBAL GENESIS" in banner
 
-    def test_poseidon_compact_banner_uses_skin_branding_instead_of_triibal_genesis(self):
+    def test_poseidon_compact_banner_uses_skin_branding_instead_of_tribal_genesis(self):
         set_active_skin("poseidon")
 
         with patch("cli.shutil.get_terminal_size", return_value=SimpleNamespace(columns=90)), \
-             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Triibal Agent v0.1.0 (test)"}):
+             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Tribal Agent v0.1.0 (test)"}):
             banner = _build_compact_banner()
 
         assert "Poseidon Agent" in banner
-        assert "TRIIBAL GENESIS" not in banner
+        assert "TRIBAL GENESIS" not in banner
 
     def test_poseidon_compact_banner_uses_skin_colors(self):
         set_active_skin("poseidon")
         skin = get_active_skin()
 
         with patch("cli.shutil.get_terminal_size", return_value=SimpleNamespace(columns=90)), \
-             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Triibal Agent v0.1.0 (test)"}):
+             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Tribal Agent v0.1.0 (test)"}):
             banner = _build_compact_banner()
 
         assert skin.get_color("banner_border") in banner
@@ -127,7 +127,7 @@ class TestCompactBannerSkinIntegration:
         set_active_skin("default")
 
         with patch("cli.shutil.get_terminal_size", return_value=SimpleNamespace(columns=90)), \
-             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Triibal Agent v1.0 (test) · upstream abc12345"}):
+             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Tribal Agent v1.0 (test) · upstream abc12345"}):
             banner = _build_compact_banner()
 
         assert "upstream abc12345" in banner

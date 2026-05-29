@@ -10,7 +10,7 @@ import {
 
 const ACTION_NAMES: Record<SystemAction, string> = {
   restart: "gateway-restart",
-  update: "triibal-update",
+  update: "tribal-update",
 };
 
 export function SystemActionsProvider({
@@ -72,7 +72,7 @@ export function SystemActionsProvider({
         if (action === "restart") {
           await api.restartGateway();
         } else {
-          await api.updateTriibal();
+          await api.updateTribal();
         }
         setActiveAction(action);
       } catch (err) {

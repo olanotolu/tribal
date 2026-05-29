@@ -1,22 +1,22 @@
 ---
 sidebar_position: 1
 title: "Quickstart"
-description: "Your first conversation with Triibal Agent — from install to chatting in under 5 minutes"
+description: "Your first conversation with Tribal Agent — from install to chatting in under 5 minutes"
 ---
 
 # Quickstart
 
-This guide gets you from zero to a working Triibal setup that survives real use. Install, choose a provider, verify a working chat, and know exactly what to do when something breaks.
+This guide gets you from zero to a working Tribal setup that survives real use. Install, choose a provider, verify a working chat, and know exactly what to do when something breaks.
 
 ## Prefer to watch?
 
-**Onchain AI Garage** put together a Masterclass walkthrough of installation, setup, and basic commands — a good companion to this page if you'd rather follow along on video. For more, see the full [Triibal Agent Tutorials & Use Cases](https://www.youtube.com/channel/UCqB1bhMwGsW-yefBxYwFCCg) playlist.
+**Onchain AI Garage** put together a Masterclass walkthrough of installation, setup, and basic commands — a good companion to this page if you'd rather follow along on video. For more, see the full [Tribal Agent Tutorials & Use Cases](https://www.youtube.com/channel/UCqB1bhMwGsW-yefBxYwFCCg) playlist.
 
 <div style={{position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', maxWidth: '100%', marginBottom: '1.5rem'}}>
   <iframe
     style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}}
     src="https://www.youtube-nocookie.com/embed/R3YOGfTBcQg"
-    title="Triibal Agent Masterclass: Installation, Setup, Basic Commands"
+    title="Tribal Agent Masterclass: Installation, Setup, Basic Commands"
     frameBorder="0"
     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowFullScreen
@@ -27,7 +27,7 @@ This guide gets you from zero to a working Triibal setup that survives real use.
 
 - Brand new and want the shortest path to a working setup
 - Switching providers and don't want to lose time to config mistakes
-- Setting up Triibal for a team, bot, or always-on workflow
+- Setting up Tribal for a team, bot, or always-on workflow
 - Tired of "it installed, but it still does nothing"
 
 ## The fastest path
@@ -36,23 +36,23 @@ Pick the row that matches your goal:
 
 | Goal | Do this first | Then do this |
 |---|---|---|
-| I just want Triibal working on my machine | `triibal setup` | Run a real chat and verify it responds |
-| I already know my provider | `triibal model` | Save the config, then start chatting |
-| I want a bot or always-on setup | `triibal gateway setup` after CLI works | Connect Telegram, Discord, Slack, or another platform |
-| I want a local or self-hosted model | `triibal model` → custom endpoint | Verify the endpoint, model name, and context length |
-| I want multi-provider fallback | `triibal model` first | Add routing and fallback only after the base chat works |
+| I just want Tribal working on my machine | `tribal setup` | Run a real chat and verify it responds |
+| I already know my provider | `tribal model` | Save the config, then start chatting |
+| I want a bot or always-on setup | `tribal gateway setup` after CLI works | Connect Telegram, Discord, Slack, or another platform |
+| I want a local or self-hosted model | `tribal model` → custom endpoint | Verify the endpoint, model name, and context length |
+| I want multi-provider fallback | `tribal model` first | Add routing and fallback only after the base chat works |
 
-**Rule of thumb:** if Triibal cannot complete a normal chat, do not add more features yet. Get one clean conversation working first, then layer on gateway, cron, skills, voice, or routing.
+**Rule of thumb:** if Tribal cannot complete a normal chat, do not add more features yet. Get one clean conversation working first, then layer on gateway, cron, skills, voice, or routing.
 
 ---
 
-## 1. Install Triibal Agent
+## 1. Install Tribal Agent
 
 **Option A — pip (simplest):**
 
 ```bash
-pip install triibal-agent
-triibal postinstall     # optional: installs Node.js, browser, ripgrep, ffmpeg + runs setup
+pip install tribal-agent
+tribal postinstall     # optional: installs Node.js, browser, ripgrep, ffmpeg + runs setup
 ```
 
 PyPI releases track tagged versions (major/minor releases), not every commit on `main`. For bleeding-edge, use Option B.
@@ -61,7 +61,7 @@ PyPI releases track tagged versions (major/minor releases), not every commit on 
 
 ```bash
 # Linux / macOS / WSL2 / Android (Termux)
-curl -fsSL https://raw.githubusercontent.com/Triibal/triibal/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Tribal/tribal/main/scripts/install.sh | bash
 ```
 
 :::tip Android / Termux
@@ -82,17 +82,17 @@ For detailed installation options, prerequisites, and troubleshooting, see the [
 
 ## 2. Choose a Provider
 
-The single most important setup step. Use `triibal model` to walk through the choice interactively:
+The single most important setup step. Use `tribal model` to walk through the choice interactively:
 
 ```bash
-triibal model
+tribal model
 ```
 
 :::tip Easiest path: Nous Portal
 One subscription covers 300+ models plus the [Tool Gateway](../user-guide/features/tool-gateway.md) (web search, image generation, TTS, cloud browser). On a fresh install:
 
 ```bash
-triibal setup --portal
+tribal setup --portal
 ```
 
 That logs you in, sets Nous as your provider, and turns on the Tool Gateway in one command.
@@ -102,16 +102,16 @@ Good defaults:
 
 | Provider | What it is | How to set up |
 |----------|-----------|---------------|
-| **Nous Portal** | Subscription-based, zero-config | OAuth login via `triibal model` |
-| **OpenAI Codex** | ChatGPT OAuth, uses Codex models | Device code auth via `triibal model` |
-| **Anthropic** | Claude models directly — Max plan + extra usage credits (OAuth), or API key for pay-per-token | `triibal model` → OAuth login (requires Max + extra credits), or an Anthropic API key |
+| **Nous Portal** | Subscription-based, zero-config | OAuth login via `tribal model` |
+| **OpenAI Codex** | ChatGPT OAuth, uses Codex models | Device code auth via `tribal model` |
+| **Anthropic** | Claude models directly — Max plan + extra usage credits (OAuth), or API key for pay-per-token | `tribal model` → OAuth login (requires Max + extra credits), or an Anthropic API key |
 | **OpenRouter** | Multi-provider routing across many models | Enter your API key |
 | **Z.AI** | GLM / Zhipu-hosted models | Set `GLM_API_KEY` / `ZAI_API_KEY` (also accepts `Z_AI_API_KEY`) |
 | **Kimi / Moonshot** | Moonshot-hosted coding and chat models | Set `KIMI_API_KEY` (or the Kimi-Coding-specific `KIMI_CODING_API_KEY`) |
 | **Kimi / Moonshot China** | China-region Moonshot endpoint | Set `KIMI_CN_API_KEY` |
 | **Arcee AI** | Trinity models | Set `ARCEEAI_API_KEY` |
 | **GMI Cloud** | Multi-model direct API | Set `GMI_API_KEY` |
-| **MiniMax (OAuth)** | MiniMax frontier model via browser OAuth — no API key needed (model name in `triibal_cli/models.py` may change between releases) | `triibal model` → MiniMax (OAuth) |
+| **MiniMax (OAuth)** | MiniMax frontier model via browser OAuth — no API key needed (model name in `tribal_cli/models.py` may change between releases) | `tribal model` → MiniMax (OAuth) |
 | **MiniMax** | International MiniMax endpoint | Set `MINIMAX_API_KEY` |
 | **MiniMax China** | China-region MiniMax endpoint | Set `MINIMAX_CN_API_KEY` |
 | **Alibaba Cloud** | Qwen models via DashScope | Set `DASHSCOPE_API_KEY` (Qwen Coding Plan also accepts `ALIBABA_CODING_PLAN_API_KEY`) |
@@ -119,48 +119,48 @@ Good defaults:
 | **AWS Bedrock** | Claude, Nova, Llama, DeepSeek via native Converse API | IAM role or `aws configure` ([guide](../guides/aws-bedrock.md)) |
 | **Azure Foundry** | Azure AI Foundry-hosted models | Set `AZURE_FOUNDRY_API_KEY` + `AZURE_FOUNDRY_BASE_URL` |
 | **Google AI Studio** | Gemini models via direct API | Set `GOOGLE_API_KEY` / `GEMINI_API_KEY` |
-| **Google Gemini (OAuth)** | Gemini via the `google-gemini-cli` OAuth flow — no key needed | `triibal model` → Google Gemini (OAuth) |
+| **Google Gemini (OAuth)** | Gemini via the `google-gemini-cli` OAuth flow — no key needed | `tribal model` → Google Gemini (OAuth) |
 | **xAI** | Grok models via direct API | Set `XAI_API_KEY` |
-| **xAI Grok OAuth** | SuperGrok / Premium+ subscription, no API key needed | `triibal model` → xAI Grok OAuth |
+| **xAI Grok OAuth** | SuperGrok / Premium+ subscription, no API key needed | `tribal model` → xAI Grok OAuth |
 | **NovitaAI** | Multi-model API gateway | Set `NOVITA_API_KEY` |
 | **StepFun** | Step Plan models | Set `STEPFUN_API_KEY` |
 | **Xiaomi MiMo** | Xiaomi-hosted models | Set `XIAOMI_API_KEY` |
 | **Tencent TokenHub** | Tencent-hosted models | Set `TOKENHUB_API_KEY` |
 | **Ollama Cloud** | Managed Ollama-hosted models | Set `OLLAMA_API_KEY` |
 | **LM Studio** | Local desktop app exposing an OpenAI-compatible API | Set `LM_API_KEY` (and `LM_BASE_URL` if non-default) |
-| **Qwen OAuth** | Qwen Portal browser OAuth — no API key needed | `triibal model` → Qwen OAuth |
+| **Qwen OAuth** | Qwen Portal browser OAuth — no API key needed | `tribal model` → Qwen OAuth |
 | **Kilo Code** | KiloCode-hosted models | Set `KILOCODE_API_KEY` |
 | **OpenCode Zen** | Pay-as-you-go access to curated models | Set `OPENCODE_ZEN_API_KEY` |
 | **OpenCode Go** | $10/month subscription for open models | Set `OPENCODE_GO_API_KEY` |
 | **DeepSeek** | Direct DeepSeek API access | Set `DEEPSEEK_API_KEY` |
 | **NVIDIA NIM** | Nemotron models via build.nvidia.com or local NIM | Set `NVIDIA_API_KEY` (optional: `NVIDIA_BASE_URL`) |
-| **GitHub Copilot** | GitHub Copilot subscription (GPT-5.x, Claude, Gemini, etc.) | OAuth via `triibal model`, or `COPILOT_GITHUB_TOKEN` / `GH_TOKEN` |
-| **GitHub Copilot ACP** | Copilot ACP agent backend (spawns local `copilot` CLI) | `triibal model` (requires `copilot` CLI + `copilot login`) |
+| **GitHub Copilot** | GitHub Copilot subscription (GPT-5.x, Claude, Gemini, etc.) | OAuth via `tribal model`, or `COPILOT_GITHUB_TOKEN` / `GH_TOKEN` |
+| **GitHub Copilot ACP** | Copilot ACP agent backend (spawns local `copilot` CLI) | `tribal model` (requires `copilot` CLI + `copilot login`) |
 | **Custom Endpoint** | VLLM, SGLang, Ollama, or any OpenAI-compatible API | Set base URL + API key |
 
 For most first-time users: choose a provider, accept the defaults unless you know why you're changing them. The full provider catalog with env vars and setup steps lives on the [Providers](../integrations/providers.md) page.
 
 :::caution Minimum context: 64K tokens
-Triibal Agent requires a model with at least **64,000 tokens** of context. Models with smaller windows cannot maintain enough working memory for multi-step tool-calling workflows and will be rejected at startup. Most hosted models (Claude, GPT, Gemini, Qwen, DeepSeek) meet this easily. If you're running a local model, set its context size to at least 64K (e.g. `--ctx-size 65536` for llama.cpp or `-c 65536` for Ollama).
+Tribal Agent requires a model with at least **64,000 tokens** of context. Models with smaller windows cannot maintain enough working memory for multi-step tool-calling workflows and will be rejected at startup. Most hosted models (Claude, GPT, Gemini, Qwen, DeepSeek) meet this easily. If you're running a local model, set its context size to at least 64K (e.g. `--ctx-size 65536` for llama.cpp or `-c 65536` for Ollama).
 :::
 
 :::tip
-You can switch providers at any time with `triibal model` — no lock-in. For a full list of all supported providers and setup details, see [AI Providers](../integrations/providers.md).
+You can switch providers at any time with `tribal model` — no lock-in. For a full list of all supported providers and setup details, see [AI Providers](../integrations/providers.md).
 :::
 
 ### How settings are stored
 
-Triibal separates secrets from normal config:
+Tribal separates secrets from normal config:
 
-- **Secrets and tokens** → `~/.triibal/.env`
-- **Non-secret settings** → `~/.triibal/config.yaml`
+- **Secrets and tokens** → `~/.tribal/.env`
+- **Non-secret settings** → `~/.tribal/config.yaml`
 
 The easiest way to set values correctly is through the CLI:
 
 ```bash
-triibal config set model anthropic/claude-opus-4.6
-triibal config set terminal.backend docker
-triibal config set OPENROUTER_API_KEY sk-or-...
+tribal config set model anthropic/claude-opus-4.6
+tribal config set terminal.backend docker
+tribal config set OPENROUTER_API_KEY sk-or-...
 ```
 
 The right value goes to the right file automatically.
@@ -168,14 +168,14 @@ The right value goes to the right file automatically.
 ## 3. Run Your First Chat
 
 ```bash
-triibal            # classic CLI
-triibal --tui      # modern TUI (recommended)
+tribal            # classic CLI
+tribal --tui      # modern TUI (recommended)
 ```
 
 You'll see a welcome banner with your model, available tools, and skills. Use a prompt that's specific and easy to verify:
 
 :::tip Pick your interface
-Triibal ships with two terminal interfaces: the classic `prompt_toolkit` CLI and a newer [TUI](../user-guide/tui.md) with modal overlays, mouse selection, and non-blocking input. Both share the same sessions, slash commands, and config — try each with `triibal` vs `triibal --tui`.
+Tribal ships with two terminal interfaces: the classic `prompt_toolkit` CLI and a newer [TUI](../user-guide/tui.md) with modal overlays, mouse selection, and non-blocking input. Both share the same sessions, slash commands, and config — try each with `tribal` vs `tribal --tui`.
 :::
 
 ```
@@ -193,7 +193,7 @@ Help me set up a clean GitHub PR workflow for this codebase.
 **What success looks like:**
 
 - The banner shows your chosen model/provider
-- Triibal replies without error
+- Tribal replies without error
 - It can use a tool if needed (terminal, file read, web search)
 - The conversation continues normally for more than one turn
 
@@ -204,8 +204,8 @@ If that works, you're past the hardest part.
 Before moving on, make sure resume works:
 
 ```bash
-triibal --continue    # Resume the most recent session
-triibal -c            # Short form
+tribal --continue    # Resume the most recent session
+tribal -c            # Short form
 ```
 
 That should bring you back to the session you just had. If it doesn't, check whether you're in the same profile and whether the session actually saved. This matters later when you're juggling multiple setups or machines.
@@ -247,15 +247,15 @@ Only after the base chat works. Pick what you need:
 ### Bot or shared assistant
 
 ```bash
-triibal gateway setup    # Interactive platform configuration
+tribal gateway setup    # Interactive platform configuration
 ```
 
 Connect [Telegram](/user-guide/messaging/telegram), [Discord](/user-guide/messaging/discord), [Slack](/user-guide/messaging/slack), [WhatsApp](/user-guide/messaging/whatsapp), [Signal](/user-guide/messaging/signal), [Email](/user-guide/messaging/email), or [Home Assistant](/user-guide/messaging/homeassistant), or [Microsoft Teams](/user-guide/messaging/teams).
 
 ### Automation and tools
 
-- `triibal tools` — tune tool access per platform
-- `triibal skills` — browse and install reusable workflows
+- `tribal tools` — tune tool access per platform
+- `tribal skills` — browse and install reusable workflows
 - Cron — only after your bot or CLI setup is stable
 
 ### Sandboxed terminal
@@ -263,16 +263,16 @@ Connect [Telegram](/user-guide/messaging/telegram), [Discord](/user-guide/messag
 For safety, run the agent in a Docker container or on a remote server:
 
 ```bash
-triibal config set terminal.backend docker    # Docker isolation
-triibal config set terminal.backend ssh       # Remote server
+tribal config set terminal.backend docker    # Docker isolation
+tribal config set terminal.backend ssh       # Remote server
 ```
 
 ### Voice mode
 
 ```bash
-# From the Triibal install directory (the curl installer placed it at
-# ~/.triibal/triibal-agent on Linux/macOS or %LOCALAPPDATA%\triibal\triibal-agent on Windows):
-cd ~/.triibal/triibal-agent
+# From the Tribal install directory (the curl installer placed it at
+# ~/.tribal/tribal-agent on Linux/macOS or %LOCALAPPDATA%\tribal\tribal-agent on Windows):
+cd ~/.tribal/tribal-agent
 uv pip install -e ".[voice]"
 # Includes faster-whisper for free local speech-to-text
 ```
@@ -282,8 +282,8 @@ Then in the CLI: `/voice on`. Press `Ctrl+B` to record. See [Voice Mode](../user
 ### Skills
 
 ```bash
-triibal skills search kubernetes
-triibal skills install openai/skills/k8s
+tribal skills search kubernetes
+tribal skills install openai/skills/k8s
 ```
 
 Or use `/skills` inside a chat session.
@@ -291,7 +291,7 @@ Or use `/skills` inside a chat session.
 ### MCP servers
 
 ```yaml
-# Add to ~/.triibal/config.yaml
+# Add to ~/.tribal/config.yaml
 mcp_servers:
   github:
     command: npx
@@ -305,10 +305,10 @@ mcp_servers:
 ACP support ships with the standard `[all]` extras, so the curl installer already includes it. Just run:
 
 ```bash
-triibal acp
+tribal acp
 ```
 
-(If you installed without `[all]`, run `cd ~/.triibal/triibal-agent && uv pip install -e ".[acp]"` first.)
+(If you installed without `[all]`, run `cd ~/.tribal/tribal-agent && uv pip install -e ".[acp]"` first.)
 
 See [ACP Editor Integration](../user-guide/features/acp.md).
 
@@ -320,23 +320,23 @@ These are the problems that waste the most time:
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| Triibal opens but gives empty or broken replies | Provider auth or model selection is wrong | Run `triibal model` again and confirm provider, model, and auth |
+| Tribal opens but gives empty or broken replies | Provider auth or model selection is wrong | Run `tribal model` again and confirm provider, model, and auth |
 | Custom endpoint "works" but returns garbage | Wrong base URL, model name, or not actually OpenAI-compatible | Verify the endpoint in a separate client first |
-| Gateway starts but nobody can message it | Bot token, allowlist, or platform setup is incomplete | Re-run `triibal gateway setup` and check `triibal gateway status` |
-| `triibal --continue` can't find old session | Switched profiles or session never saved | Check `triibal sessions list` and confirm you're in the right profile |
+| Gateway starts but nobody can message it | Bot token, allowlist, or platform setup is incomplete | Re-run `tribal gateway setup` and check `tribal gateway status` |
+| `tribal --continue` can't find old session | Switched profiles or session never saved | Check `tribal sessions list` and confirm you're in the right profile |
 | Model unavailable or odd fallback behavior | Provider routing or fallback settings are too aggressive | Keep routing off until the base provider is stable |
-| `triibal doctor` flags config problems | Config values are missing or stale | Fix the config, retest a plain chat before adding features |
+| `tribal doctor` flags config problems | Config values are missing or stale | Fix the config, retest a plain chat before adding features |
 
 ## Recovery Toolkit
 
 When something feels off, use this order:
 
-1. `triibal doctor`
-2. `triibal model`
-3. `triibal setup`
-4. `triibal sessions list`
-5. `triibal --continue`
-6. `triibal gateway status`
+1. `tribal doctor`
+2. `tribal model`
+3. `tribal setup`
+4. `tribal sessions list`
+5. `tribal --continue`
+6. `tribal gateway status`
 
 That sequence gets you from "broken vibes" back to a known state fast.
 
@@ -346,14 +346,14 @@ That sequence gets you from "broken vibes" back to a known state fast.
 
 | Command | Description |
 |---------|-------------|
-| `triibal` | Start chatting |
-| `triibal model` | Choose your LLM provider and model |
-| `triibal tools` | Configure which tools are enabled per platform |
-| `triibal setup` | Full setup wizard (configures everything at once) |
-| `triibal doctor` | Diagnose issues |
-| `triibal update` | Update to latest version |
-| `triibal gateway` | Start the messaging gateway |
-| `triibal --continue` | Resume last session |
+| `tribal` | Start chatting |
+| `tribal model` | Choose your LLM provider and model |
+| `tribal tools` | Configure which tools are enabled per platform |
+| `tribal setup` | Full setup wizard (configures everything at once) |
+| `tribal doctor` | Diagnose issues |
+| `tribal update` | Update to latest version |
+| `tribal gateway` | Start the messaging gateway |
+| `tribal --continue` | Resume last session |
 
 ## Next Steps
 

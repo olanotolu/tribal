@@ -2,11 +2,11 @@
 name: apple-reminders
 description: "Apple Reminders via remindctl: add, list, complete."
 version: 1.0.0
-author: Triibal Agent
+author: Tribal Agent
 license: MIT
 platforms: [macos]
 metadata:
-  triibal:
+  tribal:
     tags: [Reminders, tasks, todo, macOS, Apple]
 prerequisites:
   commands: [remindctl]

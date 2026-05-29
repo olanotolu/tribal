@@ -19,7 +19,7 @@ REFERENCE_PATTERN = re.compile(
 )
 TRAILING_PUNCTUATION = ",.;!?"
 _SENSITIVE_HOME_DIRS = (".ssh", ".aws", ".gnupg", ".kube", ".docker", ".azure", ".config/gh")
-_SENSITIVE_TRIIBAL_DIRS = (Path("skills") / ".hub",)
+_SENSITIVE_TRIBAL_DIRS = (Path("skills") / ".hub",)
 _SENSITIVE_HOME_FILES = (
     Path(".ssh") / "authorized_keys",
     Path(".ssh") / "id_rsa",
@@ -340,14 +340,14 @@ def _resolve_path(cwd: Path, target: str, *, allowed_root: Path | None = None) -
 
 
 def _ensure_reference_path_allowed(path: Path) -> None:
-    from triibal_constants import get_triibal_home
+    from tribal_constants import get_tribal_home
     home = Path(os.path.expanduser("~")).resolve()
-    triibal_home = get_triibal_home().resolve()
+    tribal_home = get_tribal_home().resolve()
 
     blocked_exact = {home / rel for rel in _SENSITIVE_HOME_FILES}
-    blocked_exact.add(triibal_home / ".env")
+    blocked_exact.add(tribal_home / ".env")
     blocked_dirs = [home / rel for rel in _SENSITIVE_HOME_DIRS]
-    blocked_dirs.extend(triibal_home / rel for rel in _SENSITIVE_TRIIBAL_DIRS)
+    blocked_dirs.extend(tribal_home / rel for rel in _SENSITIVE_TRIBAL_DIRS)
 
     if path in blocked_exact:
         raise ValueError("path is a sensitive credential file and cannot be attached")
@@ -357,7 +357,7 @@ def _ensure_reference_path_allowed(path: Path) -> None:
             path.relative_to(blocked_dir)
         except ValueError:
             continue
-        raise ValueError("path is a sensitive credential or internal Triibal path and cannot be attached")
+        raise ValueError("path is a sensitive credential or internal Tribal path and cannot be attached")
 
 
 def _strip_trailing_punctuation(value: str) -> str:

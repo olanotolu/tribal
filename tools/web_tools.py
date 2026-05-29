@@ -3,8 +3,8 @@
 Standalone Web Tools Module
 
 This module provides generic web tools that work with multiple backend providers.
-Backend is selected during ``triibal tools`` setup (web.backend in config.yaml).
-When available, Triibal can route Firecrawl calls through a Nous-hosted tool-gateway
+Backend is selected during ``tribal tools`` setup (web.backend in config.yaml).
+When available, Tribal can route Firecrawl calls through a Nous-hosted tool-gateway
 for Nous Subscribers only.
 
 Available tools:
@@ -125,9 +125,9 @@ def _has_env(name: str) -> bool:
     return bool(val and val.strip())
 
 def _load_web_config() -> dict:
-    """Load the ``web:`` section from ~/.triibal/config.yaml."""
+    """Load the ``web:`` section from ~/.tribal/config.yaml."""
     try:
-        from triibal_cli.config import load_config
+        from tribal_cli.config import load_config
         return load_config().get("web", {})
     except (ImportError, Exception):
         return {}
@@ -135,7 +135,7 @@ def _load_web_config() -> dict:
 def _get_backend() -> str:
     """Determine which web backend to use (shared fallback).
 
-    Reads ``web.backend`` from config.yaml (set by ``triibal tools``).
+    Reads ``web.backend`` from config.yaml (set by ``tribal tools``).
     Falls back to whichever API key is present for users who configured
     keys manually without running setup.
     """
@@ -222,7 +222,7 @@ def _is_backend_available(backend: str) -> bool:
         # Cheap probe — env var OR auth.json has OAuth tokens. Must not
         # call resolve_xai_http_credentials() here because the OAuth path
         # can trigger a network token refresh, and _is_backend_available
-        # runs on every web_search dispatch + every `triibal tools` repaint.
+        # runs on every web_search dispatch + every `tribal tools` repaint.
         try:
             from tools.xai_http import has_xai_credentials
             return has_xai_credentials()
@@ -821,7 +821,7 @@ def web_search_tool(query: str, limit: int = 5) -> str:
                 "success": False,
                 "error": (
                     "No web search provider configured. "
-                    "Run `triibal tools` to set one up."
+                    "Run `tribal tools` to set one up."
                 ),
             }
         else:

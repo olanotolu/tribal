@@ -1,19 +1,19 @@
 ---
 sidebar_position: 3
 title: "Android / Termux"
-description: "Run Triibal Agent directly on an Android phone with Termux"
+description: "Run Tribal Agent directly on an Android phone with Termux"
 ---
 
-# Triibal on Android with Termux
+# Tribal on Android with Termux
 
-This is the tested path for running Triibal Agent directly on an Android phone through [Termux](https://termux.dev/).
+This is the tested path for running Tribal Agent directly on an Android phone through [Termux](https://termux.dev/).
 
 It gives you a working local CLI on the phone, plus the core extras that are currently known to install cleanly on Android.
 
 ## What is supported in the tested path?
 
 The tested Termux bundle installs:
-- the Triibal CLI
+- the Tribal CLI
 - cron support
 - PTY/background terminal support
 - Telegram gateway support (manual / best-effort background runs)
@@ -37,23 +37,23 @@ A few features still need desktop/server-style dependencies that are not publish
 - Docker-based terminal isolation is not available inside Termux
 - Android may still suspend Termux background jobs, so gateway persistence is best-effort rather than a normal managed service
 
-That does not stop Triibal from working well as a phone-native CLI agent — it just means the recommended mobile install is intentionally narrower than the desktop/server install.
+That does not stop Tribal from working well as a phone-native CLI agent — it just means the recommended mobile install is intentionally narrower than the desktop/server install.
 
 ---
 
 ## Option 1: One-line installer
 
-Triibal now ships a Termux-aware installer path:
+Tribal now ships a Termux-aware installer path:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Triibal/triibal/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Tribal/tribal/main/scripts/install.sh | bash
 ```
 
 On Termux, the installer automatically:
 - uses `pkg` for system packages
 - creates the venv with `python -m venv`
 - attempts the broad `.[termux-all]` extra first and falls back to the smaller `.[termux]` extra (then a base install) — the curl installer matches this order automatically
-- links `triibal` into `$PREFIX/bin` so it stays on your Termux PATH
+- links `tribal` into `$PREFIX/bin` so it stays on your Termux PATH
 - skips the untested browser / WhatsApp bootstrap
 
 If you want the explicit commands or need to debug a failed install, use the manual path below.
@@ -77,11 +77,11 @@ Why these packages?
 - `ripgrep` — fast file search
 - `ffmpeg` — media / TTS conversions
 
-### 2. Clone Triibal
+### 2. Clone Tribal
 
 ```bash
-git clone --recurse-submodules https://github.com/Triibal/triibal.git
-cd triibal-agent
+git clone --recurse-submodules https://github.com/Tribal/tribal.git
+cd tribal-agent
 ```
 
 If you already cloned without submodules:
@@ -113,25 +113,25 @@ If you only want the minimal core agent, this also works:
 python -m pip install -e '.' -c constraints-termux.txt
 ```
 
-### 5. Put `triibal` on your Termux PATH
+### 5. Put `tribal` on your Termux PATH
 
 ```bash
-ln -sf "$PWD/venv/bin/triibal" "$PREFIX/bin/triibal"
+ln -sf "$PWD/venv/bin/tribal" "$PREFIX/bin/tribal"
 ```
 
-`$PREFIX/bin` is already on PATH in Termux, so this makes the `triibal` command persist across new shells without re-activating the venv every time.
+`$PREFIX/bin` is already on PATH in Termux, so this makes the `tribal` command persist across new shells without re-activating the venv every time.
 
 ### 6. Verify the install
 
 ```bash
-triibal version
-triibal doctor
+tribal version
+tribal doctor
 ```
 
-### 7. Start Triibal
+### 7. Start Tribal
 
 ```bash
-triibal
+tribal
 ```
 
 ---
@@ -141,15 +141,15 @@ triibal
 ### Configure a model
 
 ```bash
-triibal model
+tribal model
 ```
 
-Or set keys directly in `~/.triibal/.env`.
+Or set keys directly in `~/.tribal/.env`.
 
 ### Re-run the full interactive setup wizard later
 
 ```bash
-triibal setup
+tribal setup
 ```
 
 ### Install optional Node dependencies manually
@@ -203,7 +203,7 @@ export ANDROID_API_LEVEL="$(getprop ro.build.version.sdk)"
 python -m pip install -e '.[termux]' -c constraints-termux.txt
 ```
 
-### `triibal doctor` says ripgrep or Node is missing
+### `tribal doctor` says ripgrep or Node is missing
 
 Install them with Termux packages:
 
@@ -238,5 +238,5 @@ If you hit a new Android-specific issue, please open a GitHub issue with:
 - your Android version
 - `termux-info`
 - `python --version`
-- `triibal doctor`
+- `tribal doctor`
 - the exact install command and full error output

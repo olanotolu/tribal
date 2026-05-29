@@ -6,51 +6,51 @@ sidebar_position: 1
 
 # AI Providers
 
-This page covers setting up inference providers for Triibal Agent — from cloud APIs like OpenRouter and Anthropic, to self-hosted endpoints like Ollama and vLLM, to advanced routing and fallback configurations. You need at least one provider configured to use Triibal.
+This page covers setting up inference providers for Tribal Agent — from cloud APIs like OpenRouter and Anthropic, to self-hosted endpoints like Ollama and vLLM, to advanced routing and fallback configurations. You need at least one provider configured to use Tribal.
 
 ## Inference Providers
 
-You need at least one way to connect to an LLM. Use `triibal model` to switch providers and models interactively, or configure directly:
+You need at least one way to connect to an LLM. Use `tribal model` to switch providers and models interactively, or configure directly:
 
 | Provider | Setup |
 |----------|-------|
-| **Nous Portal** | `triibal model` (OAuth, subscription-based) |
-| **OpenAI Codex** | `triibal model` (ChatGPT OAuth, uses Codex models) |
-| **GitHub Copilot** | `triibal model` (OAuth device code flow, `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `gh auth token`) |
-| **GitHub Copilot ACP** | `triibal model` (spawns local `copilot --acp --stdio`) |
-| **Anthropic** | `triibal model` (Claude Max + extra usage credits via OAuth; also supports Anthropic API key or manual setup-token — see note below) |
-| **OpenRouter** | `OPENROUTER_API_KEY` in `~/.triibal/.env` |
-| **NovitaAI** | `NOVITA_API_KEY` in `~/.triibal/.env` (provider: `novita`, 200+ models, Model API, Agent Sandbox, GPU Cloud) |
-| **z.ai / GLM** | `GLM_API_KEY` in `~/.triibal/.env` (provider: `zai`) |
-| **Kimi / Moonshot** | `KIMI_API_KEY` in `~/.triibal/.env` (provider: `kimi-coding`) |
-| **Kimi / Moonshot (China)** | `KIMI_CN_API_KEY` in `~/.triibal/.env` (provider: `kimi-coding-cn`; aliases: `kimi-cn`, `moonshot-cn`) |
-| **Arcee AI** | `ARCEEAI_API_KEY` in `~/.triibal/.env` (provider: `arcee`; aliases: `arcee-ai`, `arceeai`) |
-| **GMI Cloud** | `GMI_API_KEY` in `~/.triibal/.env` (provider: `gmi`; aliases: `gmi-cloud`, `gmicloud`) |
-| **MiniMax** | `MINIMAX_API_KEY` in `~/.triibal/.env` (provider: `minimax`) |
-| **MiniMax China** | `MINIMAX_CN_API_KEY` in `~/.triibal/.env` (provider: `minimax-cn`) |
-| **xAI (Grok) — Responses API** | `XAI_API_KEY` in `~/.triibal/.env` (provider: `xai`) |
-| **xAI Grok OAuth (SuperGrok)** | `triibal model` → "xAI Grok OAuth (SuperGrok / Premium+)" — browser login, no API key. See [guide](../guides/xai-grok-oauth.md) |
-| **Qwen Cloud (Alibaba DashScope)** | `DASHSCOPE_API_KEY` in `~/.triibal/.env` (provider: `alibaba`) |
+| **Nous Portal** | `tribal model` (OAuth, subscription-based) |
+| **OpenAI Codex** | `tribal model` (ChatGPT OAuth, uses Codex models) |
+| **GitHub Copilot** | `tribal model` (OAuth device code flow, `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `gh auth token`) |
+| **GitHub Copilot ACP** | `tribal model` (spawns local `copilot --acp --stdio`) |
+| **Anthropic** | `tribal model` (Claude Max + extra usage credits via OAuth; also supports Anthropic API key or manual setup-token — see note below) |
+| **OpenRouter** | `OPENROUTER_API_KEY` in `~/.tribal/.env` |
+| **NovitaAI** | `NOVITA_API_KEY` in `~/.tribal/.env` (provider: `novita`, 200+ models, Model API, Agent Sandbox, GPU Cloud) |
+| **z.ai / GLM** | `GLM_API_KEY` in `~/.tribal/.env` (provider: `zai`) |
+| **Kimi / Moonshot** | `KIMI_API_KEY` in `~/.tribal/.env` (provider: `kimi-coding`) |
+| **Kimi / Moonshot (China)** | `KIMI_CN_API_KEY` in `~/.tribal/.env` (provider: `kimi-coding-cn`; aliases: `kimi-cn`, `moonshot-cn`) |
+| **Arcee AI** | `ARCEEAI_API_KEY` in `~/.tribal/.env` (provider: `arcee`; aliases: `arcee-ai`, `arceeai`) |
+| **GMI Cloud** | `GMI_API_KEY` in `~/.tribal/.env` (provider: `gmi`; aliases: `gmi-cloud`, `gmicloud`) |
+| **MiniMax** | `MINIMAX_API_KEY` in `~/.tribal/.env` (provider: `minimax`) |
+| **MiniMax China** | `MINIMAX_CN_API_KEY` in `~/.tribal/.env` (provider: `minimax-cn`) |
+| **xAI (Grok) — Responses API** | `XAI_API_KEY` in `~/.tribal/.env` (provider: `xai`) |
+| **xAI Grok OAuth (SuperGrok)** | `tribal model` → "xAI Grok OAuth (SuperGrok / Premium+)" — browser login, no API key. See [guide](../guides/xai-grok-oauth.md) |
+| **Qwen Cloud (Alibaba DashScope)** | `DASHSCOPE_API_KEY` in `~/.tribal/.env` (provider: `alibaba`) |
 | **Alibaba Cloud (Coding Plan)** | `DASHSCOPE_API_KEY` (provider: `alibaba-coding-plan`, alias: `alibaba_coding`) — separate billing SKU, different endpoint |
-| **Kilo Code** | `KILOCODE_API_KEY` in `~/.triibal/.env` (provider: `kilocode`) |
-| **Xiaomi MiMo** | `XIAOMI_API_KEY` in `~/.triibal/.env` (provider: `xiaomi`, aliases: `mimo`, `xiaomi-mimo`) |
-| **Tencent TokenHub** | `TOKENHUB_API_KEY` in `~/.triibal/.env` (provider: `tencent-tokenhub`, aliases: `tencent`, `tokenhub`, `tencentmaas`) |
-| **OpenCode Zen** | `OPENCODE_ZEN_API_KEY` in `~/.triibal/.env` (provider: `opencode-zen`) |
-| **OpenCode Go** | `OPENCODE_GO_API_KEY` in `~/.triibal/.env` (provider: `opencode-go`) |
-| **DeepSeek** | `DEEPSEEK_API_KEY` in `~/.triibal/.env` (provider: `deepseek`) |
-| **Hugging Face** | `HF_TOKEN` in `~/.triibal/.env` (provider: `huggingface`, aliases: `hf`) |
-| **Google / Gemini** | `GOOGLE_API_KEY` (or `GEMINI_API_KEY`) in `~/.triibal/.env` (provider: `gemini`) |
-| **Google Gemini (OAuth)** | `triibal model` → "Google Gemini (OAuth)" (provider: `google-gemini-cli`, free tier supported, browser PKCE login) |
-| **OpenAI API (direct)** | `OPENAI_API_KEY` in `~/.triibal/.env` (provider: `openai-api`, optional `OPENAI_BASE_URL`) |
-| **Azure AI Foundry** | `triibal model` → "Azure AI Foundry" (provider: `azure-foundry`; uses Azure OpenAI / Foundry endpoint and key) |
-| **AWS Bedrock** | `triibal model` → "AWS Bedrock" (provider: `bedrock`; standard AWS credentials chain via boto3) |
-| **NVIDIA Build** | `NVIDIA_API_KEY` in `~/.triibal/.env` (provider: `nvidia`; NIM-hosted models on build.nvidia.com) |
-| **Ollama Cloud** | `triibal model` → "Ollama Cloud" (provider: `ollama-cloud`; cloud-hosted Ollama API) |
-| **Qwen OAuth** | `triibal model` → "Qwen OAuth" (provider: `qwen-oauth`; browser PKCE login) |
-| **MiniMax OAuth** | `triibal model` → "MiniMax (OAuth)" (provider: `minimax-oauth`; browser PKCE login) |
-| **StepFun** | `STEPFUN_API_KEY` in `~/.triibal/.env` (provider: `stepfun`) |
-| **LM Studio** | `triibal model` → "LM Studio" (provider: `lmstudio`, optional `LM_API_KEY`) |
-| **Custom Endpoint** | `triibal model` → choose "Custom endpoint" (saved in `config.yaml`) |
+| **Kilo Code** | `KILOCODE_API_KEY` in `~/.tribal/.env` (provider: `kilocode`) |
+| **Xiaomi MiMo** | `XIAOMI_API_KEY` in `~/.tribal/.env` (provider: `xiaomi`, aliases: `mimo`, `xiaomi-mimo`) |
+| **Tencent TokenHub** | `TOKENHUB_API_KEY` in `~/.tribal/.env` (provider: `tencent-tokenhub`, aliases: `tencent`, `tokenhub`, `tencentmaas`) |
+| **OpenCode Zen** | `OPENCODE_ZEN_API_KEY` in `~/.tribal/.env` (provider: `opencode-zen`) |
+| **OpenCode Go** | `OPENCODE_GO_API_KEY` in `~/.tribal/.env` (provider: `opencode-go`) |
+| **DeepSeek** | `DEEPSEEK_API_KEY` in `~/.tribal/.env` (provider: `deepseek`) |
+| **Hugging Face** | `HF_TOKEN` in `~/.tribal/.env` (provider: `huggingface`, aliases: `hf`) |
+| **Google / Gemini** | `GOOGLE_API_KEY` (or `GEMINI_API_KEY`) in `~/.tribal/.env` (provider: `gemini`) |
+| **Google Gemini (OAuth)** | `tribal model` → "Google Gemini (OAuth)" (provider: `google-gemini-cli`, free tier supported, browser PKCE login) |
+| **OpenAI API (direct)** | `OPENAI_API_KEY` in `~/.tribal/.env` (provider: `openai-api`, optional `OPENAI_BASE_URL`) |
+| **Azure AI Foundry** | `tribal model` → "Azure AI Foundry" (provider: `azure-foundry`; uses Azure OpenAI / Foundry endpoint and key) |
+| **AWS Bedrock** | `tribal model` → "AWS Bedrock" (provider: `bedrock`; standard AWS credentials chain via boto3) |
+| **NVIDIA Build** | `NVIDIA_API_KEY` in `~/.tribal/.env` (provider: `nvidia`; NIM-hosted models on build.nvidia.com) |
+| **Ollama Cloud** | `tribal model` → "Ollama Cloud" (provider: `ollama-cloud`; cloud-hosted Ollama API) |
+| **Qwen OAuth** | `tribal model` → "Qwen OAuth" (provider: `qwen-oauth`; browser PKCE login) |
+| **MiniMax OAuth** | `tribal model` → "MiniMax (OAuth)" (provider: `minimax-oauth`; browser PKCE login) |
+| **StepFun** | `STEPFUN_API_KEY` in `~/.tribal/.env` (provider: `stepfun`) |
+| **LM Studio** | `tribal model` → "LM Studio" (provider: `lmstudio`, optional `LM_API_KEY`) |
+| **Custom Endpoint** | `tribal model` → choose "Custom endpoint" (saved in `config.yaml`) |
 
 For the official API-key path, see the dedicated [Google Gemini guide](/guides/google-gemini).
 
@@ -61,47 +61,47 @@ In the `model:` config section, you can use either `default:` or `model:` as the
 
 ### Nous Portal
 
-[Nous Portal](https://portal.nousresearch.com) is Nous Research's unified subscription gateway and **the recommended way to run Triibal Agent**. One OAuth login covers 300+ frontier agentic models (Claude, GPT, Gemini, DeepSeek, Qwen, Kimi, GLM, MiniMax, Grok, ...) plus the [Tool Gateway](/user-guide/features/tool-gateway) (web search, image generation, TTS, browser automation) plus [Nous Chat](https://chat.nousresearch.com) — billed against your Nous subscription instead of separate per-provider accounts.
+[Nous Portal](https://portal.nousresearch.com) is Nous Research's unified subscription gateway and **the recommended way to run Tribal Agent**. One OAuth login covers 300+ frontier agentic models (Claude, GPT, Gemini, DeepSeek, Qwen, Kimi, GLM, MiniMax, Grok, ...) plus the [Tool Gateway](/user-guide/features/tool-gateway) (web search, image generation, TTS, browser automation) plus [Nous Chat](https://chat.nousresearch.com) — billed against your Nous subscription instead of separate per-provider accounts.
 
 ```bash
-triibal setup --portal     # fresh install — OAuth + provider + gateway in one command
-triibal model              # existing install — pick "Nous Portal" from the list
-triibal portal status      # inspect login + routing at any time
+tribal setup --portal     # fresh install — OAuth + provider + gateway in one command
+tribal model              # existing install — pick "Nous Portal" from the list
+tribal portal status      # inspect login + routing at any time
 ```
 
 Don't have a subscription yet? Get one at [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription).
 
-**For full details:** see the dedicated [Nous Portal integration page](/integrations/nous-portal) (what's in the subscription, model catalog, troubleshooting) and the step-by-step [Run Triibal Agent with Nous Portal guide](/guides/run-triibal-with-nous-portal).
+**For full details:** see the dedicated [Nous Portal integration page](/integrations/nous-portal) (what's in the subscription, model catalog, troubleshooting) and the step-by-step [Run Tribal Agent with Nous Portal guide](/guides/run-tribal-with-nous-portal).
 
-**Client identification.** Every Portal request from Triibal Agent carries a `client=triibal-client-v<version>` tag (e.g. `client=triibal-client-v0.13.0`) auto-aligned to your installed release. This is sent on all Portal pathways — main chat loop, auxiliary calls, compression summarizer, web extraction — and lets Portal-side telemetry distinguish Triibal traffic from other clients. No config required; the tag updates automatically when you `triibal update`.
+**Client identification.** Every Portal request from Tribal Agent carries a `client=tribal-client-v<version>` tag (e.g. `client=tribal-client-v0.13.0`) auto-aligned to your installed release. This is sent on all Portal pathways — main chat loop, auxiliary calls, compression summarizer, web extraction — and lets Portal-side telemetry distinguish Tribal traffic from other clients. No config required; the tag updates automatically when you `tribal update`.
 
-**JWT auth (automatic).** Triibal prefers scoped `inference:invoke` JWTs for Portal requests with the legacy opaque session-key path as a fallback. No configuration is required — credentials are managed by the OAuth flow and rotate transparently. Revoked refresh tokens are quarantined to avoid replay loops.
+**JWT auth (automatic).** Tribal prefers scoped `inference:invoke` JWTs for Portal requests with the legacy opaque session-key path as a fallback. No configuration is required — credentials are managed by the OAuth flow and rotate transparently. Revoked refresh tokens are quarantined to avoid replay loops.
 
 
 :::info Codex Note
-The OpenAI Codex provider authenticates via device code (open a URL, enter a code). Triibal stores the resulting credentials in its own auth store under `~/.triibal/auth.json` and can import existing Codex CLI credentials from `~/.codex/auth.json` when present. No Codex CLI installation is required.
+The OpenAI Codex provider authenticates via device code (open a URL, enter a code). Tribal stores the resulting credentials in its own auth store under `~/.tribal/auth.json` and can import existing Codex CLI credentials from `~/.codex/auth.json` when present. No Codex CLI installation is required.
 
-If a token refresh fails with a terminal error (HTTP 4xx, `invalid_grant`, revoked grant, etc.), Triibal marks the refresh token as dead and stops replaying it so you don't see a flood of identical auth failures. The next request surfaces a typed re-auth message instead. Run `triibal auth add codex-oauth` (or `triibal model` → OpenAI Codex) to start a fresh device-code login; the quarantine clears on the next successful exchange.
+If a token refresh fails with a terminal error (HTTP 4xx, `invalid_grant`, revoked grant, etc.), Tribal marks the refresh token as dead and stops replaying it so you don't see a flood of identical auth failures. The next request surfaces a typed re-auth message instead. Run `tribal auth add codex-oauth` (or `tribal model` → OpenAI Codex) to start a fresh device-code login; the quarantine clears on the next successful exchange.
 :::
 
 :::warning
-Even when using Nous Portal, Codex, or a custom endpoint, some tools (vision, web summarization, MoA) use a separate "auxiliary" model. By default (`auxiliary.*.provider: "auto"`), Triibal routes these tasks to your **main chat model** — the same model you picked in `triibal model`. You can override each task individually to route it to a cheaper/faster model (e.g. Gemini Flash on OpenRouter) — see [Auxiliary Models](/user-guide/configuration#auxiliary-models).
+Even when using Nous Portal, Codex, or a custom endpoint, some tools (vision, web summarization, MoA) use a separate "auxiliary" model. By default (`auxiliary.*.provider: "auto"`), Tribal routes these tasks to your **main chat model** — the same model you picked in `tribal model`. You can override each task individually to route it to a cheaper/faster model (e.g. Gemini Flash on OpenRouter) — see [Auxiliary Models](/user-guide/configuration#auxiliary-models).
 :::
 
 :::tip Nous Tool Gateway
-Paid Nous Portal subscribers also get access to the **[Tool Gateway](/user-guide/features/tool-gateway)** — web search, image generation, TTS, and browser automation routed through your subscription. No extra API keys needed. On a fresh install, `triibal setup --portal` logs you in, sets Nous as your provider, and turns the gateway on in one command. Existing users can enable it from `triibal model` or per-tool from `triibal tools`. Inspect routing at any time with `triibal portal status`.
+Paid Nous Portal subscribers also get access to the **[Tool Gateway](/user-guide/features/tool-gateway)** — web search, image generation, TTS, and browser automation routed through your subscription. No extra API keys needed. On a fresh install, `tribal setup --portal` logs you in, sets Nous as your provider, and turns the gateway on in one command. Existing users can enable it from `tribal model` or per-tool from `tribal tools`. Inspect routing at any time with `tribal portal status`.
 :::
 
 ### Two Commands for Model Management
 
-Triibal has **two** model commands that serve different purposes:
+Tribal has **two** model commands that serve different purposes:
 
 | Command | Where to run | What it does |
 |---------|-------------|--------------|
-| **`triibal model`** | Your terminal (outside any session) | Full setup wizard — add providers, run OAuth, enter API keys, configure endpoints |
-| **`/model`** | Inside a Triibal chat session | Quick switch between **already-configured** providers and models |
+| **`tribal model`** | Your terminal (outside any session) | Full setup wizard — add providers, run OAuth, enter API keys, configure endpoints |
+| **`/model`** | Inside a Tribal chat session | Quick switch between **already-configured** providers and models |
 
-If you're trying to switch to a provider you haven't set up yet (e.g. you only have OpenRouter configured and want to use Anthropic), you need `triibal model`, not `/model`. Exit your session first (`Ctrl+C` or `/quit`), run `triibal model`, complete the provider setup, then start a new session.
+If you're trying to switch to a provider you haven't set up yet (e.g. you only have OpenRouter configured and want to use Anthropic), you need `tribal model`, not `/model`. Exit your session first (`Ctrl+C` or `/quit`), run `tribal model`, complete the provider setup, then start a new session.
 
 
 ### Anthropic (Native)
@@ -109,7 +109,7 @@ If you're trying to switch to a provider you haven't set up yet (e.g. you only h
 Use Claude models directly through the Anthropic API — no OpenRouter proxy needed. Supports three auth methods:
 
 :::caution Requires Claude Max "extra usage" credits
-When you authenticate via `triibal model` → Anthropic OAuth (or via `triibal auth add anthropic --type oauth`), Triibal routes as Claude Code against your Anthropic account. **It only works if you're on a Claude Max plan and have purchased extra usage credits.** The base Max plan allowance (the usage included in Claude Code by default) is not consumed by Triibal — only the extra/overage credits you've added on top are. Claude Pro subscribers cannot use this path.
+When you authenticate via `tribal model` → Anthropic OAuth (or via `tribal auth add anthropic --type oauth`), Tribal routes as Claude Code against your Anthropic account. **It only works if you're on a Claude Max plan and have purchased extra usage credits.** The base Max plan allowance (the usage included in Claude Code by default) is not consumed by Tribal — only the extra/overage credits you've added on top are. Claude Pro subscribers cannot use this path.
 
 If you don't have Max + extra credits, use an `ANTHROPIC_API_KEY` instead — requests are billed pay-per-token against that key's organization (standard API pricing, independent of any Claude subscription).
 :::
@@ -117,21 +117,21 @@ If you don't have Max + extra credits, use an `ANTHROPIC_API_KEY` instead — re
 ```bash
 # With an API key (pay-per-token)
 export ANTHROPIC_API_KEY=***
-triibal chat --provider anthropic --model claude-sonnet-4-6
+tribal chat --provider anthropic --model claude-sonnet-4-6
 
-# Preferred: authenticate through `triibal model`
-# Triibal will use Claude Code's credential store directly when available
-triibal model
+# Preferred: authenticate through `tribal model`
+# Tribal will use Claude Code's credential store directly when available
+tribal model
 
 # Manual override with a setup-token (fallback / legacy)
 export ANTHROPIC_TOKEN=***  # setup-token or manual OAuth token
-triibal chat --provider anthropic
+tribal chat --provider anthropic
 
 # Auto-detect Claude Code credentials (if you already use Claude Code)
-triibal chat --provider anthropic  # reads Claude Code credential files automatically
+tribal chat --provider anthropic  # reads Claude Code credential files automatically
 ```
 
-When you choose Anthropic OAuth through `triibal model`, Triibal prefers Claude Code's own credential store over copying the token into `~/.triibal/.env`. That keeps refreshable Claude credentials refreshable.
+When you choose Anthropic OAuth through `tribal model`, Tribal prefers Claude Code's own credential store over copying the token into `~/.tribal/.env`. That keeps refreshable Claude credentials refreshable.
 
 Or set it permanently:
 ```yaml
@@ -146,12 +146,12 @@ model:
 
 ### GitHub Copilot
 
-Triibal supports GitHub Copilot as a first-class provider with two modes:
+Tribal supports GitHub Copilot as a first-class provider with two modes:
 
 **`copilot` — Direct Copilot API** (recommended). Uses your GitHub Copilot subscription to access GPT-5.x, Claude, Gemini, and other models through the Copilot API.
 
 ```bash
-triibal chat --provider copilot --model gpt-5.4
+tribal chat --provider copilot --model gpt-5.4
 ```
 
 **Authentication options** (checked in this order):
@@ -161,30 +161,30 @@ triibal chat --provider copilot --model gpt-5.4
 3. `GITHUB_TOKEN` environment variable
 4. `gh auth token` CLI fallback
 
-If no token is found, `triibal model` offers an **OAuth device code login** — the same flow used by the Copilot CLI and opencode.
+If no token is found, `tribal model` offers an **OAuth device code login** — the same flow used by the Copilot CLI and opencode.
 
 :::warning Token types
 The Copilot API does **not** support classic Personal Access Tokens (`ghp_*`). Supported token types:
 
 | Type | Prefix | How to get |
 |------|--------|------------|
-| OAuth token | `gho_` | `triibal model` → GitHub Copilot → Login with GitHub |
+| OAuth token | `gho_` | `tribal model` → GitHub Copilot → Login with GitHub |
 | Fine-grained PAT | `github_pat_` | GitHub Settings → Developer settings → Fine-grained tokens (needs **Copilot Requests** permission) |
 | GitHub App token | `ghu_` | Via GitHub App installation |
 
-If your `gh auth token` returns a `ghp_*` token, use `triibal model` to authenticate via OAuth instead.
+If your `gh auth token` returns a `ghp_*` token, use `tribal model` to authenticate via OAuth instead.
 :::
 
-:::info Copilot auth behavior in Triibal
-Triibal sends a supported GitHub token (`gho_*`, `github_pat_*`, or `ghu_*`) directly to `api.githubcopilot.com` and includes Copilot-specific headers (`Editor-Version`, `Copilot-Integration-Id`, `Openai-Intent`, `x-initiator`).
+:::info Copilot auth behavior in Tribal
+Tribal sends a supported GitHub token (`gho_*`, `github_pat_*`, or `ghu_*`) directly to `api.githubcopilot.com` and includes Copilot-specific headers (`Editor-Version`, `Copilot-Integration-Id`, `Openai-Intent`, `x-initiator`).
 
-On HTTP 401, Triibal now performs a one-shot credential recovery before fallback:
+On HTTP 401, Tribal now performs a one-shot credential recovery before fallback:
 
 1. Re-resolve token via the normal priority chain (`COPILOT_GITHUB_TOKEN` → `GH_TOKEN` → `GITHUB_TOKEN` → `gh auth token`)
 2. Rebuild the shared OpenAI client with refreshed headers
 3. Retry the request once
 
-Some older community proxies use `api.github.com/copilot_internal/v2/token` exchange flows. That endpoint can be unavailable for some account types (returns 404). Triibal therefore keeps direct-token auth as the primary path and relies on runtime credential refresh + retry for robustness.
+Some older community proxies use `api.github.com/copilot_internal/v2/token` exchange flows. That endpoint can be unavailable for some account types (returns 404). Tribal therefore keeps direct-token auth as the primary path and relies on runtime credential refresh + retry for robustness.
 :::
 
 **API routing**: GPT-5+ models (except `gpt-5-mini`) automatically use the Responses API. All other models (GPT-4o, Claude, Gemini, etc.) use Chat Completions. Models are auto-detected from the live Copilot catalog.
@@ -192,7 +192,7 @@ Some older community proxies use `api.github.com/copilot_internal/v2/token` exch
 **`copilot-acp` — Copilot ACP agent backend**. Spawns the local Copilot CLI as a subprocess:
 
 ```bash
-triibal chat --provider copilot-acp --model copilot-acp
+tribal chat --provider copilot-acp --model copilot-acp
 # Requires the GitHub Copilot CLI in PATH and an existing `copilot login` session
 ```
 
@@ -206,8 +206,8 @@ model:
 | Environment variable | Description |
 |---------------------|-------------|
 | `COPILOT_GITHUB_TOKEN` | GitHub token for Copilot API (first priority) |
-| `TRIIBAL_COPILOT_ACP_COMMAND` | Override the Copilot CLI binary path (default: `copilot`) |
-| `TRIIBAL_COPILOT_ACP_ARGS` | Override ACP args (default: `--acp --stdio`) |
+| `TRIBAL_COPILOT_ACP_COMMAND` | Override the Copilot CLI binary path (default: `copilot`) |
+| `TRIBAL_COPILOT_ACP_ARGS` | Override ACP args (default: `--acp --stdio`) |
 
 ### First-Class API-Key Providers
 
@@ -215,49 +215,49 @@ These providers have built-in support with dedicated provider IDs. Set the API k
 
 ```bash
 # NovitaAI Model API
-triibal chat --provider novita --model moonshotai/kimi-k2.5
-# Requires: NOVITA_API_KEY in ~/.triibal/.env
+tribal chat --provider novita --model moonshotai/kimi-k2.5
+# Requires: NOVITA_API_KEY in ~/.tribal/.env
 
 # z.ai / ZhipuAI GLM
-triibal chat --provider zai --model glm-5
-# Requires: GLM_API_KEY in ~/.triibal/.env
+tribal chat --provider zai --model glm-5
+# Requires: GLM_API_KEY in ~/.tribal/.env
 
 # Kimi / Moonshot AI (international: api.moonshot.ai)
-triibal chat --provider kimi-coding --model kimi-for-coding
-# Requires: KIMI_API_KEY in ~/.triibal/.env
+tribal chat --provider kimi-coding --model kimi-for-coding
+# Requires: KIMI_API_KEY in ~/.tribal/.env
 
 # Kimi / Moonshot AI (China: api.moonshot.cn)
-triibal chat --provider kimi-coding-cn --model kimi-k2.5
-# Requires: KIMI_CN_API_KEY in ~/.triibal/.env
+tribal chat --provider kimi-coding-cn --model kimi-k2.5
+# Requires: KIMI_CN_API_KEY in ~/.tribal/.env
 
 # MiniMax (global endpoint)
-triibal chat --provider minimax --model MiniMax-M2.7
-# Requires: MINIMAX_API_KEY in ~/.triibal/.env
+tribal chat --provider minimax --model MiniMax-M2.7
+# Requires: MINIMAX_API_KEY in ~/.tribal/.env
 
 # MiniMax (China endpoint)
-triibal chat --provider minimax-cn --model MiniMax-M2.7
-# Requires: MINIMAX_CN_API_KEY in ~/.triibal/.env
+tribal chat --provider minimax-cn --model MiniMax-M2.7
+# Requires: MINIMAX_CN_API_KEY in ~/.tribal/.env
 
 # Qwen Cloud / DashScope (Qwen models)
-triibal chat --provider alibaba --model qwen3.5-plus
-# Requires: DASHSCOPE_API_KEY in ~/.triibal/.env
+tribal chat --provider alibaba --model qwen3.5-plus
+# Requires: DASHSCOPE_API_KEY in ~/.tribal/.env
 
 # Xiaomi MiMo
-triibal chat --provider xiaomi --model mimo-v2-pro
-# Requires: XIAOMI_API_KEY in ~/.triibal/.env
+tribal chat --provider xiaomi --model mimo-v2-pro
+# Requires: XIAOMI_API_KEY in ~/.tribal/.env
 
 # Tencent TokenHub (Hy3 Preview)
-triibal chat --provider tencent-tokenhub --model hy3-preview
-# Requires: TOKENHUB_API_KEY in ~/.triibal/.env
+tribal chat --provider tencent-tokenhub --model hy3-preview
+# Requires: TOKENHUB_API_KEY in ~/.tribal/.env
 
 # Arcee AI (Trinity models)
-triibal chat --provider arcee --model trinity-large-thinking
-# Requires: ARCEEAI_API_KEY in ~/.triibal/.env
+tribal chat --provider arcee --model trinity-large-thinking
+# Requires: ARCEEAI_API_KEY in ~/.tribal/.env
 
 # GMI Cloud
 # Use the exact model ID returned by GMI's /v1/models endpoint.
-triibal chat --provider gmi --model zai-org/GLM-5.1-FP8
-# Requires: GMI_API_KEY in ~/.triibal/.env
+tribal chat --provider gmi --model zai-org/GLM-5.1-FP8
+# Requires: GMI_API_KEY in ~/.tribal/.env
 ```
 
 Or set the provider permanently in `config.yaml`:
@@ -270,26 +270,26 @@ model:
 Base URLs can be overridden with `NOVITA_BASE_URL`, `GLM_BASE_URL`, `KIMI_BASE_URL`, `MINIMAX_BASE_URL`, `MINIMAX_CN_BASE_URL`, `DASHSCOPE_BASE_URL`, `XIAOMI_BASE_URL`, `GMI_BASE_URL`, or `TOKENHUB_BASE_URL` environment variables.
 
 :::note Z.AI Endpoint Auto-Detection
-When using the Z.AI / GLM provider, Triibal automatically probes multiple endpoints (global, China, coding variants) to find one that accepts your API key. You don't need to set `GLM_BASE_URL` manually — the working endpoint is detected and cached automatically.
+When using the Z.AI / GLM provider, Tribal automatically probes multiple endpoints (global, China, coding variants) to find one that accepts your API key. You don't need to set `GLM_BASE_URL` manually — the working endpoint is detected and cached automatically.
 :::
 
 ### xAI (Grok) — Responses API + Prompt Caching
 
-xAI is wired through the Responses API (`codex_responses` transport) for automatic reasoning support on Grok 4 models — no `reasoning_effort` parameter needed, the server reasons by default. Set `XAI_API_KEY` in `~/.triibal/.env` and pick xAI in `triibal model`, or drop `grok` as a shortcut into `/model grok-4-fast-reasoning`.
+xAI is wired through the Responses API (`codex_responses` transport) for automatic reasoning support on Grok 4 models — no `reasoning_effort` parameter needed, the server reasons by default. Set `XAI_API_KEY` in `~/.tribal/.env` and pick xAI in `tribal model`, or drop `grok` as a shortcut into `/model grok-4-fast-reasoning`.
 
-SuperGrok and X Premium+ subscribers can sign in with browser OAuth instead of using an API key — pick **xAI Grok OAuth (SuperGrok / Premium+)** in `triibal model`, or run `triibal auth add xai-oauth`. The same OAuth bearer token is automatically reused by direct-to-xAI tools (TTS, image gen, video gen, transcription). See the [xAI Grok OAuth guide](../guides/xai-grok-oauth.md) for the full flow — and if Triibal runs on a remote host, also see [OAuth over SSH / Remote Hosts](../guides/oauth-over-ssh.md) for the required `ssh -L` tunnel.
+SuperGrok and X Premium+ subscribers can sign in with browser OAuth instead of using an API key — pick **xAI Grok OAuth (SuperGrok / Premium+)** in `tribal model`, or run `tribal auth add xai-oauth`. The same OAuth bearer token is automatically reused by direct-to-xAI tools (TTS, image gen, video gen, transcription). See the [xAI Grok OAuth guide](../guides/xai-grok-oauth.md) for the full flow — and if Tribal runs on a remote host, also see [OAuth over SSH / Remote Hosts](../guides/oauth-over-ssh.md) for the required `ssh -L` tunnel.
 
-When using xAI as a provider (any base URL containing `x.ai`), Triibal automatically enables prompt caching by sending the `x-grok-conv-id` header with every API request. This routes requests to the same server within a conversation session, allowing xAI's infrastructure to reuse cached system prompts and conversation history.
+When using xAI as a provider (any base URL containing `x.ai`), Tribal automatically enables prompt caching by sending the `x-grok-conv-id` header with every API request. This routes requests to the same server within a conversation session, allowing xAI's infrastructure to reuse cached system prompts and conversation history.
 
 No configuration is needed — caching activates automatically when an xAI endpoint is detected and a session ID is available. This reduces latency and cost for multi-turn conversations.
 
-xAI also ships a dedicated TTS endpoint (`/v1/tts`). Select **xAI TTS** in `triibal tools` → Voice & TTS, or see the [Voice & TTS](../user-guide/features/tts.md#text-to-speech) page for config.
+xAI also ships a dedicated TTS endpoint (`/v1/tts`). Select **xAI TTS** in `tribal tools` → Voice & TTS, or see the [Voice & TTS](../user-guide/features/tts.md#text-to-speech) page for config.
 
-**Retired xAI model migration (May 15, 2026):** xAI is retiring `grok-4*`, `grok-3`, `grok-code-fast-1`, and `grok-imagine-image-pro` on 2026-05-15. `triibal doctor` and `triibal chat` startup both detect any config still pointing at a retired ref and print the recommended replacement. Use `triibal migrate xai` for a one-shot config rewrite — dry-run by default, add `--apply` to write changes (a timestamped `config.yaml.bak-pre-migrate-xai-*` backup is created automatically).
+**Retired xAI model migration (May 15, 2026):** xAI is retiring `grok-4*`, `grok-3`, `grok-code-fast-1`, and `grok-imagine-image-pro` on 2026-05-15. `tribal doctor` and `tribal chat` startup both detect any config still pointing at a retired ref and print the recommended replacement. Use `tribal migrate xai` for a one-shot config rewrite — dry-run by default, add `--apply` to write changes (a timestamped `config.yaml.bak-pre-migrate-xai-*` backup is created automatically).
 
 ```bash
-triibal migrate xai          # preview replacements
-triibal migrate xai --apply  # rewrite ~/.triibal/config.yaml in place
+tribal migrate xai          # preview replacements
+tribal migrate xai --apply  # rewrite ~/.tribal/config.yaml in place
 ```
 
 **xAI Web Search backend.** When the [Web Search](../user-guide/features/web-search.md) toolset is enabled, `web.backend: xai` routes search through xAI's hosted search endpoint using the same `XAI_API_KEY` / OAuth credentials. No additional setup required if xAI is already configured as a provider.
@@ -300,11 +300,11 @@ triibal migrate xai --apply  # rewrite ~/.triibal/config.yaml in place
 
 ```bash
 # Use any available model
-triibal chat --provider novita --model moonshotai/kimi-k2.5
-# Requires: NOVITA_API_KEY in ~/.triibal/.env
+tribal chat --provider novita --model moonshotai/kimi-k2.5
+# Requires: NOVITA_API_KEY in ~/.tribal/.env
 
 # Short alias
-triibal chat --provider novita-ai --model deepseek/deepseek-v3-0324
+tribal chat --provider novita-ai --model deepseek/deepseek-v3-0324
 ```
 
 Or set it permanently in `config.yaml`:
@@ -319,10 +319,10 @@ Get your API key at [novita.ai/settings/key-management](https://novita.ai/settin
 
 ### Ollama Cloud — Managed Ollama Models, OAuth + API Key
 
-[Ollama Cloud](https://ollama.com/cloud) hosts the same open-weight catalog as local Ollama but without the GPU requirement. Pick it in `triibal model` as **Ollama Cloud**, paste your API key from [ollama.com/settings/keys](https://ollama.com/settings/keys), and Triibal auto-discovers the available models.
+[Ollama Cloud](https://ollama.com/cloud) hosts the same open-weight catalog as local Ollama but without the GPU requirement. Pick it in `tribal model` as **Ollama Cloud**, paste your API key from [ollama.com/settings/keys](https://ollama.com/settings/keys), and Tribal auto-discovers the available models.
 
 ```bash
-triibal model
+tribal model
 # → pick "Ollama Cloud"
 # → paste your OLLAMA_API_KEY
 # → select from discovered models (gpt-oss:120b, glm-4.6:cloud, qwen3-coder:480b-cloud, etc.)
@@ -347,10 +347,10 @@ Anthropic Claude, Amazon Nova, DeepSeek v3.2, Meta Llama 4, and other models via
 
 ```bash
 # Simplest — named profile in ~/.aws/credentials
-triibal chat --provider bedrock --model us.anthropic.claude-sonnet-4-6
+tribal chat --provider bedrock --model us.anthropic.claude-sonnet-4-6
 
 # Or with explicit env vars
-AWS_PROFILE=myprofile AWS_REGION=us-east-1 triibal chat --provider bedrock --model us.anthropic.claude-sonnet-4-6
+AWS_PROFILE=myprofile AWS_REGION=us-east-1 tribal chat --provider bedrock --model us.anthropic.claude-sonnet-4-6
 ```
 
 Or permanently in `config.yaml`:
@@ -375,15 +375,15 @@ See the [AWS Bedrock guide](/guides/aws-bedrock) for a walkthrough of IAM setup,
 
 ### Qwen Portal (OAuth)
 
-Alibaba's Qwen Portal with browser-based OAuth login. Pick **Qwen OAuth (Portal)** in `triibal model`, sign in through the browser, and Triibal persists the refresh token.
+Alibaba's Qwen Portal with browser-based OAuth login. Pick **Qwen OAuth (Portal)** in `tribal model`, sign in through the browser, and Tribal persists the refresh token.
 
 ```bash
-triibal model
+tribal model
 # → pick "Qwen OAuth (Portal)"
 # → browser opens; sign in with your Alibaba account
-# → confirm — credentials are saved to ~/.triibal/auth.json
+# → confirm — credentials are saved to ~/.tribal/auth.json
 
-triibal chat   # uses portal.qwen.ai/v1 endpoint
+tribal chat   # uses portal.qwen.ai/v1 endpoint
 ```
 
 Or configure `config.yaml`:
@@ -393,7 +393,7 @@ model:
   default: "qwen3-coder-plus"
 ```
 
-Set `TRIIBAL_QWEN_BASE_URL` only if the portal endpoint relocates (default: `https://portal.qwen.ai/v1`).
+Set `TRIBAL_QWEN_BASE_URL` only if the portal endpoint relocates (default: `https://portal.qwen.ai/v1`).
 
 :::tip Qwen OAuth vs Qwen Cloud (Alibaba DashScope)
 `qwen-oauth` uses the consumer-facing Qwen Portal with OAuth login — ideal for individual users. The `alibaba` provider uses Qwen Cloud (Alibaba DashScope) with a `DASHSCOPE_API_KEY` — ideal for programmatic / production workloads. Both route to Qwen-family models but live at different endpoints.
@@ -401,7 +401,7 @@ Set `TRIIBAL_QWEN_BASE_URL` only if the portal endpoint relocates (default: `htt
 
 ### Alibaba Cloud (Coding Plan)
 
-If you're subscribed to Alibaba's **Coding Plan** (a pricing SKU separate from standard DashScope API access), Triibal exposes it as its own first-class provider: `alibaba-coding-plan`. Endpoint: `https://coding-intl.dashscope.aliyuncs.com/v1`. It's OpenAI-compatible like the regular `alibaba` provider but with a different base URL and billing surface.
+If you're subscribed to Alibaba's **Coding Plan** (a pricing SKU separate from standard DashScope API access), Tribal exposes it as its own first-class provider: `alibaba-coding-plan`. Endpoint: `https://coding-intl.dashscope.aliyuncs.com/v1`. It's OpenAI-compatible like the regular `alibaba` provider but with a different base URL and billing surface.
 
 ```yaml
 model:
@@ -412,22 +412,22 @@ model:
 Or from the CLI:
 
 ```bash
-triibal chat --provider alibaba_coding --model qwen3-coder-plus
+tribal chat --provider alibaba_coding --model qwen3-coder-plus
 ```
 
 `alibaba_coding` uses the same `DASHSCOPE_API_KEY` your `alibaba` entry already uses — no separate key needed, just a different routing target. Before this provider was registered, users who set `provider: alibaba_coding` in `config.yaml` silently fell through to OpenRouter routing.
 
 ### MiniMax (OAuth)
 
-MiniMax-M2.7 via browser OAuth login — no API key needed. Pick **MiniMax (OAuth)** in `triibal model`, sign in through the browser, and Triibal persists the access + refresh tokens. Uses the Anthropic Messages-compatible endpoint (`/anthropic`) under the hood.
+MiniMax-M2.7 via browser OAuth login — no API key needed. Pick **MiniMax (OAuth)** in `tribal model`, sign in through the browser, and Tribal persists the access + refresh tokens. Uses the Anthropic Messages-compatible endpoint (`/anthropic`) under the hood.
 
 ```bash
-triibal model
+tribal model
 # → pick "MiniMax (OAuth)"
 # → browser opens; sign in with your MiniMax account (global or CN region)
-# → confirm — credentials are saved to ~/.triibal/auth.json
+# → confirm — credentials are saved to ~/.tribal/auth.json
 
-triibal chat   # uses api.minimax.io/anthropic endpoint
+tribal chat   # uses api.minimax.io/anthropic endpoint
 ```
 
 Or configure `config.yaml`:
@@ -449,11 +449,11 @@ Nemotron and other open source models via [build.nvidia.com](https://build.nvidi
 
 ```bash
 # Cloud (build.nvidia.com)
-triibal chat --provider nvidia --model nvidia/nemotron-3-super-120b-a12b
-# Requires: NVIDIA_API_KEY in ~/.triibal/.env
+tribal chat --provider nvidia --model nvidia/nemotron-3-super-120b-a12b
+# Requires: NVIDIA_API_KEY in ~/.tribal/.env
 
 # Local NIM endpoint — override base URL
-NVIDIA_BASE_URL=http://localhost:8000/v1 triibal chat --provider nvidia --model nvidia/nemotron-3-super-120b-a12b
+NVIDIA_BASE_URL=http://localhost:8000/v1 tribal chat --provider nvidia --model nvidia/nemotron-3-super-120b-a12b
 ```
 
 Or set it permanently in `config.yaml`:
@@ -467,7 +467,7 @@ model:
 For on-prem deployments (DGX Spark, local GPU), set `NVIDIA_BASE_URL=http://localhost:8000/v1`. NIM exposes the same OpenAI-compatible chat completions API as build.nvidia.com, so switching between cloud and local is a one-line env-var change.
 :::
 
-Triibal automatically attaches the NIM billing-origin header on every request to `build.nvidia.com` — no configuration needed. This routes consumption against the correct origin in NVIDIA's billing dashboard.
+Tribal automatically attaches the NIM billing-origin header on every request to `build.nvidia.com` — no configuration needed. This routes consumption against the correct origin in NVIDIA's billing dashboard.
 
 ### GMI Cloud
 
@@ -475,8 +475,8 @@ Open and reasoning models via [GMI Cloud](https://www.gmicloud.ai/) — OpenAI-c
 
 ```bash
 # GMI Cloud
-triibal chat --provider gmi --model deepseek-ai/DeepSeek-V3.2
-# Requires: GMI_API_KEY in ~/.triibal/.env
+tribal chat --provider gmi --model deepseek-ai/DeepSeek-V3.2
+# Requires: GMI_API_KEY in ~/.tribal/.env
 ```
 
 Or set it permanently in `config.yaml`:
@@ -494,8 +494,8 @@ Step-series models via [StepFun](https://platform.stepfun.com) — OpenAI-compat
 
 ```bash
 # StepFun
-triibal chat --provider stepfun --model step-3-mini
-# Requires: STEPFUN_API_KEY in ~/.triibal/.env
+tribal chat --provider stepfun --model step-3-mini
+# Requires: STEPFUN_API_KEY in ~/.tribal/.env
 ```
 
 Or set it permanently in `config.yaml`:
@@ -513,11 +513,11 @@ The base URL can be overridden with `STEPFUN_BASE_URL` (default: `https://api.st
 
 ```bash
 # Use any available model
-triibal chat --provider huggingface --model Qwen/Qwen3.5-397B-A17B
-# Requires: HF_TOKEN in ~/.triibal/.env
+tribal chat --provider huggingface --model Qwen/Qwen3.5-397B-A17B
+# Requires: HF_TOKEN in ~/.tribal/.env
 
 # Short alias
-triibal chat --provider hf --model deepseek-ai/DeepSeek-V3.2
+tribal chat --provider hf --model deepseek-ai/DeepSeek-V3.2
 ```
 
 Or set it permanently in `config.yaml`:
@@ -543,14 +543,14 @@ same API that Google's own `gemini-cli` tool uses. This supports both the
 **Quick start:**
 
 ```bash
-triibal model
+tribal model
 # → pick "Google Gemini (OAuth)"
 # → see policy warning, confirm
 # → browser opens to accounts.google.com, sign in
-# → done — Triibal auto-provisions your free tier on first request
+# → done — Tribal auto-provisions your free tier on first request
 ```
 
-Triibal ships Google's **public** `gemini-cli` desktop OAuth client by default —
+Tribal ships Google's **public** `gemini-cli` desktop OAuth client by default —
 the same credentials Google includes in their open-source `gemini-cli`. Desktop
 OAuth clients are not confidential (PKCE provides the security). You do not
 need to install `gemini-cli` or register your own GCP OAuth client.
@@ -558,9 +558,9 @@ need to install `gemini-cli` or register your own GCP OAuth client.
 **How auth works:**
 - PKCE Authorization Code flow against `accounts.google.com`
 - Browser callback at `http://127.0.0.1:8085/oauth2callback` (with ephemeral-port fallback if busy)
-- Tokens stored at `~/.triibal/auth/google_oauth.json` (chmod 0600, atomic write, cross-process `fcntl` lock)
+- Tokens stored at `~/.tribal/auth/google_oauth.json` (chmod 0600, atomic write, cross-process `fcntl` lock)
 - Automatic refresh 60 s before expiry
-- Headless environments (SSH, `TRIIBAL_HEADLESS=1`) → paste-mode fallback
+- Headless environments (SSH, `TRIBAL_HEADLESS=1`) → paste-mode fallback
 - Inflight refresh deduplication — two concurrent requests won't double-refresh
 - `invalid_grant` (revoked refresh) → credential file wiped, user prompted to re-login
 
@@ -570,15 +570,15 @@ need to install `gemini-cli` or register your own GCP OAuth client.
 - Request body wrapped `{project, model, user_prompt_id, request}`
 - OpenAI-shaped `messages[]`, `tools[]`, `tool_choice` are translated to Gemini's native
   `contents[]`, `tools[].functionDeclarations`, `toolConfig` shape
-- Responses translated back to OpenAI shape so the rest of Triibal works unchanged
+- Responses translated back to OpenAI shape so the rest of Tribal works unchanged
 
 **Tiers & project IDs:**
 
 | Your situation | What to do |
 |---|---|
 | Personal Google account, want free tier | Nothing — sign in, start chatting |
-| Workspace / Standard / Enterprise account | Set `TRIIBAL_GEMINI_PROJECT_ID` or `GOOGLE_CLOUD_PROJECT` to your GCP project ID |
-| VPC-SC-protected org | Triibal detects `SECURITY_POLICY_VIOLATED` and forces `standard-tier` automatically |
+| Workspace / Standard / Enterprise account | Set `TRIBAL_GEMINI_PROJECT_ID` or `GOOGLE_CLOUD_PROJECT` to your GCP project ID |
+| VPC-SC-protected org | Tribal detects `SECURITY_POLICY_VIOLATED` and forces `standard-tier` automatically |
 
 Free tier auto-provisions a Google-managed project on first use. No GCP setup required.
 
@@ -600,7 +600,7 @@ Gemini Code Assist quota  (project: 123-abc)
 :::warning Policy risk
 Google considers using the Gemini CLI OAuth client with third-party software a
 policy violation. Some users have reported account restrictions. For the lowest-risk
-experience, use your own API key via the `gemini` provider instead. Triibal shows
+experience, use your own API key via the `gemini` provider instead. Tribal shows
 an upfront warning and requires explicit confirmation before OAuth begins.
 :::
 
@@ -610,8 +610,8 @@ If you'd rather register your own Google OAuth client — e.g., to keep quota
 and consent scoped to your own GCP project — set:
 
 ```bash
-TRIIBAL_GEMINI_CLIENT_ID=your-client.apps.googleusercontent.com
-TRIIBAL_GEMINI_CLIENT_SECRET=...   # optional for Desktop clients
+TRIBAL_GEMINI_CLIENT_ID=your-client.apps.googleusercontent.com
+TRIBAL_GEMINI_CLIENT_SECRET=...   # optional for Desktop clients
 ```
 
 Register a **Desktop app** OAuth client at
@@ -620,7 +620,7 @@ with the Generative Language API enabled.
 
 ## Custom & Self-Hosted LLM Providers
 
-Triibal Agent works with **any OpenAI-compatible API endpoint**. If a server implements `/v1/chat/completions`, you can point Triibal at it. This means you can use local models, GPU inference servers, multi-provider routers, or any third-party API.
+Tribal Agent works with **any OpenAI-compatible API endpoint**. If a server implements `/v1/chat/completions`, you can point Tribal at it. This means you can use local models, GPU inference servers, multi-provider routers, or any third-party API.
 
 ### General Setup
 
@@ -628,14 +628,14 @@ Three ways to configure a custom endpoint:
 
 **Interactive setup (recommended):**
 ```bash
-triibal model
+tribal model
 # Select "Custom endpoint (self-hosted / VLLM / etc.)"
 # Enter: API base URL, API key, Model name
 ```
 
 **Manual config (`config.yaml`):**
 ```yaml
-# In ~/.triibal/config.yaml
+# In ~/.tribal/config.yaml
 model:
   default: your-model-name
   provider: custom
@@ -644,19 +644,19 @@ model:
 ```
 
 :::warning Legacy env vars
-`LLM_MODEL` in `.env` is **removed** — `config.yaml` is the single source of truth for model and endpoint configuration. `OPENAI_BASE_URL` is still honored, but **only** for the `openai-api` provider (it overrides the OpenAI endpoint for direct API-key access). For other providers and custom endpoints, use `triibal model` or set `model.base_url` in `config.yaml` directly. If you have stale entries in your `.env`, they are automatically cleared on the next `triibal setup` or config migration.
+`LLM_MODEL` in `.env` is **removed** — `config.yaml` is the single source of truth for model and endpoint configuration. `OPENAI_BASE_URL` is still honored, but **only** for the `openai-api` provider (it overrides the OpenAI endpoint for direct API-key access). For other providers and custom endpoints, use `tribal model` or set `model.base_url` in `config.yaml` directly. If you have stale entries in your `.env`, they are automatically cleared on the next `tribal setup` or config migration.
 :::
 
 Both approaches persist to `config.yaml`, which is the source of truth for model, provider, and base URL.
 
 ### Switching Models with `/model`
 
-:::warning triibal model vs /model
-**`triibal model`** (run from your terminal, outside any chat session) is the **full provider setup wizard**. Use it to add new providers, run OAuth flows, enter API keys, and configure custom endpoints.
+:::warning tribal model vs /model
+**`tribal model`** (run from your terminal, outside any chat session) is the **full provider setup wizard**. Use it to add new providers, run OAuth flows, enter API keys, and configure custom endpoints.
 
-**`/model`** (typed inside an active Triibal chat session) can only **switch between providers and models you've already set up**. It cannot add new providers, run OAuth, or prompt for API keys. If you've only configured one provider (e.g. OpenRouter), `/model` will only show models for that provider.
+**`/model`** (typed inside an active Tribal chat session) can only **switch between providers and models you've already set up**. It cannot add new providers, run OAuth, or prompt for API keys. If you've only configured one provider (e.g. OpenRouter), `/model` will only show models for that provider.
 
-**To add a new provider:** Exit your session (`Ctrl+C` or `/quit`), run `triibal model`, set up the new provider, then start a new session.
+**To add a new provider:** Exit your session (`Ctrl+C` or `/quit`), run `tribal model`, set up the new provider, then start a new session.
 :::
 
 Once you have at least one custom endpoint configured, you can switch models mid-session:
@@ -674,7 +674,7 @@ If you have **named custom providers** configured (see below), use the triple sy
 /model custom:work:llama3       # Use the "work" custom provider with llama3
 ```
 
-When switching providers, Triibal persists the base URL and provider to config so the change survives restarts. When switching away from a custom endpoint to a built-in provider, the stale base URL is automatically cleared.
+When switching providers, Tribal persists the base URL and provider to config so the change survives restarts. When switching away from a custom endpoint to a built-in provider, the stale base URL is automatically cleared.
 
 :::tip
 `/model custom` (bare, no model name) queries your endpoint's `/models` API and auto-selects the model if exactly one is loaded. Useful for local servers running a single model.
@@ -694,10 +694,10 @@ ollama pull qwen2.5-coder:32b
 ollama serve   # Starts on port 11434
 ```
 
-Then configure Triibal:
+Then configure Tribal:
 
 ```bash
-triibal model
+tribal model
 # Select "Custom endpoint (self-hosted / VLLM / etc.)"
 # Enter URL: http://localhost:11434/v1
 # Skip API key (Ollama doesn't need one)
@@ -723,7 +723,7 @@ Ollama does **not** use your model's full context window by default. Depending o
 | 24–48 GB | 32,768 tokens |
 | 48+ GB | 256,000 tokens |
 
-Triibal Agent requires at least **64,000 tokens** of context for agent use with tools. Smaller windows are rejected at startup because the system prompt, tool schemas, and working conversation state need enough room for reliable multi-step workflows.
+Tribal Agent requires at least **64,000 tokens** of context for agent use with tools. Smaller windows are rejected at startup because the system prompt, tool schemas, and working conversation state need enough room for reliable multi-step workflows.
 
 **How to increase it** (pick one):
 
@@ -741,7 +741,7 @@ echo -e "FROM qwen2.5-coder:32b\nPARAMETER num_ctx 64000" > Modelfile
 ollama create qwen2.5-coder-64k -f Modelfile
 ```
 
-**You cannot set context length through the OpenAI-compatible API** (`/v1/chat/completions`). It must be configured server-side or via a Modelfile. This is the #1 source of confusion when integrating Ollama with tools like Triibal.
+**You cannot set context length through the OpenAI-compatible API** (`/v1/chat/completions`). It must be configured server-side or via a Modelfile. This is the #1 source of confusion when integrating Ollama with tools like Tribal.
 :::
 
 **Verify your context is set correctly:**
@@ -768,13 +768,13 @@ vllm serve meta-llama/Llama-3.1-70B-Instruct \
   --max-model-len 65536 \
   --tensor-parallel-size 2 \
   --enable-auto-tool-choice \
-  --tool-call-parser triibal
+  --tool-call-parser tribal
 ```
 
-Then configure Triibal:
+Then configure Tribal:
 
 ```bash
-triibal model
+tribal model
 # Select "Custom endpoint (self-hosted / VLLM / etc.)"
 # Enter URL: http://localhost:8000/v1
 # Skip API key (or enter one if you configured vLLM with --api-key)
@@ -787,10 +787,10 @@ triibal model
 
 | Flag | Purpose |
 |------|---------|
-| `--enable-auto-tool-choice` | Required for `tool_choice: "auto"` (the default in Triibal) |
+| `--enable-auto-tool-choice` | Required for `tool_choice: "auto"` (the default in Tribal) |
 | `--tool-call-parser <name>` | Parser for the model's tool call format |
 
-Supported parsers: `triibal` (Qwen 2.5, Triibal 2/3), `llama3_json` (Llama 3.x), `mistral`, `deepseek_v3`, `deepseek_v31`, `xlam`, `pythonic`. Without these flags, tool calls won't work — the model will output tool calls as text.
+Supported parsers: `tribal` (Qwen 2.5, Tribal 2/3), `llama3_json` (Llama 3.x), `mistral`, `deepseek_v3`, `deepseek_v31`, `xlam`, `pythonic`. Without these flags, tool calls won't work — the model will output tool calls as text.
 
 :::tip
 vLLM supports human-readable sizes: `--max-model-len 64k` (lowercase k = 1000, uppercase K = 1024).
@@ -812,10 +812,10 @@ python -m sglang.launch_server \
   --tool-call-parser qwen
 ```
 
-Then configure Triibal:
+Then configure Tribal:
 
 ```bash
-triibal model
+tribal model
 # Select "Custom endpoint (self-hosted / VLLM / etc.)"
 # Enter URL: http://localhost:30000/v1
 # Enter model name: meta-llama/Llama-3.1-70B-Instruct
@@ -846,12 +846,12 @@ cmake -B build && cmake --build build --config Release
   --port 8080 --host 0.0.0.0
 ```
 
-**Context length (`-c`):** Recent builds default to `0` which reads the model's training context from the GGUF metadata. For models with 128k+ training context, this can OOM trying to allocate the full KV cache. Set `-c` explicitly to at least 64,000 tokens for Triibal. If using parallel slots (`-np`), the total context is divided among slots — with `-c 64000 -np 4`, each slot only gets 16k, which is below Triibal' minimum per active session.
+**Context length (`-c`):** Recent builds default to `0` which reads the model's training context from the GGUF metadata. For models with 128k+ training context, this can OOM trying to allocate the full KV cache. Set `-c` explicitly to at least 64,000 tokens for Tribal. If using parallel slots (`-np`), the total context is divided among slots — with `-c 64000 -np 4`, each slot only gets 16k, which is below Tribal' minimum per active session.
 
-Then configure Triibal to point at it:
+Then configure Tribal to point at it:
 
 ```bash
-triibal model
+tribal model
 # Select "Custom endpoint (self-hosted / VLLM / etc.)"
 # Enter URL: http://localhost:8080/v1
 # Skip API key (local servers don't need one)
@@ -861,9 +861,9 @@ triibal model
 This saves the endpoint to `config.yaml` so it persists across sessions.
 
 :::caution `--jinja` is required for tool calling
-Without `--jinja`, llama-server ignores the `tools` parameter entirely. The model will try to call tools by writing JSON in its response text, but Triibal won't recognize it as a tool call — you'll see raw JSON like `{"name": "web_search", ...}` printed as a message instead of an actual search.
+Without `--jinja`, llama-server ignores the `tools` parameter entirely. The model will try to call tools by writing JSON in its response text, but Tribal won't recognize it as a tool call — you'll see raw JSON like `{"name": "web_search", ...}` printed as a message instead of an actual search.
 
-Native tool calling support (best performance): Llama 3.x, Qwen 2.5 (including Coder), Triibal 2/3, Mistral, DeepSeek, Functionary. All other models use a generic handler that works but may be less efficient. See the [llama.cpp function calling docs](https://github.com/ggml-org/llama.cpp/blob/master/docs/function-calling.md) for the full list.
+Native tool calling support (best performance): Llama 3.x, Qwen 2.5 (including Coder), Tribal 2/3, Mistral, DeepSeek, Functionary. All other models use a generic handler that works but may be less efficient. See the [llama.cpp function calling docs](https://github.com/ggml-org/llama.cpp/blob/master/docs/function-calling.md) for the full list.
 
 You can verify tool support is active by checking `http://localhost:8080/props` — the `chat_template` field should be present.
 :::
@@ -885,17 +885,17 @@ lms server start                        # Starts on port 1234
 lms load qwen2.5-coder --context-length 64000
 ```
 
-Then configure Triibal:
+Then configure Tribal:
 
 ```bash
-triibal model
+tribal model
 # Select "LM Studio"
 # Press Enter to use http://localhost:1234/v1
 # Pick one of the discovered models
 # If LM Studio server auth is enabled, enter LM_API_KEY when prompted
 ```
 
-Triibal will automatically load a LM Studio model with 64K context length
+Tribal will automatically load a LM Studio model with 64K context length
 
 To change context length in LM Studio:
 
@@ -911,13 +911,13 @@ You can use the CLI to estimate if the model will fit: `lms load model-name --co
 To set persistent per-model defaults: My Models tab → gear icon on the model → set context size.
 :::
 
-**Tool calling:** Supported since LM Studio 0.3.6. Models with native tool-calling training (Qwen 2.5, Llama 3.x, Mistral, Triibal) are auto-detected and shown with a tool badge. Other models use a generic fallback that may be less reliable.
+**Tool calling:** Supported since LM Studio 0.3.6. Models with native tool-calling training (Qwen 2.5, Llama 3.x, Mistral, Tribal) are auto-detected and shown with a tool badge. Other models use a generic fallback that may be less reliable.
 
 ---
 
 ### WSL2 Networking (Windows Users)
 
-Since Triibal Agent requires a Unix environment, Windows users run it inside WSL2. If your model server (Ollama, LM Studio, etc.) runs on the **Windows host**, you need to bridge the network gap — WSL2 uses a virtual network adapter with its own subnet, so `localhost` inside WSL2 refers to the Linux VM, **not** the Windows host.
+Since Tribal Agent requires a Unix environment, Windows users run it inside WSL2. If your model server (Ollama, LM Studio, etc.) runs on the **Windows host**, you need to bridge the network gap — WSL2 uses a virtual network adapter with its own subnet, so `localhost` inside WSL2 refers to the Linux VM, **not** the Windows host.
 
 :::tip Both in WSL2? No problem.
 If your model server also runs inside WSL2 (common for vLLM, SGLang, and llama-server), `localhost` works as expected — they share the same network namespace. Skip this section.
@@ -960,7 +960,7 @@ ip route show | grep -i default | awk '{ print $3 }'
 # Example output: 172.29.192.1
 ```
 
-Use that IP in your Triibal config:
+Use that IP in your Tribal config:
 
 ```yaml
 model:
@@ -1022,17 +1022,17 @@ curl http://localhost:11434/v1/models          # Mirrored mode
 curl http://172.29.192.1:11434/v1/models       # NAT mode (use your actual host IP)
 ```
 
-If you get a JSON response listing your models, you're good. Use that same URL as the `base_url` in your Triibal config.
+If you get a JSON response listing your models, you're good. Use that same URL as the `base_url` in your Tribal config.
 
 ---
 
 ### Troubleshooting Local Models
 
-These issues affect **all** local inference servers when used with Triibal.
+These issues affect **all** local inference servers when used with Tribal.
 
 #### "Connection refused" from WSL2 to a Windows-hosted model server
 
-If you're running Triibal inside WSL2 and your model server on the Windows host, `http://localhost:<port>` won't work in WSL2's default NAT networking mode. See [WSL2 Networking](#wsl2-networking-windows-users) above for the fix.
+If you're running Tribal inside WSL2 and your model server on the Windows host, `http://localhost:<port>` won't work in WSL2's default NAT networking mode. See [WSL2 Networking](#wsl2-networking-windows-users) above for the fix.
 
 #### Tool calls appear as text instead of executing
 
@@ -1043,19 +1043,19 @@ The model outputs something like `{"name": "web_search", "arguments": {...}}` as
 | Server | Fix |
 |--------|-----|
 | **llama.cpp** | Add `--jinja` to the startup command |
-| **vLLM** | Add `--enable-auto-tool-choice --tool-call-parser triibal` |
+| **vLLM** | Add `--enable-auto-tool-choice --tool-call-parser tribal` |
 | **SGLang** | Add `--tool-call-parser qwen` (or appropriate parser) |
 | **Ollama** | Tool calling is enabled by default — make sure your model supports it (check with `ollama show model-name`) |
 | **LM Studio** | Update to 0.3.6+ and use a model with native tool support |
 
 #### Model seems to forget context or give incoherent responses
 
-**Cause:** Context window is too small. When the conversation exceeds the context limit, most servers silently drop older messages. Triibal's system prompt + tool schemas alone can use 4k–8k tokens.
+**Cause:** Context window is too small. When the conversation exceeds the context limit, most servers silently drop older messages. Tribal's system prompt + tool schemas alone can use 4k–8k tokens.
 
 **Diagnosis:**
 
 ```bash
-# Check what Triibal thinks the context is
+# Check what Tribal thinks the context is
 # Look at startup line: "Context limit: X tokens"
 
 # Check your server's actual context
@@ -1068,7 +1068,7 @@ The model outputs something like `{"name": "web_search", "arguments": {...}}` as
 
 #### "Context limit: 2048 tokens" at startup
 
-Triibal auto-detects context length from your server's `/v1/models` endpoint. If the server reports a low value (or doesn't report one at all), Triibal uses the model's declared limit which may be wrong.
+Tribal auto-detects context length from your server's `/v1/models` endpoint. If the server reports a low value (or doesn't report one at all), Tribal uses the model's declared limit which may be wrong.
 
 **Fix:** Set it explicitly in `config.yaml`:
 
@@ -1083,8 +1083,8 @@ model:
 #### Responses get cut off mid-sentence
 
 **Possible causes:**
-1. **Low output cap (`max_tokens`) on the server** — SGLang defaults to 128 tokens per response. Set `--default-max-tokens` on the server or configure Triibal with `model.max_tokens` in config.yaml. Note: `max_tokens` controls response length only — it is unrelated to how long your conversation history can be (that is `context_length`).
-2. **Context exhaustion** — The model filled its context window. Increase `model.context_length` or enable [context compression](/user-guide/configuration#context-compression) in Triibal.
+1. **Low output cap (`max_tokens`) on the server** — SGLang defaults to 128 tokens per response. Set `--default-max-tokens` on the server or configure Tribal with `model.max_tokens` in config.yaml. Note: `max_tokens` controls response length only — it is unrelated to how long your conversation history can be (that is `context_length`).
+2. **Context exhaustion** — The model filled its context window. Increase `model.context_length` or enable [context compression](/user-guide/configuration#context-compression) in Tribal.
 
 ---
 
@@ -1101,7 +1101,7 @@ litellm --model anthropic/claude-sonnet-4 --port 4000
 litellm --config litellm_config.yaml --port 4000
 ```
 
-Then configure Triibal with `triibal model` → Custom endpoint → `http://localhost:4000/v1`.
+Then configure Tribal with `tribal model` → Custom endpoint → `http://localhost:4000/v1`.
 
 Example `litellm_config.yaml` with fallback:
 ```yaml
@@ -1129,7 +1129,7 @@ router_settings:
 npx @blockrun/clawrouter    # Starts on port 8402
 ```
 
-Then configure Triibal with `triibal model` → Custom endpoint → `http://localhost:8402/v1` → model name `blockrun/auto`.
+Then configure Tribal with `tribal model` → Custom endpoint → `http://localhost:8402/v1` → model name `blockrun/auto`.
 
 Routing profiles:
 | Profile | Strategy | Savings |
@@ -1164,7 +1164,7 @@ Any service with an OpenAI-compatible API works. Some popular options:
 | [LocalAI](https://localai.io) | `http://localhost:8080/v1` | Self-hosted, multi-model |
 | [Jan](https://jan.ai) | `http://localhost:1337/v1` | Desktop app with local models |
 
-Configure any of these with `triibal model` → Custom endpoint, or in `config.yaml`:
+Configure any of these with `tribal model` → Custom endpoint, or in `config.yaml`:
 
 ```yaml
 model:
@@ -1179,7 +1179,7 @@ model:
 ### Context Length Detection
 
 :::note Two settings, easy to confuse
-**`context_length`** is the **total context window** — the combined budget for input *and* output tokens (e.g. 200,000 for Claude Opus 4.6). Triibal uses this to decide when to compress history and to validate API requests.
+**`context_length`** is the **total context window** — the combined budget for input *and* output tokens (e.g. 200,000 for Claude Opus 4.6). Tribal uses this to decide when to compress history and to validate API requests.
 
 **`model.max_tokens`** is the **output cap** — the maximum number of tokens the model may generate in a *single response*. It has nothing to do with how long your conversation history can be. The industry-standard name `max_tokens` is a common source of confusion; Anthropic's native API has since renamed it `max_output_tokens` for clarity.
 
@@ -1187,7 +1187,7 @@ Set `context_length` when auto-detection gets the window size wrong.
 Set `model.max_tokens` only when you need to limit how long individual responses can be.
 :::
 
-Triibal uses a multi-source resolution chain to detect the correct context window for your model and provider:
+Tribal uses a multi-source resolution chain to detect the correct context window for your model and provider:
 
 1. **Config override** — `model.context_length` in config.yaml (highest priority)
 2. **Custom provider per-model** — `custom_providers[].models.<id>.context_length`
@@ -1223,7 +1223,7 @@ custom_providers:
         context_length: 65536
 ```
 
-`triibal model` will prompt for context length when configuring a custom endpoint. Leave it blank for auto-detection.
+`tribal model` will prompt for context length when configuring a custom endpoint. Leave it blank for auto-detection.
 
 :::tip When to set this manually
 - You're using Ollama with a custom `num_ctx` that's lower than the model's maximum
@@ -1241,18 +1241,18 @@ If you work with multiple custom endpoints (e.g., a local dev server and a remot
 custom_providers:
   - name: local
     base_url: http://localhost:8080/v1
-    # api_key omitted — Triibal uses "no-key-required" for keyless local servers
+    # api_key omitted — Tribal uses "no-key-required" for keyless local servers
   - name: work
     base_url: https://gpu-server.internal.corp/v1
     key_env: CORP_API_KEY
-    api_mode: chat_completions   # set explicitly by `triibal model` → Custom Endpoint wizard; auto-detection still happens as a fallback
+    api_mode: chat_completions   # set explicitly by `tribal model` → Custom Endpoint wizard; auto-detection still happens as a fallback
   - name: anthropic-proxy
     base_url: https://proxy.example.com/anthropic
     key_env: ANTHROPIC_PROXY_KEY
     api_mode: anthropic_messages  # for Anthropic-compatible proxies
 ```
 
-Some OpenAI-compatible endpoints need provider-specific request body fields. Add an `extra_body` map to the matching custom provider and Triibal will merge it into each chat-completions request for that endpoint:
+Some OpenAI-compatible endpoints need provider-specific request body fields. Add an `extra_body` map to the matching custom provider and Tribal will merge it into each chat-completions request for that endpoint:
 
 ```yaml
 custom_providers:
@@ -1272,9 +1272,9 @@ extra_body:
     enable_thinking: true
 ```
 
-The `triibal model` → Custom Endpoint wizard now prompts for `api_mode` explicitly and persists your answer to `config.yaml`. URL-based auto-detection (e.g. `/anthropic` paths → `anthropic_messages`) still happens as a fallback when the field is left blank.
+The `tribal model` → Custom Endpoint wizard now prompts for `api_mode` explicitly and persists your answer to `config.yaml`. URL-based auto-detection (e.g. `/anthropic` paths → `anthropic_messages`) still happens as a fallback when the field is left blank.
 
-**Native vision for custom-provider models.** If your custom endpoint serves a vision-capable model that isn't in models.dev, set `model.supports_vision: true` so Triibal routes attached images natively (as `image_url` parts) instead of pre-processing them through `vision_analyze`. Single knob — no need to also set `agent.image_input_mode: native`.
+**Native vision for custom-provider models.** If your custom endpoint serves a vision-capable model that isn't in models.dev, set `model.supports_vision: true` so Tribal routes attached images natively (as `image_url` parts) instead of pre-processing them through `vision_analyze`. Single knob — no need to also set `agent.image_input_mode: native`.
 
 ```yaml
 model:
@@ -1294,20 +1294,20 @@ Switch between them mid-session with the triple syntax:
 /model custom:anthropic-proxy:claude-sonnet-4  # Use the proxy
 ```
 
-You can also select named custom providers from the interactive `triibal model` menu.
+You can also select named custom providers from the interactive `tribal model` menu.
 
 ---
 
 ### Cookbook: Together AI, Groq, Perplexity
 
-The cloud providers listed in [Other Compatible Providers](#other-compatible-providers) all speak OpenAI's REST dialect, so they wire up the same way under `custom_providers:`. Three worked recipes follow. Each drops into `~/.triibal/config.yaml` and the matching API key goes in `~/.triibal/.env`.
+The cloud providers listed in [Other Compatible Providers](#other-compatible-providers) all speak OpenAI's REST dialect, so they wire up the same way under `custom_providers:`. Three worked recipes follow. Each drops into `~/.tribal/config.yaml` and the matching API key goes in `~/.tribal/.env`.
 
 #### Together AI
 
 Hosts open-weight models (Llama, MiniMax, Gemma, DeepSeek, Qwen) at prices significantly below first-party APIs. Good default for multi-model fleets.
 
 ```yaml
-# ~/.triibal/config.yaml
+# ~/.tribal/config.yaml
 custom_providers:
   - name: together
     base_url: https://api.together.xyz/v1
@@ -1320,7 +1320,7 @@ model:
 ```
 
 ```bash
-# ~/.triibal/.env
+# ~/.tribal/.env
 TOGETHER_API_KEY=your-together-key
 ```
 
@@ -1332,14 +1332,14 @@ Switch models mid-session:
 /model custom:together:deepseek-ai/DeepSeek-V3
 ```
 
-Together's `/v1/models` endpoint works, so `triibal model` can auto-discover available models.
+Together's `/v1/models` endpoint works, so `tribal model` can auto-discover available models.
 
 #### Groq
 
 Ultra-fast inference (~500 tok/s on Llama-3.3-70B). Small catalog but strong for latency-sensitive interactive use.
 
 ```yaml
-# ~/.triibal/config.yaml
+# ~/.tribal/config.yaml
 custom_providers:
   - name: groq
     base_url: https://api.groq.com/openai/v1
@@ -1351,7 +1351,7 @@ model:
 ```
 
 ```bash
-# ~/.triibal/.env
+# ~/.tribal/.env
 GROQ_API_KEY=your-groq-key
 ```
 
@@ -1360,7 +1360,7 @@ GROQ_API_KEY=your-groq-key
 Useful when you want a model that does live web search and citation automatically. Strict about which models are available — check [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api) for the current list.
 
 ```yaml
-# ~/.triibal/config.yaml
+# ~/.tribal/config.yaml
 custom_providers:
   - name: perplexity
     base_url: https://api.perplexity.ai
@@ -1372,7 +1372,7 @@ model:
 ```
 
 ```bash
-# ~/.triibal/.env
+# ~/.tribal/.env
 PERPLEXITY_API_KEY=your-perplexity-key
 ```
 
@@ -1398,8 +1398,8 @@ model:
 ```
 
 :::tip Troubleshooting
-- `triibal doctor` should print no `Unknown provider` warnings for any of these names after the CLI validator fixes in #15083.
-- If a provider's `/v1/models` endpoint is unreachable (Perplexity is the common one), `triibal model` will persist the model with a warning rather than hard-reject — see #15136.
+- `tribal doctor` should print no `Unknown provider` warnings for any of these names after the CLI validator fixes in #15083.
+- If a provider's `/v1/models` endpoint is unreachable (Perplexity is the common one), `tribal model` will persist the model with a warning rather than hard-reject — see #15136.
 - To skip `custom_providers:` entirely and use bare `provider: custom` with `CUSTOM_BASE_URL` env var, see #15103.
 :::
 
@@ -1420,7 +1420,7 @@ model:
 | **Chinese AI models** | z.ai (GLM), Kimi/Moonshot (`kimi-coding` or `kimi-coding-cn`), MiniMax, Xiaomi MiMo, or Tencent TokenHub (first-class providers) |
 
 :::tip
-You can switch between providers at any time with `triibal model` — no restart required. Your conversation history, memory, and skills carry over regardless of which provider you use.
+You can switch between providers at any time with `tribal model` — no restart required. Your conversation history, memory, and skills carry over regardless of which provider you use.
 :::
 
 ## Optional API Keys
@@ -1438,7 +1438,7 @@ You can switch between providers at any time with `triibal model` — no restart
 
 ### Self-Hosting Firecrawl
 
-By default, Triibal uses the [Firecrawl cloud API](https://firecrawl.dev/) for web search and scraping. If you prefer to run Firecrawl locally, you can point Triibal at a self-hosted instance instead. See Firecrawl's [SELF_HOST.md](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md) for complete setup instructions.
+By default, Tribal uses the [Firecrawl cloud API](https://firecrawl.dev/) for web search and scraping. If you prefer to run Firecrawl locally, you can point Tribal at a self-hosted instance instead. See Firecrawl's [SELF_HOST.md](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md) for complete setup instructions.
 
 **What you get:** No API key required, no rate limits, no per-page costs, full data sovereignty.
 
@@ -1454,16 +1454,16 @@ By default, Triibal uses the [Firecrawl cloud API](https://firecrawl.dev/) for w
    docker compose up -d
    ```
 
-2. Point Triibal at your instance (no API key needed):
+2. Point Tribal at your instance (no API key needed):
    ```bash
-   triibal config set FIRECRAWL_API_URL http://localhost:3002
+   tribal config set FIRECRAWL_API_URL http://localhost:3002
    ```
 
 You can also set both `FIRECRAWL_API_KEY` and `FIRECRAWL_API_URL` if your self-hosted instance has authentication enabled.
 
 ## OpenRouter Provider Routing
 
-When using OpenRouter, you can control how requests are routed across providers. Add a `provider_routing` section to `~/.triibal/config.yaml`:
+When using OpenRouter, you can control how requests are routed across providers. Add a `provider_routing` section to `~/.tribal/config.yaml`:
 
 ```yaml
 provider_routing:
@@ -1479,7 +1479,7 @@ provider_routing:
 
 ## OpenRouter Pareto Code Router
 
-OpenRouter ships an experimental coding-model router at `openrouter/pareto-code` that auto-routes requests to the cheapest model meeting a coding-quality bar (ranked by [Artificial Analysis](https://artificialanalysis.ai/)). Pick this model and tune the `min_coding_score` knob in `~/.triibal/config.yaml`:
+OpenRouter ships an experimental coding-model router at `openrouter/pareto-code` that auto-routes requests to the cheapest model meeting a coding-quality bar (ranked by [Artificial Analysis](https://artificialanalysis.ai/)). Pick this model and tune the `min_coding_score` knob in `~/.tribal/config.yaml`:
 
 ```yaml
 model:
@@ -1500,7 +1500,7 @@ Notes:
 
 ## Fallback Providers
 
-Configure a chain of backup providers Triibal tries in order when the primary model fails (rate limits, server errors, auth failures). The canonical format is a top-level `fallback_providers:` list:
+Configure a chain of backup providers Tribal tries in order when the primary model fails (rate limits, server errors, auth failures). The canonical format is a top-level `fallback_providers:` list:
 
 ```yaml
 fallback_providers:
@@ -1525,7 +1525,7 @@ When activated, the fallback swaps the model and provider mid-session without lo
 Supported providers: `openrouter`, `nous`, `novita`, `openai-codex`, `copilot`, `copilot-acp`, `anthropic`, `gemini`, `google-gemini-cli`, `qwen-oauth`, `huggingface`, `zai`, `kimi-coding`, `kimi-coding-cn`, `minimax`, `minimax-cn`, `minimax-oauth`, `deepseek`, `nvidia`, `xai`, `xai-oauth`, `ollama-cloud`, `bedrock`, `azure-foundry`, `opencode-zen`, `opencode-go`, `kilocode`, `xiaomi`, `arcee`, `gmi`, `stepfun`, `lmstudio`, `alibaba`, `alibaba-coding-plan`, `tencent-tokenhub`, `custom`.
 
 :::tip
-Fallback is configured exclusively through `config.yaml` — or interactively via `triibal fallback`. For full details on when it triggers, how the chain advances, and how it interacts with auxiliary tasks and delegation, see [Fallback Providers](/user-guide/features/fallback-providers).
+Fallback is configured exclusively through `config.yaml` — or interactively via `tribal fallback`. For full details on when it triggers, how the chain advances, and how it interacts with auxiliary tasks and delegation, see [Fallback Providers](/user-guide/features/fallback-providers).
 :::
 
 ---

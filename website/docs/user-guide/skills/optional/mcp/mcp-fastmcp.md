@@ -14,10 +14,10 @@ Build, test, inspect, install, and deploy MCP servers with FastMCP in Python. Us
 
 | | |
 |---|---|
-| Source | Optional — install with `triibal skills install official/mcp/fastmcp` |
+| Source | Optional — install with `tribal skills install official/mcp/fastmcp` |
 | Path | `optional-skills/mcp/fastmcp` |
 | Version | `1.0.0` |
-| Author | Triibal Agent |
+| Author | Tribal Agent |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `MCP`, `FastMCP`, `Python`, `Tools`, `Resources`, `Prompts`, `Deployment` |
@@ -26,7 +26,7 @@ Build, test, inspect, install, and deploy MCP servers with FastMCP in Python. Us
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # FastMCP
@@ -40,11 +40,11 @@ Use this skill when the task is to:
 - create a new MCP server in Python
 - wrap an API, database, CLI, or file-processing workflow as MCP tools
 - expose resources or prompts in addition to tools
-- smoke-test a server with the FastMCP CLI before wiring it into Triibal or another client
+- smoke-test a server with the FastMCP CLI before wiring it into Tribal or another client
 - install a server into Claude Code, Claude Desktop, Cursor, or a similar MCP client
 - prepare a FastMCP server repo for HTTP deployment
 
-Use `native-mcp` when the server already exists and only needs to be connected to Triibal. Use `mcporter` when the goal is ad-hoc CLI access to an existing MCP server instead of building one.
+Use `native-mcp` when the server already exists and only needs to be connected to Tribal. Use `mcporter` when the goal is ad-hoc CLI access to an existing MCP server instead of building one.
 
 ## Prerequisites
 
@@ -95,7 +95,7 @@ Prefer a thin server with good names, docstrings, and schemas over a large serve
 Copy a template directly or use the scaffold helper:
 
 ```bash
-python ~/.triibal/skills/mcp/fastmcp/scripts/scaffold_fastmcp.py \
+python ~/.tribal/skills/mcp/fastmcp/scripts/scaffold_fastmcp.py \
   --template api_wrapper \
   --name "Acme API" \
   --output ./acme_server.py
@@ -104,7 +104,7 @@ python ~/.triibal/skills/mcp/fastmcp/scripts/scaffold_fastmcp.py \
 Available templates:
 
 ```bash
-python ~/.triibal/skills/mcp/fastmcp/scripts/scaffold_fastmcp.py --list
+python ~/.tribal/skills/mcp/fastmcp/scripts/scaffold_fastmcp.py --list
 ```
 
 If copying manually, replace `__SERVER_NAME__` with a real server name.
@@ -185,9 +185,9 @@ fastmcp install cursor acme_server.py -e .
 
 Use `fastmcp discover` to inspect named MCP servers already configured on the machine.
 
-When the goal is Triibal integration, either:
+When the goal is Tribal integration, either:
 
-- configure the server in `~/.triibal/config.yaml` using the `native-mcp` skill, or
+- configure the server in `~/.tribal/config.yaml` using the `native-mcp` skill, or
 - keep using FastMCP CLI commands during development until the interface stabilizes
 
 ### 7. Deploy After the Local Contract Is Stable
@@ -306,9 +306,9 @@ fastmcp call server.py your_tool_name --json
 
 This usually exposes naming mismatches, missing required arguments, or non-serializable return values.
 
-### Triibal cannot see the deployed server
+### Tribal cannot see the deployed server
 
-The server-building part may be correct while the Triibal config is not. Load the `native-mcp` skill and configure the server in `~/.triibal/config.yaml`, then restart Triibal.
+The server-building part may be correct while the Tribal config is not. Load the `native-mcp` skill and configure the server in `~/.tribal/config.yaml`, then restart Tribal.
 
 ## References
 

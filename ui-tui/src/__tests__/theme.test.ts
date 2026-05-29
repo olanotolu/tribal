@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 // `theme.js` reads `process.env` at module-load to compute DEFAULT_THEME,
 // and `fromSkin` closes over DEFAULT_THEME.  A developer shell with
-// TRIIBAL_TUI_THEME=light (or TRIIBAL_TUI_BACKGROUND set to something
+// TRIBAL_TUI_THEME=light (or TRIBAL_TUI_BACKGROUND set to something
 // bright) would flip the base and turn these assertions into a local-
 // only failure.  We sterilize the relevant env vars + dynamically
 // import the module fresh so EVERY symbol that closes over the env
@@ -12,9 +12,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 // `detectLightMode` takes env as an explicit arg, so it's safe to import
 // statically — but we stay consistent and dynamic-import it too.
 const RELEVANT_ENV = [
-  'TRIIBAL_TUI_LIGHT',
-  'TRIIBAL_TUI_THEME',
-  'TRIIBAL_TUI_BACKGROUND',
+  'TRIBAL_TUI_LIGHT',
+  'TRIBAL_TUI_THEME',
+  'TRIBAL_TUI_BACKGROUND',
   'COLORFGBG',
   'COLORTERM',
   'TERM_PROGRAM'
@@ -43,7 +43,7 @@ describe('DEFAULT_THEME', () => {
   it('has brand defaults', async () => {
     const { DEFAULT_THEME } = await importThemeWithCleanEnv()
 
-    expect(DEFAULT_THEME.brand.name).toBe('Triibal Agent')
+    expect(DEFAULT_THEME.brand.name).toBe('Tribal Agent')
     expect(DEFAULT_THEME.brand.prompt).toBe('❯')
     expect(DEFAULT_THEME.brand.tool).toBe('┊')
   })
@@ -95,14 +95,14 @@ describe('detectLightMode', () => {
     expect(detectLightMode({ TERM_PROGRAM: 'Apple_Terminal' })).toBe(true)
   })
 
-  it('honors TRIIBAL_TUI_LIGHT on/off', async () => {
+  it('honors TRIBAL_TUI_LIGHT on/off', async () => {
     const { detectLightMode } = await importThemeWithCleanEnv()
 
-    expect(detectLightMode({ TRIIBAL_TUI_LIGHT: '1' })).toBe(true)
-    expect(detectLightMode({ TRIIBAL_TUI_LIGHT: 'true' })).toBe(true)
-    expect(detectLightMode({ TRIIBAL_TUI_LIGHT: 'on' })).toBe(true)
-    expect(detectLightMode({ TRIIBAL_TUI_LIGHT: '0' })).toBe(false)
-    expect(detectLightMode({ TRIIBAL_TUI_LIGHT: 'off' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_LIGHT: '1' })).toBe(true)
+    expect(detectLightMode({ TRIBAL_TUI_LIGHT: 'true' })).toBe(true)
+    expect(detectLightMode({ TRIBAL_TUI_LIGHT: 'on' })).toBe(true)
+    expect(detectLightMode({ TRIBAL_TUI_LIGHT: '0' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_LIGHT: 'off' })).toBe(false)
   })
 
   it('sniffs COLORFGBG bg slots 7 and 15 as light (#11300)', async () => {
@@ -128,31 +128,31 @@ describe('detectLightMode', () => {
     expect(detectLightMode({ COLORFGBG: '15;' })).toBe(false)
   })
 
-  it('lets TRIIBAL_TUI_LIGHT=0 override a light COLORFGBG', async () => {
+  it('lets TRIBAL_TUI_LIGHT=0 override a light COLORFGBG', async () => {
     const { detectLightMode } = await importThemeWithCleanEnv()
 
-    expect(detectLightMode({ COLORFGBG: '0;15', TRIIBAL_TUI_LIGHT: '0' })).toBe(false)
+    expect(detectLightMode({ COLORFGBG: '0;15', TRIBAL_TUI_LIGHT: '0' })).toBe(false)
   })
 
-  it('honors TRIIBAL_TUI_THEME=light/dark as a symmetric explicit override', async () => {
+  it('honors TRIBAL_TUI_THEME=light/dark as a symmetric explicit override', async () => {
     const { detectLightMode } = await importThemeWithCleanEnv()
 
-    expect(detectLightMode({ TRIIBAL_TUI_THEME: 'light' })).toBe(true)
-    expect(detectLightMode({ TRIIBAL_TUI_THEME: 'dark' })).toBe(false)
-    expect(detectLightMode({ COLORFGBG: '0;15', TRIIBAL_TUI_THEME: 'dark' })).toBe(false)
-    expect(detectLightMode({ COLORFGBG: '15;0', TRIIBAL_TUI_THEME: 'light' })).toBe(true)
+    expect(detectLightMode({ TRIBAL_TUI_THEME: 'light' })).toBe(true)
+    expect(detectLightMode({ TRIBAL_TUI_THEME: 'dark' })).toBe(false)
+    expect(detectLightMode({ COLORFGBG: '0;15', TRIBAL_TUI_THEME: 'dark' })).toBe(false)
+    expect(detectLightMode({ COLORFGBG: '15;0', TRIBAL_TUI_THEME: 'light' })).toBe(true)
   })
 
-  it('uses TRIIBAL_TUI_BACKGROUND luminance when COLORFGBG is missing', async () => {
+  it('uses TRIBAL_TUI_BACKGROUND luminance when COLORFGBG is missing', async () => {
     const { detectLightMode } = await importThemeWithCleanEnv()
 
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: '#ffffff' })).toBe(true)
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: '#000000' })).toBe(false)
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: '#1e1e1e' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: '#ffffff' })).toBe(true)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: '#000000' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: '#1e1e1e' })).toBe(false)
     // Three-char hex normalises like CSS.
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: '#fff' })).toBe(true)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: '#fff' })).toBe(true)
     // Garbage falls through to the default-dark path.
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: 'not-a-colour' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: 'not-a-colour' })).toBe(false)
   })
 
   it('rejects partially-invalid hex instead of silently truncating', async () => {
@@ -160,12 +160,12 @@ describe('detectLightMode', () => {
     // `parseInt('fffgff'.slice(2,4), 16)` would return 15 — the strict
     // regex must reject these inputs so they fall through to default-
     // dark instead of producing a false-positive light reading.
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: '#fffgff' })).toBe(false)
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: 'ffggff' })).toBe(false)
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: '#xyz' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: '#fffgff' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: 'ffggff' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: '#xyz' })).toBe(false)
     // Wrong length also rejected (no implicit padding/truncation).
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: '#fffff' })).toBe(false)
-    expect(detectLightMode({ TRIIBAL_TUI_BACKGROUND: '#fffffff' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: '#fffff' })).toBe(false)
+    expect(detectLightMode({ TRIBAL_TUI_BACKGROUND: '#fffffff' })).toBe(false)
   })
 
   it('treats COLORFGBG as authoritative when present so it dominates the TERM_PROGRAM allow-list', async () => {
@@ -185,7 +185,7 @@ describe('detectLightMode', () => {
 describe('fromSkin', () => {
   // `fromSkin` closes over DEFAULT_THEME (which is env-derived), so we
   // must dynamic-import it after sterilizing env — otherwise an ambient
-  // TRIIBAL_TUI_THEME=light would flip the base palette and make these
+  // TRIBAL_TUI_THEME=light would flip the base palette and make these
   // assertions order-dependent on the developer's shell.
 
   it('overrides banner colors', async () => {

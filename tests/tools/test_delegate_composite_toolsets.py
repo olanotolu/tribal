@@ -9,14 +9,14 @@ from tools.delegate_tool import _expand_parent_toolsets
 class TestExpandParentToolsets(unittest.TestCase):
     """Verify _expand_parent_toolsets recognises individual toolsets within composites."""
 
-    def test_composite_triibal_cli_expands_web(self):
-        """triibal-cli includes web_search/web_extract → 'web' should be in expansion."""
-        expanded = _expand_parent_toolsets({"triibal-cli"})
+    def test_composite_tribal_cli_expands_web(self):
+        """tribal-cli includes web_search/web_extract → 'web' should be in expansion."""
+        expanded = _expand_parent_toolsets({"tribal-cli"})
         self.assertIn("web", expanded)
         self.assertIn("terminal", expanded)
         self.assertIn("browser", expanded)
         # Original composite is preserved
-        self.assertIn("triibal-cli", expanded)
+        self.assertIn("tribal-cli", expanded)
 
     def test_individual_toolset_unchanged(self):
         """When parent already uses individual toolsets, expansion keeps them."""
@@ -34,8 +34,8 @@ class TestExpandParentToolsets(unittest.TestCase):
         self.assertIn("nonexistent-toolset-xyz", expanded)
 
     def test_intersection_with_expanded_composite(self):
-        """End-to-end: requesting ['web'] from parent with ['triibal-cli'] yields ['web']."""
-        parent_toolsets = {"triibal-cli"}
+        """End-to-end: requesting ['web'] from parent with ['tribal-cli'] yields ['web']."""
+        parent_toolsets = {"tribal-cli"}
         expanded = _expand_parent_toolsets(parent_toolsets)
         toolsets = ["web"]
         child_toolsets = [t for t in toolsets if t in expanded]

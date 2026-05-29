@@ -83,7 +83,7 @@ class _BackgroundLoop:
             return
         self._thread = threading.Thread(
             target=self._run_forever,
-            name="triibal-lsp-loop",
+            name="tribal-lsp-loop",
             daemon=True,
         )
         self._thread.start()
@@ -190,13 +190,13 @@ class LSPService:
 
     @classmethod
     def create_from_config(cls) -> Optional["LSPService"]:
-        """Build a service from ``triibal_cli.config`` settings.
+        """Build a service from ``tribal_cli.config`` settings.
 
         Returns ``None`` if the config can't be loaded.  The service
         itself returns ``is_active()`` False when LSP is disabled.
         """
         try:
-            from triibal_cli.config import load_config
+            from tribal_cli.config import load_config
             cfg = load_config()
         except Exception as e:  # noqa: BLE001
             logger.debug("LSP config load failed: %s", e)
@@ -260,7 +260,7 @@ class LSPService:
 
         Files in already-broken pairs return False so the file_operations
         layer skips the LSP path entirely — no spawn attempts, no
-        timeout cost — until the service is restarted (``triibal lsp
+        timeout cost — until the service is restarted (``tribal lsp
         restart``) or the process exits.
         """
         if not self._enabled:
@@ -583,7 +583,7 @@ class LSPService:
         )
 
     # ------------------------------------------------------------------
-    # status / introspection (used by ``triibal lsp status``)
+    # status / introspection (used by ``tribal lsp status``)
     # ------------------------------------------------------------------
 
     def get_status(self) -> Dict[str, Any]:

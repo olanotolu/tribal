@@ -1,4 +1,4 @@
-import { wrapAnsi } from '@triibal/ink'
+import { wrapAnsi } from '@tribal/ink'
 import { describe, expect, it } from 'vitest'
 
 import { offsetFromPosition } from '../components/textInput.js'

@@ -3,15 +3,15 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Triibal Agent',
+  title: 'Tribal Agent',
   tagline: 'The self-improving AI agent',
   favicon: 'img/favicon.ico',
 
-  url: 'https://triibal.dev',
+  url: 'https://tribal.dev',
   baseUrl: '/docs/',
 
   organizationName: 'NousResearch',
-  projectName: 'triibal-agent',
+  projectName: 'tribal-agent',
 
   onBrokenLinks: 'warn',
 
@@ -73,7 +73,7 @@ const config: Config = {
         docs: {
           routeBasePath: '/',  // Docs at the root of /docs/
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/Triibal/triibal/edit/main/website/',
+          editUrl: 'https://github.com/Tribal/tribal/edit/main/website/',
         },
         blog: false,
         theme: {
@@ -84,7 +84,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/triibal-agent-banner.png',
+    image: 'img/tribal-agent-banner.png',
     colorMode: {
       defaultMode: 'dark',
       respectPrefersColorScheme: true,
@@ -96,9 +96,9 @@ const config: Config = {
       },
     },
     navbar: {
-      title: 'Triibal Agent',
+      title: 'Tribal Agent',
       logo: {
-        alt: 'Triibal Agent',
+        alt: 'Tribal Agent',
         src: 'img/logo.png',
       },
       items: [
@@ -118,12 +118,12 @@ const config: Config = {
           position: 'right',
         },
         {
-          href: 'https://triibal.dev',
+          href: 'https://tribal.dev',
           label: 'Home',
           position: 'right',
         },
         {
-          href: 'https://github.com/Triibal/triibal',
+          href: 'https://github.com/Tribal/tribal',
           label: 'GitHub',
           position: 'right',
         },
@@ -150,14 +150,14 @@ const config: Config = {
           title: 'Community',
           items: [
             { label: 'Discord', href: 'https://discord.gg/NousResearch' },
-            { label: 'GitHub Discussions', href: 'https://github.com/Triibal/triibal/discussions' },
+            { label: 'GitHub Discussions', href: 'https://github.com/Tribal/tribal/discussions' },
             { label: 'Skills Hub', href: 'https://agentskills.io' },
           ],
         },
         {
           title: 'More',
           items: [
-            { label: 'GitHub', href: 'https://github.com/Triibal/triibal' },
+            { label: 'GitHub', href: 'https://github.com/Tribal/tribal' },
             { label: 'Nous Research', href: 'https://nousresearch.com' },
           ],
         },

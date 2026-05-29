@@ -4,7 +4,7 @@
  * Exposes React, UI components, hooks, and utilities on the window so
  * that plugin bundles can use them without bundling their own copies.
  *
- * Plugins call window.__TRIIBAL_PLUGINS__.register(name, Component)
+ * Plugins call window.__TRIBAL_PLUGINS__.register(name, Component)
  * to register their tab component.
  */
 
@@ -90,8 +90,8 @@ export function getRegisteredCount(): number {
 
 declare global {
   interface Window {
-    __TRIIBAL_PLUGIN_SDK__: unknown;
-    __TRIIBAL_PLUGINS__: {
+    __TRIBAL_PLUGIN_SDK__: unknown;
+    __TRIBAL_PLUGINS__: {
       register: typeof registerPlugin;
       registerSlot: typeof registerSlot;
     };
@@ -99,12 +99,12 @@ declare global {
 }
 
 export function exposePluginSDK() {
-  window.__TRIIBAL_PLUGINS__ = {
+  window.__TRIBAL_PLUGINS__ = {
     register: registerPlugin,
     registerSlot,
   };
 
-  window.__TRIIBAL_PLUGIN_SDK__ = {
+  window.__TRIBAL_PLUGIN_SDK__ = {
     // React core — plugins use these instead of importing react
     React,
     hooks: {
@@ -117,7 +117,7 @@ export function exposePluginSDK() {
       createContext,
     },
 
-    // Triibal API client
+    // Tribal API client
     api,
     // Raw fetchJSON for plugin-specific endpoints
     fetchJSON,

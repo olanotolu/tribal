@@ -2,12 +2,12 @@
 
 from unittest.mock import patch
 
-from cli import TriibalCLI
+from cli import TribalCLI
 
 
 class TestCLILoadingIndicator:
     def _make_cli(self):
-        cli_obj = TriibalCLI.__new__(TriibalCLI)
+        cli_obj = TribalCLI.__new__(TribalCLI)
         cli_obj._app = None
         cli_obj._last_invalidate = 0.0
         cli_obj._command_running = False

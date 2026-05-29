@@ -39,13 +39,13 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 # Pin one path to current main, one to the PR worktree.
 # ``REPO_ROOT`` is ``.../.worktrees/<name>``; the main checkout lives
 # two levels up. When running directly from a regular clone (no
-# worktree), ``MAIN_DIR`` falls back to a sibling ``triibal-agent-main``
+# worktree), ``MAIN_DIR`` falls back to a sibling ``tribal-agent-main``
 # checkout if one exists.
 def _resolve_main_dir() -> Path:
     candidate = REPO_ROOT.parent.parent
     if (candidate / "tools" / "image_generation_tool.py").exists() and candidate != REPO_ROOT:
         return candidate
-    sibling = REPO_ROOT.parent / "triibal-agent-main"
+    sibling = REPO_ROOT.parent / "tribal-agent-main"
     if (sibling / "tools" / "image_generation_tool.py").exists():
         return sibling
     return REPO_ROOT
@@ -54,7 +54,7 @@ def _resolve_main_dir() -> Path:
 MAIN_DIR = _resolve_main_dir()
 PR_DIR = REPO_ROOT
 assert (PR_DIR / "tools" / "image_generation_tool.py").exists(), (
-    f"PR_DIR={PR_DIR} doesn't look like a triibal-agent checkout"
+    f"PR_DIR={PR_DIR} doesn't look like a tribal-agent checkout"
 )
 
 
@@ -62,9 +62,9 @@ SUBPROCESS_SCRIPT = r"""
 import json, os, sys, tempfile
 sys.path.insert(0, sys.argv[1])
 
-# Isolated TRIIBAL_HOME so the config write is hermetic.
+# Isolated TRIBAL_HOME so the config write is hermetic.
 home = tempfile.mkdtemp()
-os.environ["TRIIBAL_HOME"] = home
+os.environ["TRIBAL_HOME"] = home
 
 # Clear FAL-related env so dispatch decisions are config-driven.
 for k in (
@@ -87,7 +87,7 @@ for name in list(sys.modules):
     if (name.startswith("tools.")
             or name.startswith("agent.")
             or name.startswith("plugins.")
-            or name.startswith("triibal_cli.")):
+            or name.startswith("tribal_cli.")):
         sys.modules.pop(name, None)
 
 import tools.image_generation_tool as image_tool
@@ -233,7 +233,7 @@ def main() -> int:
     if MAIN_DIR == PR_DIR:
         print(
             "WARN: MAIN_DIR == PR_DIR — diffs will be trivially identical.\n"
-            "      Set up a sibling 'triibal-agent-main' checkout pinned to "
+            "      Set up a sibling 'tribal-agent-main' checkout pinned to "
             "origin/main to get real parity coverage."
         )
         print()

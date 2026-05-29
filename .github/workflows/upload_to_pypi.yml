@@ -61,21 +61,21 @@ jobs:
       - name: Build TUI bundle
         run: cd ui-tui && npm ci && npm run build
 
-      - name: Bundle TUI into triibal_cli
+      - name: Bundle TUI into tribal_cli
         run: |
-          mkdir -p triibal_cli/tui_dist
-          cp ui-tui/dist/entry.js triibal_cli/tui_dist/entry.js
+          mkdir -p tribal_cli/tui_dist
+          cp ui-tui/dist/entry.js tribal_cli/tui_dist/entry.js
 
       - name: Verify frontend assets exist
         run: |
-          test -f triibal_cli/web_dist/index.html || { echo "ERROR: web_dist not built"; exit 1; }
-          test -f triibal_cli/tui_dist/entry.js || { echo "ERROR: tui_dist not built"; exit 1; }
+          test -f tribal_cli/web_dist/index.html || { echo "ERROR: web_dist not built"; exit 1; }
+          test -f tribal_cli/tui_dist/entry.js || { echo "ERROR: tui_dist not built"; exit 1; }
 
       - name: Bundle install scripts into wheel
         run: |
-          mkdir -p triibal_cli/scripts
-          cp scripts/install.sh triibal_cli/scripts/install.sh
-          cp scripts/install.ps1 triibal_cli/scripts/install.ps1
+          mkdir -p tribal_cli/scripts
+          cp scripts/install.sh tribal_cli/scripts/install.sh
+          cp scripts/install.ps1 tribal_cli/scripts/install.ps1
 
       - name: Build wheel and sdist
         run: uv build --sdist --wheel
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/triibal-agent
+      url: https://pypi.org/p/tribal-agent
     permissions:
       id-token: write  # OIDC trusted publishing
 

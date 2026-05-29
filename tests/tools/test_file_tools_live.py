@@ -69,14 +69,14 @@ def env(tmp_path, monkeypatch):
     """A real LocalEnvironment rooted in a temp directory."""
     home = tmp_path / "home"
     home.mkdir()
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    (triibal_home / "config.yaml").write_text(
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    (tribal_home / "config.yaml").write_text(
         "terminal:\n  auto_source_bashrc: false\n",
         encoding="utf-8",
     )
     monkeypatch.setenv("HOME", str(home))
-    monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
+    monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
     return LocalEnvironment(cwd=str(tmp_path), timeout=15)
 
 
@@ -206,10 +206,10 @@ class TestReadFile:
         _assert_clean(result.content)
 
     def test_tilde_expansion(self, ops):
-        test_path = Path.home() / ".triibal_test_tilde_9f8a7b"
+        test_path = Path.home() / ".tribal_test_tilde_9f8a7b"
         try:
             test_path.write_text("TILDE_EXPANSION_OK\n")
-            result = ops.read_file("~/.triibal_test_tilde_9f8a7b")
+            result = ops.read_file("~/.tribal_test_tilde_9f8a7b")
             assert result.error is None
             assert "TILDE_EXPANSION_OK" in result.content
             _assert_clean(result.content)
@@ -392,14 +392,14 @@ class TestExpandPath:
 
     def test_tilde_injection_blocked(self, ops):
         """Paths like ~; rm -rf / must NOT execute shell commands."""
-        malicious = "~; echo PWNED > /tmp/_triibal_injection_test"
+        malicious = "~; echo PWNED > /tmp/_tribal_injection_test"
         result = ops._expand_path(malicious)
         # The invalid username (contains ";") should prevent shell expansion.
         # The path should be returned as-is (no expansion).
         assert result == malicious
         # Verify the injected command did NOT execute
         import os
-        assert not os.path.exists("/tmp/_triibal_injection_test")
+        assert not os.path.exists("/tmp/_tribal_injection_test")
 
     def test_tilde_username_with_subpath(self, ops):
         """~root/file.txt should attempt expansion (valid username)."""

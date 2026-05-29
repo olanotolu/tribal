@@ -4,9 +4,9 @@ Gateway runtime status helpers.
 Provides PID-file based detection of whether the gateway daemon is running,
 used by send_message's check_fn to gate availability in the CLI.
 
-The PID file lives at ``{TRIIBAL_HOME}/gateway.pid``.  TRIIBAL_HOME defaults to
-``~/.triibal`` but can be overridden via the environment variable.  This means
-separate TRIIBAL_HOME directories naturally get separate PID files — a property
+The PID file lives at ``{TRIBAL_HOME}/gateway.pid``.  TRIBAL_HOME defaults to
+``~/.tribal`` but can be overridden via the environment variable.  This means
+separate TRIBAL_HOME directories naturally get separate PID files — a property
 that will be useful when we add named profiles (multiple agents running
 concurrently under distinct configurations).
 """
@@ -19,7 +19,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from triibal_constants import get_triibal_home
+from tribal_constants import get_tribal_home
 from typing import Any, Optional
 from utils import atomic_json_write
 
@@ -28,7 +28,7 @@ if sys.platform == "win32":
 else:
     import fcntl
 
-_GATEWAY_KIND = "triibal-gateway"
+_GATEWAY_KIND = "tribal-gateway"
 _RUNTIME_STATUS_FILE = "gateway_state.json"
 _LOCKS_DIRNAME = "gateway-locks"
 _IS_WINDOWS = sys.platform == "win32"
@@ -42,8 +42,8 @@ _WINDOWS_LOCK_OFFSET = 1024 * 1024
 
 
 def _get_pid_path() -> Path:
-    """Return the path to the gateway PID file, respecting TRIIBAL_HOME."""
-    home = get_triibal_home()
+    """Return the path to the gateway PID file, respecting TRIBAL_HOME."""
+    home = get_tribal_home()
     return home / "gateway.pid"
 
 
@@ -51,7 +51,7 @@ def _get_gateway_lock_path(pid_path: Optional[Path] = None) -> Path:
     """Return the path to the runtime gateway lock file."""
     if pid_path is not None:
         return pid_path.with_name(_GATEWAY_LOCK_FILENAME)
-    home = get_triibal_home()
+    home = get_tribal_home()
     return home / _GATEWAY_LOCK_FILENAME
 
 
@@ -62,11 +62,11 @@ def _get_runtime_status_path() -> Path:
 
 def _get_lock_dir() -> Path:
     """Return the machine-local directory for token-scoped gateway locks."""
-    override = os.getenv("TRIIBAL_GATEWAY_LOCK_DIR")
+    override = os.getenv("TRIBAL_GATEWAY_LOCK_DIR")
     if override:
         return Path(override)
     state_home = Path(os.getenv("XDG_STATE_HOME", Path.home() / ".local" / "state"))
-    return state_home / "triibal" / _LOCKS_DIRNAME
+    return state_home / "tribal" / _LOCKS_DIRNAME
 
 
 def _utc_now_iso() -> str:
@@ -165,16 +165,16 @@ def _read_process_cmdline(pid: int) -> Optional[str]:
 
 
 def _looks_like_gateway_process(pid: int) -> bool:
-    """Return True when the live PID still looks like the Triibal gateway."""
+    """Return True when the live PID still looks like the Tribal gateway."""
     cmdline = _read_process_cmdline(pid)
     if not cmdline:
         return False
 
     patterns = (
-        "triibal_cli.main gateway",
-        "triibal_cli/main.py gateway",
-        "triibal gateway",
-        "triibal-gateway",
+        "tribal_cli.main gateway",
+        "tribal_cli/main.py gateway",
+        "tribal gateway",
+        "tribal-gateway",
         "gateway/run.py",
     )
     return any(pattern in cmdline for pattern in patterns)
@@ -192,9 +192,9 @@ def _record_looks_like_gateway(record: dict[str, Any]) -> bool:
     # Normalize Windows backslashes so patterns match cross-platform.
     cmdline = " ".join(str(part) for part in argv).replace("\\", "/")
     patterns = (
-        "triibal_cli.main gateway",
-        "triibal_cli/main.py gateway",
-        "triibal gateway",
+        "tribal_cli.main gateway",
+        "tribal_cli/main.py gateway",
+        "tribal gateway",
         "gateway/run.py",
     )
     return any(pattern in cmdline for pattern in patterns)
@@ -579,7 +579,7 @@ def acquire_scoped_lock(scope: str, identity: str, metadata: Optional[dict[str, 
     """Acquire a machine-local lock keyed by scope + identity.
 
     Used to prevent multiple local gateways from using the same external identity
-    at once (e.g. the same Telegram bot token across different TRIIBAL_HOME dirs).
+    at once (e.g. the same Telegram bot token across different TRIBAL_HOME dirs).
     """
     lock_path = _get_scope_lock_path(scope, identity)
     lock_path.parent.mkdir(parents=True, exist_ok=True)
@@ -747,7 +747,7 @@ def release_all_scoped_locks(
 # unexpected kills — but that also means a --replace takeover target
 # exits 1, which tricks systemd into reviving it 30 seconds later,
 # starting a flap loop against the replacer when both services are
-# enabled in the user's systemd (e.g. ``triibal.service`` + ``triibal-
+# enabled in the user's systemd (e.g. ``tribal.service`` + ``tribal-
 # gateway.service``).
 #
 # The takeover marker breaks the loop: the replacer writes a short-lived
@@ -766,13 +766,13 @@ _PLANNED_STOP_MARKER_TTL_S = 60
 
 def _get_takeover_marker_path() -> Path:
     """Return the path to the --replace takeover marker file."""
-    home = get_triibal_home()
+    home = get_tribal_home()
     return home / _TAKEOVER_MARKER_FILENAME
 
 
 def _get_planned_stop_marker_path() -> Path:
     """Return the path to the intentional gateway stop marker file."""
-    home = get_triibal_home()
+    home = get_tribal_home()
     return home / _PLANNED_STOP_MARKER_FILENAME
 
 

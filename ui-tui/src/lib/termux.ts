@@ -9,17 +9,17 @@ export const isTermuxEnv = (env: NodeJS.ProcessEnv = process.env): boolean => {
 }
 
 /**
- * Return true when Triibal should enable Termux-focused TUI defaults.
+ * Return true when Tribal should enable Termux-focused TUI defaults.
  *
  * Defaults to on in Termux, with an explicit opt-out for debugging:
- *   TRIIBAL_TUI_TERMUX_MODE=0
+ *   TRIBAL_TUI_TERMUX_MODE=0
  */
 export const isTermuxTuiMode = (env: NodeJS.ProcessEnv = process.env): boolean => {
   if (!isTermuxEnv(env)) {
     return false
   }
 
-  const override = String(env.TRIIBAL_TUI_TERMUX_MODE ?? '').trim().toLowerCase()
+  const override = String(env.TRIBAL_TUI_TERMUX_MODE ?? '').trim().toLowerCase()
 
   if (override) {
     return truthy(override)

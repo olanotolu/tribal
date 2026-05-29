@@ -1,4 +1,4 @@
-import { Box, Text } from '@triibal/ink'
+import { Box, Text } from '@tribal/ink'
 import { useStore } from '@nanostores/react'
 
 import { useGateway } from '../app/gatewayContext.js'

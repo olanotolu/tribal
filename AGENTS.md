@@ -1,6 +1,6 @@
-# Triibal Agent - Development Guide
+# Tribal Agent - Development Guide
 
-Instructions for AI coding assistants and developers working on the triibal-agent codebase.
+Instructions for AI coding assistants and developers working on the tribal-agent codebase.
 
 ## Development Environment
 
@@ -10,7 +10,7 @@ source .venv/bin/activate   # or: source venv/bin/activate
 ```
 
 `scripts/run_tests.sh` probes `.venv` first, then `venv`, then
-`$HOME/.triibal/triibal-agent/venv` (for worktrees that share a venv with the
+`$HOME/.tribal/tribal-agent/venv` (for worktrees that share a venv with the
 main checkout).
 
 ## Project Structure
@@ -20,17 +20,17 @@ The canonical source is the filesystem. The notes call out the load-bearing
 entry points you'll actually edit.
 
 ```
-triibal-agent/
+tribal-agent/
 ├── run_agent.py          # AIAgent class — core conversation loop (~12k LOC)
 ├── model_tools.py        # Tool orchestration, discover_builtin_tools(), handle_function_call()
-├── toolsets.py           # Toolset definitions, _TRIIBAL_CORE_TOOLS list
-├── cli.py                # TriibalCLI class — interactive CLI orchestrator (~11k LOC)
-├── triibal_state.py       # SessionDB — SQLite session store (FTS5 search)
-├── triibal_constants.py   # get_triibal_home(), display_triibal_home() — profile-aware paths
-├── triibal_logging.py     # setup_logging() — agent.log / errors.log / gateway.log (profile-aware)
+├── toolsets.py           # Toolset definitions, _TRIBAL_CORE_TOOLS list
+├── cli.py                # TribalCLI class — interactive CLI orchestrator (~11k LOC)
+├── tribal_state.py       # SessionDB — SQLite session store (FTS5 search)
+├── tribal_constants.py   # get_tribal_home(), display_tribal_home() — profile-aware paths
+├── tribal_logging.py     # setup_logging() — agent.log / errors.log / gateway.log (profile-aware)
 ├── batch_runner.py       # Parallel batch processing
 ├── agent/                # Agent internals (provider adapters, memory, caching, compression, etc.)
-├── triibal_cli/           # CLI subcommands, setup wizard, plugins loader, skin engine
+├── tribal_cli/           # CLI subcommands, setup wizard, plugins loader, skin engine
 ├── tools/                # Tool implementations — auto-discovered via tools/registry.py
 │   └── environments/     # Terminal backends (local, docker, ssh, modal, daytona, singularity)
 ├── gateway/              # Messaging gateway — run.py + session.py + platforms/
@@ -44,14 +44,14 @@ triibal-agent/
 │   ├── context_engine/   # Context-engine plugins
 │   ├── model-providers/  # Inference backend plugins (openrouter, anthropic, gmi, ...)
 │   ├── kanban/           # Multi-agent board dispatcher + worker plugin
-│   ├── triibal-achievements/  # Gamified achievement tracking
+│   ├── tribal-achievements/  # Gamified achievement tracking
 │   ├── observability/    # Metrics / traces / logs plugin
 │   ├── image_gen/        # Image-generation providers
 │   └── <others>/         # disk-cleanup, example-dashboard, google_meet, platforms,
 │                         #   spotify, strike-freedom-cockpit, ...
 ├── optional-skills/      # Heavier/niche skills shipped but NOT active by default
 ├── skills/               # Built-in skills bundled with the repo
-├── ui-tui/               # Ink (React) terminal UI — `triibal --tui`
+├── ui-tui/               # Ink (React) terminal UI — `tribal --tui`
 │   └── src/              # entry.tsx, app.tsx, gatewayClient.ts + app/components/hooks/lib
 ├── tui_gateway/          # Python JSON-RPC backend for the TUI
 ├── acp_adapter/          # ACP server (VS Code / Zed / JetBrains integration)
@@ -61,10 +61,10 @@ triibal-agent/
 └── tests/                # Pytest suite (~17k tests across ~900 files as of May 2026)
 ```
 
-**User config:** `~/.triibal/config.yaml` (settings), `~/.triibal/.env` (API keys only).
-**Logs:** `~/.triibal/logs/` — `agent.log` (INFO+), `errors.log` (WARNING+),
-`gateway.log` when running the gateway. Profile-aware via `get_triibal_home()`.
-Browse with `triibal logs [--follow] [--level ...] [--session ...]`.
+**User config:** `~/.tribal/config.yaml` (settings), `~/.tribal/.env` (API keys only).
+**Logs:** `~/.tribal/logs/` — `agent.log` (INFO+), `errors.log` (WARNING+),
+`gateway.log` when running the gateway. Profile-aware via `get_tribal_home()`.
+Browse with `tribal logs [--follow] [--level ...] [--session ...]`.
 
 ## File Dependency Chain
 
@@ -145,11 +145,11 @@ Reasoning content is stored in `assistant_msg["reasoning"]`.
 - **Rich** for banner/panels, **prompt_toolkit** for input with autocomplete
 - **KawaiiSpinner** (`agent/display.py`) — animated faces during API calls, `┊` activity feed for tool results
 - `load_cli_config()` in cli.py merges hardcoded defaults + user config YAML
-- **Skin engine** (`triibal_cli/skin_engine.py`) — data-driven CLI theming; initialized from `display.skin` config key at startup; skins customize banner colors, spinner faces/verbs/wings, tool prefix, response box, branding text
-- `process_command()` is a method on `TriibalCLI` — dispatches on canonical command name resolved via `resolve_command()` from the central registry
-- Skill slash commands: `agent/skill_commands.py` scans `~/.triibal/skills/`, injects as **user message** (not system prompt) to preserve prompt caching
+- **Skin engine** (`tribal_cli/skin_engine.py`) — data-driven CLI theming; initialized from `display.skin` config key at startup; skins customize banner colors, spinner faces/verbs/wings, tool prefix, response box, branding text
+- `process_command()` is a method on `TribalCLI` — dispatches on canonical command name resolved via `resolve_command()` from the central registry
+- Skill slash commands: `agent/skill_commands.py` scans `~/.tribal/skills/`, injects as **user message** (not system prompt) to preserve prompt caching
 
-### Slash Command Registry (`triibal_cli/commands.py`)
+### Slash Command Registry (`tribal_cli/commands.py`)
 
 All slash commands are defined in a central `COMMAND_REGISTRY` list of `CommandDef` objects. Every downstream consumer derives from this registry automatically:
 
@@ -157,18 +157,18 @@ All slash commands are defined in a central `COMMAND_REGISTRY` list of `CommandD
 - **Gateway** — `GATEWAY_KNOWN_COMMANDS` frozenset for hook emission, `resolve_command()` for dispatch
 - **Gateway help** — `gateway_help_lines()` generates `/help` output
 - **Telegram** — `telegram_bot_commands()` generates the BotCommand menu
-- **Slack** — `slack_subcommand_map()` generates `/triibal` subcommand routing
+- **Slack** — `slack_subcommand_map()` generates `/tribal` subcommand routing
 - **Autocomplete** — `COMMANDS` flat dict feeds `SlashCommandCompleter`
 - **CLI help** — `COMMANDS_BY_CATEGORY` dict feeds `show_help()`
 
 ### Adding a Slash Command
 
-1. Add a `CommandDef` entry to `COMMAND_REGISTRY` in `triibal_cli/commands.py`:
+1. Add a `CommandDef` entry to `COMMAND_REGISTRY` in `tribal_cli/commands.py`:
 ```python
 CommandDef("mycommand", "Description of what it does", "Session",
            aliases=("mc",), args_hint="[arg]"),
 ```
-2. Add handler in `TriibalCLI.process_command()` in `cli.py`:
+2. Add handler in `TribalCLI.process_command()` in `cli.py`:
 ```python
 elif canonical == "mycommand":
     self._handle_mycommand(cmd_original)
@@ -196,12 +196,12 @@ if canonical == "mycommand":
 
 ## TUI Architecture (ui-tui + tui_gateway)
 
-The TUI is a full replacement for the classic (prompt_toolkit) CLI, activated via `triibal --tui` or `TRIIBAL_TUI=1`.
+The TUI is a full replacement for the classic (prompt_toolkit) CLI, activated via `tribal --tui` or `TRIBAL_TUI=1`.
 
 ### Process Model
 
 ```
-triibal --tui
+tribal --tui
   └─ Node (Ink)  ──stdio JSON-RPC──  Python (tui_gateway)
        │                                  └─ AIAgent + tools + sessions
        └─ renders transcript, composer, prompts, activity
@@ -236,25 +236,25 @@ Newline-delimited JSON-RPC over stdio. Requests from Ink, events from Python. Se
 ```bash
 cd ui-tui
 npm install       # first time
-npm run dev       # watch mode (rebuilds triibal-ink + tsx --watch)
+npm run dev       # watch mode (rebuilds tribal-ink + tsx --watch)
 npm start         # production
-npm run build     # full build (triibal-ink + tsc)
+npm run build     # full build (tribal-ink + tsc)
 npm run type-check # typecheck only (tsc --noEmit)
 npm run lint      # eslint
 npm run fmt       # prettier
 npm test          # vitest
 ```
 
-### TUI in the Dashboard (`triibal dashboard` → `/chat`)
+### TUI in the Dashboard (`tribal dashboard` → `/chat`)
 
-The dashboard embeds the real `triibal --tui` — **not** a rewrite.  See `triibal_cli/pty_bridge.py` + the `@app.websocket("/api/pty")` endpoint in `triibal_cli/web_server.py`.
+The dashboard embeds the real `tribal --tui` — **not** a rewrite.  See `tribal_cli/pty_bridge.py` + the `@app.websocket("/api/pty")` endpoint in `tribal_cli/web_server.py`.
 
 - Browser loads `web/src/pages/ChatPage.tsx`, which mounts xterm.js's `Terminal` with the WebGL renderer, `@xterm/addon-fit` for container-driven resize, and `@xterm/addon-unicode11` for modern wide-character widths.
 - `/api/pty?token=…` upgrades to a WebSocket; auth uses the same ephemeral `_SESSION_TOKEN` as REST, via query param (browsers can't set `Authorization` on WS upgrade).
-- The server spawns whatever `triibal --tui` would spawn, through `ptyprocess` (POSIX PTY — WSL works, native Windows does not).
+- The server spawns whatever `tribal --tui` would spawn, through `ptyprocess` (POSIX PTY — WSL works, native Windows does not).
 - Frames: raw PTY bytes each direction; resize via `\x1b[RESIZE:<cols>;<rows>]` intercepted on the server and applied with `TIOCSWINSZ`.
 
-**Do not re-implement the primary chat experience in React.** The main transcript, composer/input flow (including slash-command behavior), and PTY-backed terminal belong to the embedded `triibal --tui` — anything new you add to Ink shows up in the dashboard automatically. If you find yourself rebuilding the transcript or composer for the dashboard, stop and extend Ink instead.
+**Do not re-implement the primary chat experience in React.** The main transcript, composer/input flow (including slash-command behavior), and PTY-backed terminal belong to the embedded `tribal --tui` — anything new you add to Ink shows up in the dashboard automatically. If you find yourself rebuilding the transcript or composer for the dashboard, stop and extend Ink instead.
 
 **Structured React UI around the TUI is allowed when it is not a second chat surface.** Sidebar widgets, inspectors, summaries, status panels, and similar supporting views (e.g. `ChatSidebar`, `ModelPickerDialog`, `ToolCall`) are fine when they complement the embedded TUI rather than replacing the transcript / composer / terminal. Keep their state independent of the PTY child's session and surface their failures non-destructively so the terminal pane keeps working unimpaired.
 
@@ -262,14 +262,14 @@ The dashboard embeds the real `triibal --tui` — **not** a rewrite.  See `triib
 
 ## Adding New Tools
 
-For most custom or local-only tools, do **not** edit Triibal core. Use the plugin
-route instead: create `~/.triibal/plugins/<name>/plugin.yaml` and
-`~/.triibal/plugins/<name>/__init__.py`, then register tools with
+For most custom or local-only tools, do **not** edit Tribal core. Use the plugin
+route instead: create `~/.tribal/plugins/<name>/plugin.yaml` and
+`~/.tribal/plugins/<name>/__init__.py`, then register tools with
 `ctx.register_tool(...)`. Plugin toolsets are discovered automatically and can be
 enabled or disabled without touching `tools/` or `toolsets.py`.
 
 Use the built-in route below only when the user is explicitly contributing a new
-core Triibal tool that should ship in the base system.
+core Tribal tool that should ship in the base system.
 
 Built-in/core tools require changes in **2 files**:
 
@@ -294,15 +294,15 @@ registry.register(
 )
 ```
 
-**2. Add to `toolsets.py`** — either `_TRIIBAL_CORE_TOOLS` (all platforms) or a new toolset. **This step is required:** auto-discovery imports the tool and registers its schema, but the tool is only *exposed to an agent* if its name appears in a toolset. `_TRIIBAL_CORE_TOOLS` is not dead code — it's the default bundle every platform's base toolset inherits from.
+**2. Add to `toolsets.py`** — either `_TRIBAL_CORE_TOOLS` (all platforms) or a new toolset. **This step is required:** auto-discovery imports the tool and registers its schema, but the tool is only *exposed to an agent* if its name appears in a toolset. `_TRIBAL_CORE_TOOLS` is not dead code — it's the default bundle every platform's base toolset inherits from.
 
 Auto-discovery: any `tools/*.py` file with a top-level `registry.register()` call is imported automatically — no manual import list to maintain. Wiring into a toolset is still a deliberate, manual step.
 
 The registry handles schema collection, dispatch, availability checking, and error wrapping. All handlers MUST return a JSON string.
 
-**Path references in tool schemas**: If the schema description mentions file paths (e.g. default output directories), use `display_triibal_home()` to make them profile-aware. The schema is generated at import time, which is after `_apply_profile_override()` sets `TRIIBAL_HOME`.
+**Path references in tool schemas**: If the schema description mentions file paths (e.g. default output directories), use `display_tribal_home()` to make them profile-aware. The schema is generated at import time, which is after `_apply_profile_override()` sets `TRIBAL_HOME`.
 
-**State files**: If a tool stores persistent state (caches, logs, checkpoints), use `get_triibal_home()` for the base directory — never `Path.home() / ".triibal"`. This ensures each profile gets its own state.
+**State files**: If a tool stores persistent state (caches, logs, checkpoints), use `get_tribal_home()` for the base directory — never `Path.home() / ".tribal"`. This ensures each profile gets its own state.
 
 **Agent-level tools** (todo, memory): intercepted by `run_agent.py` before `handle_function_call()`. See `tools/todo_tool.py` for the pattern.
 
@@ -334,7 +334,7 @@ Reference: #2810 (bounds pass), #9801 (SHA pinning + audit CI).
 ## Adding Configuration
 
 ### config.yaml options:
-1. Add to `DEFAULT_CONFIG` in `triibal_cli/config.py`
+1. Add to `DEFAULT_CONFIG` in `tribal_cli/config.py`
 2. Bump `_config_version` (check the current value at the top of `DEFAULT_CONFIG`)
    ONLY if you need to actively migrate/transform existing user config
    (renaming keys, changing structure). Adding a new key to an existing
@@ -358,7 +358,7 @@ its own provider/model/base_url/max_tokens/reasoning_effort. See
 `archive_after_days`, `backup` (nested).
 
 ### .env variables (SECRETS ONLY — API keys, tokens, passwords):
-1. Add to `OPTIONAL_ENV_VARS` in `triibal_cli/config.py` with metadata:
+1. Add to `OPTIONAL_ENV_VARS` in `tribal_cli/config.py` with metadata:
 ```python
 "NEW_API_KEY": {
     "description": "What it's for",
@@ -379,7 +379,7 @@ the env var in code (see `gateway_timeout`, `terminal.cwd` → `TERMINAL_CWD`).
 | Loader | Used by | Location |
 |--------|---------|----------|
 | `load_cli_config()` | CLI mode | `cli.py` — merges CLI-specific defaults + user YAML |
-| `load_config()` | `triibal tools`, `triibal setup`, most CLI subcommands | `triibal_cli/config.py` — merges `DEFAULT_CONFIG` + user YAML |
+| `load_config()` | `tribal tools`, `tribal setup`, most CLI subcommands | `tribal_cli/config.py` — merges `DEFAULT_CONFIG` + user YAML |
 | Direct YAML load | Gateway runtime | `gateway/run.py` + `gateway/config.py` — reads user YAML raw |
 
 If you add a new key and the CLI sees it but the gateway doesn't (or vice
@@ -397,13 +397,13 @@ versa), you're on the wrong loader. Check `DEFAULT_CONFIG` coverage.
 
 ## Skin/Theme System
 
-The skin engine (`triibal_cli/skin_engine.py`) provides data-driven CLI visual customization. Skins are **pure data** — no code changes needed to add a new skin.
+The skin engine (`tribal_cli/skin_engine.py`) provides data-driven CLI visual customization. Skins are **pure data** — no code changes needed to add a new skin.
 
 ### Architecture
 
 ```
-triibal_cli/skin_engine.py    # SkinConfig dataclass, built-in skins, YAML loader
-~/.triibal/skins/*.yaml       # User-installed custom skins (drop-in)
+tribal_cli/skin_engine.py    # SkinConfig dataclass, built-in skins, YAML loader
+~/.tribal/skins/*.yaml       # User-installed custom skins (drop-in)
 ```
 
 - `init_skin_from_config()` — called at CLI startup, reads `display.skin` from config
@@ -435,14 +435,14 @@ triibal_cli/skin_engine.py    # SkinConfig dataclass, built-in skins, YAML loade
 
 ### Built-in skins
 
-- `default` — Classic Triibal gold/kawaii (the current look)
+- `default` — Classic Tribal gold/kawaii (the current look)
 - `ares` — Crimson/bronze war-god theme with custom spinner wings
 - `mono` — Clean grayscale monochrome
 - `slate` — Cool blue developer-focused theme
 
 ### Adding a built-in skin
 
-Add to `_BUILTIN_SKINS` dict in `triibal_cli/skin_engine.py`:
+Add to `_BUILTIN_SKINS` dict in `tribal_cli/skin_engine.py`:
 
 ```python
 "mytheme": {
@@ -457,7 +457,7 @@ Add to `_BUILTIN_SKINS` dict in `triibal_cli/skin_engine.py`:
 
 ### User skins (YAML)
 
-Users create `~/.triibal/skins/<name>.yaml`:
+Users create `~/.tribal/skins/<name>.yaml`:
 
 ```yaml
 name: cyberpunk
@@ -486,13 +486,13 @@ Activate with `/skin cyberpunk` or `display.skin: cyberpunk` in config.yaml.
 
 ## Plugins
 
-Triibal has two plugin surfaces. Both live under `plugins/` in the repo so
+Tribal has two plugin surfaces. Both live under `plugins/` in the repo so
 repo-shipped plugins can be discovered alongside user-installed ones in
-`~/.triibal/plugins/` and pip-installed entry points.
+`~/.tribal/plugins/` and pip-installed entry points.
 
-### General plugins (`triibal_cli/plugins.py` + `plugins/<name>/`)
+### General plugins (`tribal_cli/plugins.py` + `plugins/<name>/`)
 
-`PluginManager` discovers plugins from `~/.triibal/plugins/`, `./.triibal/plugins/`,
+`PluginManager` discovers plugins from `~/.tribal/plugins/`, `./.tribal/plugins/`,
 and pip entry points. Each plugin exposes a `register(ctx)` function that
 can:
 
@@ -501,8 +501,8 @@ can:
   `on_session_start`, `on_session_end`
 - Register new tools via `ctx.register_tool(...)`
 - Register CLI subcommands via `ctx.register_cli_command(...)` — the
-  plugin's argparse tree is wired into `triibal` at startup so
-  `triibal <pluginname> <subcmd>` works with no change to `main.py`
+  plugin's argparse tree is wired into `tribal` at startup so
+  `tribal <pluginname> <subcmd>` works with no change to `main.py`
 
 Hooks are invoked from `model_tools.py` (pre/post tool) and `run_agent.py`
 (lifecycle). **Discovery timing pitfall:** `discover_plugins()` only runs
@@ -519,17 +519,17 @@ holographic, openviking, retaindb**.
 Each provider implements the `MemoryProvider` ABC (see `agent/memory_provider.py`)
 and is orchestrated by `agent/memory_manager.py`. Lifecycle hooks include
 `sync_turn(turn_messages)`, `prefetch(query)`, `shutdown()`, and optional
-`post_setup(triibal_home, config)` for setup-wizard integration.
+`post_setup(tribal_home, config)` for setup-wizard integration.
 
 **CLI commands via `plugins/memory/<name>/cli.py`:** if a memory plugin
 defines `register_cli(subparser)`, `discover_plugin_cli_commands()` finds
-it at argparse setup time and wires it into `triibal <plugin>`. The
+it at argparse setup time and wires it into `tribal <plugin>`. The
 framework only exposes CLI commands for the **currently active** memory
 provider (read from `memory.provider` in config.yaml), so disabled
-providers don't clutter `triibal --help`.
+providers don't clutter `tribal --help`.
 
 **Rule (Teknium, May 2026):** plugins MUST NOT modify core files
-(`run_agent.py`, `cli.py`, `gateway/run.py`, `triibal_cli/main.py`, etc.).
+(`run_agent.py`, `cli.py`, `gateway/run.py`, `tribal_cli/main.py`, etc.).
 If a plugin needs a capability the framework doesn't expose, expand the
 generic plugin surface (new hook, new ctx method) — never hardcode
 plugin-specific logic into core. PR #5295 removed 95 lines of hardcoded
@@ -538,9 +538,9 @@ honcho argparse from `main.py` for exactly this reason.
 **No new in-tree memory providers (policy, May 2026):** the set of
 built-in memory providers under `plugins/memory/` is closed. New memory
 backends must ship as **standalone plugin repos** that users install
-into `~/.triibal/plugins/` (or via pip entry points) — they implement
+into `~/.tribal/plugins/` (or via pip entry points) — they implement
 the same `MemoryProvider` ABC, register through the same discovery
-path, and integrate via `triibal memory setup` / `post_setup()` without
+path, and integrate via `tribal memory setup` / `post_setup()` without
 landing in this tree. PRs that add a new directory under
 `plugins/memory/` will be closed with a pointer to publish the
 provider as its own repo. Existing in-tree providers stay; bug fixes
@@ -557,7 +557,7 @@ discovery system** — scanned on first `get_provider_profile()` or
 
 Scan order:
 1. Bundled: `<repo>/plugins/model-providers/<name>/`
-2. User: `$TRIIBAL_HOME/plugins/model-providers/<name>/`
+2. User: `$TRIBAL_HOME/plugins/model-providers/<name>/`
 3. Legacy: `<repo>/providers/<name>.py` (back-compat)
 
 User plugins of the same name override bundled ones — `register_provider()`
@@ -579,7 +579,7 @@ plug into `agent/context_engine.py`; image-gen providers into
 `agent/image_gen_provider.py`. Reference / docs-companion plugins
 (`example-dashboard`, `strike-freedom-cockpit`, `plugin-llm-example`,
 `plugin-llm-async-example`) live in the
-[`triibal-example-plugins`](https://github.com/NousResearch/triibal-example-plugins)
+[`tribal-example-plugins`](https://github.com/NousResearch/tribal-example-plugins)
 companion repo, not in this tree.
 
 ---
@@ -592,7 +592,7 @@ Two parallel surfaces:
   Organized by category directories (e.g. `skills/github/`, `skills/mlops/`).
 - **`optional-skills/`** — heavier or niche skills shipped with the repo but
   NOT active by default. Installed explicitly via
-  `triibal skills install official/<category>/<skill>`. Adapter lives in
+  `tribal skills install official/<category>/<skill>`. Adapter lives in
   `tools/skills_hub.py` (`OptionalSkillSource`). Categories include
   `autonomous-ai-agents`, `blockchain`, `communication`, `creative`,
   `devops`, `email`, `health`, `mcp`, `migration`, `mlops`, `productivity`,
@@ -605,13 +605,13 @@ niche skills belong in `optional-skills/`.
 
 Standard fields: `name`, `description`, `version`, `author`, `license`,
 `platforms` (OS-gating list: `[macos]`, `[linux, macos]`, ...),
-`metadata.triibal.tags`, `metadata.triibal.category`,
-`metadata.triibal.related_skills`, `metadata.triibal.config` (config.yaml
+`metadata.tribal.tags`, `metadata.tribal.category`,
+`metadata.tribal.related_skills`, `metadata.tribal.config` (config.yaml
 settings the skill needs — stored under `skills.config.<key>`, prompted
 during setup, injected at load time).
 
 Top-level `tags:` and `category:` are also accepted and mirrored from
-`metadata.triibal.*` by the loader.
+`metadata.tribal.*` by the loader.
 
 ### Skill authoring standards (HARDLINE)
 
@@ -633,7 +633,7 @@ violate them.
    assert len(m.group(1)) <= 60, len(m.group(1))
    ```
 
-2. **Tools referenced in SKILL.md prose must be native Triibal tools or
+2. **Tools referenced in SKILL.md prose must be native Tribal tools or
    MCP servers the skill explicitly expects.** When the skill needs a
    capability, point at the proper tool by name in backticks
    (`` `terminal` ``, `` `web_extract` ``, `` `read_file` ``,
@@ -659,9 +659,9 @@ violate them.
 
 4. **`author` credits the human contributor first.** For external
    contributions, the contributor's real name + GitHub handle goes
-   first; "Triibal Agent" is the secondary collaborator. If the
-   contributor's commit shows "Triibal Agent" as author (because they
-   used Triibal to draft the skill), replace it with their actual name
+   first; "Tribal Agent" is the secondary collaborator. If the
+   contributor's commit shows "Tribal Agent" as author (because they
+   used Tribal to draft the skill), replace it with their actual name
    — credit the human, not the tool.
 
 5. **SKILL.md body uses the modern section order.** `# <Skill> Skill`
@@ -689,7 +689,7 @@ violate them.
    skill's own block must be dropped during salvage.
 
 The full salvage / modernization checklist for external skill PRs
-lives in the `triibal-agent-dev` skill at
+lives in the `tribal-agent-dev` skill at
 `references/new-skill-pr-salvage.md` — load it before polishing
 contributor skill PRs.
 
@@ -699,7 +699,7 @@ contributor skill PRs.
 
 All toolsets are defined in `toolsets.py` as a single `TOOLSETS` dict.
 Each platform's adapter picks a base toolset (e.g. Telegram uses
-`"messaging"`); `_TRIIBAL_CORE_TOOLS` is the default bundle most
+`"messaging"`); `_TRIBAL_CORE_TOOLS` is the default bundle most
 platforms inherit from.
 
 Current toolset keys: `browser`, `clarify`, `code_execution`, `cronjob`,
@@ -708,7 +708,7 @@ Current toolset keys: `browser`, `clarify`, `code_execution`, `cronjob`,
 `messaging`, `moa`, `rl`, `safe`, `search`, `session_search`, `skills`,
 `spotify`, `terminal`, `todo`, `tts`, `video`, `vision`, `web`, `yuanbao`.
 
-Enable/disable per platform via `triibal tools` (the curses UI) or the
+Enable/disable per platform via `tribal tools` (the curses UI) or the
 `tools.<platform>.enabled` / `tools.<platform>.disabled` lists in
 `config.yaml`.
 
@@ -751,15 +751,15 @@ work that must outlive the current turn, use `cronjob` or
 
 Background skill-maintenance system that tracks usage on agent-created
 skills and auto-archives stale ones. Users never lose skills; archives
-go to `~/.triibal/skills/.archive/` and are restorable.
+go to `~/.tribal/skills/.archive/` and are restorable.
 
 - **Core:** `agent/curator.py` (review loop, auto-transitions, LLM review
   prompt) + `agent/curator_backup.py` (pre-run tar.gz snapshots).
-- **CLI:** `triibal_cli/curator.py` wires `triibal curator <verb>` where
+- **CLI:** `tribal_cli/curator.py` wires `tribal curator <verb>` where
   verbs are: `status`, `run`, `pause`, `resume`, `pin`, `unpin`,
   `archive`, `restore`, `prune`, `backup`, `rollback`.
 - **Telemetry:** `tools/skill_usage.py` owns the sidecar
-  `~/.triibal/skills/.usage.json` — per-skill `use_count`, `view_count`,
+  `~/.tribal/skills/.usage.json` — per-skill `use_count`, `view_count`,
   `patch_count`, `last_activity_at`, `state` (active / stale /
   archived), `pinned`.
 
@@ -784,7 +784,7 @@ Full user-facing docs: `website/docs/user-guide/features/curator.md`.
 ## Cron (scheduled jobs)
 
 `cron/jobs.py` (job store) + `cron/scheduler.py` (tick loop). Agents
-schedule jobs via the `cronjob` tool; users via `triibal cron <verb>`
+schedule jobs via the `cronjob` tool; users via `tribal cron <verb>`
 (`list`, `add`, `edit`, `pause`, `resume`, `run`, `remove`) or the
 `/cron` slash command.
 
@@ -806,7 +806,7 @@ Hardening invariants:
   cannot monopolize the scheduler.
 - Catchup window: half the job's period, clamped to 120s–2h.
 - Grace window: 120s for one-shot jobs whose fire time was missed.
-- File lock at `~/.triibal/cron/.tick.lock` prevents duplicate ticks
+- File lock at `~/.tribal/cron/.tick.lock` prevents duplicate ticks
   across processes.
 - Cron sessions pass `skip_memory=True` by default; memory providers
   intentionally do not run during cron.
@@ -820,12 +820,12 @@ main conversation's message-role alternation stays intact.
 ## Kanban (multi-agent work queue)
 
 Durable SQLite-backed board that lets multiple profiles / workers
-collaborate on shared tasks. Users drive it via `triibal kanban <verb>`;
+collaborate on shared tasks. Users drive it via `tribal kanban <verb>`;
 workers spawned by the dispatcher drive it via a dedicated `kanban_*`
 toolset so their schema footprint is zero when they're not inside a
 kanban task.
 
-- **CLI:** `triibal_cli/kanban.py` wires `triibal kanban` with verbs
+- **CLI:** `tribal_cli/kanban.py` wires `tribal kanban` with verbs
   `init`, `create`, `list` (alias `ls`), `show`, `assign`, `link`,
   `unlink`, `comment`, `complete`, `block`, `unblock`, `archive`,
   `tail`, plus less-commonly-used `watch`, `stats`, `runs`, `log`,
@@ -840,12 +840,12 @@ kanban task.
   assigned profiles. Runs **inside the gateway** by default via
   `kanban.dispatch_in_gateway: true`.
 - **Plugin assets:** `plugins/kanban/dashboard/` (web UI) +
-  `plugins/kanban/systemd/` (`triibal-kanban-dispatcher.service` for
+  `plugins/kanban/systemd/` (`tribal-kanban-dispatcher.service` for
   standalone dispatcher deployment).
 
 Isolation model:
 - **Board** is the hard boundary — workers are spawned with
-  `TRIIBAL_KANBAN_BOARD` pinned in their env so they can't see other
+  `TRIBAL_KANBAN_BOARD` pinned in their env so they can't see other
   boards.
 - **Tenant** is a soft namespace *within* a board — one specialist
   fleet can serve multiple businesses with workspace-path + memory-key
@@ -862,7 +862,7 @@ Full user-facing docs: `website/docs/user-guide/features/kanban.md`.
 
 ### Prompt Caching Must Not Break
 
-Triibal-Agent ensures caching remains valid throughout a conversation. **Do NOT implement changes that would:**
+Tribal-Agent ensures caching remains valid throughout a conversation. **Do NOT implement changes that would:**
 - Alter past context mid-conversation
 - Change toolsets mid-conversation
 - Reload memories or rebuild system prompts mid-conversation
@@ -879,7 +879,7 @@ invalidation. See `/skills install --now` for the canonical pattern.
 When `terminal(background=true, notify_on_complete=true)` is used, the gateway runs a watcher that
 detects process completion and triggers a new agent turn. Control verbosity of background process
 messages with `display.background_process_notifications`
-in config.yaml (or `TRIIBAL_BACKGROUND_NOTIFICATIONS` env var):
+in config.yaml (or `TRIBAL_BACKGROUND_NOTIFICATIONS` env var):
 
 - `all` — running-output updates + final message (default)
 - `result` — only the final completion message
@@ -890,46 +890,46 @@ in config.yaml (or `TRIIBAL_BACKGROUND_NOTIFICATIONS` env var):
 
 ## Profiles: Multi-Instance Support
 
-Triibal supports **profiles** — multiple fully isolated instances, each with its own
-`TRIIBAL_HOME` directory (config, API keys, memory, sessions, skills, gateway, etc.).
+Tribal supports **profiles** — multiple fully isolated instances, each with its own
+`TRIBAL_HOME` directory (config, API keys, memory, sessions, skills, gateway, etc.).
 
-The core mechanism: `_apply_profile_override()` in `triibal_cli/main.py` sets
-`TRIIBAL_HOME` before any module imports. All `get_triibal_home()` references
+The core mechanism: `_apply_profile_override()` in `tribal_cli/main.py` sets
+`TRIBAL_HOME` before any module imports. All `get_tribal_home()` references
 automatically scope to the active profile.
 
 ### Rules for profile-safe code
 
-1. **Use `get_triibal_home()` for all TRIIBAL_HOME paths.** Import from `triibal_constants`.
-   NEVER hardcode `~/.triibal` or `Path.home() / ".triibal"` in code that reads/writes state.
+1. **Use `get_tribal_home()` for all TRIBAL_HOME paths.** Import from `tribal_constants`.
+   NEVER hardcode `~/.tribal` or `Path.home() / ".tribal"` in code that reads/writes state.
    ```python
    # GOOD
-   from triibal_constants import get_triibal_home
-   config_path = get_triibal_home() / "config.yaml"
+   from tribal_constants import get_tribal_home
+   config_path = get_tribal_home() / "config.yaml"
 
    # BAD — breaks profiles
-   config_path = Path.home() / ".triibal" / "config.yaml"
+   config_path = Path.home() / ".tribal" / "config.yaml"
    ```
 
-2. **Use `display_triibal_home()` for user-facing messages.** Import from `triibal_constants`.
-   This returns `~/.triibal` for default or `~/.triibal/profiles/<name>` for profiles.
+2. **Use `display_tribal_home()` for user-facing messages.** Import from `tribal_constants`.
+   This returns `~/.tribal` for default or `~/.tribal/profiles/<name>` for profiles.
    ```python
    # GOOD
-   from triibal_constants import display_triibal_home
-   print(f"Config saved to {display_triibal_home()}/config.yaml")
+   from tribal_constants import display_tribal_home
+   print(f"Config saved to {display_tribal_home()}/config.yaml")
 
    # BAD — shows wrong path for profiles
-   print("Config saved to ~/.triibal/config.yaml")
+   print("Config saved to ~/.tribal/config.yaml")
    ```
 
-3. **Module-level constants are fine** — they cache `get_triibal_home()` at import time,
-   which is AFTER `_apply_profile_override()` sets the env var. Just use `get_triibal_home()`,
-   not `Path.home() / ".triibal"`.
+3. **Module-level constants are fine** — they cache `get_tribal_home()` at import time,
+   which is AFTER `_apply_profile_override()` sets the env var. Just use `get_tribal_home()`,
+   not `Path.home() / ".tribal"`.
 
-4. **Tests that mock `Path.home()` must also set `TRIIBAL_HOME`** — since code now uses
-   `get_triibal_home()` (reads env var), not `Path.home() / ".triibal"`:
+4. **Tests that mock `Path.home()` must also set `TRIBAL_HOME`** — since code now uses
+   `get_tribal_home()` (reads env var), not `Path.home() / ".tribal"`:
    ```python
    with patch.object(Path, "home", return_value=tmp_path), \
-        patch.dict(os.environ, {"TRIIBAL_HOME": str(tmp_path / ".triibal")}):
+        patch.dict(os.environ, {"TRIBAL_HOME": str(tmp_path / ".tribal")}):
        ...
    ```
 
@@ -939,24 +939,24 @@ automatically scope to the active profile.
    `disconnect()`/`stop()`. This prevents two profiles from using the same credential.
    See `gateway/platforms/telegram.py` for the canonical pattern.
 
-6. **Profile operations are HOME-anchored, not TRIIBAL_HOME-anchored** — `_get_profiles_root()`
-   returns `Path.home() / ".triibal" / "profiles"`, NOT `get_triibal_home() / "profiles"`.
-   This is intentional — it lets `triibal -p coder profile list` see all profiles regardless
+6. **Profile operations are HOME-anchored, not TRIBAL_HOME-anchored** — `_get_profiles_root()`
+   returns `Path.home() / ".tribal" / "profiles"`, NOT `get_tribal_home() / "profiles"`.
+   This is intentional — it lets `tribal -p coder profile list` see all profiles regardless
    of which one is active.
 
 ## Known Pitfalls
 
-### DO NOT hardcode `~/.triibal` paths
-Use `get_triibal_home()` from `triibal_constants` for code paths. Use `display_triibal_home()`
-for user-facing print/log messages. Hardcoding `~/.triibal` breaks profiles — each profile
-has its own `TRIIBAL_HOME` directory. This was the source of 5 bugs fixed in PR #3575.
+### DO NOT hardcode `~/.tribal` paths
+Use `get_tribal_home()` from `tribal_constants` for code paths. Use `display_tribal_home()`
+for user-facing print/log messages. Hardcoding `~/.tribal` breaks profiles — each profile
+has its own `TRIBAL_HOME` directory. This was the source of 5 bugs fixed in PR #3575.
 
 ### DO NOT introduce new `simple_term_menu` usage
-Existing call sites in `triibal_cli/main.py` remain for legacy fallback only;
+Existing call sites in `tribal_cli/main.py` remain for legacy fallback only;
 the preferred UI is curses (stdlib) because `simple_term_menu` has
 ghost-duplication rendering bugs in tmux/iTerm2 with arrow keys. New
-interactive menus must use `triibal_cli/curses_ui.py` — see
-`triibal_cli/tools_config.py` for the canonical pattern.
+interactive menus must use `tribal_cli/curses_ui.py` — see
+`tribal_cli/tools_config.py` for the canonical pattern.
 
 ### DO NOT use `\033[K` (ANSI erase-to-EOL) in spinner/display code
 Leaks as literal `?[K` text under `prompt_toolkit`'s `patch_stdout`. Use space-padding: `f"\r{line}{' ' * pad}"`.
@@ -989,21 +989,21 @@ red flag.
 ### Don't wire in dead code without E2E validation
 Unused code that was never shipped was dead for a reason. Before wiring an
 unused module into a live code path, E2E test the real resolution chain
-with actual imports (not mocks) against a temp `TRIIBAL_HOME`.
+with actual imports (not mocks) against a temp `TRIBAL_HOME`.
 
-### Tests must not write to `~/.triibal/`
-The `_isolate_triibal_home` autouse fixture in `tests/conftest.py` redirects `TRIIBAL_HOME` to a temp dir. Never hardcode `~/.triibal/` paths in tests.
+### Tests must not write to `~/.tribal/`
+The `_isolate_tribal_home` autouse fixture in `tests/conftest.py` redirects `TRIBAL_HOME` to a temp dir. Never hardcode `~/.tribal/` paths in tests.
 
 **Profile tests**: When testing profile features, also mock `Path.home()` so that
-`_get_profiles_root()` and `_get_default_triibal_home()` resolve within the temp dir.
-Use the pattern from `tests/triibal_cli/test_profiles.py`:
+`_get_profiles_root()` and `_get_default_tribal_home()` resolve within the temp dir.
+Use the pattern from `tests/tribal_cli/test_profiles.py`:
 ```python
 @pytest.fixture
 def profile_env(tmp_path, monkeypatch):
-    home = tmp_path / ".triibal"
+    home = tmp_path / ".tribal"
     home.mkdir()
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
     return home
 ```
 
@@ -1044,7 +1044,7 @@ Implementation notes:
 - Pass `--no-isolate` to disable isolation — useful when debugging a single
   test interactively, or when you specifically want to verify state leakage.
 - The plugin disables itself in child processes (sentinel envvar
-  `TRIIBAL_ISOLATE_CHILD=1`), so there's no fork-bomb risk.
+  `TRIBAL_ISOLATE_CHILD=1`), so there's no fork-bomb risk.
 
 ### Why the wrapper (and why the old "just call pytest" doesn't work)
 
@@ -1053,7 +1053,7 @@ Five real sources of local-vs-CI drift the script closes:
 | | Without wrapper | With wrapper |
 |---|---|---|
 | Provider API keys | Whatever is in your env (auto-detects pool) | All `*_API_KEY`/`*_TOKEN`/etc. unset |
-| HOME / `~/.triibal/` | Your real config+auth.json | Temp dir per test |
+| HOME / `~/.tribal/` | Your real config+auth.json | Temp dir per test |
 | Timezone | Local TZ (PDT etc.) | UTC |
 | Locale | Whatever is set | C.UTF-8 |
 | xdist workers | `-n auto` = all cores | `-n auto` (safe — subprocess isolation prevents cross-worker flakes) |

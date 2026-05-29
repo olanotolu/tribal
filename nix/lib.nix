@@ -18,14 +18,14 @@
   # trailing newline so both sides always match.
   #
   # Usage:
-  #   npm = triibalNpmLib.mkNpmPassthru { folder = "ui-tui"; attr = "tui"; pname = "triibal-tui"; };
+  #   npm = tribalNpmLib.mkNpmPassthru { folder = "ui-tui"; attr = "tui"; pname = "tribal-tui"; };
   #   pkgs.buildNpmPackage (npm // { ... } # or:
   #   pkgs.buildNpmPackage ({ ... } // npm)
   mkNpmPassthru =
     {
       folder, # repo-relative folder with package.json, e.g. "ui-tui"
       attr, # flake package attr, e.g. "tui"
-      pname, # e.g. "triibal-tui"
+      pname, # e.g. "tribal-tui"
       nixFile ? "nix/${attr}.nix", # defaults to nix/<attr>.nix
     }:
     {
@@ -81,12 +81,12 @@
         devShellHook = pkgs.writeShellScript "npm-dev-hook-${pname}" ''
           REPO_ROOT=$(git rev-parse --show-toplevel)
 
-          _triibal_npm_stamp() {
+          _tribal_npm_stamp() {
             sha256sum "${folder}/package.json" "${folder}/package-lock.json" \
               2>/dev/null | sha256sum | awk '{print $1}'
           }
           STAMP=".nix-stamps/${pname}"
-          STAMP_VALUE="$(_triibal_npm_stamp)"
+          STAMP_VALUE="$(_tribal_npm_stamp)"
           if [ ! -f "$STAMP" ] || [ "$(cat "$STAMP")" != "$STAMP_VALUE" ]; then
             echo "${pname}: installing npm dependencies..."
             ( cd ${folder} && CI=true ${pkgs.lib.getExe' nodejs "npm"} install --silent --no-fund --no-audit 2>/dev/null )
@@ -102,9 +102,9 @@
             fi
 
             mkdir -p .nix-stamps
-            _triibal_npm_stamp > "$STAMP"
+            _tribal_npm_stamp > "$STAMP"
           fi
-          unset -f _triibal_npm_stamp
+          unset -f _tribal_npm_stamp
         '';
 
         npmLockfile = {

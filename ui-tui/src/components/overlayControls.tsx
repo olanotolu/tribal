@@ -1,4 +1,4 @@
-import { Text, useInput } from '@triibal/ink'
+import { Text, useInput } from '@tribal/ink'
 
 import type { Theme } from '../theme.js'
 

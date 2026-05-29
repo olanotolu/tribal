@@ -17,7 +17,7 @@ ASCII art：pyfiglet、cowsay、boxes、image-to-ascii。
 | 来源 | 内置（默认安装） |
 | 路径 | `skills/creative/ascii-art` |
 | 版本 | `4.0.0` |
-| 作者 | 0xbyt4, Triibal Agent |
+| 作者 | 0xbyt4, Tribal Agent |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `ASCII`, `Art`, `Banners`, `Creative`, `Unicode`, `Text-Art`, `pyfiglet`, `figlet`, `cowsay`, `boxes` |
@@ -26,7 +26,7 @@ ASCII art：pyfiglet、cowsay、boxes、image-to-ascii。
 ## 参考：完整 SKILL.md
 
 :::info
-以下是 Triibal 在触发此 skill 时加载的完整 skill 定义。这是 agent 在 skill 激活时所看到的指令内容。
+以下是 Tribal 在触发此 skill 时加载的完整 skill 定义。这是 agent 在 skill 激活时所看到的指令内容。
 :::
 
 # ASCII Art Skill
@@ -172,9 +172,9 @@ boxes -l                                       # List all 70+ designs
 ### 与 pyfiglet 或 asciified 组合使用
 
 ```bash
-python3 -m pyfiglet "TRIIBAL" -f slant | boxes -d stone
+python3 -m pyfiglet "TRIBAL" -f slant | boxes -d stone
 # Or without pyfiglet installed:
-curl -s "https://asciified.thelicato.io/api/v2/ascii?text=TRIIBAL&font=Slant" | boxes -d stone
+curl -s "https://asciified.thelicato.io/api/v2/ascii?text=TRIBAL&font=Slant" | boxes -d stone
 ```
 
 ## 工具 5：TOIlet（彩色文字艺术）

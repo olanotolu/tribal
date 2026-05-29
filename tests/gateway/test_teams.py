@@ -349,13 +349,13 @@ class TestTeamsPluginRegistration:
 class TestTeamsInteractiveSetup:
     def test_interactive_setup_persists_credentials(self, tmp_path, monkeypatch):
         """Regression for #19173: interactive_setup must import prompt helpers
-        from triibal_cli.cli_output (not triibal_cli.config) and persist
+        from tribal_cli.cli_output (not tribal_cli.config) and persist
         credentials to .env without crashing.
         """
-        triibal_home = tmp_path / "triibal"
-        monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
+        tribal_home = tmp_path / "tribal"
+        monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
 
-        import triibal_cli.cli_output as cli_output_mod
+        import tribal_cli.cli_output as cli_output_mod
 
         answers = iter(["client-id", "client-secret", "tenant-id", "aad-1, aad-2"])
         monkeypatch.setattr(cli_output_mod, "prompt", lambda *_a, **_kw: next(answers))
@@ -366,7 +366,7 @@ class TestTeamsInteractiveSetup:
 
         _teams_mod.interactive_setup()
 
-        env_text = (triibal_home / ".env").read_text(encoding="utf-8")
+        env_text = (tribal_home / ".env").read_text(encoding="utf-8")
         assert "TEAMS_CLIENT_ID=client-id" in env_text
         assert "TEAMS_TENANT_ID=tenant-id" in env_text
 
@@ -690,7 +690,7 @@ class TestTeamsMessageHandling:
         adapter.handle_message = AsyncMock()
 
         activity = self._make_activity(
-            text="<at>Triibal</at> what is the weather?",
+            text="<at>Tribal</at> what is the weather?",
             from_id="user-id",
         )
         await adapter._on_message(self._make_ctx(activity))

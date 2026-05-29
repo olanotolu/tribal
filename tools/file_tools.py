@@ -47,7 +47,7 @@ def _get_max_read_chars() -> int:
     if _max_read_chars_cached is not None:
         return _max_read_chars_cached
     try:
-        from triibal_cli.config import load_config
+        from tribal_cli.config import load_config
         cfg = load_config()
         val = cfg.get("file_read_max_chars")
         if isinstance(val, (int, float)) and val > 0:
@@ -195,10 +195,10 @@ def _check_sensitive_path(filepath: str, task_id: str = "default") -> str | None
 
 def _check_cross_profile_path(filepath: str, task_id: str = "default") -> str | None:
     """Return a cross-profile warning string when ``filepath`` lands in
-    another Triibal profile's skills/plugins/cron/memories directory.
+    another Tribal profile's skills/plugins/cron/memories directory.
 
     Returns ``None`` when the write is in-scope (same profile) or outside
-    Triibal scope entirely. Soft guard — the agent can override by passing
+    Tribal scope entirely. Soft guard — the agent can override by passing
     ``cross_profile=True`` to its write tool after explicit user direction.
 
     Defense-in-depth, NOT a security boundary — the terminal tool runs
@@ -214,7 +214,7 @@ def _check_cross_profile_path(filepath: str, task_id: str = "default") -> str | 
         return None
 
     # Resolve via the task's cwd so a relative ``skills/foo/SKILL.md``
-    # in a session that cd'd into ``~/.triibal/profiles/other/`` is
+    # in a session that cd'd into ``~/.tribal/profiles/other/`` is
     # classified against the right base.
     try:
         resolved = str(_resolve_path_for_task(filepath, task_id))
@@ -559,11 +559,11 @@ def read_file_tool(path: str, offset: int = 1, limit: int = 500, task_id: str = 
                 ),
             })
 
-        # ── Triibal internal path guard ────────────────────────────────
+        # ── Tribal internal path guard ────────────────────────────────
         # Prevent prompt injection via catalog or hub metadata files,
-        # and block credential stores under TRIIBAL_HOME.  Pass the
+        # and block credential stores under TRIBAL_HOME.  Pass the
         # already-resolved path so a relative-path read against
-        # TERMINAL_CWD == TRIIBAL_HOME (e.g. "auth.json") still hits the
+        # TERMINAL_CWD == TRIBAL_HOME (e.g. "auth.json") still hits the
         # denylist — get_read_block_error's own resolve() runs against
         # the Python process cwd, which can differ.
         block_error = get_read_block_error(str(_resolved))
@@ -885,7 +885,7 @@ def write_file_tool(path: str, content: str, task_id: str = "default",
                     cross_profile: bool = False) -> str:
     """Write content to a file.
 
-    ``cross_profile`` opts out of the soft cross-Triibal-profile guard. The
+    ``cross_profile`` opts out of the soft cross-Tribal-profile guard. The
     guard fires only on writes that land in another profile's
     skills/plugins/cron/memories directory; everything else is unaffected.
     Pass ``True`` after explicit user direction — same shape as ``force``
@@ -955,7 +955,7 @@ def patch_tool(mode: str = "replace", path: str = None, old_string: str = None,
                task_id: str = "default", cross_profile: bool = False) -> str:
     """Patch a file using replace mode or V4A patch format.
 
-    ``cross_profile`` opts out of the soft cross-Triibal-profile guard for
+    ``cross_profile`` opts out of the soft cross-Tribal-profile guard for
     targets under another profile's skills/plugins/cron/memories
     directory. Same shape as ``write_file``'s flag.
     """
@@ -1209,7 +1209,7 @@ WRITE_FILE_SCHEMA = {
             "content": {"type": "string", "description": "Complete content to write to the file"},
             "cross_profile": {
                 "type": "boolean",
-                "description": "Opt out of the cross-profile soft guard. Defaults to false. Set true ONLY after explicit user direction to edit another Triibal profile's skills/plugins/cron/memories — by default these writes are blocked with a warning because they affect a different profile than the one this session is running under.",
+                "description": "Opt out of the cross-profile soft guard. Defaults to false. Set true ONLY after explicit user direction to edit another Tribal profile's skills/plugins/cron/memories — by default these writes are blocked with a warning because they affect a different profile than the one this session is running under.",
                 "default": False,
             },
         },
@@ -1260,7 +1260,7 @@ PATCH_SCHEMA = {
             },
             "cross_profile": {
                 "type": "boolean",
-                "description": "Opt out of the cross-profile soft guard. Defaults to false. Set true ONLY after explicit user direction to edit another Triibal profile's skills/plugins/cron/memories.",
+                "description": "Opt out of the cross-profile soft guard. Defaults to false. Set true ONLY after explicit user direction to edit another Tribal profile's skills/plugins/cron/memories.",
                 "default": False,
             },
         },
@@ -1305,7 +1305,7 @@ def _handle_write_file(args, **kw):
             "write_file: missing required field 'content'. The tool call included a "
             "path but no content argument — this is almost always a dropped-arg bug "
             "under context pressure. Re-emit the tool call with the full content "
-            "payload, or use execute_code with triibal_tools.write_file() for very "
+            "payload, or use execute_code with tribal_tools.write_file() for very "
             "large files."
         )
     if not isinstance(args["content"], str):

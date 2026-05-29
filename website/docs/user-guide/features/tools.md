@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Tools & Toolsets"
-description: "Overview of Triibal Agent's tools — what's available, how toolsets work, and terminal backends"
+description: "Overview of Tribal Agent's tools — what's available, how toolsets work, and terminal backends"
 ---
 
 # Tools & Toolsets
@@ -10,7 +10,7 @@ Tools are functions that extend the agent's capabilities. They're organized into
 
 ## Available Tools
 
-Triibal ships with a broad built-in tool registry covering web search, browser automation, terminal execution, file editing, memory, delegation, RL training, messaging delivery, Home Assistant, and more.
+Tribal ships with a broad built-in tool registry covering web search, browser automation, terminal execution, file editing, memory, delegation, RL training, messaging delivery, Home Assistant, and more.
 
 :::note
 **Honcho cross-session memory** is available as a memory provider plugin (`plugins/memory/honcho/`), not as a built-in toolset. See [Plugins](./plugins.md) for installation.
@@ -21,10 +21,10 @@ High-level categories:
 | Category | Examples | Description |
 |----------|----------|-------------|
 | **Web** | `web_search`, `web_extract` | Search the web and extract page content. |
-| **X Search** | `x_search` | Search X (Twitter) posts and threads via xAI's built-in `x_search` Responses tool — gated on xAI credentials (SuperGrok OAuth or `XAI_API_KEY`); off by default, opt in via `triibal tools` → 🐦 X (Twitter) Search. |
+| **X Search** | `x_search` | Search X (Twitter) posts and threads via xAI's built-in `x_search` Responses tool — gated on xAI credentials (SuperGrok OAuth or `XAI_API_KEY`); off by default, opt in via `tribal tools` → 🐦 X (Twitter) Search. |
 | **Terminal & Files** | `terminal`, `process`, `read_file`, `patch` | Execute commands and manipulate files. |
 | **Browser** | `browser_navigate`, `browser_snapshot`, `browser_vision` | Interactive browser automation with text and vision support. |
-| **Media** | `vision_analyze`, `image_generate`, `video_generate`, `video_analyze`, `text_to_speech` | Multimodal analysis and generation. `video_generate` and `video_analyze` are opt-in (add `video_gen` / `video` toolsets via `triibal tools` or `--toolsets`). |
+| **Media** | `vision_analyze`, `image_generate`, `video_generate`, `video_analyze`, `text_to_speech` | Multimodal analysis and generation. `video_generate` and `video_analyze` are opt-in (add `video_gen` / `video` toolsets via `tribal tools` or `--toolsets`). |
 | **Agent orchestration** | `todo`, `clarify`, `execute_code`, `delegate_task` | Planning, clarification, code execution, and subagent delegation. |
 | **Memory & recall** | `memory`, `session_search` | Persistent memory and session search. |
 | **Automation & delivery** | `cronjob`, `send_message` | Scheduled tasks with create/list/update/pause/resume/run/remove actions, plus outbound messaging delivery. |
@@ -33,25 +33,25 @@ High-level categories:
 For the authoritative code-derived registry, see [Built-in Tools Reference](/reference/tools-reference) and [Toolsets Reference](/reference/toolsets-reference).
 
 :::tip Nous Tool Gateway
-Paid [Nous Portal](https://portal.nousresearch.com) subscribers can use web search, image generation, TTS, and browser automation through the **[Tool Gateway](tool-gateway.md)** — no separate API keys needed. Run `triibal model` to enable it, or configure individual tools with `triibal tools`.
+Paid [Nous Portal](https://portal.nousresearch.com) subscribers can use web search, image generation, TTS, and browser automation through the **[Tool Gateway](tool-gateway.md)** — no separate API keys needed. Run `tribal model` to enable it, or configure individual tools with `tribal tools`.
 :::
 
 ## Using Toolsets
 
 ```bash
 # Use specific toolsets
-triibal chat --toolsets "web,terminal"
+tribal chat --toolsets "web,terminal"
 
 # See all available tools
-triibal tools
+tribal tools
 
 # Configure tools per platform (interactive)
-triibal tools
+tribal tools
 ```
 
 Common toolsets include `web`, `search`, `terminal`, `file`, `browser`, `vision`, `image_gen`, `moa`, `skills`, `tts`, `todo`, `memory`, `session_search`, `cronjob`, `code_execution`, `delegation`, `clarify`, `homeassistant`, `messaging`, `spotify`, `discord`, `discord_admin`, `debugging`, `safe`, and `rl`.
 
-See [Toolsets Reference](/reference/toolsets-reference) for the full set, including platform presets such as `triibal-cli`, `triibal-telegram`, and dynamic MCP toolsets like `mcp-<server>`.
+See [Toolsets Reference](/reference/toolsets-reference) for the full set, including platform presets such as `tribal-cli`, `tribal-telegram`, and dynamic MCP toolsets like `mcp-<server>`.
 
 ## Terminal Backends
 
@@ -69,7 +69,7 @@ The terminal tool can execute commands in different environments:
 ### Configuration
 
 ```yaml
-# In ~/.triibal/config.yaml
+# In ~/.tribal/config.yaml
 terminal:
   backend: local    # or: docker, ssh, singularity, modal, daytona
   cwd: "."          # Working directory
@@ -84,9 +84,9 @@ terminal:
   docker_image: python:3.11-slim
 ```
 
-**One persistent container, shared across the whole process.** Triibal starts a single long-lived container on first use (`docker run -d ... sleep 2h`) and routes every terminal, file, and `execute_code` call through `docker exec` into that same container. Working-directory changes, installed packages, environment tweaks, and files written to `/workspace` all carry over from one tool call to the next, across `/new`, `/reset`, and `delegate_task` subagents, for the lifetime of the Triibal process. The container is stopped and removed on shutdown.
+**One persistent container, shared across the whole process.** Tribal starts a single long-lived container on first use (`docker run -d ... sleep 2h`) and routes every terminal, file, and `execute_code` call through `docker exec` into that same container. Working-directory changes, installed packages, environment tweaks, and files written to `/workspace` all carry over from one tool call to the next, across `/new`, `/reset`, and `delegate_task` subagents, for the lifetime of the Tribal process. The container is stopped and removed on shutdown.
 
-This means the Docker backend behaves like a persistent sandbox VM, not a fresh container per command. If you `pip install foo` once, it's there for the rest of the session. If you `cd /workspace/project`, subsequent `ls` calls see that directory. See [Configuration → Docker Backend](../configuration.md#docker-backend) for the full lifecycle details and the `container_persistent` flag that controls whether `/workspace` and `/root` survive across Triibal restarts.
+This means the Docker backend behaves like a persistent sandbox VM, not a fresh container per command. If you `pip install foo` once, it's there for the rest of the session. If you `cd /workspace/project`, subsequent `ls` calls see that directory. See [Configuration → Docker Backend](../configuration.md#docker-backend) for the full lifecycle details and the `container_persistent` flag that controls whether `/workspace` and `/root` survive across Tribal restarts.
 
 ### SSH Backend
 
@@ -97,7 +97,7 @@ terminal:
   backend: ssh
 ```
 ```bash
-# Set credentials in ~/.triibal/.env
+# Set credentials in ~/.tribal/.env
 TERMINAL_SSH_HOST=my-server.example.com
 TERMINAL_SSH_USER=myuser
 TERMINAL_SSH_KEY=~/.ssh/id_rsa
@@ -110,8 +110,8 @@ TERMINAL_SSH_KEY=~/.ssh/id_rsa
 apptainer build ~/python.sif docker://python:3.11-slim
 
 # Configure
-triibal config set terminal.backend singularity
-triibal config set terminal.singularity_image ~/python.sif
+tribal config set terminal.backend singularity
+tribal config set terminal.singularity_image ~/python.sif
 ```
 
 ### Modal (Serverless Cloud)
@@ -119,7 +119,7 @@ triibal config set terminal.singularity_image ~/python.sif
 ```bash
 uv pip install modal
 modal setup
-triibal config set terminal.backend modal
+tribal config set terminal.backend modal
 ```
 
 ### Container Resources
@@ -171,8 +171,8 @@ PTY mode (`pty=true`) enables interactive CLI tools like Codex and Claude Code.
 
 ## Sudo Support
 
-If a command needs sudo, you'll be prompted for your password (cached for the session). Or set `SUDO_PASSWORD` in `~/.triibal/.env`.
+If a command needs sudo, you'll be prompted for your password (cached for the session). Or set `SUDO_PASSWORD` in `~/.tribal/.env`.
 
 :::warning
-On messaging platforms, if sudo fails, the output includes a tip to add `SUDO_PASSWORD` to `~/.triibal/.env`.
+On messaging platforms, if sudo fails, the output includes a tip to add `SUDO_PASSWORD` to `~/.tribal/.env`.
 :::

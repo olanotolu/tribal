@@ -2,7 +2,7 @@
 
 Spawns one subprocess per (version, scenario) cell — pinned to either
 ``origin/main`` (no plugin hook, no STT command-provider registry; only
-the legacy ``TRIIBAL_LOCAL_STT_COMMAND`` escape hatch exists) or this PR's
+the legacy ``TRIBAL_LOCAL_STT_COMMAND`` escape hatch exists) or this PR's
 worktree (both new surfaces present).
 
 Each subprocess clears all STT-related env vars + writes a
@@ -46,7 +46,7 @@ def _resolve_main_dir() -> Path:
     candidate = REPO_ROOT.parent.parent
     if (candidate / "tools" / "transcription_tools.py").exists() and candidate != REPO_ROOT:
         return candidate
-    sibling = REPO_ROOT.parent / "triibal-agent-main"
+    sibling = REPO_ROOT.parent / "tribal-agent-main"
     if (sibling / "tools" / "transcription_tools.py").exists():
         return sibling
     return REPO_ROOT
@@ -55,7 +55,7 @@ def _resolve_main_dir() -> Path:
 MAIN_DIR = _resolve_main_dir()
 PR_DIR = REPO_ROOT
 assert (PR_DIR / "tools" / "transcription_tools.py").exists(), (
-    f"PR_DIR={PR_DIR} doesn't look like a triibal-agent checkout"
+    f"PR_DIR={PR_DIR} doesn't look like a tribal-agent checkout"
 )
 
 
@@ -63,15 +63,15 @@ SUBPROCESS_SCRIPT = r"""
 import json, os, sys, tempfile
 sys.path.insert(0, sys.argv[1])
 
-# Isolated TRIIBAL_HOME so the config write is hermetic.
+# Isolated TRIBAL_HOME so the config write is hermetic.
 home = tempfile.mkdtemp()
-os.environ["TRIIBAL_HOME"] = home
+os.environ["TRIBAL_HOME"] = home
 
 # Clear STT-related env so dispatch decisions are config-driven.
 for k in (
     "GROQ_API_KEY", "OPENAI_API_KEY", "VOICE_TOOLS_OPENAI_KEY",
     "MISTRAL_API_KEY", "XAI_API_KEY",
-    "TRIIBAL_LOCAL_STT_COMMAND",
+    "TRIBAL_LOCAL_STT_COMMAND",
 ):
     os.environ.pop(k, None)
 
@@ -90,7 +90,7 @@ for name in list(sys.modules):
     if (name.startswith("tools.")
             or name.startswith("agent.")
             or name.startswith("plugins.")
-            or name.startswith("triibal_cli.")):
+            or name.startswith("tribal_cli.")):
         sys.modules.pop(name, None)
 
 # Try importing transcription_registry — only exists on PR side.
@@ -345,7 +345,7 @@ def main() -> int:
     if MAIN_DIR == PR_DIR:
         print(
             "WARN: MAIN_DIR == PR_DIR — diffs will be trivially identical.\n"
-            "      Set up a sibling 'triibal-agent-main' checkout pinned to "
+            "      Set up a sibling 'tribal-agent-main' checkout pinned to "
             "origin/main to get real parity coverage."
         )
         print()

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Bootstrap Open WebUI against Triibal Agent's OpenAI-compatible API server.
+# Bootstrap Open WebUI against Tribal Agent's OpenAI-compatible API server.
 #
 # Idempotent by design:
-# - ensures ~/.triibal/.env has API server settings
+# - ensures ~/.tribal/.env has API server settings
 # - installs Open WebUI into ~/.local/open-webui-venv
-# - writes a reusable launcher at ~/.local/bin/start-open-webui-triibal.sh
+# - writes a reusable launcher at ~/.local/bin/start-open-webui-tribal.sh
 # - optionally installs a user service (launchd on macOS, systemd --user on Linux)
 #
 # Usage:
@@ -15,30 +15,30 @@ set -euo pipefail
 # Optional environment overrides:
 #   OPEN_WEBUI_PORT=8080
 #   OPEN_WEBUI_HOST=127.0.0.1
-#   OPEN_WEBUI_NAME='Johnny Triibal'
+#   OPEN_WEBUI_NAME='Johnny Tribal'
 #   OPEN_WEBUI_ENABLE_SIGNUP=true
 #   OPEN_WEBUI_ENABLE_SERVICE=auto   # auto|true|false
 #   OPEN_WEBUI_VENV=~/.local/open-webui-venv
 #   OPEN_WEBUI_DATA_DIR=~/.local/share/open-webui/data
-#   TRIIBAL_API_PORT=8642
-#   TRIIBAL_API_HOST=127.0.0.1
-#   TRIIBAL_API_MODEL_NAME='Triibal Agent'
+#   TRIBAL_API_PORT=8642
+#   TRIBAL_API_HOST=127.0.0.1
+#   TRIBAL_API_MODEL_NAME='Tribal Agent'
 
 OPEN_WEBUI_PORT="${OPEN_WEBUI_PORT:-8080}"
 OPEN_WEBUI_HOST="${OPEN_WEBUI_HOST:-127.0.0.1}"
-OPEN_WEBUI_NAME="${OPEN_WEBUI_NAME:-Triibal Agent WebUI}"
+OPEN_WEBUI_NAME="${OPEN_WEBUI_NAME:-Tribal Agent WebUI}"
 OPEN_WEBUI_ENABLE_SIGNUP="${OPEN_WEBUI_ENABLE_SIGNUP:-true}"
 OPEN_WEBUI_ENABLE_SERVICE="${OPEN_WEBUI_ENABLE_SERVICE:-auto}"
 OPEN_WEBUI_VENV="${OPEN_WEBUI_VENV:-$HOME/.local/open-webui-venv}"
 OPEN_WEBUI_DATA_DIR="${OPEN_WEBUI_DATA_DIR:-$HOME/.local/share/open-webui/data}"
-TRIIBAL_ENV_FILE="${TRIIBAL_ENV_FILE:-$HOME/.triibal/.env}"
-TRIIBAL_API_PORT="${TRIIBAL_API_PORT:-8642}"
-TRIIBAL_API_HOST="${TRIIBAL_API_HOST:-127.0.0.1}"
-TRIIBAL_API_CONNECT_HOST="${TRIIBAL_API_CONNECT_HOST:-127.0.0.1}"
-TRIIBAL_API_MODEL_NAME="${TRIIBAL_API_MODEL_NAME:-Triibal Agent}"
-TRIIBAL_API_BASE_URL="http://${TRIIBAL_API_CONNECT_HOST}:${TRIIBAL_API_PORT}/v1"
-LAUNCHER_PATH="$HOME/.local/bin/start-open-webui-triibal.sh"
-LOG_DIR="$HOME/.triibal/logs"
+TRIBAL_ENV_FILE="${TRIBAL_ENV_FILE:-$HOME/.tribal/.env}"
+TRIBAL_API_PORT="${TRIBAL_API_PORT:-8642}"
+TRIBAL_API_HOST="${TRIBAL_API_HOST:-127.0.0.1}"
+TRIBAL_API_CONNECT_HOST="${TRIBAL_API_CONNECT_HOST:-127.0.0.1}"
+TRIBAL_API_MODEL_NAME="${TRIBAL_API_MODEL_NAME:-Tribal Agent}"
+TRIBAL_API_BASE_URL="http://${TRIBAL_API_CONNECT_HOST}:${TRIBAL_API_PORT}/v1"
+LAUNCHER_PATH="$HOME/.local/bin/start-open-webui-tribal.sh"
+LOG_DIR="$HOME/.tribal/logs"
 
 log() {
   printf '[open-webui-bootstrap] %s\n' "$*"
@@ -173,7 +173,7 @@ write_launcher() {
   local quoted_data_dir quoted_name quoted_base_url quoted_host quoted_port quoted_venv
   quoted_data_dir="$(shell_quote "$OPEN_WEBUI_DATA_DIR")"
   quoted_name="$(shell_quote "$OPEN_WEBUI_NAME")"
-  quoted_base_url="$(shell_quote "$TRIIBAL_API_BASE_URL")"
+  quoted_base_url="$(shell_quote "$TRIBAL_API_BASE_URL")"
   quoted_host="$(shell_quote "$OPEN_WEBUI_HOST")"
   quoted_port="$(shell_quote "$OPEN_WEBUI_PORT")"
   quoted_venv="$(shell_quote "$OPEN_WEBUI_VENV")"
@@ -184,7 +184,7 @@ set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 API_KEY=\$(python3 - <<'PY'
 from pathlib import Path
-p = Path.home()/'.triibal'/'.env'
+p = Path.home()/'.tribal'/'.env'
 for raw in p.read_text().splitlines():
     line = raw.strip()
     if line.startswith('API_SERVER_KEY='):
@@ -218,11 +218,11 @@ EOF
 }
 
 ensure_env_permissions() {
-  chmod 600 "$TRIIBAL_ENV_FILE" 2>/dev/null || true
+  chmod 600 "$TRIBAL_ENV_FILE" 2>/dev/null || true
 }
 
 install_launchd_service() {
-  local plist="$HOME/Library/LaunchAgents/ai.openwebui.triibal.plist"
+  local plist="$HOME/Library/LaunchAgents/ai.openwebui.tribal.plist"
   mkdir -p "$(dirname "$plist")"
   cat > "$plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -230,7 +230,7 @@ install_launchd_service() {
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>ai.openwebui.triibal</string>
+  <string>ai.openwebui.tribal</string>
   <key>ProgramArguments</key>
   <array>
     <string>/bin/bash</string>
@@ -251,34 +251,34 @@ install_launchd_service() {
 EOF
   launchctl bootout "gui/$(id -u)" "$plist" >/dev/null 2>&1 || true
   launchctl bootstrap "gui/$(id -u)" "$plist"
-  launchctl enable "gui/$(id -u)/ai.openwebui.triibal"
-  launchctl kickstart -k "gui/$(id -u)/ai.openwebui.triibal"
+  launchctl enable "gui/$(id -u)/ai.openwebui.tribal"
+  launchctl kickstart -k "gui/$(id -u)/ai.openwebui.tribal"
 }
 
 install_systemd_user_service() {
   require_cmd systemctl
   local unit_dir="$HOME/.config/systemd/user"
-  local unit="$unit_dir/openwebui-triibal.service"
+  local unit="$unit_dir/openwebui-tribal.service"
   mkdir -p "$unit_dir"
   cat > "$unit" <<EOF
 [Unit]
-Description=Open WebUI connected to Triibal Agent
+Description=Open WebUI connected to Tribal Agent
 After=default.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash %h/.local/bin/start-open-webui-triibal.sh
+ExecStart=/bin/bash %h/.local/bin/start-open-webui-tribal.sh
 Restart=always
 RestartSec=3
 WorkingDirectory=%h
-StandardOutput=append:%h/.triibal/logs/openwebui.log
-StandardError=append:%h/.triibal/logs/openwebui.error.log
+StandardOutput=append:%h/.tribal/logs/openwebui.log
+StandardError=append:%h/.tribal/logs/openwebui.error.log
 
 [Install]
 WantedBy=default.target
 EOF
   systemctl --user daemon-reload
-  systemctl --user enable --now openwebui-triibal.service
+  systemctl --user enable --now openwebui-tribal.service
 }
 
 start_foreground_hint() {
@@ -287,35 +287,35 @@ start_foreground_hint() {
 }
 
 main() {
-  require_cmd triibal
+  require_cmd tribal
   require_cmd curl
   require_cmd python3
 
   install_macos_dependencies
 
   local api_key
-  api_key="$(get_env_value API_SERVER_KEY "$TRIIBAL_ENV_FILE")"
+  api_key="$(get_env_value API_SERVER_KEY "$TRIBAL_ENV_FILE")"
   if [[ -z "$api_key" ]]; then
     api_key="$(generate_secret)"
   fi
 
-  log 'Ensuring Triibal API server is configured...'
-  upsert_env API_SERVER_ENABLED true "$TRIIBAL_ENV_FILE"
-  upsert_env API_SERVER_HOST "$TRIIBAL_API_HOST" "$TRIIBAL_ENV_FILE"
-  upsert_env API_SERVER_PORT "$TRIIBAL_API_PORT" "$TRIIBAL_ENV_FILE"
-  upsert_env API_SERVER_MODEL_NAME "$TRIIBAL_API_MODEL_NAME" "$TRIIBAL_ENV_FILE"
-  upsert_env API_SERVER_KEY "$api_key" "$TRIIBAL_ENV_FILE"
+  log 'Ensuring Tribal API server is configured...'
+  upsert_env API_SERVER_ENABLED true "$TRIBAL_ENV_FILE"
+  upsert_env API_SERVER_HOST "$TRIBAL_API_HOST" "$TRIBAL_ENV_FILE"
+  upsert_env API_SERVER_PORT "$TRIBAL_API_PORT" "$TRIBAL_ENV_FILE"
+  upsert_env API_SERVER_MODEL_NAME "$TRIBAL_API_MODEL_NAME" "$TRIBAL_ENV_FILE"
+  upsert_env API_SERVER_KEY "$api_key" "$TRIBAL_ENV_FILE"
   ensure_env_permissions
 
-  log 'Restarting Triibal gateway so API server settings take effect...'
-  triibal gateway restart >/dev/null 2>&1 || true
+  log 'Restarting Tribal gateway so API server settings take effect...'
+  tribal gateway restart >/dev/null 2>&1 || true
   sleep 4
-  if ! curl -fsS "http://${TRIIBAL_API_CONNECT_HOST}:${TRIIBAL_API_PORT}/health" >/dev/null; then
-    log 'Triibal API server did not answer on the first check. Trying to start gateway in the background...'
-    nohup triibal gateway run >/dev/null 2>&1 &
+  if ! curl -fsS "http://${TRIBAL_API_CONNECT_HOST}:${TRIBAL_API_PORT}/health" >/dev/null; then
+    log 'Tribal API server did not answer on the first check. Trying to start gateway in the background...'
+    nohup tribal gateway run >/dev/null 2>&1 &
     sleep 6
   fi
-  curl -fsS "http://${TRIIBAL_API_CONNECT_HOST}:${TRIIBAL_API_PORT}/health" >/dev/null
+  curl -fsS "http://${TRIBAL_API_CONNECT_HOST}:${TRIBAL_API_PORT}/health" >/dev/null
 
   log 'Installing Open WebUI into a dedicated virtualenv...'
   install_open_webui
@@ -342,7 +342,7 @@ main() {
   esac
 
   log "Done. Open WebUI should be available at: http://${OPEN_WEBUI_HOST}:${OPEN_WEBUI_PORT}"
-  log "Triibal API endpoint: ${TRIIBAL_API_BASE_URL}"
+  log "Tribal API endpoint: ${TRIBAL_API_BASE_URL}"
   log 'Important: Open WebUI persists connection settings after first launch. If you later save a wrong API key in the Admin UI, update/delete that connection there or reset its database.'
 }
 

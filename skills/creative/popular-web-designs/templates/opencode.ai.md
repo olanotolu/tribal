@@ -1,7 +1,7 @@
 # Design System: OpenCode
 
 
-> **Triibal Agent — Implementation Notes**
+> **Tribal Agent — Implementation Notes**
 >
 > The original site uses proprietary fonts. For self-contained HTML output, use these CDN substitutes:
 > - **Primary:** `JetBrains Mono` | **Mono:** `JetBrains Mono`

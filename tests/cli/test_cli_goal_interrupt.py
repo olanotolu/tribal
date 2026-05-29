@@ -6,7 +6,7 @@ Covers:
 - Clean response without interrupt still drives the judge + enqueues.
 
 These tests exercise ``_maybe_continue_goal_after_turn`` directly on a
-minimal ``TriibalCLI`` stub (pattern used elsewhere in tests/cli).
+minimal ``TribalCLI`` stub (pattern used elsewhere in tests/cli).
 """
 
 from __future__ import annotations
@@ -26,26 +26,26 @@ import pytest
 
 
 @pytest.fixture
-def triibal_home(tmp_path, monkeypatch):
-    """Isolated TRIIBAL_HOME so SessionDB.state_meta writes stay hermetic."""
-    home = tmp_path / ".triibal"
+def tribal_home(tmp_path, monkeypatch):
+    """Isolated TRIBAL_HOME so SessionDB.state_meta writes stay hermetic."""
+    home = tmp_path / ".tribal"
     home.mkdir()
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
 
-    # Bust the goal module's DB cache so it re-resolves TRIIBAL_HOME each test.
-    from triibal_cli import goals
+    # Bust the goal module's DB cache so it re-resolves TRIBAL_HOME each test.
+    from tribal_cli import goals
     goals._DB_CACHE.clear()
     yield home
     goals._DB_CACHE.clear()
 
 
 def _make_cli_with_goal(session_id: str, goal_text: str = "build a thing"):
-    """Build a minimal TriibalCLI stub with an active goal wired in."""
-    from cli import TriibalCLI
-    from triibal_cli.goals import GoalManager
+    """Build a minimal TribalCLI stub with an active goal wired in."""
+    from cli import TribalCLI
+    from tribal_cli.goals import GoalManager
 
-    cli = TriibalCLI.__new__(TriibalCLI)
+    cli = TribalCLI.__new__(TribalCLI)
     # State the hook + helpers touch directly.
     cli._pending_input = queue.Queue()
     cli._last_turn_interrupted = False
@@ -68,7 +68,7 @@ def _make_cli_with_goal(session_id: str, goal_text: str = "build a thing"):
 
 
 class TestInterruptAutoPause:
-    def test_interrupted_turn_pauses_goal_and_skips_continuation(self, triibal_home):
+    def test_interrupted_turn_pauses_goal_and_skips_continuation(self, tribal_home):
         """Ctrl+C mid-turn must auto-pause the goal, not queue another round."""
         sid = f"sid-interrupt-{uuid.uuid4().hex}"
         cli, mgr = _make_cli_with_goal(sid)
@@ -81,7 +81,7 @@ class TestInterruptAutoPause:
 
         # Judge MUST NOT run on an interrupted turn. If it does, we've
         # regressed — fail loudly instead of silently querying a mock.
-        with patch("triibal_cli.goals.judge_goal") as judge_mock:
+        with patch("tribal_cli.goals.judge_goal") as judge_mock:
             judge_mock.side_effect = AssertionError(
                 "judge_goal called on an interrupted turn"
             )
@@ -98,7 +98,7 @@ class TestInterruptAutoPause:
         assert state.status == "paused"
         assert "interrupt" in (state.paused_reason or "").lower()
 
-    def test_interrupted_turn_is_resumable(self, triibal_home):
+    def test_interrupted_turn_is_resumable(self, tribal_home):
         """After auto-pause from Ctrl+C, /goal resume puts it back to active."""
         sid = f"sid-resume-{uuid.uuid4().hex}"
         cli, mgr = _make_cli_with_goal(sid)
@@ -106,7 +106,7 @@ class TestInterruptAutoPause:
         cli.conversation_history = [
             {"role": "assistant", "content": "partial"},
         ]
-        with patch("triibal_cli.goals.judge_goal"):
+        with patch("tribal_cli.goals.judge_goal"):
             cli._maybe_continue_goal_after_turn()
         assert mgr.state.status == "paused"
 
@@ -115,7 +115,7 @@ class TestInterruptAutoPause:
 
 
 class TestEmptyResponseSkip:
-    def test_empty_response_does_not_invoke_judge(self, triibal_home):
+    def test_empty_response_does_not_invoke_judge(self, tribal_home):
         """Whitespace-only replies skip judging (transient failure guard)."""
         sid = f"sid-empty-{uuid.uuid4().hex}"
         cli, mgr = _make_cli_with_goal(sid)
@@ -125,7 +125,7 @@ class TestEmptyResponseSkip:
             {"role": "assistant", "content": "   \n\n   "},
         ]
 
-        with patch("triibal_cli.goals.judge_goal") as judge_mock:
+        with patch("tribal_cli.goals.judge_goal") as judge_mock:
             judge_mock.side_effect = AssertionError(
                 "judge_goal called on an empty response"
             )
@@ -135,7 +135,7 @@ class TestEmptyResponseSkip:
         assert cli._pending_input.empty()
         assert mgr.state.status == "active"
 
-    def test_no_assistant_message_skipped(self, triibal_home):
+    def test_no_assistant_message_skipped(self, tribal_home):
         """Conversation with zero assistant replies must not trip the judge."""
         sid = f"sid-noassistant-{uuid.uuid4().hex}"
         cli, mgr = _make_cli_with_goal(sid)
@@ -144,7 +144,7 @@ class TestEmptyResponseSkip:
             {"role": "user", "content": "go"},
         ]
 
-        with patch("triibal_cli.goals.judge_goal") as judge_mock:
+        with patch("tribal_cli.goals.judge_goal") as judge_mock:
             judge_mock.side_effect = AssertionError(
                 "judge_goal called without an assistant response"
             )
@@ -156,7 +156,7 @@ class TestEmptyResponseSkip:
 
 class TestHealthyTurnStillRuns:
     def test_clean_response_enqueues_continuation_when_judge_says_continue(
-        self, triibal_home,
+        self, tribal_home,
     ):
         """Sanity check: the hook still works in the happy path."""
         sid = f"sid-healthy-{uuid.uuid4().hex}"
@@ -169,7 +169,7 @@ class TestHealthyTurnStillRuns:
 
         # Force the judge to say "continue" without touching the network.
         with patch(
-            "triibal_cli.goals.judge_goal",
+            "tribal_cli.goals.judge_goal",
             return_value=("continue", "needs more steps", False),
         ):
             cli._maybe_continue_goal_after_turn()
@@ -180,7 +180,7 @@ class TestHealthyTurnStillRuns:
         assert "Continuing toward your standing goal" in queued
         assert mgr.state.status == "active"
 
-    def test_clean_response_marks_done_when_judge_says_done(self, triibal_home):
+    def test_clean_response_marks_done_when_judge_says_done(self, tribal_home):
         sid = f"sid-done-{uuid.uuid4().hex}"
         cli, mgr = _make_cli_with_goal(sid)
         cli._last_turn_interrupted = False
@@ -189,7 +189,7 @@ class TestHealthyTurnStillRuns:
         ]
 
         with patch(
-            "triibal_cli.goals.judge_goal",
+            "tribal_cli.goals.judge_goal",
             return_value=("done", "goal satisfied", False),
         ):
             cli._maybe_continue_goal_after_turn()
@@ -199,7 +199,7 @@ class TestHealthyTurnStillRuns:
 
 
 class TestInterruptFlagLifecycle:
-    def test_chat_resets_flag_at_entry(self, triibal_home):
+    def test_chat_resets_flag_at_entry(self, tribal_home):
         """chat() must reset _last_turn_interrupted at the top of each turn.
 
         This guards against stale flag state: if turn N was interrupted and
@@ -208,10 +208,10 @@ class TestInterruptFlagLifecycle:
         # We can't run chat() end-to-end here, but we can assert the reset
         # is the first thing after the secret-capture registration by
         # inspecting the source shape.
-        from cli import TriibalCLI
+        from cli import TribalCLI
         import inspect
 
-        src = inspect.getsource(TriibalCLI.chat)
+        src = inspect.getsource(TribalCLI.chat)
         # Look for an explicit reset near the top of chat().
         head = src.split("if not self._ensure_runtime_credentials", 1)[0]
         assert "self._last_turn_interrupted = False" in head, (

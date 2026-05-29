@@ -1,5 +1,5 @@
 """
-Tests for mcp_serve — Triibal MCP server.
+Tests for mcp_serve — Tribal MCP server.
 
 Three layers of tests:
 1. Unit tests — helpers, content extraction, attachment parsing
@@ -26,12 +26,12 @@ import pytest
 # ---------------------------------------------------------------------------
 
 @pytest.fixture(autouse=True)
-def _isolate_triibal_home(tmp_path, monkeypatch):
-    """Redirect TRIIBAL_HOME to a temp directory."""
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+def _isolate_tribal_home(tmp_path, monkeypatch):
+    """Redirect TRIBAL_HOME to a temp directory."""
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
     try:
-        import triibal_constants
-        monkeypatch.setattr(triibal_constants, "get_triibal_home", lambda: tmp_path)
+        import tribal_constants
+        monkeypatch.setattr(tribal_constants, "get_tribal_home", lambda: tmp_path)
     except (ImportError, AttributeError):
         pass
     return tmp_path
@@ -123,7 +123,7 @@ def populated_sessions_dir(sessions_dir, sample_sessions):
 
 
 def _create_test_db(db_path, session_id, messages):
-    """Create a minimal SQLite DB mimicking triibal_state schema."""
+    """Create a minimal SQLite DB mimicking tribal_state schema."""
     conn = sqlite3.connect(str(db_path))
     conn.execute("""
         CREATE TABLE IF NOT EXISTS sessions (
@@ -1005,13 +1005,13 @@ class TestCliIntegration:
         assert args.verbose is True
 
     def test_dispatcher_routes_serve(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
         mock_run = MagicMock()
         monkeypatch.setattr("mcp_serve.run_mcp_server", mock_run)
 
         import argparse
         args = argparse.Namespace(mcp_action="serve", verbose=True)
-        from triibal_cli.mcp_config import mcp_command
+        from tribal_cli.mcp_config import mcp_command
         mcp_command(args)
         mock_run.assert_called_once_with(verbose=True)
 

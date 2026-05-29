@@ -6,7 +6,7 @@ description: "Runtime behavior of the tool registry, toolsets, dispatch, and ter
 
 # Tools Runtime
 
-Triibal tools are self-registering functions grouped into toolsets and executed through a central registry/dispatch system.
+Tribal tools are self-registering functions grouped into toolsets and executed through a central registry/dispatch system.
 
 Primary files:
 
@@ -64,7 +64,7 @@ Each import triggers the module's `registry.register()` calls. Errors in optiona
 After core tool discovery, MCP tools and plugin tools are also discovered:
 
 1. **MCP tools** — `tools.mcp_tool.discover_mcp_tools()` reads MCP server config and registers tools from external servers.
-2. **Plugin tools** — `triibal_cli.plugins.discover_plugins()` loads user/project/pip plugins that may register additional tools.
+2. **Plugin tools** — `tribal_cli.plugins.discover_plugins()` loads user/project/pip plugins that may register additional tools.
 
 ## Tool availability checking (`check_fn`)
 
@@ -94,12 +94,12 @@ Key behaviors:
 
 ## Toolset resolution
 
-Toolsets are named bundles of tools. Triibal resolves them through:
+Toolsets are named bundles of tools. Tribal resolves them through:
 
 - explicit enabled/disabled toolset lists
-- platform presets (`triibal-cli`, `triibal-telegram`, etc.)
+- platform presets (`tribal-cli`, `tribal-telegram`, etc.)
 - dynamic MCP toolsets
-- curated special-purpose sets like `triibal-acp`
+- curated special-purpose sets like `tribal-acp`
 
 ### How `get_tool_definitions()` filters tools
 

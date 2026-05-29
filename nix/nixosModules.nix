@@ -1,50 +1,50 @@
-# nix/nixosModules.nix — NixOS module for triibal-agent
+# nix/nixosModules.nix — NixOS module for tribal-agent
 #
 # Two modes:
 #   container.enable = false (default) → native systemd service
 #   container.enable = true            → OCI container (persistent writable layer)
 #
-# Container mode: triibal runs from /nix/store bind-mounted read-only into a
+# Container mode: tribal runs from /nix/store bind-mounted read-only into a
 # plain Ubuntu container. The writable layer (apt/pip/npm installs) persists
 # across restarts and agent updates. Only image/volume/options changes trigger
-# container recreation. Environment variables are written to $TRIIBAL_HOME/.env
-# and read by triibal at startup — no container recreation needed for env changes.
+# container recreation. Environment variables are written to $TRIBAL_HOME/.env
+# and read by tribal at startup — no container recreation needed for env changes.
 #
-# Tool resolution: the triibal wrapper uses --suffix PATH for nix store tools,
+# Tool resolution: the tribal wrapper uses --suffix PATH for nix store tools,
 # so apt/uv-installed versions take priority. The container entrypoint provisions
 # extensible tools on first boot: nodejs/npm via apt, uv via curl, and a Python
 # 3.11 venv (bootstrapped entirely by uv) at ~/.venv with pip seeded. Agents get
 # writable tool prefixes for npm i -g, pip install, uv tool install, etc.
 #
 # Usage:
-#   services.triibal-agent = {
+#   services.tribal-agent = {
 #     enable = true;
 #     settings.model = "anthropic/claude-sonnet-4";
-#     environmentFiles = [ config.sops.secrets."triibal/env".path ];
+#     environmentFiles = [ config.sops.secrets."tribal/env".path ];
 #   };
 #
 { inputs, ... }: {
   flake.nixosModules.default = { config, lib, pkgs, ... }:
 
   let
-    cfg = config.services.triibal-agent;
+    cfg = config.services.tribal-agent;
     effectivePackage =
       if cfg.extraPythonPackages == [ ] && cfg.extraDependencyGroups == [ ]
       then cfg.package
       else cfg.package.override { inherit (cfg) extraPythonPackages extraDependencyGroups; };
-    triibal-agent = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    tribal-agent = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
-    # Deep-merge config type (from 0xrsydn/nix-triibal-agent)
+    # Deep-merge config type (from 0xrsydn/nix-tribal-agent)
     deepConfigType = lib.types.mkOptionType {
-      name = "triibal-config-attrs";
-      description = "Triibal YAML config (attrset), merged deeply via lib.recursiveUpdate.";
+      name = "tribal-config-attrs";
+      description = "Tribal YAML config (attrset), merged deeply via lib.recursiveUpdate.";
       check = builtins.isAttrs;
       merge = _loc: defs: lib.foldl' lib.recursiveUpdate { } (map (d: d.value) defs);
     };
 
     # Generate config.yaml from Nix attrset (YAML is a superset of JSON)
     configJson = builtins.toJSON cfg.settings;
-    generatedConfigFile = pkgs.writeText "triibal-config.yaml" configJson;
+    generatedConfigFile = pkgs.writeText "tribal-config.yaml" configJson;
     configFile = if cfg.configFile != null then cfg.configFile else generatedConfigFile;
 
     configMergeScript = pkgs.callPackage ./configMergeScript.nix { };
@@ -54,21 +54,21 @@
       lib.mapAttrsToList (k: v: "${k}=${v}") cfg.environment
     );
     # Build documents derivation (from 0xrsydn)
-    documentDerivation = pkgs.runCommand "triibal-documents" { } (
+    documentDerivation = pkgs.runCommand "tribal-documents" { } (
       ''
         mkdir -p $out
       '' + lib.concatStringsSep "\n" (
         lib.mapAttrsToList (name: value:
           if builtins.isPath value || lib.isStorePath value
           then "cp ${value} $out/${name}"
-          else "cat > $out/${name} <<'TRIIBAL_DOC_EOF'\n${value}\nTRIIBAL_DOC_EOF"
+          else "cat > $out/${name} <<'TRIBAL_DOC_EOF'\n${value}\nTRIBAL_DOC_EOF"
         ) cfg.documents
       )
     );
 
-    containerName = "triibal-agent";
+    containerName = "tribal-agent";
     containerDataDir = "/data";     # stateDir mount point inside container
-    containerHomeDir = "/home/triibal";
+    containerHomeDir = "/home/tribal";
 
     # ── Container mode helpers ──────────────────────────────────────────
     containerBin = if cfg.container.backend == "docker"
@@ -76,54 +76,54 @@
       else "${pkgs.podman}/bin/podman";
 
     # Runs as root inside the container on every start. Provisions the
-    # triibal user + sudo on first boot (writable layer persists), then
+    # tribal user + sudo on first boot (writable layer persists), then
     # drops privileges. Supports arbitrary base images (Debian, Alpine, etc).
-    containerEntrypoint = pkgs.writeShellScript "triibal-container-entrypoint" ''
+    containerEntrypoint = pkgs.writeShellScript "tribal-container-entrypoint" ''
       set -eu
 
-      TRIIBAL_UID="''${TRIIBAL_UID:?TRIIBAL_UID must be set}"
-      TRIIBAL_GID="''${TRIIBAL_GID:?TRIIBAL_GID must be set}"
+      TRIBAL_UID="''${TRIBAL_UID:?TRIBAL_UID must be set}"
+      TRIBAL_GID="''${TRIBAL_GID:?TRIBAL_GID must be set}"
 
-      # ── Group: ensure a group with GID=$TRIIBAL_GID exists ──
+      # ── Group: ensure a group with GID=$TRIBAL_GID exists ──
       # Check by GID (not name) to avoid collisions with pre-existing groups
       # (e.g. GID 100 = "users" on Ubuntu)
-      EXISTING_GROUP=$(getent group "$TRIIBAL_GID" 2>/dev/null | cut -d: -f1 || true)
+      EXISTING_GROUP=$(getent group "$TRIBAL_GID" 2>/dev/null | cut -d: -f1 || true)
       if [ -n "$EXISTING_GROUP" ]; then
         GROUP_NAME="$EXISTING_GROUP"
       else
-        GROUP_NAME="triibal"
+        GROUP_NAME="tribal"
         if command -v groupadd >/dev/null 2>&1; then
-          groupadd -g "$TRIIBAL_GID" "$GROUP_NAME"
+          groupadd -g "$TRIBAL_GID" "$GROUP_NAME"
         elif command -v addgroup >/dev/null 2>&1; then
-          addgroup -g "$TRIIBAL_GID" "$GROUP_NAME" 2>/dev/null || true
+          addgroup -g "$TRIBAL_GID" "$GROUP_NAME" 2>/dev/null || true
         fi
       fi
 
-      # ── User: ensure a user with UID=$TRIIBAL_UID exists ──
-      PASSWD_ENTRY=$(getent passwd "$TRIIBAL_UID" 2>/dev/null || true)
+      # ── User: ensure a user with UID=$TRIBAL_UID exists ──
+      PASSWD_ENTRY=$(getent passwd "$TRIBAL_UID" 2>/dev/null || true)
       if [ -n "$PASSWD_ENTRY" ]; then
         TARGET_USER=$(echo "$PASSWD_ENTRY" | cut -d: -f1)
         TARGET_HOME=$(echo "$PASSWD_ENTRY" | cut -d: -f6)
       else
-        TARGET_USER="triibal"
-        TARGET_HOME="/home/triibal"
+        TARGET_USER="tribal"
+        TARGET_HOME="/home/tribal"
         if command -v useradd >/dev/null 2>&1; then
-          useradd -u "$TRIIBAL_UID" -g "$TRIIBAL_GID" -m -d "$TARGET_HOME" -s /bin/bash "$TARGET_USER"
+          useradd -u "$TRIBAL_UID" -g "$TRIBAL_GID" -m -d "$TARGET_HOME" -s /bin/bash "$TARGET_USER"
         elif command -v adduser >/dev/null 2>&1; then
-          adduser -u "$TRIIBAL_UID" -D -h "$TARGET_HOME" -s /bin/sh -G "$GROUP_NAME" "$TARGET_USER" 2>/dev/null || true
+          adduser -u "$TRIBAL_UID" -D -h "$TARGET_HOME" -s /bin/sh -G "$GROUP_NAME" "$TARGET_USER" 2>/dev/null || true
         fi
       fi
       mkdir -p "$TARGET_HOME"
-      chown "$TRIIBAL_UID:$TRIIBAL_GID" "$TARGET_HOME"
+      chown "$TRIBAL_UID:$TRIBAL_GID" "$TARGET_HOME"
       chmod 0750 "$TARGET_HOME"
 
-      # Ensure TRIIBAL_HOME is owned by the target user.
+      # Ensure TRIBAL_HOME is owned by the target user.
       # Use find instead of chown -R: chown strips the setgid bit (kernel
       # behavior), destroying the 2770 permissions the NixOS activation
       # script sets for group access by hostUsers.  Only touch files with
       # wrong ownership so correctly-owned dirs keep their permission bits.
-      if [ -n "''${TRIIBAL_HOME:-}" ] && [ -d "$TRIIBAL_HOME" ]; then
-        find "$TRIIBAL_HOME" \! -user "$TRIIBAL_UID" -exec chown "$TRIIBAL_UID:$TRIIBAL_GID" {} +
+      if [ -n "''${TRIBAL_HOME:-}" ] && [ -d "$TRIBAL_HOME" ]; then
+        find "$TRIBAL_HOME" \! -user "$TRIBAL_UID" -exec chown "$TRIBAL_UID:$TRIBAL_GID" {} +
       fi
 
       # ── Provision apt packages (first boot only, cached in writable layer) ──
@@ -131,7 +131,7 @@
       # nodejs/npm: writable node so npm i -g works (nix store copies are read-only)
       #   Node 22 via NodeSource — Ubuntu 24.04 ships Node 18 which is EOL.
       # curl: needed for uv installer + NodeSource setup
-      if [ ! -f /var/lib/triibal-tools-provisioned ] && command -v apt-get >/dev/null 2>&1; then
+      if [ ! -f /var/lib/tribal-tools-provisioned ] && command -v apt-get >/dev/null 2>&1; then
         echo "First boot: provisioning agent tools..."
         apt-get update -qq
         apt-get install -y -qq sudo curl ca-certificates gnupg
@@ -142,13 +142,13 @@
           > /etc/apt/sources.list.d/nodesource.list
         apt-get update -qq
         apt-get install -y -qq nodejs
-        touch /var/lib/triibal-tools-provisioned
+        touch /var/lib/tribal-tools-provisioned
       fi
 
-      if command -v sudo >/dev/null 2>&1 && [ ! -f /etc/sudoers.d/triibal ]; then
+      if command -v sudo >/dev/null 2>&1 && [ ! -f /etc/sudoers.d/tribal ]; then
         mkdir -p /etc/sudoers.d
-        echo "$TARGET_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/triibal
-        chmod 0440 /etc/sudoers.d/triibal
+        echo "$TARGET_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/tribal
+        chmod 0440 /etc/sudoers.d/tribal
       fi
 
       # uv (Python manager) — not in Ubuntu repos, retry-safe outside the sentinel
@@ -173,7 +173,7 @@
       fi
 
       if command -v setpriv >/dev/null 2>&1; then
-        exec setpriv --reuid="$TRIIBAL_UID" --regid="$TRIIBAL_GID" --init-groups "$@"
+        exec setpriv --reuid="$TRIBAL_UID" --regid="$TRIBAL_GID" --init-groups "$@"
       elif command -v su >/dev/null 2>&1; then
         exec su -s /bin/sh "$TARGET_USER" -c 'exec "$0" "$@"' -- "$@"
       else
@@ -184,7 +184,7 @@
 
     # Identity hash — only recreate container when structural config changes.
     # Package and entrypoint use stable symlinks (current-package, current-entrypoint)
-    # so they can update without recreation. Env vars go through $TRIIBAL_HOME/.env.
+    # so they can update without recreation. Env vars go through $TRIBAL_HOME/.env.
     containerIdentity = builtins.hashString "sha256" (builtins.toJSON {
       schema = 4; # bump when identity inputs change (4: Node 18→22 via NodeSource)
       image = cfg.container.image;
@@ -194,7 +194,7 @@
 
     identityFile = "${cfg.stateDir}/.container-identity";
 
-    # Default: /var/lib/triibal/workspace → /data/workspace.
+    # Default: /var/lib/tribal/workspace → /data/workspace.
     # Custom paths outside stateDir pass through unchanged (user must add extraVolumes).
     containerWorkDir =
       if lib.hasPrefix "${cfg.stateDir}/" cfg.workingDirectory
@@ -202,26 +202,26 @@
       else cfg.workingDirectory;
 
   in {
-    options.services.triibal-agent = with lib; {
-      enable = mkEnableOption "Triibal Agent gateway service";
+    options.services.tribal-agent = with lib; {
+      enable = mkEnableOption "Tribal Agent gateway service";
 
       # ── Package ──────────────────────────────────────────────────────────
       package = mkOption {
         type = types.package;
-        default = triibal-agent;
-        description = "The triibal-agent package to use.";
+        default = tribal-agent;
+        description = "The tribal-agent package to use.";
       };
 
       # ── Service identity ─────────────────────────────────────────────────
       user = mkOption {
         type = types.str;
-        default = "triibal";
+        default = "tribal";
         description = "System user running the gateway.";
       };
 
       group = mkOption {
         type = types.str;
-        default = "triibal";
+        default = "tribal";
         description = "System group running the gateway.";
       };
 
@@ -234,8 +234,8 @@
       # ── Directories ──────────────────────────────────────────────────────
       stateDir = mkOption {
         type = types.str;
-        default = "/var/lib/triibal";
-        description = "State directory. Contains .triibal/ subdir (TRIIBAL_HOME).";
+        default = "/var/lib/tribal";
+        description = "State directory. Contains .tribal/ subdir (TRIBAL_HOME).";
       };
 
       workingDirectory = mkOption {
@@ -259,7 +259,7 @@
         type = deepConfigType;
         default = { };
         description = ''
-          Declarative Triibal config (attrset). Deep-merged across module
+          Declarative Tribal config (attrset). Deep-merged across module
           definitions and rendered as config.yaml.
         '';
         example = literalExpression ''
@@ -278,8 +278,8 @@
         default = [ ];
         description = ''
           Paths to environment files containing secrets (API keys, tokens).
-          Contents are merged into $TRIIBAL_HOME/.env at activation time.
-          Triibal reads this file on every startup via load_triibal_dotenv().
+          Contents are merged into $TRIBAL_HOME/.env at activation time.
+          Tribal reads this file on every startup via load_tribal_dotenv().
         '';
       };
 
@@ -287,7 +287,7 @@
         type = types.attrsOf types.str;
         default = { };
         description = ''
-          Non-secret environment variables. Merged into $TRIIBAL_HOME/.env
+          Non-secret environment variables. Merged into $TRIBAL_HOME/.env
           at activation time. Do NOT put secrets here — use environmentFiles.
         '';
       };
@@ -362,7 +362,7 @@
               default = null;
               description = ''
                 Authentication method. Set to "oauth" for OAuth 2.1 PKCE flow
-                (remote MCP servers). Tokens are stored in $TRIIBAL_HOME/mcp-tokens/.
+                (remote MCP servers). Tokens are stored in $TRIBAL_HOME/mcp-tokens/.
               '';
             };
 
@@ -455,7 +455,7 @@
       extraArgs = mkOption {
         type = types.listOf types.str;
         default = [ ];
-        description = "Extra command-line arguments for `triibal gateway`.";
+        description = "Extra command-line arguments for `tribal gateway`.";
       };
 
       extraPackages = mkOption {
@@ -465,7 +465,7 @@
           Extra packages available to the agent — terminal commands, skills,
           cron jobs, and the service process all see them.
 
-          Implemented via the triibal user's per-user profile
+          Implemented via the tribal user's per-user profile
           (`/etc/profiles/per-user/${cfg.user}/bin`), which NixOS includes
           in PATH for login shells.  The packages are also added to the
           systemd service PATH for direct process access.
@@ -476,16 +476,16 @@
         type = types.listOf types.package;
         default = [ ];
         description = ''
-          Directory-based plugin packages to symlink into the triibal plugins
+          Directory-based plugin packages to symlink into the tribal plugins
           directory. Each package should contain a plugin.yaml and __init__.py
-          at its root. Triibal discovers these automatically on startup.
+          at its root. Tribal discovers these automatically on startup.
         '';
         example = literalExpression ''
           [
             (pkgs.fetchFromGitHub {
               owner = "stephenschoettler";
-              repo = "triibal-lcm";
-              name = "triibal-lcm";
+              repo = "tribal-lcm";
+              name = "tribal-lcm";
               rev = "v0.7.0";
               hash = "sha256-...";
             })
@@ -499,17 +499,17 @@
         description = ''
           Python packages to add to PYTHONPATH for entry-point plugin discovery.
           These are pip-packaged plugins that register via the
-          triibal_agent.plugins entry-point group. Each package must be built
-          with the same Python interpreter as triibal (python312).
+          tribal_agent.plugins entry-point group. Each package must be built
+          with the same Python interpreter as tribal (python312).
         '';
         example = literalExpression ''
           [
             (pkgs.python312Packages.buildPythonPackage {
-              pname = "rtk-triibal";
+              pname = "rtk-tribal";
               version = "1.0.0";
               src = pkgs.fetchFromGitHub {
                 owner = "ogallotti";
-                repo = "rtk-triibal";
+                repo = "rtk-tribal";
                 rev = "main";
                 hash = "sha256-...";
               };
@@ -526,7 +526,7 @@
           the sealed Python venv. These are resolved by uv alongside core
           dependencies — no PYTHONPATH patching or collision risk.
 
-          Use this for optional extras already declared in triibal-agent's
+          Use this for optional extras already declared in tribal-agent's
           pyproject.toml (e.g. "hindsight", "honcho", "voice").
           Use extraPythonPackages for external packages not in pyproject.toml.
         '';
@@ -549,8 +549,8 @@
         type = types.bool;
         default = false;
         description = ''
-          Add the triibal CLI to environment.systemPackages and export
-          TRIIBAL_HOME system-wide (via environment.variables) so interactive
+          Add the tribal CLI to environment.systemPackages and export
+          TRIBAL_HOME system-wide (via environment.variables) so interactive
           shells share state with the gateway service.
         '';
       };
@@ -588,8 +588,8 @@
           type = types.listOf types.str;
           default = [ ];
           description = ''
-            Interactive users who get a ~/.triibal symlink to the service
-            stateDir. These users are automatically added to the triibal group.
+            Interactive users who get a ~/.tribal symlink to the service
+            stateDir. These users are automatically added to the tribal group.
           '';
           example = [ "sidbin" ];
         };
@@ -600,7 +600,7 @@
 
       # ── Merge MCP servers into settings ────────────────────────────────
       (lib.mkIf (cfg.mcpServers != { }) {
-        services.triibal-agent.settings.mcp_servers = lib.mapAttrs (_name: srv:
+        services.tribal-agent.settings.mcp_servers = lib.mapAttrs (_name: srv:
           # Stdio transport
           lib.optionalAttrs (srv.command != null) { inherit (srv) command args; }
           // lib.optionalAttrs (srv.env != { }) { inherit (srv) env; }
@@ -643,12 +643,12 @@
       })
 
       # ── Host CLI ──────────────────────────────────────────────────────
-      # Add the triibal CLI to system PATH and export TRIIBAL_HOME system-wide
+      # Add the tribal CLI to system PATH and export TRIBAL_HOME system-wide
       # so interactive shells share state (sessions, skills, cron) with the
-      # gateway service instead of creating a separate ~/.triibal/.
+      # gateway service instead of creating a separate ~/.tribal/.
       (lib.mkIf cfg.addToSystemPackages {
         environment.systemPackages = [ effectivePackage ];
-        environment.variables.TRIIBAL_HOME = "${cfg.stateDir}/.triibal";
+        environment.variables.TRIBAL_HOME = "${cfg.stateDir}/.tribal";
       })
 
       # ── Host user group membership ─────────────────────────────────────
@@ -664,7 +664,7 @@
           names = map lib.getName cfg.extraPlugins;
         in [{
           assertion = (lib.length names) == (lib.length (lib.unique names));
-          message = "services.triibal-agent.extraPlugins: duplicate plugin names detected: ${toString names}. If using fetchFromGitHub, set name = \"plugin-name\" to disambiguate.";
+          message = "services.tribal-agent.extraPlugins: duplicate plugin names detected: ${toString names}. If using fetchFromGitHub, set name = \"plugin-name\" to disambiguate.";
         }];
       }
 
@@ -674,13 +674,13 @@
           names = map lib.getName cfg.extraPlugins;
         in [{
           assertion = (lib.length names) == (lib.length (lib.unique names));
-          message = "services.triibal-agent.extraPlugins: duplicate plugin names detected: ${toString names}. If using fetchFromGitHub, set name = \"plugin-name\" to disambiguate.";
+          message = "services.tribal-agent.extraPlugins: duplicate plugin names detected: ${toString names}. If using fetchFromGitHub, set name = \"plugin-name\" to disambiguate.";
         }];
       }
 
       # ── Warnings ──────────────────────────────────────────────────────
       # ── Per-user profile for extraPackages ───────────────────────────
-      # Wire extraPackages into the triibal user's per-user profile so the
+      # Wire extraPackages into the tribal user's per-user profile so the
       # login-shell snapshot (which rebuilds PATH from NixOS profiles) sees
       # them.  The systemd service PATH also includes them for direct access.
       (lib.mkIf (cfg.extraPackages != []) {
@@ -693,10 +693,10 @@
       (lib.mkIf (cfg.container.enable && !cfg.addToSystemPackages && cfg.container.hostUsers != []) {
         warnings = [
           ''
-            services.triibal-agent: container.enable is true and container.hostUsers
-            is set, but addToSystemPackages is false. Without a host-installed triibal
+            services.tribal-agent: container.enable is true and container.hostUsers
+            is set, but addToSystemPackages is false. Without a host-installed tribal
             binary, container routing will not work for interactive users.
-            Set addToSystemPackages = true or ensure triibal is on PATH.
+            Set addToSystemPackages = true or ensure tribal is on PATH.
           ''
         ];
       })
@@ -705,12 +705,12 @@
       {
         systemd.tmpfiles.rules = [
           "d ${cfg.stateDir}                2770 ${cfg.user} ${cfg.group} - -"
-          "d ${cfg.stateDir}/.triibal        2770 ${cfg.user} ${cfg.group} - -"
-          "d ${cfg.stateDir}/.triibal/cron   2770 ${cfg.user} ${cfg.group} - -"
-          "d ${cfg.stateDir}/.triibal/sessions 2770 ${cfg.user} ${cfg.group} - -"
-          "d ${cfg.stateDir}/.triibal/logs   2770 ${cfg.user} ${cfg.group} - -"
-          "d ${cfg.stateDir}/.triibal/memories 2770 ${cfg.user} ${cfg.group} - -"
-          "d ${cfg.stateDir}/.triibal/plugins 2770 ${cfg.user} ${cfg.group} - -"
+          "d ${cfg.stateDir}/.tribal        2770 ${cfg.user} ${cfg.group} - -"
+          "d ${cfg.stateDir}/.tribal/cron   2770 ${cfg.user} ${cfg.group} - -"
+          "d ${cfg.stateDir}/.tribal/sessions 2770 ${cfg.user} ${cfg.group} - -"
+          "d ${cfg.stateDir}/.tribal/logs   2770 ${cfg.user} ${cfg.group} - -"
+          "d ${cfg.stateDir}/.tribal/memories 2770 ${cfg.user} ${cfg.group} - -"
+          "d ${cfg.stateDir}/.tribal/plugins 2770 ${cfg.user} ${cfg.group} - -"
           "d ${cfg.stateDir}/home           0750 ${cfg.user} ${cfg.group} - -"
           "d ${cfg.workingDirectory}         2770 ${cfg.user} ${cfg.group} - -"
         ];
@@ -718,25 +718,25 @@
 
       # ── Activation: link config + auth + documents ────────────────────
       {
-        system.activationScripts."triibal-agent-setup" = lib.stringAfter ([ "users" ] ++ lib.optional (config.system.activationScripts ? setupSecrets) "setupSecrets") ''
+        system.activationScripts."tribal-agent-setup" = lib.stringAfter ([ "users" ] ++ lib.optional (config.system.activationScripts ? setupSecrets) "setupSecrets") ''
           # Ensure directories exist (activation runs before tmpfiles)
-          mkdir -p ${cfg.stateDir}/.triibal
+          mkdir -p ${cfg.stateDir}/.tribal
           mkdir -p ${cfg.stateDir}/home
           mkdir -p ${cfg.workingDirectory}
-          chown ${cfg.user}:${cfg.group} ${cfg.stateDir} ${cfg.stateDir}/.triibal ${cfg.stateDir}/home ${cfg.workingDirectory}
-          chmod 2770 ${cfg.stateDir} ${cfg.stateDir}/.triibal ${cfg.workingDirectory}
+          chown ${cfg.user}:${cfg.group} ${cfg.stateDir} ${cfg.stateDir}/.tribal ${cfg.stateDir}/home ${cfg.workingDirectory}
+          chmod 2770 ${cfg.stateDir} ${cfg.stateDir}/.tribal ${cfg.workingDirectory}
           chmod 0750 ${cfg.stateDir}/home
 
           # Create subdirs, set setgid + group-writable, migrate existing files.
           # Nix-managed files (config.yaml, .env, .managed) stay 0640/0644.
-          find ${cfg.stateDir}/.triibal -maxdepth 1 \
+          find ${cfg.stateDir}/.tribal -maxdepth 1 \
             \( -name "*.db" -o -name "*.db-wal" -o -name "*.db-shm" -o -name "SOUL.md" \) \
             -exec chmod g+rw {} + 2>/dev/null || true
           for _subdir in cron sessions logs memories plugins; do
-            mkdir -p "${cfg.stateDir}/.triibal/$_subdir"
-            chown ${cfg.user}:${cfg.group} "${cfg.stateDir}/.triibal/$_subdir"
-            chmod 2770 "${cfg.stateDir}/.triibal/$_subdir"
-            find "${cfg.stateDir}/.triibal/$_subdir" -type f \
+            mkdir -p "${cfg.stateDir}/.tribal/$_subdir"
+            chown ${cfg.user}:${cfg.group} "${cfg.stateDir}/.tribal/$_subdir"
+            chmod 2770 "${cfg.stateDir}/.tribal/$_subdir"
+            find "${cfg.stateDir}/.tribal/$_subdir" -type f \
               -exec chmod g+rw {} + 2>/dev/null || true
           done
 
@@ -744,63 +744,63 @@
           # Preserves user-added keys (skills, streaming, etc.); Nix keys win.
           # If configFile is user-provided (not generated), overwrite instead of merge.
           ${if cfg.configFile != null then ''
-            install -o ${cfg.user} -g ${cfg.group} -m 0640 -D ${configFile} ${cfg.stateDir}/.triibal/config.yaml
+            install -o ${cfg.user} -g ${cfg.group} -m 0640 -D ${configFile} ${cfg.stateDir}/.tribal/config.yaml
           '' else ''
-            ${configMergeScript} ${generatedConfigFile} ${cfg.stateDir}/.triibal/config.yaml
-            chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.triibal/config.yaml
-            chmod 0640 ${cfg.stateDir}/.triibal/config.yaml
+            ${configMergeScript} ${generatedConfigFile} ${cfg.stateDir}/.tribal/config.yaml
+            chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.tribal/config.yaml
+            chmod 0640 ${cfg.stateDir}/.tribal/config.yaml
           ''}
 
           # Managed mode marker (so interactive shells also detect NixOS management)
-          touch ${cfg.stateDir}/.triibal/.managed
-          chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.triibal/.managed
-          chmod 0644 ${cfg.stateDir}/.triibal/.managed
+          touch ${cfg.stateDir}/.tribal/.managed
+          chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.tribal/.managed
+          chmod 0644 ${cfg.stateDir}/.tribal/.managed
 
           # Container mode metadata — tells the host CLI to exec into the
           # container instead of running locally. Removed when container mode
           # is disabled so the host CLI falls back to native execution.
           ${if cfg.container.enable then ''
-            cat > ${cfg.stateDir}/.triibal/.container-mode <<'TRIIBAL_CONTAINER_MODE_EOF'
+            cat > ${cfg.stateDir}/.tribal/.container-mode <<'TRIBAL_CONTAINER_MODE_EOF'
     # Written by NixOS activation script. Do not edit manually.
     backend=${cfg.container.backend}
     container_name=${containerName}
     exec_user=${cfg.user}
-    triibal_bin=${containerDataDir}/current-package/bin/triibal
-    TRIIBAL_CONTAINER_MODE_EOF
-            chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.triibal/.container-mode
-            chmod 0644 ${cfg.stateDir}/.triibal/.container-mode
+    tribal_bin=${containerDataDir}/current-package/bin/tribal
+    TRIBAL_CONTAINER_MODE_EOF
+            chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.tribal/.container-mode
+            chmod 0644 ${cfg.stateDir}/.tribal/.container-mode
           '' else ''
-            rm -f ${cfg.stateDir}/.triibal/.container-mode
+            rm -f ${cfg.stateDir}/.tribal/.container-mode
 
             # Remove symlink bridge for hostUsers
             ${lib.concatStringsSep "\n" (map (user:
               let
                 userHome = config.users.users.${user}.home;
-                symlinkPath = "${userHome}/.triibal";
+                symlinkPath = "${userHome}/.tribal";
               in ''
-                if [ -L "${symlinkPath}" ] && [ "$(readlink "${symlinkPath}")" = "${cfg.stateDir}/.triibal" ]; then
+                if [ -L "${symlinkPath}" ] && [ "$(readlink "${symlinkPath}")" = "${cfg.stateDir}/.tribal" ]; then
                   rm -f "${symlinkPath}"
-                  echo "triibal-agent: removed symlink ${symlinkPath}"
+                  echo "tribal-agent: removed symlink ${symlinkPath}"
                 fi
               '') cfg.container.hostUsers)}
           ''}
 
           # ── Symlink bridge for interactive users ───────────────────────
-          # Create ~/.triibal -> stateDir/.triibal for each hostUser so the
+          # Create ~/.tribal -> stateDir/.tribal for each hostUser so the
           # host CLI shares state with the container service.
           # Only runs when container mode is enabled.
           ${lib.optionalString cfg.container.enable
             (lib.concatStringsSep "\n" (map (user:
               let
                 userHome = config.users.users.${user}.home;
-                symlinkPath = "${userHome}/.triibal";
-                target = "${cfg.stateDir}/.triibal";
+                symlinkPath = "${userHome}/.tribal";
+                target = "${cfg.stateDir}/.tribal";
               in ''
                 if [ -d "${symlinkPath}" ] && [ ! -L "${symlinkPath}" ]; then
                   # Real directory — back it up, then create symlink.
                   # (ln -sfn cannot atomically replace a directory.)
                   _backup="${symlinkPath}.bak.$(date +%s)"
-                  echo "triibal-agent: backing up existing ${symlinkPath} to $_backup"
+                  echo "tribal-agent: backing up existing ${symlinkPath} to $_backup"
                   mv "${symlinkPath}" "$_backup"
                 fi
                 # For everything else (existing symlink, doesn't exist, etc.)
@@ -812,23 +812,23 @@
           # Seed auth file if provided
           ${lib.optionalString (cfg.authFile != null) ''
             ${if cfg.authFileForceOverwrite then ''
-              install -o ${cfg.user} -g ${cfg.group} -m 0600 ${cfg.authFile} ${cfg.stateDir}/.triibal/auth.json
+              install -o ${cfg.user} -g ${cfg.group} -m 0600 ${cfg.authFile} ${cfg.stateDir}/.tribal/auth.json
             '' else ''
-              if [ ! -f ${cfg.stateDir}/.triibal/auth.json ]; then
-                install -o ${cfg.user} -g ${cfg.group} -m 0600 ${cfg.authFile} ${cfg.stateDir}/.triibal/auth.json
+              if [ ! -f ${cfg.stateDir}/.tribal/auth.json ]; then
+                install -o ${cfg.user} -g ${cfg.group} -m 0600 ${cfg.authFile} ${cfg.stateDir}/.tribal/auth.json
               fi
             ''}
           ''}
 
           # Seed .env from Nix-declared environment + environmentFiles.
-          # Triibal reads $TRIIBAL_HOME/.env at startup via load_triibal_dotenv(),
+          # Tribal reads $TRIBAL_HOME/.env at startup via load_tribal_dotenv(),
           # so this is the single source of truth for both native and container mode.
           ${lib.optionalString (cfg.environment != {} || cfg.environmentFiles != []) ''
-            ENV_FILE="${cfg.stateDir}/.triibal/.env"
+            ENV_FILE="${cfg.stateDir}/.tribal/.env"
             install -o ${cfg.user} -g ${cfg.group} -m 0640 /dev/null "$ENV_FILE"
-            cat > "$ENV_FILE" <<'TRIIBAL_NIX_ENV_EOF'
+            cat > "$ENV_FILE" <<'TRIBAL_NIX_ENV_EOF'
     ${envFileContent}
-    TRIIBAL_NIX_ENV_EOF
+    TRIBAL_NIX_ENV_EOF
             ${lib.concatStringsSep "\n" (map (f: ''
               if [ -f "${f}" ]; then
                 echo "" >> "$ENV_FILE"
@@ -844,7 +844,7 @@
 
         # ── Declarative plugins ─────────────────────────────────────────
         # Remove stale managed symlinks (plugins removed from config)
-        find ${cfg.stateDir}/.triibal/plugins -maxdepth 1 -type l -name 'nix-managed-*' -delete 2>/dev/null || true
+        find ${cfg.stateDir}/.tribal/plugins -maxdepth 1 -type l -name 'nix-managed-*' -delete 2>/dev/null || true
 
         ${lib.concatStringsSep "\n" (map (plugin:
           let
@@ -854,8 +854,8 @@
               echo "ERROR: extraPlugins entry '${plugin}' has no plugin.yaml" >&2
               exit 1
             fi
-            ln -sfn ${plugin} ${cfg.stateDir}/.triibal/plugins/nix-managed-${name}
-            chown -h ${cfg.user}:${cfg.group} ${cfg.stateDir}/.triibal/plugins/nix-managed-${name}
+            ln -sfn ${plugin} ${cfg.stateDir}/.tribal/plugins/nix-managed-${name}
+            chown -h ${cfg.user}:${cfg.group} ${cfg.stateDir}/.tribal/plugins/nix-managed-${name}
           '') cfg.extraPlugins)}
         '';
       }
@@ -864,16 +864,16 @@
       # MODE A: Native systemd service (default)
       # ══════════════════════════════════════════════════════════════════
       (lib.mkIf (!cfg.container.enable) {
-        systemd.services.triibal-agent = {
-          description = "Triibal Agent Gateway";
+        systemd.services.tribal-agent = {
+          description = "Tribal Agent Gateway";
           wantedBy = [ "multi-user.target" ];
           after = [ "network-online.target" ];
           wants = [ "network-online.target" ];
 
           environment = {
             HOME = cfg.stateDir;
-            TRIIBAL_HOME = "${cfg.stateDir}/.triibal";
-            TRIIBAL_MANAGED = "true";
+            TRIBAL_HOME = "${cfg.stateDir}/.tribal";
+            TRIBAL_MANAGED = "true";
             MESSAGING_CWD = cfg.workingDirectory;
           };
 
@@ -883,11 +883,11 @@
             WorkingDirectory = cfg.workingDirectory;
 
             # cfg.environment and cfg.environmentFiles are written to
-            # $TRIIBAL_HOME/.env by the activation script. load_triibal_dotenv()
+            # $TRIBAL_HOME/.env by the activation script. load_tribal_dotenv()
             # reads them at Python startup — no systemd EnvironmentFile needed.
 
             ExecStart = lib.concatStringsSep " " ([
-              "${effectivePackage}/bin/triibal"
+              "${effectivePackage}/bin/tribal"
               "gateway"
             ] ++ cfg.extraArgs);
 
@@ -895,7 +895,7 @@
             RestartSec = cfg.restartSec;
 
             # Shared-state: files created by the gateway should be group-writable
-            # so interactive users in the triibal group can read/write them.
+            # so interactive users in the tribal group can read/write them.
             UMask = "0007";
 
             # Hardening
@@ -925,8 +925,8 @@
         # Ensure the container runtime is available
         virtualisation.docker.enable = lib.mkDefault (cfg.container.backend == "docker");
 
-        systemd.services.triibal-agent = {
-          description = "Triibal Agent Gateway (container)";
+        systemd.services.tribal-agent = {
+          description = "Tribal Agent Gateway (container)";
           wantedBy = [ "multi-user.target" ];
           after = [ "network-online.target" ]
             ++ lib.optional (cfg.container.backend == "docker") "docker.service";
@@ -954,8 +954,8 @@
 
             if [ "$NEED_CREATE" = "true" ]; then
               # Resolve numeric UID/GID — passed to entrypoint for in-container user setup
-              TRIIBAL_UID=$(${pkgs.coreutils}/bin/id -u ${cfg.user})
-              TRIIBAL_GID=$(${pkgs.coreutils}/bin/id -g ${cfg.user})
+              TRIBAL_UID=$(${pkgs.coreutils}/bin/id -u ${cfg.user})
+              TRIBAL_GID=$(${pkgs.coreutils}/bin/id -g ${cfg.user})
 
               echo "Creating container..."
               ${containerBin} create \
@@ -966,15 +966,15 @@
                 --volume ${cfg.stateDir}:${containerDataDir} \
                 --volume ${cfg.stateDir}/home:${containerHomeDir} \
                 ${lib.concatStringsSep " " (map (v: "--volume ${v}") cfg.container.extraVolumes)} \
-                --env TRIIBAL_UID="$TRIIBAL_UID" \
-                --env TRIIBAL_GID="$TRIIBAL_GID" \
-                --env TRIIBAL_HOME=${containerDataDir}/.triibal \
-                --env TRIIBAL_MANAGED=true \
+                --env TRIBAL_UID="$TRIBAL_UID" \
+                --env TRIBAL_GID="$TRIBAL_GID" \
+                --env TRIBAL_HOME=${containerDataDir}/.tribal \
+                --env TRIBAL_MANAGED=true \
                 --env HOME=${containerHomeDir} \
                 --env MESSAGING_CWD=${containerWorkDir} \
                 ${lib.concatStringsSep " " cfg.container.extraOptions} \
                 ${cfg.container.image} \
-                ${containerDataDir}/current-package/bin/triibal gateway run --replace ${lib.concatStringsSep " " cfg.extraArgs}
+                ${containerDataDir}/current-package/bin/tribal gateway run --replace ${lib.concatStringsSep " " cfg.extraArgs}
 
               echo "${containerIdentity}" > ${identityFile}
             fi

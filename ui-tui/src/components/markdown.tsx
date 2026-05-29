@@ -1,4 +1,4 @@
-import { Box, Link, stringWidth, Text } from '@triibal/ink'
+import { Box, Link, stringWidth, Text } from '@tribal/ink'
 import { Fragment, memo, type ReactNode, useMemo } from 'react'
 
 import { ensureEmojiPresentation } from '../lib/emoji.js'

@@ -15,7 +15,7 @@ import uuid
 from typing import Optional
 
 from tools.environments.base import BaseEnvironment, _popen_bash
-from tools.environments.local import _TRIIBAL_PROVIDER_ENV_BLOCKLIST
+from tools.environments.local import _TRIBAL_PROVIDER_ENV_BLOCKLIST
 
 logger = logging.getLogger(__name__)
 
@@ -88,10 +88,10 @@ def _normalize_env_dict(env: dict | None) -> dict[str, str]:
     return normalized
 
 
-def _load_triibal_env_vars() -> dict[str, str]:
-    """Load ~/.triibal/.env values without failing Docker command execution."""
+def _load_tribal_env_vars() -> dict[str, str]:
+    """Load ~/.tribal/.env values without failing Docker command execution."""
     try:
-        from triibal_cli.config import load_env
+        from tribal_cli.config import load_env
 
         return load_env() or {}
     except Exception:
@@ -102,7 +102,7 @@ def find_docker() -> Optional[str]:
     """Locate the docker (or podman) CLI binary.
 
     Resolution order:
-    1. ``TRIIBAL_DOCKER_BINARY`` env var — explicit override (e.g. ``/usr/bin/podman``)
+    1. ``TRIBAL_DOCKER_BINARY`` env var — explicit override (e.g. ``/usr/bin/podman``)
     2. ``docker`` on PATH via ``shutil.which``
     3. ``podman`` on PATH via ``shutil.which``
     4. Well-known macOS Docker Desktop install locations
@@ -114,10 +114,10 @@ def find_docker() -> Optional[str]:
         return _docker_executable
 
     # 1. Explicit override via env var (e.g. for Podman on immutable distros)
-    override = os.getenv("TRIIBAL_DOCKER_BINARY")
+    override = os.getenv("TRIBAL_DOCKER_BINARY")
     if override and os.path.isfile(override) and os.access(override, os.X_OK):
         _docker_executable = override
-        logger.info("Using TRIIBAL_DOCKER_BINARY override: %s", override)
+        logger.info("Using TRIBAL_DOCKER_BINARY override: %s", override)
         return override
 
     # 2. docker on PATH
@@ -148,7 +148,7 @@ def find_docker() -> Optional[str]:
 # We drop all capabilities then add back the minimum needed:
 #   DAC_OVERRIDE - root can write to bind-mounted dirs owned by host user
 #   CHOWN/FOWNER - package managers (pip, npm, apt) need to set file ownership
-#   SETUID/SETGID - the image's init drops from root to the 'triibal'
+#   SETUID/SETGID - the image's init drops from root to the 'tribal'
 #       user (via `s6-setuidgid` in the bundled image, or whatever
 #       privilege-drop helper a user image uses), which requires these
 #       caps. Combined with `no-new-privileges`, the dropped process
@@ -340,7 +340,7 @@ class DockerEnvironment(BaseEnvironment):
             resource_args.append("--network=none")
 
         # Persistent workspace via bind mounts from a configurable host directory
-        # (TERMINAL_SANDBOX_DIR, default ~/.triibal/sandboxes/). Non-persistent
+        # (TERMINAL_SANDBOX_DIR, default ~/.tribal/sandboxes/). Non-persistent
         # mode uses tmpfs (ephemeral, fast, gone on cleanup).
         from tools.environments.base import get_sandbox_dir
 
@@ -505,7 +505,7 @@ class DockerEnvironment(BaseEnvironment):
         self._docker_exe = find_docker() or "docker"
 
         # Start the container directly via `docker run -d`.
-        container_name = f"triibal-{uuid.uuid4().hex[:8]}"
+        container_name = f"tribal-{uuid.uuid4().hex[:8]}"
         run_cmd = [
             self._docker_exe, "run", "-d",
             "--init",           # tini/catatonit as PID 1 — reaps zombie children
@@ -550,14 +550,14 @@ class DockerEnvironment(BaseEnvironment):
         except Exception:
             pass
         # Explicit docker_forward_env entries are an intentional opt-in and must
-        # win over the generic Triibal secret blocklist. Only implicit passthrough
+        # win over the generic Tribal secret blocklist. Only implicit passthrough
         # keys are filtered.
-        forward_keys = explicit_forward_keys | (passthrough_keys - _TRIIBAL_PROVIDER_ENV_BLOCKLIST)
-        triibal_env = _load_triibal_env_vars() if forward_keys else {}
+        forward_keys = explicit_forward_keys | (passthrough_keys - _TRIBAL_PROVIDER_ENV_BLOCKLIST)
+        tribal_env = _load_tribal_env_vars() if forward_keys else {}
         for key in sorted(forward_keys):
             value = os.getenv(key)
             if value is None:
-                value = triibal_env.get(key)
+                value = tribal_env.get(key)
             if value is not None:
                 exec_env[key] = value
 

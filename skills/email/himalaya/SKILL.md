@@ -6,7 +6,7 @@ author: community
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  triibal:
+  tribal:
     tags: [Email, IMAP, SMTP, CLI, Communication]
     homepage: https://github.com/pimalaya/himalaya
 prerequisites:
@@ -17,8 +17,8 @@ prerequisites:
 
 Himalaya is a CLI email client that lets you manage emails from the terminal using IMAP, SMTP, Notmuch, or Sendmail backends.
 
-This skill is separate from the Triibal Email gateway adapter. The gateway
-adapter lets people email the agent and uses Triibal' built-in IMAP/SMTP
+This skill is separate from the Tribal Email gateway adapter. The gateway
+adapter lets people email the agent and uses Tribal' built-in IMAP/SMTP
 adapter; this skill lets the agent operate a mailbox from terminal tools and
 requires the external `himalaya` CLI.
 
@@ -99,7 +99,7 @@ folder.aliases.trash = "Trash"
 > emails to recipients. Always use `folder.aliases.X` (plural, dotted
 > keys, directly under `[accounts.NAME]`).
 
-## Triibal Integration Notes
+## Tribal Integration Notes
 
 - **Reading, listing, searching, moving, deleting** all work directly through the terminal tool
 - **Composing/replying/forwarding** — piped input (`cat << EOF | himalaya template send`) is recommended for reliability. Interactive `$EDITOR` mode works with `pty=true` + background + process tool, but requires knowing the editor and its commands
@@ -156,7 +156,7 @@ himalaya message export 42 --full
 
 ### Reply to an Email
 
-To reply non-interactively from Triibal, read the original message, compose a reply, and pipe it:
+To reply non-interactively from Tribal, read the original message, compose a reply, and pipe it:
 
 ```bash
 # Get the reply template, edit it, and send
@@ -191,7 +191,7 @@ himalaya template forward 42 | sed 's/^To:.*/To: newrecipient@example.com/' | hi
 
 ### Write a New Email
 
-**Non-interactive (use this from Triibal)** — pipe the message via stdin:
+**Non-interactive (use this from Tribal)** — pipe the message via stdin:
 
 ```bash
 cat << 'EOF' | himalaya template send

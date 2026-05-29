@@ -20,13 +20,13 @@ Usage:
     response = agent.run_conversation("Tell me about the latest Python updates")
 """
 
-# IMPORTANT: triibal_bootstrap must be the very first import — UTF-8 stdio
-# on Windows.  No-op on POSIX.  See triibal_bootstrap.py for full rationale.
+# IMPORTANT: tribal_bootstrap must be the very first import — UTF-8 stdio
+# on Windows.  No-op on POSIX.  See tribal_bootstrap.py for full rationale.
 try:
-    import triibal_bootstrap  # noqa: F401
+    import tribal_bootstrap  # noqa: F401
 except ModuleNotFoundError:
-    # Graceful fallback when triibal_bootstrap isn't registered in the venv
-    # yet — happens during partial ``triibal update`` where git-reset landed
+    # Graceful fallback when tribal_bootstrap isn't registered in the venv
+    # yet — happens during partial ``tribal update`` where git-reset landed
     # new code but ``uv pip install -e .`` didn't finish.  Missing bootstrap
     # means UTF-8 stdio setup is skipped on Windows; POSIX is unaffected.
     pass
@@ -68,7 +68,7 @@ from urllib.parse import urlparse, parse_qs, urlunparse
 from datetime import datetime
 from pathlib import Path
 
-from triibal_constants import get_triibal_home
+from tribal_constants import get_tribal_home
 
 # OpenAI lazy proxy + safe stdio + proxy URL helpers — see agent/process_bootstrap.py.
 # `OpenAI` is re-exported here so `patch("run_agent.OpenAI", ...)` in tests works.
@@ -84,15 +84,15 @@ from agent.process_bootstrap import (
 from agent.iteration_budget import IterationBudget
 
 
-from triibal_cli.env_loader import load_triibal_dotenv
-from triibal_cli.timeouts import (
+from tribal_cli.env_loader import load_tribal_dotenv
+from tribal_cli.timeouts import (
     get_provider_request_timeout,
     get_provider_stale_timeout,
 )
 
-_triibal_home = get_triibal_home()
+_tribal_home = get_tribal_home()
 _project_env = Path(__file__).parent / '.env'
-_loaded_env_paths = load_triibal_dotenv(triibal_home=_triibal_home, project_env=_project_env)
+_loaded_env_paths = load_tribal_dotenv(tribal_home=_tribal_home, project_env=_project_env)
 if _loaded_env_paths:
     for _env_path in _loaded_env_paths:
         logger.info("Loaded environment variables from %s", _env_path)
@@ -128,7 +128,7 @@ from agent.redact import redact_sensitive_text
 from agent.prompt_builder import (
     DEFAULT_AGENT_IDENTITY, PLATFORM_HINTS,
     MEMORY_GUIDANCE, SESSION_SEARCH_GUIDANCE, SKILLS_GUIDANCE,
-    TRIIBAL_AGENT_HELP_GUIDANCE,
+    TRIBAL_AGENT_HELP_GUIDANCE,
     KANBAN_GUIDANCE,
     build_nous_subscription_prompt,
 )
@@ -203,7 +203,7 @@ from agent.tool_dispatch_helpers import (
     _trajectory_normalize_msg,
 )
 from utils import atomic_json_write, base_url_host_matches, base_url_hostname, env_var_enabled, normalize_proxy_url
-from triibal_cli.config import cfg_get
+from tribal_cli.config import cfg_get
 
 
 
@@ -230,10 +230,10 @@ _QWEN_CODE_VERSION = "0.14.1"
 
 def _routermint_headers() -> dict:
     """Return the User-Agent RouterMint needs to avoid Cloudflare 1010 blocks."""
-    from triibal_cli import __version__ as _TRIIBAL_VERSION
+    from tribal_cli import __version__ as _TRIBAL_VERSION
 
     return {
-        "User-Agent": f"TriibalAgent/{_TRIIBAL_VERSION}",
+        "User-Agent": f"TribalAgent/{_TRIBAL_VERSION}",
     }
 
 
@@ -333,7 +333,7 @@ class AIAgent:
     """
 
     _TOOL_CALL_ARGUMENTS_CORRUPTION_MARKER = (
-        "[triibal-agent: tool call arguments were corrupted in this session and "
+        "[tribal-agent: tool call arguments were corrupted in this session and "
         "have been dropped to keep the conversation alive. See issue #15236.]"
     )
 
@@ -497,7 +497,7 @@ class AIAgent:
         if self._session_db is not None:
             return self._session_db
         try:
-            from triibal_state import SessionDB
+            from tribal_state import SessionDB
 
             self._session_db = SessionDB()
             return self._session_db
@@ -512,7 +512,7 @@ class AIAgent:
         try:
             self._session_db.create_session(
                 session_id=self.session_id,
-                source=self.platform or os.environ.get("TRIIBAL_SESSION_SOURCE", "cli"),
+                source=self.platform or os.environ.get("TRIBAL_SESSION_SOURCE", "cli"),
                 model=self.model,
                 model_config=self._session_init_model_config,
                 system_prompt=self._cached_system_prompt,
@@ -573,7 +573,7 @@ class AIAgent:
             start_context = {
                 "old_session_id": old_session_id,
                 "carry_over_context": carry_over_context,
-                "platform": getattr(self, "platform", None) or os.environ.get("TRIIBAL_SESSION_SOURCE", "cli"),
+                "platform": getattr(self, "platform", None) or os.environ.get("TRIBAL_SESSION_SOURCE", "cli"),
                 "model": getattr(self, "model", ""),
                 "context_length": getattr(engine, "context_length", None),
                 "conversation_id": getattr(self, "_gateway_session_key", None),
@@ -650,13 +650,13 @@ class AIAgent:
 
     def _ensure_lmstudio_runtime_loaded(self, config_context_length: Optional[int] = None) -> None:
         """
-        Preload the LM Studio model with at least Triibal' minimum context.
+        Preload the LM Studio model with at least Tribal' minimum context.
         """
         if (self.provider or "").strip().lower() != "lmstudio":
             return
         try:
             from agent.model_metadata import MINIMUM_CONTEXT_LENGTH
-            from triibal_cli.models import ensure_lmstudio_model_loaded
+            from tribal_cli.models import ensure_lmstudio_model_loaded
             if config_context_length is None:
                 config_context_length = getattr(self, "_config_context_length", None)
             target_ctx = max(config_context_length or 0, MINIMUM_CONTEXT_LENGTH)
@@ -719,7 +719,7 @@ class AIAgent:
         all non-forced output is suppressed.
 
         ``suppress_status_output`` is a stricter CLI automation mode used by
-        parseable single-query flows such as ``triibal chat -q``. In that mode,
+        parseable single-query flows such as ``tribal chat -q``. In that mode,
         all status/diagnostic prints routed through ``_vprint`` are suppressed
         so stdout stays machine-readable.
         """
@@ -1058,19 +1058,19 @@ class AIAgent:
         Priority:
           1. ``providers.<id>.models.<model>.timeout_seconds`` (per-model override)
           2. ``providers.<id>.request_timeout_seconds`` (provider-wide)
-          3. ``TRIIBAL_API_TIMEOUT`` env var (legacy escape hatch)
+          3. ``TRIBAL_API_TIMEOUT`` env var (legacy escape hatch)
           4. 1800.0s default
 
         Used by OpenAI-wire chat completions (streaming and non-streaming) so
         the per-provider config knob wins over the 1800s default.  Without this
-        helper, the hardcoded ``TRIIBAL_API_TIMEOUT`` fallback would always be
+        helper, the hardcoded ``TRIBAL_API_TIMEOUT`` fallback would always be
         passed as a per-call ``timeout=`` kwarg, overriding the client-level
         timeout the AIAgent.__init__ path configured.
         """
         cfg = get_provider_request_timeout(self.provider, self.model)
         if cfg is not None:
             return cfg
-        return float(os.getenv("TRIIBAL_API_TIMEOUT", 1800.0))
+        return float(os.getenv("TRIBAL_API_TIMEOUT", 1800.0))
 
     def _resolved_api_call_stale_timeout_base(self) -> tuple[float, bool]:
         """Resolve the base non-stream stale timeout and whether it is implicit.
@@ -1078,7 +1078,7 @@ class AIAgent:
         Priority:
           1. ``providers.<id>.models.<model>.stale_timeout_seconds``
           2. ``providers.<id>.stale_timeout_seconds``
-          3. ``TRIIBAL_API_CALL_STALE_TIMEOUT`` env var
+          3. ``TRIBAL_API_CALL_STALE_TIMEOUT`` env var
           4. 90.0s default (time-to-first-byte for non-streaming / Codex
              internal-streaming requests; lowered from 300s in May 2026 so
              fallback providers kick in faster when upstream providers
@@ -1094,7 +1094,7 @@ class AIAgent:
         if cfg is not None:
             return cfg, False
 
-        env_timeout = os.getenv("TRIIBAL_API_CALL_STALE_TIMEOUT")
+        env_timeout = os.getenv("TRIBAL_API_CALL_STALE_TIMEOUT")
         if env_timeout is not None:
             return float(env_timeout), False
 
@@ -1134,7 +1134,7 @@ class AIAgent:
         This helper substitutes an actionable hint into the stale-timeout
         warning when the request matches a known silent-reject pattern.
         Currently flagged: ``gpt-5.5`` family on the Codex backend.  See
-        triibal-agent #21444 for the symptom history.  The upstream backend
+        tribal-agent #21444 for the symptom history.  The upstream backend
         behavior has historically come and gone with ChatGPT entitlement
         changes — the heuristic stays in place as future-proofing even when
         the symptom is dormant.
@@ -1170,7 +1170,7 @@ class AIAgent:
             "Workaround: try `gpt-5.4` on the same OAuth profile, or `gpt-5.3-codex`, "
             "or switch to a different model/provider in your fallback chain. "
             "Some ChatGPT Codex accounts do not support `gpt-5.4-codex`. "
-            "See triibal-agent#21444 for symptom history."
+            "See tribal-agent#21444 for symptom history."
         )
 
     def _is_openrouter_url(self) -> bool:
@@ -1218,7 +1218,7 @@ class AIAgent:
             return False
         if normalized_provider == "copilot":
             try:
-                from triibal_cli.models import _should_use_copilot_responses_api
+                from tribal_cli.models import _should_use_copilot_responses_api
                 return _should_use_copilot_responses_api(model)
             except Exception:
                 # Fall back to the generic GPT-5 rule if Copilot-specific
@@ -1814,7 +1814,7 @@ class AIAgent:
         parts. Image / binary parts are left untouched; only text fields are
         passed through ``redact_sensitive_text``.
 
-        Respects ``TRIIBAL_REDACT_SECRETS`` via ``redact_sensitive_text`` —
+        Respects ``TRIBAL_REDACT_SECRETS`` via ``redact_sensitive_text`` —
         when disabled the helper is effectively a no-op.
         """
         if content is None:
@@ -1839,7 +1839,7 @@ class AIAgent:
 
         Gated by ``sessions.write_json_snapshots`` (default False).  state.db
         is the canonical message store; this writer exists only for users
-        whose external tooling consumes ``~/.triibal/sessions/session_{sid}.json``
+        whose external tooling consumes ``~/.tribal/sessions/session_{sid}.json``
         directly.  When the flag is off this is a fast no-op.
 
         When enabled, rewrites the snapshot after every persistence point with
@@ -1872,7 +1872,7 @@ class AIAgent:
                 # Defence-in-depth: redact credentials from every message
                 # content before persistence. Catches PATs / API keys / Bearer
                 # tokens that may have leaked into assistant responses, tool
-                # output, or user paste. Respects TRIIBAL_REDACT_SECRETS via
+                # output, or user paste. Respects TRIBAL_REDACT_SECRETS via
                 # redact_sensitive_text — no-op when disabled. (#19798, #19845)
                 if "content" in msg:
                     msg = dict(msg)
@@ -2116,19 +2116,19 @@ class AIAgent:
         """Check whether the per-turn file-mutation verifier footer is on.
 
         Config path: ``display.file_mutation_verifier`` (bool, default True).
-        ``TRIIBAL_FILE_MUTATION_VERIFIER`` env var overrides config.  Exposed
+        ``TRIBAL_FILE_MUTATION_VERIFIER`` env var overrides config.  Exposed
         as a method so tests can patch a single seam without reaching into
         the private ``_turn_failed_file_mutations`` state dict.
         """
         try:
             import os as _os
-            env = _os.environ.get("TRIIBAL_FILE_MUTATION_VERIFIER")
+            env = _os.environ.get("TRIBAL_FILE_MUTATION_VERIFIER")
             if env is not None:
                 return env.strip().lower() not in {"0", "false", "no", "off"}
             # Read from the persisted config.yaml so gateway and CLI share
             # the same setting.  Import lazily to avoid a startup-time cycle.
             try:
-                from triibal_cli.config import load_config as _load_config
+                from tribal_cli.config import load_config as _load_config
                 _cfg = _load_config() or {}
             except Exception:
                 _cfg = {}
@@ -2861,7 +2861,7 @@ class AIAgent:
         return any(_contains_image(item) for item in candidates)
 
     def _copilot_headers_for_request(self, *, is_vision: bool) -> dict:
-        from triibal_cli.copilot_auth import copilot_request_headers
+        from tribal_cli.copilot_auth import copilot_request_headers
 
         return copilot_request_headers(is_agent_turn=True, is_vision=is_vision)
 
@@ -2944,7 +2944,7 @@ class AIAgent:
         # Guard against silent account swap.
         #
         # When an agent is using a non-singleton credential — e.g. a manual
-        # pool entry (``triibal auth add xai-oauth``) whose tokens belong to
+        # pool entry (``tribal auth add xai-oauth``) whose tokens belong to
         # a different account than the loopback_pkce singleton, or an agent
         # constructed with an explicit ``api_key=`` arg — force-refreshing
         # the singleton here and adopting its tokens silently re-routes the
@@ -2955,13 +2955,13 @@ class AIAgent:
         # MUST only fire when the agent really is on singleton tokens.
         try:
             if self.provider == "openai-codex":
-                from triibal_cli.auth import resolve_codex_runtime_credentials
+                from tribal_cli.auth import resolve_codex_runtime_credentials
 
                 singleton_now = resolve_codex_runtime_credentials(
                     refresh_if_expiring=False,
                 )
             else:
-                from triibal_cli.auth import resolve_xai_oauth_runtime_credentials
+                from tribal_cli.auth import resolve_xai_oauth_runtime_credentials
 
                 singleton_now = resolve_xai_oauth_runtime_credentials(
                     refresh_if_expiring=False,
@@ -2983,11 +2983,11 @@ class AIAgent:
 
         try:
             if self.provider == "openai-codex":
-                from triibal_cli.auth import resolve_codex_runtime_credentials
+                from tribal_cli.auth import resolve_codex_runtime_credentials
 
                 creds = resolve_codex_runtime_credentials(force_refresh=force)
             else:
-                from triibal_cli.auth import resolve_xai_oauth_runtime_credentials
+                from tribal_cli.auth import resolve_xai_oauth_runtime_credentials
 
                 creds = resolve_xai_oauth_runtime_credentials(force_refresh=force)
         except Exception as exc:
@@ -3021,7 +3021,7 @@ class AIAgent:
             return False
 
         try:
-            from triibal_cli.auth import (
+            from tribal_cli.auth import (
                 NOUS_INFERENCE_AUTH_MODE_AUTO,
                 NOUS_INFERENCE_AUTH_MODE_LEGACY,
                 resolve_nous_runtime_credentials,
@@ -3033,8 +3033,8 @@ class AIAgent:
                 else NOUS_INFERENCE_AUTH_MODE_AUTO
             )
             creds = resolve_nous_runtime_credentials(
-                min_key_ttl_seconds=max(60, int(os.getenv("TRIIBAL_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
-                timeout_seconds=float(os.getenv("TRIIBAL_NOUS_TIMEOUT_SECONDS", "15")),
+                min_key_ttl_seconds=max(60, int(os.getenv("TRIBAL_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
+                timeout_seconds=float(os.getenv("TRIBAL_NOUS_TIMEOUT_SECONDS", "15")),
                 inference_auth_mode=selected_auth_mode,
             )
         except Exception as exc:
@@ -3072,7 +3072,7 @@ class AIAgent:
             return False
 
         try:
-            from triibal_cli.copilot_auth import resolve_copilot_token
+            from tribal_cli.copilot_auth import resolve_copilot_token
 
             new_token, token_source = resolve_copilot_token()
         except Exception as exc:
@@ -3159,7 +3159,7 @@ class AIAgent:
         elif base_url_host_matches(base_url, "api.routermint.com"):
             self._client_kwargs["default_headers"] = _routermint_headers()
         elif base_url_host_matches(base_url, "api.githubcopilot.com"):
-            from triibal_cli.models import copilot_default_headers
+            from tribal_cli.models import copilot_default_headers
 
             self._client_kwargs["default_headers"] = copilot_default_headers()
         elif base_url_host_matches(base_url, "api.kimi.com"):
@@ -3576,7 +3576,7 @@ class AIAgent:
         misclassified as non-vision and have their images stripped.
         """
         try:
-            from triibal_cli.config import load_config
+            from tribal_cli.config import load_config
             from agent.image_routing import _lookup_supports_vision
             cfg = load_config()
             provider = (getattr(self, "provider", "") or "").strip()
@@ -3963,7 +3963,7 @@ class AIAgent:
             or base_url_host_matches(self._base_url_lower, "api.githubcopilot.com")
         ):
             try:
-                from triibal_cli.models import github_model_reasoning_efforts
+                from tribal_cli.models import github_model_reasoning_efforts
 
                 return bool(github_model_reasoning_efforts(self.model))
             except Exception:
@@ -4016,7 +4016,7 @@ class AIAgent:
             if opts or (_time.monotonic() - ts) < 60:
                 return opts
         try:
-            from triibal_cli.models import lmstudio_model_reasoning_options
+            from tribal_cli.models import lmstudio_model_reasoning_options
             opts = lmstudio_model_reasoning_options(
                 self.model, self.base_url, getattr(self, "api_key", ""),
             )
@@ -4041,7 +4041,7 @@ class AIAgent:
     def _github_models_reasoning_extra_body(self) -> dict | None:
         """Format reasoning payload for GitHub Models/OpenAI-compatible routes."""
         try:
-            from triibal_cli.models import github_model_reasoning_efforts
+            from tribal_cli.models import github_model_reasoning_efforts
         except Exception:
             return None
 
@@ -4612,7 +4612,7 @@ def main(
 
 
 def cli_main(argv: list[str] | None = None) -> None:
-    """Entry point for the ``triibal-agent`` console script."""
+    """Entry point for the ``tribal-agent`` console script."""
     import fire
 
     if argv is None:

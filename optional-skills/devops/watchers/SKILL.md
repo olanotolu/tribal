@@ -2,11 +2,11 @@
 name: watchers
 description: Poll RSS, JSON APIs, and GitHub with watermark dedup.
 version: 1.0.0
-author: Triibal Agent
+author: Tribal Agent
 license: MIT
 platforms: [linux, macos]
 metadata:
-  triibal:
+  tribal:
     tags: [cron, polling, rss, github, http, automation, monitoring]
     category: devops
     requires_toolsets: [terminal]
@@ -37,7 +37,7 @@ The scripts below handle all three. The agent runs them via the terminal tool â€
 
 ## Ready-made scripts
 
-All three live in `$TRIIBAL_HOME/skills/devops/watchers/scripts/` once the skill is installed. Each reads `WATCHER_STATE_DIR` (defaults to `$TRIIBAL_HOME/watcher-state/`) for its state file, keyed by the `--name` argument.
+All three live in `$TRIBAL_HOME/skills/devops/watchers/scripts/` once the skill is installed. Each reads `WATCHER_STATE_DIR` (defaults to `$TRIBAL_HOME/watcher-state/`) for its state file, keyed by the `--name` argument.
 
 | Script | What it watches | Dedup key |
 |---|---|---|
@@ -58,21 +58,21 @@ All three:
 Run a watcher directly from the terminal tool:
 
 ```bash
-python $TRIIBAL_HOME/skills/devops/watchers/scripts/watch_rss.py \
+python $TRIBAL_HOME/skills/devops/watchers/scripts/watch_rss.py \
   --name hn --url https://news.ycombinator.com/rss --max 5
 ```
 
-Watch a GitHub repo (set `GITHUB_TOKEN` in `~/.triibal/.env` to avoid the 60 req/hr anonymous rate limit):
+Watch a GitHub repo (set `GITHUB_TOKEN` in `~/.tribal/.env` to avoid the 60 req/hr anonymous rate limit):
 
 ```bash
-python $TRIIBAL_HOME/skills/devops/watchers/scripts/watch_github.py \
-  --name triibal-issues --repo Triibal/triibal --scope issues
+python $TRIBAL_HOME/skills/devops/watchers/scripts/watch_github.py \
+  --name tribal-issues --repo Tribal/tribal --scope issues
 ```
 
 Poll an arbitrary JSON API:
 
 ```bash
-python $TRIIBAL_HOME/skills/devops/watchers/scripts/watch_http_json.py \
+python $TRIBAL_HOME/skills/devops/watchers/scripts/watch_http_json.py \
   --name api --url https://api.example.com/events \
   --id-field event_id --items-path data.events
 ```
@@ -87,16 +87,16 @@ The agent invokes the script via the terminal tool inside the cron job's agent l
 
 ## State files
 
-Every watcher writes `$TRIIBAL_HOME/watcher-state/<name>.json`. Inspect:
+Every watcher writes `$TRIBAL_HOME/watcher-state/<name>.json`. Inspect:
 
 ```bash
-cat $TRIIBAL_HOME/watcher-state/hn.json
+cat $TRIBAL_HOME/watcher-state/hn.json
 ```
 
 Force a replay (next run treated as first poll):
 
 ```bash
-rm $TRIIBAL_HOME/watcher-state/hn.json
+rm $TRIBAL_HOME/watcher-state/hn.json
 ```
 
 ## Writing your own
@@ -108,5 +108,5 @@ All three scripts use the same template: load watermark, fetch, diff, save, emit
 1. **Printing a "no new items" header every tick.** Callers rely on empty stdout = silent. If you print anything on an empty delta, you spam the channel. The shipped scripts handle this; custom scripts must too.
 2. **Expecting the first run to emit items.** It won't â€” first run records a baseline. If you need an initial digest, delete the state file after the first run or add a `--prime-with-latest N` flag in your own script.
 3. **Unbounded watermark growth.** The shared helper caps at 500 IDs. Raise it for high-churn feeds; lower it on constrained filesystems.
-4. **Putting the state dir where the agent's sandbox can't write.** `$TRIIBAL_HOME/watcher-state/` is always writable. Docker/Modal backends may not see arbitrary host paths.
+4. **Putting the state dir where the agent's sandbox can't write.** `$TRIBAL_HOME/watcher-state/` is always writable. Docker/Modal backends may not see arbitrary host paths.
 

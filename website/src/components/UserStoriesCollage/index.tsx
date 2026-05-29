@@ -174,9 +174,9 @@ export default function UserStoriesCollage(): JSX.Element {
       <div className={styles.hero}>
         <h1>User Stories &amp; Use Cases</h1>
         <p>
-          What the Triibal Agent community is actually building. Every tile
+          What the Tribal Agent community is actually building. Every tile
           below links to a real post, issue, video, or gist where someone
-          describes how they use Triibal &mdash; scraped from X, GitHub, Reddit,
+          describes how they use Tribal &mdash; scraped from X, GitHub, Reddit,
           Hacker News, YouTube, blogs, and podcasts.
         </p>
         <div className={styles.meta}>
@@ -293,9 +293,9 @@ export default function UserStoriesCollage(): JSX.Element {
       )}
 
       <div className={styles.footer}>
-        Built something with Triibal?{' '}
+        Built something with Tribal?{' '}
         <a
-          href="https://github.com/Triibal/triibal/edit/main/website/src/data/userStories.json"
+          href="https://github.com/Tribal/tribal/edit/main/website/src/data/userStories.json"
           target="_blank"
           rel="noopener noreferrer"
         >

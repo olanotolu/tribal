@@ -8,18 +8,18 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def _isolate(tmp_path, monkeypatch):
-    """Redirect TRIIBAL_HOME and clear module caches."""
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
+    """Redirect TRIBAL_HOME and clear module caches."""
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
     # Write a minimal config so load_config doesn't fail
-    (triibal_home / "config.yaml").write_text("model:\n  default: test-model\n")
+    (tribal_home / "config.yaml").write_text("model:\n  default: test-model\n")
 
 
 def _write_config(tmp_path, config_dict):
-    """Write a config.yaml to the test TRIIBAL_HOME."""
+    """Write a config.yaml to the test TRIBAL_HOME."""
     import yaml
-    config_path = tmp_path / ".triibal" / "config.yaml"
+    config_path = tmp_path / ".tribal" / "config.yaml"
     config_path.write_text(yaml.dump(config_dict))
 
 
@@ -105,7 +105,7 @@ class TestResolveProviderClientMainAlias:
             "model": {"default": "gpt-5.4", "provider": "github-copilot"},
         })
         with (
-            patch("triibal_cli.auth.resolve_api_key_provider_credentials", return_value={
+            patch("tribal_cli.auth.resolve_api_key_provider_credentials", return_value={
                 "api_key": "ghu_test_token",
                 "base_url": "https://api.githubcopilot.com",
             }),
@@ -183,7 +183,7 @@ class TestResolveProviderClientModelNormalization:
             "model": {"default": "zai/glm-5.1", "provider": "zai"},
         })
         with (
-            patch("triibal_cli.auth.resolve_api_key_provider_credentials", return_value={
+            patch("tribal_cli.auth.resolve_api_key_provider_credentials", return_value={
                 "api_key": "glm-key",
                 "base_url": "https://api.z.ai/api/paas/v4",
             }),
@@ -202,7 +202,7 @@ class TestResolveProviderClientModelNormalization:
             "model": {"default": "zai/glm-5.1", "provider": "zai"},
         })
         with (
-            patch("triibal_cli.auth.resolve_api_key_provider_credentials", return_value={
+            patch("tribal_cli.auth.resolve_api_key_provider_credentials", return_value={
                 "api_key": "glm-key",
                 "base_url": "https://api.z.ai/api/paas/v4",
             }),
@@ -239,7 +239,7 @@ class TestResolveVisionProviderClientModelNormalization:
         })
         with (
             patch("agent.auxiliary_client._read_nous_auth", return_value=None),
-            patch("triibal_cli.auth.resolve_api_key_provider_credentials", return_value={
+            patch("tribal_cli.auth.resolve_api_key_provider_credentials", return_value={
                 "api_key": "glm-key",
                 "base_url": "https://api.z.ai/api/paas/v4",
             }),
@@ -300,7 +300,7 @@ class TestProvidersDictApiModeAnthropicMessages:
                 },
             },
         })
-        from triibal_cli.runtime_provider import _get_named_custom_provider
+        from tribal_cli.runtime_provider import _get_named_custom_provider
         entry = _get_named_custom_provider("myrelay")
         assert entry is not None
         assert entry.get("api_mode") == "anthropic_messages"
@@ -318,7 +318,7 @@ class TestProvidersDictApiModeAnthropicMessages:
                 },
             },
         })
-        from triibal_cli.runtime_provider import _get_named_custom_provider
+        from tribal_cli.runtime_provider import _get_named_custom_provider
         entry = _get_named_custom_provider("weird")
         assert entry is not None
         assert "api_mode" not in entry
@@ -334,7 +334,7 @@ class TestProvidersDictApiModeAnthropicMessages:
                 },
             },
         })
-        from triibal_cli.runtime_provider import _get_named_custom_provider
+        from tribal_cli.runtime_provider import _get_named_custom_provider
         entry = _get_named_custom_provider("localchat")
         assert entry is not None
         assert "api_mode" not in entry

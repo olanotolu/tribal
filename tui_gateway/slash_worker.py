@@ -1,4 +1,4 @@
-"""Persistent slash-command worker — one TriibalCLI per TUI session.
+"""Persistent slash-command worker — one TribalCLI per TUI session.
 
 Protocol: reads JSON lines from stdin {id, command}, writes {id, ok, output|error} to stdout.
 """
@@ -11,11 +11,11 @@ import os
 import sys
 
 import cli as cli_mod
-from cli import TriibalCLI
+from cli import TribalCLI
 from rich.console import Console
 
 
-def _run(cli: TriibalCLI, command: str) -> str:
+def _run(cli: TribalCLI, command: str) -> str:
     cmd = (command or "").strip()
     if not cmd:
         return ""
@@ -49,11 +49,11 @@ def main():
     p.add_argument("--model", default="")
     args = p.parse_args()
 
-    os.environ["TRIIBAL_SESSION_KEY"] = args.session_key
-    os.environ["TRIIBAL_INTERACTIVE"] = "1"
+    os.environ["TRIBAL_SESSION_KEY"] = args.session_key
+    os.environ["TRIBAL_INTERACTIVE"] = "1"
 
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-        cli = TriibalCLI(model=args.model or None, compact=True, resume=args.session_key, verbose=False)
+        cli = TribalCLI(model=args.model or None, compact=True, resume=args.session_key, verbose=False)
 
     for raw in sys.stdin:
         line = raw.strip()

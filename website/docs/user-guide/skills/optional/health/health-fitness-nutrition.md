@@ -14,7 +14,7 @@ Gym workout planner and nutrition tracker. Search 690+ exercises by muscle, equi
 
 | | |
 |---|---|
-| Source | Optional — install with `triibal skills install official/health/fitness-nutrition` |
+| Source | Optional — install with `tribal skills install official/health/fitness-nutrition` |
 | Path | `optional-skills/health/fitness-nutrition` |
 | Version | `1.0.0` |
 | License | MIT |
@@ -24,7 +24,7 @@ Gym workout planner and nutrition tracker. Search 690+ exercises by muscle, equi
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # Fitness & Nutrition

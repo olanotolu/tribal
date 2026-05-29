@@ -258,67 +258,67 @@ class TestExchangeAuthCode:
         assert not setup_module.PENDING_AUTH_PATH.exists()
 
 
-class TestTriibalConstantsFallback:
-    """Tests for _triibal_home.py fallback when triibal_constants is unavailable."""
+class TestTribalConstantsFallback:
+    """Tests for _tribal_home.py fallback when tribal_constants is unavailable."""
 
     HELPER_PATH = (
         Path(__file__).resolve().parents[2]
-        / "skills/productivity/google-workspace/scripts/_triibal_home.py"
+        / "skills/productivity/google-workspace/scripts/_tribal_home.py"
     )
 
     def _load_helper(self, monkeypatch):
-        """Load _triibal_home.py with triibal_constants blocked."""
-        monkeypatch.setitem(sys.modules, "triibal_constants", None)
-        spec = importlib.util.spec_from_file_location("_triibal_home_test", self.HELPER_PATH)
+        """Load _tribal_home.py with tribal_constants blocked."""
+        monkeypatch.setitem(sys.modules, "tribal_constants", None)
+        spec = importlib.util.spec_from_file_location("_tribal_home_test", self.HELPER_PATH)
         module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None
         spec.loader.exec_module(module)
         return module
 
-    def test_fallback_uses_triibal_home_env_var(self, monkeypatch, tmp_path):
-        """When triibal_constants is missing, TRIIBAL_HOME comes from env var."""
-        monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path / "custom-triibal"))
+    def test_fallback_uses_tribal_home_env_var(self, monkeypatch, tmp_path):
+        """When tribal_constants is missing, TRIBAL_HOME comes from env var."""
+        monkeypatch.setenv("TRIBAL_HOME", str(tmp_path / "custom-tribal"))
         module = self._load_helper(monkeypatch)
-        assert module.get_triibal_home() == tmp_path / "custom-triibal"
+        assert module.get_tribal_home() == tmp_path / "custom-tribal"
 
-    def test_fallback_defaults_to_dot_triibal(self, monkeypatch):
-        """When triibal_constants is missing and TRIIBAL_HOME unset, default to ~/.triibal."""
-        monkeypatch.delenv("TRIIBAL_HOME", raising=False)
+    def test_fallback_defaults_to_dot_tribal(self, monkeypatch):
+        """When tribal_constants is missing and TRIBAL_HOME unset, default to ~/.tribal."""
+        monkeypatch.delenv("TRIBAL_HOME", raising=False)
         module = self._load_helper(monkeypatch)
-        assert module.get_triibal_home() == Path.home() / ".triibal"
+        assert module.get_tribal_home() == Path.home() / ".tribal"
 
-    def test_fallback_ignores_empty_triibal_home(self, monkeypatch):
-        """Empty/whitespace TRIIBAL_HOME is treated as unset."""
-        monkeypatch.setenv("TRIIBAL_HOME", "  ")
+    def test_fallback_ignores_empty_tribal_home(self, monkeypatch):
+        """Empty/whitespace TRIBAL_HOME is treated as unset."""
+        monkeypatch.setenv("TRIBAL_HOME", "  ")
         module = self._load_helper(monkeypatch)
-        assert module.get_triibal_home() == Path.home() / ".triibal"
+        assert module.get_tribal_home() == Path.home() / ".tribal"
 
-    def test_fallback_display_triibal_home_shortens_path(self, monkeypatch):
-        """Fallback display_triibal_home() uses ~/ shorthand like the real one."""
-        monkeypatch.delenv("TRIIBAL_HOME", raising=False)
+    def test_fallback_display_tribal_home_shortens_path(self, monkeypatch):
+        """Fallback display_tribal_home() uses ~/ shorthand like the real one."""
+        monkeypatch.delenv("TRIBAL_HOME", raising=False)
         module = self._load_helper(monkeypatch)
-        assert module.display_triibal_home() == "~/.triibal"
+        assert module.display_tribal_home() == "~/.tribal"
 
-    def test_fallback_display_triibal_home_profile_path(self, monkeypatch):
-        """Fallback display_triibal_home() handles profile paths under ~/."""
-        monkeypatch.setenv("TRIIBAL_HOME", str(Path.home() / ".triibal/profiles/coder"))
+    def test_fallback_display_tribal_home_profile_path(self, monkeypatch):
+        """Fallback display_tribal_home() handles profile paths under ~/."""
+        monkeypatch.setenv("TRIBAL_HOME", str(Path.home() / ".tribal/profiles/coder"))
         module = self._load_helper(monkeypatch)
-        assert module.display_triibal_home() == "~/.triibal/profiles/coder"
+        assert module.display_tribal_home() == "~/.tribal/profiles/coder"
 
-    def test_fallback_display_triibal_home_custom_path(self, monkeypatch):
-        """Fallback display_triibal_home() returns full path for non-home locations."""
-        monkeypatch.setenv("TRIIBAL_HOME", "/opt/triibal-custom")
+    def test_fallback_display_tribal_home_custom_path(self, monkeypatch):
+        """Fallback display_tribal_home() returns full path for non-home locations."""
+        monkeypatch.setenv("TRIBAL_HOME", "/opt/tribal-custom")
         module = self._load_helper(monkeypatch)
-        assert module.display_triibal_home() == "/opt/triibal-custom"
+        assert module.display_tribal_home() == "/opt/tribal-custom"
 
-    def test_delegates_to_triibal_constants_when_available(self):
-        """When triibal_constants IS importable, _triibal_home delegates to it."""
+    def test_delegates_to_tribal_constants_when_available(self):
+        """When tribal_constants IS importable, _tribal_home delegates to it."""
         spec = importlib.util.spec_from_file_location(
-            "_triibal_home_happy", self.HELPER_PATH
+            "_tribal_home_happy", self.HELPER_PATH
         )
         module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None
         spec.loader.exec_module(module)
-        import triibal_constants
-        assert module.get_triibal_home is triibal_constants.get_triibal_home
-        assert module.display_triibal_home is triibal_constants.display_triibal_home
+        import tribal_constants
+        assert module.get_tribal_home is tribal_constants.get_tribal_home
+        assert module.display_tribal_home is tribal_constants.display_tribal_home

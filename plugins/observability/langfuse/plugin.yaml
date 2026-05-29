@@ -1,10 +1,10 @@
 name: langfuse
 version: "1.0.0"
-description: "Optional Langfuse observability for Triibal — traces conversations, LLM calls, and tool usage. Opt-in via `triibal plugins enable observability/langfuse` (or check the box in `triibal plugins`)."
+description: "Optional Langfuse observability for Tribal — traces conversations, LLM calls, and tool usage. Opt-in via `tribal plugins enable observability/langfuse` (or check the box in `tribal plugins`)."
 author: NousResearch
 requires_env:
-  - TRIIBAL_LANGFUSE_PUBLIC_KEY
-  - TRIIBAL_LANGFUSE_SECRET_KEY
+  - TRIBAL_LANGFUSE_PUBLIC_KEY
+  - TRIBAL_LANGFUSE_SECRET_KEY
 hooks:
   - pre_api_request
   - post_api_request

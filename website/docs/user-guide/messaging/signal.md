@@ -1,17 +1,17 @@
 ---
 sidebar_position: 6
 title: "Signal"
-description: "Set up Triibal Agent as a Signal messenger bot via signal-cli daemon"
+description: "Set up Tribal Agent as a Signal messenger bot via signal-cli daemon"
 ---
 
 # Signal Setup
 
-Triibal connects to Signal through the [signal-cli](https://github.com/AsamK/signal-cli) daemon running in HTTP mode. The adapter streams messages in real-time via SSE (Server-Sent Events) and sends responses via JSON-RPC.
+Tribal connects to Signal through the [signal-cli](https://github.com/AsamK/signal-cli) daemon running in HTTP mode. The adapter streams messages in real-time via SSE (Server-Sent Events) and sends responses via JSON-RPC.
 
 Signal is the most privacy-focused mainstream messenger — end-to-end encrypted by default, open-source protocol, minimal metadata collection. This makes it ideal for security-sensitive agent workflows.
 
 :::info No New Python Dependencies
-The Signal adapter uses `httpx` (already a core Triibal dependency) for all communication. No additional Python packages are required. You just need signal-cli installed externally.
+The Signal adapter uses `httpx` (already a core Tribal dependency) for all communication. No additional Python packages are required. You just need signal-cli installed externally.
 :::
 
 ---
@@ -48,7 +48,7 @@ Signal-cli works as a **linked device** — like WhatsApp Web, but for Signal. Y
 
 ```bash
 # Generate a linking URI (displays a QR code or link)
-signal-cli link -n "TriibalAgent"
+signal-cli link -n "TribalAgent"
 ```
 
 1. Open **Signal** on your phone
@@ -78,12 +78,12 @@ curl http://127.0.0.1:8080/api/v1/check
 
 ---
 
-## Step 3: Configure Triibal
+## Step 3: Configure Tribal
 
 The easiest way:
 
 ```bash
-triibal gateway setup
+tribal gateway setup
 ```
 
 Select **Signal** from the platform menu. The wizard will:
@@ -96,7 +96,7 @@ Select **Signal** from the platform menu. The wizard will:
 
 ### Manual Configuration
 
-Add to `~/.triibal/.env`:
+Add to `~/.tribal/.env`:
 
 ```bash
 # Required
@@ -114,9 +114,9 @@ SIGNAL_HOME_CHANNEL=+1234567890                  # Default delivery target for c
 Then start the gateway:
 
 ```bash
-triibal gateway              # Foreground
-triibal gateway install      # Install as a user service
-sudo triibal gateway install --system   # Linux only: boot-time system service
+tribal gateway              # Foreground
+tribal gateway install      # Install as a user service
+sudo tribal gateway install --system   # Linux only: boot-time system service
 ```
 
 ---
@@ -125,10 +125,10 @@ sudo triibal gateway install --system   # Linux only: boot-time system service
 
 ### DM Access
 
-DM access follows the same pattern as all other Triibal platforms:
+DM access follows the same pattern as all other Tribal platforms:
 
 1. **`SIGNAL_ALLOWED_USERS` set** → only those users can message
-2. **No allowlist set** → unknown users get a DM pairing code (approve via `triibal pairing approve signal CODE`)
+2. **No allowlist set** → unknown users get a DM pairing code (approve via `tribal pairing approve signal CODE`)
 3. **`SIGNAL_ALLOW_ALL_USERS=true`** → anyone can message (use with caution)
 
 ### Group Access
@@ -175,11 +175,11 @@ Attachment size limit: **100 MB** (both directions).
 
 Signal messages render with **native formatting** instead of literal markdown characters. The adapter converts markdown (`**bold**`, `*italic*`, `` `code` ``, `~~strike~~`, `||spoiler||`, headings) into Signal `bodyRanges` so the text shows up with real styling on the recipient's client rather than as visible `**` / `` ` `` characters.
 
-**Reply quotes.** When Triibal replies to a specific message, it now posts a native reply that quotes the original — same UI affordance Signal users see when they use "Reply" themselves. This is automatic for replies generated in response to an inbound message.
+**Reply quotes.** When Tribal replies to a specific message, it now posts a native reply that quotes the original — same UI affordance Signal users see when they use "Reply" themselves. This is automatic for replies generated in response to an inbound message.
 
 **Reactions.** The agent can react to messages via the standard reaction API; reactions surface in Signal as emoji reactions on the referenced message rather than as extra text.
 
-None of this requires additional config — it ships on by default in recent signal-cli builds. If your `signal-cli` version is too old, Triibal falls back to plaintext delivery and logs a one-time warning.
+None of this requires additional config — it ships on by default in recent signal-cli builds. If your `signal-cli` version is too old, Tribal falls back to plaintext delivery and logs a one-time warning.
 
 ### Typing Indicators
 
@@ -189,13 +189,13 @@ The bot sends typing indicators while processing messages, refreshing every 8 se
 
 All phone numbers are automatically redacted in logs:
 - `+15551234567` → `+155****4567`
-- This applies to both Triibal gateway logs and the global redaction system
+- This applies to both Tribal gateway logs and the global redaction system
 
 ### Note to Self (Single-Number Setup)
 
-If you run signal-cli as a **linked secondary device** on your own phone number (rather than a separate bot number), you can interact with Triibal through Signal's "Note to Self" feature.
+If you run signal-cli as a **linked secondary device** on your own phone number (rather than a separate bot number), you can interact with Tribal through Signal's "Note to Self" feature.
 
-Just send a message to yourself from your phone — signal-cli picks it up and Triibal responds in the same conversation.
+Just send a message to yourself from your phone — signal-cli picks it up and Tribal responds in the same conversation.
 
 **How it works:**
 - "Note to Self" messages arrive as `syncMessage.sentMessage` envelopes

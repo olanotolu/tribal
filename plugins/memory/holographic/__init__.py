@@ -1,14 +1,14 @@
-"""triibal-memory-store — holographic memory plugin using MemoryProvider interface.
+"""tribal-memory-store — holographic memory plugin using MemoryProvider interface.
 
 Registers as a MemoryProvider plugin, giving the agent structured fact storage
 with entity resolution, trust scoring, and HRR-based compositional retrieval.
 
 Original plugin by dusterbloom (PR #2351), adapted to the MemoryProvider ABC.
 
-Config in $TRIIBAL_HOME/config.yaml (profile-scoped):
+Config in $TRIBAL_HOME/config.yaml (profile-scoped):
   plugins:
-    triibal-memory-store:
-      db_path: $TRIIBAL_HOME/memory_store.db   # omit to use the default
+    tribal-memory-store:
+      db_path: $TRIBAL_HOME/memory_store.db   # omit to use the default
       auto_extract: false
       default_trust: 0.5
       min_trust_threshold: 0.3
@@ -26,7 +26,7 @@ from agent.memory_provider import MemoryProvider
 from tools.registry import tool_error
 from .store import MemoryStore
 from .retrieval import FactRetriever
-from triibal_cli.config import cfg_get
+from tribal_cli.config import cfg_get
 
 logger = logging.getLogger(__name__)
 
@@ -95,15 +95,15 @@ FACT_FEEDBACK_SCHEMA = {
 # ---------------------------------------------------------------------------
 
 def _load_plugin_config() -> dict:
-    from triibal_constants import get_triibal_home
-    config_path = get_triibal_home() / "config.yaml"
+    from tribal_constants import get_tribal_home
+    config_path = get_tribal_home() / "config.yaml"
     if not config_path.exists():
         return {}
     try:
         import yaml
         with open(config_path, encoding="utf-8-sig") as f:
             all_config = yaml.safe_load(f) or {}
-        return cfg_get(all_config, "plugins", "triibal-memory-store", default={}) or {}
+        return cfg_get(all_config, "plugins", "tribal-memory-store", default={}) or {}
     except Exception:
         return {}
 
@@ -128,10 +128,10 @@ class HolographicMemoryProvider(MemoryProvider):
     def is_available(self) -> bool:
         return True  # SQLite is always available, numpy is optional
 
-    def save_config(self, values, triibal_home):
-        """Write config to config.yaml under plugins.triibal-memory-store."""
+    def save_config(self, values, tribal_home):
+        """Write config to config.yaml under plugins.tribal-memory-store."""
         from pathlib import Path
-        config_path = Path(triibal_home) / "config.yaml"
+        config_path = Path(tribal_home) / "config.yaml"
         try:
             import yaml
             existing = {}
@@ -139,15 +139,15 @@ class HolographicMemoryProvider(MemoryProvider):
                 with open(config_path, encoding="utf-8-sig") as f:
                     existing = yaml.safe_load(f) or {}
             existing.setdefault("plugins", {})
-            existing["plugins"]["triibal-memory-store"] = values
+            existing["plugins"]["tribal-memory-store"] = values
             with open(config_path, "w", encoding="utf-8") as f:
                 yaml.dump(existing, f, default_flow_style=False)
         except Exception:
             pass
 
     def get_config_schema(self):
-        from triibal_constants import display_triibal_home
-        _default_db = f"{display_triibal_home()}/memory_store.db"
+        from tribal_constants import display_tribal_home
+        _default_db = f"{display_tribal_home()}/memory_store.db"
         return [
             {"key": "db_path", "description": "SQLite database path", "default": _default_db},
             {"key": "auto_extract", "description": "Auto-extract facts at session end", "default": "false", "choices": ["true", "false"]},
@@ -156,16 +156,16 @@ class HolographicMemoryProvider(MemoryProvider):
         ]
 
     def initialize(self, session_id: str, **kwargs) -> None:
-        from triibal_constants import get_triibal_home
-        _triibal_home = str(get_triibal_home())
-        _default_db = _triibal_home + "/memory_store.db"
+        from tribal_constants import get_tribal_home
+        _tribal_home = str(get_tribal_home())
+        _default_db = _tribal_home + "/memory_store.db"
         db_path = self._config.get("db_path", _default_db)
-        # Expand $TRIIBAL_HOME in user-supplied paths so config values like
-        # "$TRIIBAL_HOME/memory_store.db" or "~/.triibal/memory_store.db" both
+        # Expand $TRIBAL_HOME in user-supplied paths so config values like
+        # "$TRIBAL_HOME/memory_store.db" or "~/.tribal/memory_store.db" both
         # resolve to the active profile's directory.
         if isinstance(db_path, str):
-            db_path = db_path.replace("$TRIIBAL_HOME", _triibal_home)
-            db_path = db_path.replace("${TRIIBAL_HOME}", _triibal_home)
+            db_path = db_path.replace("$TRIBAL_HOME", _tribal_home)
+            db_path = db_path.replace("${TRIBAL_HOME}", _tribal_home)
         default_trust = float(self._config.get("default_trust", 0.5))
         hrr_dim = int(self._config.get("hrr_dim", 1024))
         hrr_weight = float(self._config.get("hrr_weight", 0.3))

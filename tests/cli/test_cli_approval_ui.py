@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import cli as cli_module
-from cli import TriibalCLI
+from cli import TribalCLI
 
 
 class _FakeBuffer:
@@ -19,7 +19,7 @@ class _FakeBuffer:
 
 
 def _make_cli_stub():
-    cli = TriibalCLI.__new__(TriibalCLI)
+    cli = TribalCLI.__new__(TribalCLI)
     cli._approval_state = None
     cli._approval_deadline = 0
     cli._approval_lock = threading.Lock()
@@ -334,9 +334,9 @@ class TestCliApprovalUi:
                 thread.join(timeout=10)
 
         assert seen["approval"].__self__ is cli
-        assert seen["approval"].__func__ is TriibalCLI._approval_callback
+        assert seen["approval"].__func__ is TribalCLI._approval_callback
         assert seen["sudo"].__self__ is cli
-        assert seen["sudo"].__func__ is TriibalCLI._sudo_password_callback
+        assert seen["sudo"].__func__ is TribalCLI._sudo_password_callback
         assert not cli._background_tasks
 
 

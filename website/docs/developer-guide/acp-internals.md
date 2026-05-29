@@ -6,7 +6,7 @@ description: "How the ACP adapter works: lifecycle, sessions, event bridge, appr
 
 # ACP Internals
 
-The ACP adapter wraps Triibal' synchronous `AIAgent` in an async JSON-RPC stdio server.
+The ACP adapter wraps Tribal' synchronous `AIAgent` in an async JSON-RPC stdio server.
 
 Key implementation files:
 
@@ -22,22 +22,22 @@ Key implementation files:
 ## Boot flow
 
 ```text
-triibal acp / triibal-acp / python -m acp_adapter
+tribal acp / tribal-acp / python -m acp_adapter
   -> acp_adapter.entry.main()
   -> parse --version / --check / --setup before server startup
-  -> load ~/.triibal/.env
+  -> load ~/.tribal/.env
   -> configure stderr logging
-  -> construct TriibalACPAgent
+  -> construct TribalACPAgent
   -> acp.run_agent(agent, use_unstable_protocol=True)
 ```
 
-The Zed ACP Registry path launches the same adapter through `uvx --from 'triibal-agent[acp]==<version>' triibal-acp`, pointed at the `triibal-agent` PyPI release.
+The Zed ACP Registry path launches the same adapter through `uvx --from 'tribal-agent[acp]==<version>' tribal-acp`, pointed at the `tribal-agent` PyPI release.
 
 Stdout is reserved for ACP JSON-RPC transport. Human-readable logs go to stderr.
 
 ## Major components
 
-### `TriibalACPAgent`
+### `TribalACPAgent`
 
 `acp_adapter/server.py` implements the ACP agent protocol.
 
@@ -94,15 +94,15 @@ asyncio.run_coroutine_threadsafe(...)
 
 Mapping:
 
-- `allow_once` -> Triibal `once`
-- `allow_always` -> Triibal `always`
-- reject options -> Triibal `deny`
+- `allow_once` -> Tribal `once`
+- `allow_always` -> Tribal `always`
+- reject options -> Tribal `deny`
 
 Timeouts and bridge failures deny by default.
 
 ### Tool rendering helpers
 
-`acp_adapter/tools.py` maps Triibal tools to ACP tool kinds and builds editor-facing content.
+`acp_adapter/tools.py` maps Tribal tools to ACP tool kinds and builds editor-facing content.
 
 Examples:
 
@@ -116,7 +116,7 @@ Examples:
 ```text
 new_session(cwd)
   -> create SessionState
-  -> create AIAgent(platform="acp", enabled_toolsets=["triibal-acp"])
+  -> create AIAgent(platform="acp", enabled_toolsets=["tribal-acp"])
   -> bind task_id/session_id to cwd override
 
 prompt(..., session_id)
@@ -144,12 +144,12 @@ prompt(..., session_id)
 
 ACP does not implement its own auth store.
 
-Instead it reuses Triibal' runtime resolver:
+Instead it reuses Tribal' runtime resolver:
 
 - `acp_adapter/auth.py`
-- `triibal_cli/runtime_provider.py`
+- `tribal_cli/runtime_provider.py`
 
-So ACP advertises and uses the currently configured Triibal provider/credentials. It also always advertises a terminal setup auth method (`triibal-setup`, args `--setup`) so first-run registry clients can open Triibal' interactive model/provider configuration before starting a normal ACP session.
+So ACP advertises and uses the currently configured Tribal provider/credentials. It also always advertises a terminal setup auth method (`tribal-setup`, args `--setup`) so first-run registry clients can open Tribal' interactive model/provider configuration before starting a normal ACP session.
 
 ## Working directory binding
 
@@ -172,13 +172,13 @@ ACP temporarily installs an approval callback on the terminal tool during prompt
 
 ## Current limitations
 
-- ACP sessions are persisted to the shared `~/.triibal/state.db` (SessionDB) and transparently restored across process restarts; they appear in `session_search`
+- ACP sessions are persisted to the shared `~/.tribal/state.db` (SessionDB) and transparently restored across process restarts; they appear in `session_search`
 - non-text prompt blocks are currently ignored for request text extraction
 - editor-specific UX varies by ACP client implementation
 
 ## Related files
 
 - `tests/acp/` — ACP test suite
-- `toolsets.py` — `triibal-acp` toolset definition
-- `triibal_cli/main.py` — `triibal acp` CLI subcommand
-- `pyproject.toml` — `[acp]` optional dependency + `triibal-acp` script
+- `toolsets.py` — `tribal-acp` toolset definition
+- `tribal_cli/main.py` — `tribal acp` CLI subcommand
+- `pyproject.toml` — `[acp]` optional dependency + `tribal-acp` script

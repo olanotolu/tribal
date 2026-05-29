@@ -21,9 +21,9 @@
             combined = pkgs.lib.concatStringsSep "\n" (builtins.filter (h: h != "") hooks);
           in
           ''
-            echo "Triibal Agent dev shell"
+            echo "Tribal Agent dev shell"
             ${combined}
-            echo "Ready. Run 'triibal' to start."
+            echo "Ready. Run 'tribal' to start."
           '';
       };
     };

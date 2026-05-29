@@ -2,25 +2,25 @@
 sidebar_position: 3
 sidebar_label: "Git Worktrees"
 title: "Git Worktrees"
-description: "使用 git worktrees 和隔离检出在同一仓库中安全运行多个 Triibal agent"
+description: "使用 git worktrees 和隔离检出在同一仓库中安全运行多个 Tribal agent"
 ---
 
 # Git Worktrees
 
-Triibal Agent 常用于大型、长期维护的仓库。当你需要：
+Tribal Agent 常用于大型、长期维护的仓库。当你需要：
 
 - 在同一项目中**并行运行多个 agent**，或
 - 将实验性重构与主分支隔离，
 
 Git **worktrees** 是为每个 agent 提供独立检出（checkout）而无需复制整个仓库的最安全方式。
 
-本页介绍如何将 worktrees 与 Triibal 结合使用，使每个会话拥有干净、隔离的工作目录。
+本页介绍如何将 worktrees 与 Tribal 结合使用，使每个会话拥有干净、隔离的工作目录。
 
-## 为什么在 Triibal 中使用 Worktrees？
+## 为什么在 Tribal 中使用 Worktrees？
 
-Triibal 将**当前工作目录**视为项目根目录：
+Tribal 将**当前工作目录**视为项目根目录：
 
-- CLI：运行 `triibal` 或 `triibal chat` 时所在的目录
+- CLI：运行 `tribal` 或 `tribal chat` 时所在的目录
 - Messaging gateway：由 `MESSAGING_CWD` 设置的目录
 
 如果在**同一检出**中运行多个 agent，它们的变更可能相互干扰：
@@ -44,24 +44,24 @@ Triibal 将**当前工作目录**视为项目根目录：
 cd /path/to/your/repo
 
 # 在 ../repo-feature 中创建新分支和 worktree
-git worktree add ../repo-feature feature/triibal-experiment
+git worktree add ../repo-feature feature/tribal-experiment
 ```
 
 这将创建：
 
 - 新目录：`../repo-feature`
-- 新分支：`feature/triibal-experiment`，已在该目录中检出
+- 新分支：`feature/tribal-experiment`，已在该目录中检出
 
-现在可以 `cd` 进入新 worktree 并在其中运行 Triibal：
+现在可以 `cd` 进入新 worktree 并在其中运行 Tribal：
 
 ```bash
 cd ../repo-feature
 
-# 在 worktree 中启动 Triibal
-triibal
+# 在 worktree 中启动 Tribal
+tribal
 ```
 
-Triibal 将：
+Tribal 将：
 
 - 将 `../repo-feature` 视为项目根目录。
 - 使用该目录进行上下文文件读取、代码编辑和工具调用。
@@ -74,8 +74,8 @@ Triibal 将：
 ```bash
 cd /path/to/your/repo
 
-git worktree add ../repo-experiment-a feature/triibal-a
-git worktree add ../repo-experiment-b feature/triibal-b
+git worktree add ../repo-experiment-a feature/tribal-a
+git worktree add ../repo-experiment-b feature/tribal-b
 ```
 
 在不同终端中分别运行：
@@ -83,16 +83,16 @@ git worktree add ../repo-experiment-b feature/triibal-b
 ```bash
 # 终端 1
 cd ../repo-experiment-a
-triibal
+tribal
 
 # 终端 2
 cd ../repo-experiment-b
-triibal
+tribal
 ```
 
-每个 Triibal 进程：
+每个 Tribal 进程：
 
-- 在各自的分支上工作（`feature/triibal-a` 与 `feature/triibal-b`）。
+- 在各自的分支上工作（`feature/tribal-a` 与 `feature/tribal-b`）。
 - 在不同的 shadow repo 哈希下写入 checkpoint（由 worktree 路径派生）。
 - 可独立使用 `/rollback`，互不影响。
 
@@ -122,47 +122,47 @@ git worktree remove ../repo-feature
 
 - `git worktree remove` 在 worktree 存在未提交变更时会拒绝移除，除非强制执行。
 - 移除 worktree **不会**自动删除分支；可使用常规 `git branch` 命令决定是否删除分支。
-- `~/.triibal/checkpoints/` 下的 Triibal checkpoint 数据在移除 worktree 时不会自动清理，但通常体积很小。
+- `~/.tribal/checkpoints/` 下的 Tribal checkpoint 数据在移除 worktree 时不会自动清理，但通常体积很小。
 
 ## 最佳实践
 
-- **每个 Triibal 实验对应一个 worktree**
+- **每个 Tribal 实验对应一个 worktree**
   - 为每项重要变更创建专用的分支/worktree。
   - 这样可保持 diff 聚焦，PR 小而易于审查。
 - **以实验内容命名分支**
-  - 例如：`feature/triibal-checkpoints-docs`、`feature/triibal-refactor-tests`。
+  - 例如：`feature/tribal-checkpoints-docs`、`feature/tribal-refactor-tests`。
 - **频繁提交**
   - 使用 git commit 记录高层级里程碑。
   - 使用 [checkpoints 与 /rollback](./checkpoints-and-rollback.md) 作为工具驱动编辑之间的安全网。
-- **使用 worktrees 时避免从裸仓库根目录运行 Triibal**
+- **使用 worktrees 时避免从裸仓库根目录运行 Tribal**
   - 优先使用 worktree 目录，使每个 agent 拥有明确的作用范围。
 
-## 使用 `triibal -w`（自动 Worktree 模式）
+## 使用 `tribal -w`（自动 Worktree 模式）
 
-Triibal 内置 `-w` 标志，可**自动创建一个一次性 git worktree** 及其独立分支。无需手动配置 worktree——只需 `cd` 进入仓库并运行：
+Tribal 内置 `-w` 标志，可**自动创建一个一次性 git worktree** 及其独立分支。无需手动配置 worktree——只需 `cd` 进入仓库并运行：
 
 ```bash
 cd /path/to/your/repo
-triibal -w
+tribal -w
 ```
 
-Triibal 将：
+Tribal 将：
 
 - 在仓库内的 `.worktrees/` 下创建临时 worktree。
-- 检出一个隔离分支（例如 `triibal/triibal-<hash>`）。
+- 检出一个隔离分支（例如 `tribal/tribal-<hash>`）。
 - 在该 worktree 内运行完整的 CLI 会话。
 
 这是获得 worktree 隔离的最简便方式。也可与单次查询结合使用：
 
 ```bash
-triibal -w -q "Fix issue #123"
+tribal -w -q "Fix issue #123"
 ```
 
-如需并行运行多个 agent，在多个终端中分别运行 `triibal -w`——每次调用都会自动获得独立的 worktree 和分支。
+如需并行运行多个 agent，在多个终端中分别运行 `tribal -w`——每次调用都会自动获得独立的 worktree 和分支。
 
 ## 综合运用
 
-- 使用 **git worktrees** 为每个 Triibal 会话提供独立的干净检出。
+- 使用 **git worktrees** 为每个 Tribal 会话提供独立的干净检出。
 - 使用**分支**记录实验的高层级历史。
 - 使用 **checkpoints + `/rollback`** 在每个 worktree 内从错误中恢复。
 

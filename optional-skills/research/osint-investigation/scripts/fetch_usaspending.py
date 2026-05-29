@@ -59,7 +59,7 @@ def _post(body: dict) -> dict:
     req = urllib.request.Request(
         ENDPOINT,
         data=json.dumps(body).encode("utf-8"),
-        headers={"Content-Type": "application/json", "User-Agent": "triibal-agent osint-investigation"},
+        headers={"Content-Type": "application/json", "User-Agent": "tribal-agent osint-investigation"},
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=60) as resp:

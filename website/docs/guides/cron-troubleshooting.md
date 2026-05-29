@@ -1,7 +1,7 @@
 ---
 sidebar_position: 12
 title: "Cron Troubleshooting"
-description: "Diagnose and fix common Triibal cron issues — jobs not firing, delivery failures, skill loading errors, and performance problems"
+description: "Diagnose and fix common Tribal cron issues — jobs not firing, delivery failures, skill loading errors, and performance problems"
 ---
 
 # Cron Troubleshooting
@@ -15,7 +15,7 @@ When a cron job isn't behaving as expected, work through these checks in order. 
 ### Check 1: Verify the job exists and is active
 
 ```bash
-triibal cron list
+tribal cron list
 ```
 
 Look for the job and confirm its state is `[active]` (not `[paused]` or `[completed]`). If it shows `[completed]`, the repeat count may be exhausted — edit the job to reset it.
@@ -38,7 +38,7 @@ If the job fires once and then disappears from the list, it's a one-shot schedul
 
 Cron jobs are fired by the gateway's background ticker thread, which ticks every 60 seconds. A regular CLI chat session does **not** automatically fire cron jobs.
 
-If you're expecting jobs to fire automatically, you need a running gateway (`triibal gateway` for foreground, or `triibal gateway start` for the installed service). For one-off debugging, you can manually trigger a tick with `triibal cron tick`.
+If you're expecting jobs to fire automatically, you need a running gateway (`tribal gateway` for foreground, or `tribal gateway start` for the installed service). For one-off debugging, you can manually trigger a tick with `tribal cron tick`.
 
 ### Check 4: Check the system clock and timezone
 
@@ -46,7 +46,7 @@ Jobs use the local timezone. If your machine's clock is wrong or in a different 
 
 ```bash
 date
-triibal cron list   # Compare next_run times with local time
+tribal cron list   # Compare next_run times with local time
 ```
 
 ---
@@ -59,20 +59,20 @@ Delivery targets are case-sensitive and require the correct platform to be confi
 
 | Target | Requires |
 |--------|----------|
-| `telegram` | `TELEGRAM_BOT_TOKEN` in `~/.triibal/.env` |
-| `discord` | `DISCORD_BOT_TOKEN` in `~/.triibal/.env` |
-| `slack` | `SLACK_BOT_TOKEN` in `~/.triibal/.env` |
+| `telegram` | `TELEGRAM_BOT_TOKEN` in `~/.tribal/.env` |
+| `discord` | `DISCORD_BOT_TOKEN` in `~/.tribal/.env` |
+| `slack` | `SLACK_BOT_TOKEN` in `~/.tribal/.env` |
 | `whatsapp` | WhatsApp gateway configured |
 | `signal` | Signal gateway configured |
 | `matrix` | Matrix homeserver configured |
 | `email` | SMTP configured in `config.yaml` |
 | `sms` | SMS provider configured |
-| `local` | Write access to `~/.triibal/cron/output/` |
+| `local` | Write access to `~/.tribal/cron/output/` |
 | `origin` | Delivers to the chat where the job was created |
 
 Other supported platforms include `mattermost`, `homeassistant`, `dingtalk`, `feishu`, `wecom`, `weixin`, `bluebubbles`, `qqbot`, and `webhook`. You can also target a specific chat with `platform:chat_id` syntax (e.g., `telegram:-1001234567890`).
 
-If delivery fails, the job still runs — it just won't send anywhere. Check `triibal cron list` for updated `last_error` field (if available).
+If delivery fails, the job still runs — it just won't send anywhere. Check `tribal cron list` for updated `last_error` field (if available).
 
 ### Check 2: Check `[SILENT]` usage
 
@@ -104,14 +104,14 @@ cron:
 ### Check 1: Verify skills are installed
 
 ```bash
-triibal skills list
+tribal skills list
 ```
 
-Skills must be installed before they can be attached to cron jobs. If a skill is missing, install it first with `triibal skills install <skill-name>` or via `/skills` in the CLI.
+Skills must be installed before they can be attached to cron jobs. If a skill is missing, install it first with `tribal skills install <skill-name>` or via `/skills` in the CLI.
 
 ### Check 2: Check skill name vs. skill folder name
 
-Skill names are case-sensitive and must match the installed skill's folder name. If your job specifies `ai-funding-daily-report` but the skill folder is `ai-funding-daily-report`, confirm the exact name from `triibal skills list`.
+Skill names are case-sensitive and must match the installed skill's folder name. If your job specifies `ai-funding-daily-report` but the skill folder is `ai-funding-daily-report`, confirm the exact name from `tribal skills list`.
 
 ### Check 3: Skills that require interactive tools
 
@@ -138,26 +138,26 @@ In this example, `context-skill` loads before `target-skill`.
 If a job ran and failed, you may see error context in:
 
 1. The chat where the job delivers (if delivery succeeded)
-2. `~/.triibal/logs/agent.log` for scheduler messages (or `errors.log` for warnings)
-3. The job's `last_run` metadata via `triibal cron list`
+2. `~/.tribal/logs/agent.log` for scheduler messages (or `errors.log` for warnings)
+3. The job's `last_run` metadata via `tribal cron list`
 
 ### Check 2: Common error patterns
 
 **"No such file or directory" for scripts**
-The `script` path must be an absolute path (or relative to the Triibal config directory). Verify:
+The `script` path must be an absolute path (or relative to the Tribal config directory). Verify:
 ```bash
-ls ~/.triibal/scripts/your-script.py   # Must exist
-triibal cron edit <job_id> --script ~/.triibal/scripts/your-script.py
+ls ~/.tribal/scripts/your-script.py   # Must exist
+tribal cron edit <job_id> --script ~/.tribal/scripts/your-script.py
 ```
 
 **"Skill not found" at job execution**
-The skill must be installed on the machine running the scheduler. If you move between machines, skills don't automatically sync — reinstall them with `triibal skills install <skill-name>`.
+The skill must be installed on the machine running the scheduler. If you move between machines, skills don't automatically sync — reinstall them with `tribal skills install <skill-name>`.
 
 **Job runs but delivers nothing**
 Likely a delivery target issue (see Delivery Failures above) or a silently suppressed response (`[SILENT]`).
 
 **Job hangs or times out**
-The scheduler uses an inactivity-based timeout (default 600s, configurable via `TRIIBAL_CRON_TIMEOUT` env var, `0` for unlimited). The agent can run as long as it's actively calling tools — the timer only fires after sustained inactivity. Long-running jobs should use scripts to handle data collection and deliver only the result.
+The scheduler uses an inactivity-based timeout (default 600s, configurable via `TRIBAL_CRON_TIMEOUT` env var, `0` for unlimited). The agent can run as long as it's actively calling tools — the timer only fires after sustained inactivity. Long-running jobs should use scripts to handle data collection and deliver only the result.
 
 ### Check 3: Lock contention
 
@@ -165,17 +165,17 @@ The scheduler uses file-based locking to prevent overlapping ticks. If two gatew
 
 Kill duplicate gateway processes:
 ```bash
-ps aux | grep triibal
+ps aux | grep tribal
 # Kill duplicate processes, keep only one
 ```
 
 ### Check 4: Permissions on jobs.json
 
-Jobs are stored in `~/.triibal/cron/jobs.json`. If this file is not readable/writable by your user, the scheduler will fail silently:
+Jobs are stored in `~/.tribal/cron/jobs.json`. If this file is not readable/writable by your user, the scheduler will fail silently:
 
 ```bash
-ls -la ~/.triibal/cron/jobs.json
-chmod 600 ~/.triibal/cron/jobs.json   # Your user should own it
+ls -la ~/.tribal/cron/jobs.json
+chmod 600 ~/.tribal/cron/jobs.json   # Your user should own it
 ```
 
 ---
@@ -199,11 +199,11 @@ Scripts that dump megabytes of output will slow down the agent and may hit token
 ## Diagnostic Commands
 
 ```bash
-triibal cron list                    # Show all jobs, states, next_run times
-triibal cron run <job_id>            # Schedule for next tick (for testing)
-triibal cron edit <job_id>           # Fix configuration issues
-triibal logs                         # View recent Triibal logs
-triibal skills list                  # Verify installed skills
+tribal cron list                    # Show all jobs, states, next_run times
+tribal cron run <job_id>            # Schedule for next tick (for testing)
+tribal cron edit <job_id>           # Fix configuration issues
+tribal logs                         # View recent Tribal logs
+tribal skills list                  # Verify installed skills
 ```
 
 ---
@@ -212,9 +212,9 @@ triibal skills list                  # Verify installed skills
 
 If you've worked through this guide and the issue persists:
 
-1. Run the job with `triibal cron run <job_id>` (fires on next gateway tick) and watch for errors in the chat output
-2. Check `~/.triibal/logs/agent.log` for scheduler messages and `~/.triibal/logs/errors.log` for warnings
-3. Open an issue at [github.com/Triibal/triibal](https://github.com/Triibal/triibal) with:
+1. Run the job with `tribal cron run <job_id>` (fires on next gateway tick) and watch for errors in the chat output
+2. Check `~/.tribal/logs/agent.log` for scheduler messages and `~/.tribal/logs/errors.log` for warnings
+3. Open an issue at [github.com/Tribal/tribal](https://github.com/Tribal/tribal) with:
    - The job ID and schedule
    - The delivery target
    - What you expected vs. what happened

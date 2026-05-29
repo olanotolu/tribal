@@ -1,60 +1,60 @@
 ---
 sidebar_position: 1
 title: "CLI Interface"
-description: "Master the Triibal Agent terminal interface — commands, keybindings, personalities, and more"
+description: "Master the Tribal Agent terminal interface — commands, keybindings, personalities, and more"
 ---
 
 # CLI Interface
 
-Triibal Agent's CLI is a full terminal user interface (TUI) — not a web UI. It features multiline editing, slash-command autocomplete, conversation history, interrupt-and-redirect, and streaming tool output. Built for people who live in the terminal.
+Tribal Agent's CLI is a full terminal user interface (TUI) — not a web UI. It features multiline editing, slash-command autocomplete, conversation history, interrupt-and-redirect, and streaming tool output. Built for people who live in the terminal.
 
 :::tip First-time setup
-One command — `triibal setup --portal` — and you're ready to `triibal chat`. See [Nous Portal](/integrations/nous-portal).
+One command — `tribal setup --portal` — and you're ready to `tribal chat`. See [Nous Portal](/integrations/nous-portal).
 :::
 
 :::tip
-Triibal also ships a modern TUI with modal overlays, mouse selection, and non-blocking input. Launch it with `triibal --tui` — see the [TUI](tui.md) guide.
+Tribal also ships a modern TUI with modal overlays, mouse selection, and non-blocking input. Launch it with `tribal --tui` — see the [TUI](tui.md) guide.
 :::
 
 ## Running the CLI
 
 ```bash
 # Start an interactive session (default)
-triibal
+tribal
 
 # Single query mode (non-interactive)
-triibal chat -q "Hello"
+tribal chat -q "Hello"
 
 # With a specific model
-triibal chat --model "anthropic/claude-sonnet-4"
+tribal chat --model "anthropic/claude-sonnet-4"
 
 # With a specific provider
-triibal chat --provider nous        # Use Nous Portal
-triibal chat --provider openrouter  # Force OpenRouter
+tribal chat --provider nous        # Use Nous Portal
+tribal chat --provider openrouter  # Force OpenRouter
 
 # With specific toolsets
-triibal chat --toolsets "web,terminal,skills"
+tribal chat --toolsets "web,terminal,skills"
 
 # Start with one or more skills preloaded
-triibal -s triibal-agent-dev,github-auth
-triibal chat -s github-pr-workflow -q "open a draft PR"
+tribal -s tribal-agent-dev,github-auth
+tribal chat -s github-pr-workflow -q "open a draft PR"
 
 # Resume previous sessions
-triibal --continue             # Resume the most recent CLI session (-c)
-triibal --resume <session_id>  # Resume a specific session by ID (-r)
+tribal --continue             # Resume the most recent CLI session (-c)
+tribal --resume <session_id>  # Resume a specific session by ID (-r)
 
 # Verbose mode (debug output)
-triibal chat --verbose
+tribal chat --verbose
 
 # Isolated git worktree (for running multiple agents in parallel)
-triibal -w                         # Interactive mode in worktree
-triibal -w -q "Fix issue #123"     # Single query in worktree
+tribal -w                         # Interactive mode in worktree
+tribal -w -q "Fix issue #123"     # Single query in worktree
 ```
 
 ## Interface Layout
 
-<img className="docs-terminal-figure" src="/img/docs/cli-layout.svg" alt="Stylized preview of the Triibal CLI layout showing the banner, conversation area, and fixed input prompt." />
-<p className="docs-figure-caption">The Triibal CLI banner, conversation stream, and fixed input prompt rendered as a stable docs figure instead of fragile text art.</p>
+<img className="docs-terminal-figure" src="/img/docs/cli-layout.svg" alt="Stylized preview of the Tribal CLI layout showing the banner, conversation area, and fixed input prompt." />
+<p className="docs-figure-caption">The Tribal CLI banner, conversation stream, and fixed input prompt rendered as a stable docs figure instead of fragile text art.</p>
 
 The welcome banner shows your model, terminal backend, working directory, available tools, and installed skills at a glance.
 
@@ -75,7 +75,7 @@ A persistent status bar sits above the input area, updating in real time:
 | 🗜️ N | **Context compression count** — how many times the running session has been auto-compressed. Appears once the first compression fires. |
 | ▶ N | **Active background tasks** — how many `/background` prompts are still running in the current session. Appears whenever at least one task is in flight. |
 | Duration | Elapsed session time |
-| ⚠ YOLO | **YOLO mode warning** — shown whenever `TRIIBAL_YOLO_MODE` is on (either `triibal --yolo` at launch or `/yolo` toggled mid-session). Mirrors the banner-line warning so you can't forget you're in auto-approve mode. |
+| ⚠ YOLO | **YOLO mode warning** — shown whenever `TRIBAL_YOLO_MODE` is on (either `tribal --yolo` at launch or `/yolo` toggled mid-session). Mirrors the banner-line warning so you can't forget you're in auto-approve mode. |
 
 The bar adapts to terminal width — full layout at ≥ 76 columns, compact at 52–75, minimal (model + duration, plus the YOLO badge when active) below 52.
 
@@ -92,7 +92,7 @@ Use `/usage` for a detailed breakdown including per-category costs (input vs out
 
 ### Session Resume Display
 
-When resuming a previous session (`triibal -c` or `triibal --resume <id>`), a "Previous Conversation" panel appears between the banner and the input prompt, showing a compact recap of the conversation history. See [Sessions — Conversation Recap on Resume](sessions.md#conversation-recap-on-resume) for details and configuration.
+When resuming a previous session (`tribal -c` or `tribal --resume <id>`), a "Previous Conversation" panel appears between the banner and the input prompt, showing a compact recap of the conversation history. See [Sessions — Conversation Recap on Resume](sessions.md#conversation-recap-on-resume) for details and configuration.
 
 ## Keybindings
 
@@ -107,7 +107,7 @@ When resuming a previous session (`triibal -c` or `triibal --resume <id>`), a "P
 | `Ctrl+X Ctrl+E` | Emacs-style alternate binding for the external editor (same behavior as `Ctrl+G`). |
 | `Ctrl+C` | Interrupt agent (double-press within 2s to force exit) |
 | `Ctrl+D` | Exit |
-| `Ctrl+Z` | Suspend Triibal to background (Unix only). Run `fg` in the shell to resume. |
+| `Ctrl+Z` | Suspend Tribal to background (Unix only). Run `fg` in the shell to resume. |
 | `Tab` | Accept auto-suggestion (ghost text) or autocomplete slash commands |
 
 **Multiline paste preview.** When you paste a multi-line block, the CLI echoes a compact single-line preview (`[pasted: 47 lines, 1,842 chars — press Enter to send]`) instead of dumping the whole payload into the scrollback. The full content is still what gets sent; this is just display polish.
@@ -116,7 +116,7 @@ When resuming a previous session (`triibal -c` or `triibal --resume <id>`), a "P
 
 ## Slash Commands
 
-Type `/` to see the autocomplete dropdown. Triibal supports a large set of CLI slash commands, dynamic skill commands, and user-defined quick commands.
+Type `/` to see the autocomplete dropdown. Tribal supports a large set of CLI slash commands, dynamic skill commands, and user-defined quick commands.
 
 Common examples:
 
@@ -129,7 +129,7 @@ Common examples:
 | `/background <prompt>` | Run a prompt in a separate background session |
 | `/skin` | Show or switch the active CLI skin |
 | `/voice on` | Enable CLI voice mode (press `Ctrl+B` to record) |
-| `/voice tts` | Toggle spoken playback for Triibal replies |
+| `/voice tts` | Toggle spoken playback for Tribal replies |
 | `/reasoning high` | Increase reasoning effort |
 | `/title My Session` | Name the current session |
 | `/status` | Show session info — model/profile/tokens/duration — followed by a local **Session recap** block (recent turn counts, top tools used, files touched, latest user prompt + assistant reply). Pure local compute; no LLM call. |
@@ -148,11 +148,11 @@ Commands are case-insensitive — `/HELP` works the same as `/help`. Installed s
 You can define custom commands that run shell commands instantly without invoking the LLM. These work in both the CLI and messaging platforms (Telegram, Discord, etc.).
 
 ```yaml
-# ~/.triibal/config.yaml
+# ~/.tribal/config.yaml
 quick_commands:
   status:
     type: exec
-    command: systemctl status triibal-agent
+    command: systemctl status tribal-agent
   gpu:
     type: exec
     command: nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader
@@ -168,15 +168,15 @@ Then type `/status`, `/gpu`, or `/restart` in any chat. See the [Configuration g
 If you already know which skills you want active for the session, pass them at launch time:
 
 ```bash
-triibal -s triibal-agent-dev,github-auth
-triibal chat -s github-pr-workflow -s github-auth
+tribal -s tribal-agent-dev,github-auth
+tribal chat -s github-pr-workflow -s github-auth
 ```
 
-Triibal loads each named skill into the session prompt before the first turn. The same flag works in interactive mode and single-query mode.
+Tribal loads each named skill into the session prompt before the first turn. The same flag works in interactive mode and single-query mode.
 
 ## Skill Slash Commands
 
-Every installed skill in `~/.triibal/skills/` is automatically registered as a slash command. The skill name becomes the command:
+Every installed skill in `~/.tribal/skills/` is automatically registered as a slash command. The skill name becomes the command:
 
 ```
 /gif-search funny cats
@@ -199,13 +199,13 @@ Set a predefined personality to change the agent's tone:
 
 Built-in personalities include: `helpful`, `concise`, `technical`, `creative`, `teacher`, `kawaii`, `catgirl`, `pirate`, `shakespeare`, `surfer`, `noir`, `uwu`, `philosopher`, `hype`.
 
-You can also define custom personalities in `~/.triibal/config.yaml`:
+You can also define custom personalities in `~/.tribal/config.yaml`:
 
 ```yaml
 personalities:
   helpful: "You are a helpful, friendly AI assistant."
   kawaii: "You are a kawaii assistant! Use cute expressions..."
-  pirate: "Arrr! Ye be talkin' to Captain Triibal..."
+  pirate: "Arrr! Ye be talkin' to Captain Tribal..."
   # Add your own!
 ```
 
@@ -228,7 +228,7 @@ Pasting multi-line text is supported — use any of the newline keys above, or s
 
 ### Shift+Enter compatibility
 
-Most terminals send the same byte sequence for `Enter` and `Shift+Enter` by default, so applications cannot distinguish them. Triibal recognises `Shift+Enter` only when the terminal sends a distinct sequence via the [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/) or xterm's `modifyOtherKeys` mode.
+Most terminals send the same byte sequence for `Enter` and `Shift+Enter` by default, so applications cannot distinguish them. Tribal recognises `Shift+Enter` only when the terminal sends a distinct sequence via the [Kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/) or xterm's `modifyOtherKeys` mode.
 
 | Terminal | Status |
 |---|---|
@@ -237,7 +237,7 @@ Most terminals send the same byte sequence for `Enter` and `Shift+Enter` by defa
 | Windows Terminal Preview 1.25+ | Supported once the Kitty protocol is enabled in settings |
 | macOS Terminal.app, stock Windows Terminal (stable) | Not supported — `Shift+Enter` is indistinguishable from `Enter` |
 
-Where the terminal cannot distinguish them, `Alt+Enter` and `Ctrl+J` continue to work everywhere. **On Windows Terminal specifically, `Alt+Enter` is captured by the terminal (toggles fullscreen) and never reaches Triibal — use `Ctrl+Enter` (delivered as `Ctrl+J`) or `Ctrl+J` directly for a newline.**
+Where the terminal cannot distinguish them, `Alt+Enter` and `Ctrl+J` continue to work everywhere. **On Windows Terminal specifically, `Alt+Enter` is captured by the terminal (toggles fullscreen) and never reaches Tribal — use `Ctrl+Enter` (delivered as `Ctrl+J`) or `Ctrl+J` directly for a newline.**
 
 ## Interrupting the Agent
 
@@ -259,7 +259,7 @@ The `display.busy_input_mode` config key controls what happens when you press En
 | `"steer"` | Your message is injected into the current run via `/steer`, arriving at the agent after the next tool call — no interrupt, no new turn |
 
 ```yaml
-# ~/.triibal/config.yaml
+# ~/.tribal/config.yaml
 display:
   busy_input_mode: "steer"   # or "queue" or "interrupt" (default)
 ```
@@ -278,15 +278,15 @@ You can also change it inside the CLI:
 ```
 
 :::tip First-touch hint
-The very first time you press Enter while Triibal is working, Triibal prints a one-line reminder explaining the `/busy` knob (`"(tip) Your message interrupted the current run…"`). It only fires once per install — a flag in `config.yaml` under `onboarding.seen.busy_input_prompt` latches it. Delete that key to see the tip again.
+The very first time you press Enter while Tribal is working, Tribal prints a one-line reminder explaining the `/busy` knob (`"(tip) Your message interrupted the current run…"`). It only fires once per install — a flag in `config.yaml` under `onboarding.seen.busy_input_prompt` latches it. Delete that key to see the tip again.
 :::
 
 ### Suspending to Background
 
-On Unix systems, press **`Ctrl+Z`** to suspend Triibal to the background — just like any terminal process. The shell prints a confirmation:
+On Unix systems, press **`Ctrl+Z`** to suspend Tribal to the background — just like any terminal process. The shell prints a confirmation:
 
 ```
-Triibal Agent has been suspended. Run `fg` to bring Triibal Agent back.
+Tribal Agent has been suspended. Run `fg` to bring Tribal Agent back.
 ```
 
 Type `fg` in your shell to resume the session exactly where you left off. This is not supported on Windows.
@@ -316,7 +316,7 @@ Cycle through display modes with `/verbose`: `off → new → all → verbose`. 
 The `display.tool_preview_length` config key controls the maximum number of characters shown in tool call preview lines (e.g. file paths, terminal commands). The default is `0`, which means no limit — full paths and commands are shown.
 
 ```yaml
-# ~/.triibal/config.yaml
+# ~/.tribal/config.yaml
 display:
   tool_preview_length: 80   # Truncate tool previews to 80 chars (0 = no limit)
 ```
@@ -331,7 +331,7 @@ When you exit a CLI session, a resume command is printed:
 
 ```
 Resume this session with:
-  triibal --resume 20260225_143052_a1b2c3
+  tribal --resume 20260225_143052_a1b2c3
 
 Session:        20260225_143052_a1b2c3
 Duration:       12m 34s
@@ -341,21 +341,21 @@ Messages:       28 (5 user, 18 tool calls)
 Resume options:
 
 ```bash
-triibal --continue                          # Resume the most recent CLI session
-triibal -c                                  # Short form
-triibal -c "my project"                     # Resume a named session (latest in lineage)
-triibal --resume 20260225_143052_a1b2c3     # Resume a specific session by ID
-triibal --resume "refactoring auth"         # Resume by title
-triibal -r 20260225_143052_a1b2c3           # Short form
+tribal --continue                          # Resume the most recent CLI session
+tribal -c                                  # Short form
+tribal -c "my project"                     # Resume a named session (latest in lineage)
+tribal --resume 20260225_143052_a1b2c3     # Resume a specific session by ID
+tribal --resume "refactoring auth"         # Resume by title
+tribal -r 20260225_143052_a1b2c3           # Short form
 ```
 
 Resuming restores the full conversation history from SQLite. The agent sees all previous messages, tool calls, and responses — just as if you never left.
 
-Use `/title My Session Name` inside a chat to name the current session, or `triibal sessions rename <id> <title>` from the command line. Use `triibal sessions list` to browse past sessions.
+Use `/title My Session Name` inside a chat to name the current session, or `tribal sessions rename <id> <title>` from the command line. Use `tribal sessions list` to browse past sessions.
 
 ### Session Storage
 
-CLI sessions are stored in Triibal's SQLite state database under `~/.triibal/state.db`. The database keeps:
+CLI sessions are stored in Tribal's SQLite state database under `~/.tribal/state.db`. The database keeps:
 
 - session metadata (ID, title, timestamps, token counters)
 - message history
@@ -369,7 +369,7 @@ Some messaging adapters also keep per-platform transcript files alongside the da
 Long conversations are automatically summarized when approaching context limits:
 
 ```yaml
-# In ~/.triibal/config.yaml
+# In ~/.tribal/config.yaml
 compression:
   enabled: true
   threshold: 0.50    # Compress at 50% of context limit by default
@@ -390,7 +390,7 @@ Run a prompt in a separate background session while continuing to use the CLI fo
 /background Analyze the logs in /var/log and summarize any errors from today
 ```
 
-Triibal immediately confirms the task and gives you back the prompt:
+Tribal immediately confirms the task and gives you back the prompt:
 
 ```
 🔄 Background task #1 started: "Analyze the logs in /var/log and summarize..."
@@ -411,7 +411,7 @@ Each `/background` prompt spawns a **completely separate agent session** in a da
 When a background task finishes, the result appears as a panel in your terminal:
 
 ```
-╭─ ⚕ Triibal (background #1) ──────────────────────────────────╮
+╭─ ⚕ Tribal (background #1) ──────────────────────────────────╮
 │ Found 3 errors in syslog from today:                         │
 │ 1. OOM killer invoked at 03:22 — killed process nginx        │
 │ 2. Disk I/O error on /dev/sda1 at 07:15                      │
@@ -440,5 +440,5 @@ By default, the CLI runs in quiet mode which:
 
 For debug output:
 ```bash
-triibal chat --verbose
+tribal chat --verbose
 ```

@@ -7,10 +7,10 @@ import pytest
 
 
 def _make_cli_stub():
-    """Create a minimal TriibalCLI-like object with stream state."""
-    from cli import TriibalCLI
+    """Create a minimal TribalCLI-like object with stream state."""
+    from cli import TribalCLI
 
-    cli = TriibalCLI.__new__(TriibalCLI)
+    cli = TribalCLI.__new__(TribalCLI)
     cli.show_reasoning = False
     cli._stream_buf = ""
     cli._stream_started = False

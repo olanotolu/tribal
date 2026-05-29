@@ -2,11 +2,11 @@
 name: arxiv
 description: "Search arXiv papers by keyword, author, category, or ID."
 version: 1.0.0
-author: Triibal Agent
+author: Tribal Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  triibal:
+  tribal:
     tags: [Research, Arxiv, Papers, Academic, Science, API]
     related_skills: [ocr-and-documents]
 ---

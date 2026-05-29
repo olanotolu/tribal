@@ -1,1 +1,1 @@
-# Triibal plugins package
+# Tribal plugins package

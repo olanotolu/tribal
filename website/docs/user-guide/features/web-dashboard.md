@@ -6,16 +6,16 @@ description: "Browser-based dashboard for managing configuration, API keys, sess
 
 # Web Dashboard
 
-The web dashboard is a browser-based UI for managing your Triibal Agent installation. Instead of editing YAML files or running CLI commands, you can configure settings, manage API keys, and monitor sessions from a clean web interface.
+The web dashboard is a browser-based UI for managing your Tribal Agent installation. Instead of editing YAML files or running CLI commands, you can configure settings, manage API keys, and monitor sessions from a clean web interface.
 
 :::tip
-Hosted-mode auth uses Nous Portal OAuth; if you also want the dashboard to talk to a real backend, `triibal setup --portal` wires up the model and tool gateway too. See [Nous Portal](/integrations/nous-portal).
+Hosted-mode auth uses Nous Portal OAuth; if you also want the dashboard to talk to a real backend, `tribal setup --portal` wires up the model and tool gateway too. See [Nous Portal](/integrations/nous-portal).
 :::
 
 ## Quick Start
 
 ```bash
-triibal dashboard
+tribal dashboard
 ```
 
 This starts a local web server and opens `http://127.0.0.1:9119` in your browser. The dashboard runs entirely on your machine — no data leaves localhost.
@@ -28,35 +28,35 @@ This starts a local web server and opens `http://127.0.0.1:9119` in your browser
 | `--host` | `127.0.0.1` | Bind address |
 | `--no-open` | — | Don't auto-open the browser |
 | `--insecure` | off | Allow binding to non-localhost hosts (**DANGEROUS** — exposes API keys on the network; pair with a firewall and strong auth) |
-| `--tui` | off | Expose the in-browser Chat tab (embedded `triibal --tui` via PTY/WebSocket). Alternatively set `TRIIBAL_DASHBOARD_TUI=1`. |
+| `--tui` | off | Expose the in-browser Chat tab (embedded `tribal --tui` via PTY/WebSocket). Alternatively set `TRIBAL_DASHBOARD_TUI=1`. |
 
 ```bash
 # Custom port
-triibal dashboard --port 8080
+tribal dashboard --port 8080
 
 # Bind to all interfaces (use with caution on shared networks)
-triibal dashboard --host 0.0.0.0
+tribal dashboard --host 0.0.0.0
 
 # Start without opening browser
-triibal dashboard --no-open
+tribal dashboard --no-open
 
 # Enable the in-browser Chat tab
-triibal dashboard --tui
+tribal dashboard --tui
 ```
 
 ## Prerequisites
 
-The default `triibal-agent` install does not ship the HTTP stack or PTY helper — those are optional extras. The **web dashboard** needs FastAPI and Uvicorn (`web` extra). The **Chat** tab also needs `ptyprocess` to spawn the embedded TUI behind a pseudo-terminal (`pty` extra on POSIX). Install both with:
+The default `tribal-agent` install does not ship the HTTP stack or PTY helper — those are optional extras. The **web dashboard** needs FastAPI and Uvicorn (`web` extra). The **Chat** tab also needs `ptyprocess` to spawn the embedded TUI behind a pseudo-terminal (`pty` extra on POSIX). Install both with:
 
 ```bash
-pip install 'triibal-agent[web,pty]'
+pip install 'tribal-agent[web,pty]'
 ```
 
-The `web` extra pulls in FastAPI/Uvicorn; `pty` pulls in `ptyprocess` (POSIX) or `pywinpty` (native Windows — note that the embedded TUI itself still requires WSL). `pip install triibal-agent[all]` includes both extras and is the easiest path if you also want messaging/voice/etc.
+The `web` extra pulls in FastAPI/Uvicorn; `pty` pulls in `ptyprocess` (POSIX) or `pywinpty` (native Windows — note that the embedded TUI itself still requires WSL). `pip install tribal-agent[all]` includes both extras and is the easiest path if you also want messaging/voice/etc.
 
-When you run `triibal dashboard` without the dependencies, it will tell you what to install. If the frontend hasn't been built yet and `npm` is available, it builds automatically on first launch.
+When you run `tribal dashboard` without the dependencies, it will tell you what to install. If the frontend hasn't been built yet and `npm` is available, it builds automatically on first launch.
 
-The Chat tab is intentionally off for a plain `triibal dashboard` launch. Start the dashboard with `triibal dashboard --tui` or set `TRIIBAL_DASHBOARD_TUI=1` when you want the embedded browser chat pane.
+The Chat tab is intentionally off for a plain `tribal dashboard` launch. Start the dashboard with `tribal dashboard --tui` or set `TRIBAL_DASHBOARD_TUI=1` when you want the embedded browser chat pane.
 
 ## Pages
 
@@ -73,12 +73,12 @@ The status page auto-refreshes every 5 seconds.
 
 ### Chat
 
-The **Chat** tab embeds the full Triibal TUI (the same interface you get from `triibal --tui`) directly in the browser. Everything you can do in the terminal TUI — slash commands, model picker, tool-call cards, markdown streaming, clarify/sudo/approval prompts, skin theming — works identically here, because the dashboard is running the real TUI binary and rendering its ANSI output through [xterm.js](https://xtermjs.org/) with its WebGL renderer for pixel-perfect cell layout.
+The **Chat** tab embeds the full Tribal TUI (the same interface you get from `tribal --tui`) directly in the browser. Everything you can do in the terminal TUI — slash commands, model picker, tool-call cards, markdown streaming, clarify/sudo/approval prompts, skin theming — works identically here, because the dashboard is running the real TUI binary and rendering its ANSI output through [xterm.js](https://xtermjs.org/) with its WebGL renderer for pixel-perfect cell layout.
 
 **How it works:**
 
 - `/api/pty` opens a WebSocket authenticated with the dashboard's session token
-- The server spawns `triibal --tui` behind a POSIX pseudo-terminal
+- The server spawns `tribal --tui` behind a POSIX pseudo-terminal
 - Keystrokes travel to the PTY; ANSI output streams back to the browser
 - xterm.js's WebGL renderer paints each cell to an integer-pixel grid; mouse tracking (SGR 1006), wide characters (Unicode 11), and box-drawing glyphs all render natively
 - Resizing the browser window resizes the TUI via the `@xterm/addon-fit` addon
@@ -87,8 +87,8 @@ The **Chat** tab embeds the full Triibal TUI (the same interface you get from `t
 
 **Prerequisites:**
 
-- Node.js (same requirement as `triibal --tui`; the TUI bundle is built on first launch)
-- `ptyprocess` — installed by the `pty` extra (`pip install 'triibal-agent[web,pty]'`, or `[all]` covers both)
+- Node.js (same requirement as `tribal --tui`; the TUI bundle is built on first launch)
+- `ptyprocess` — installed by the `pty` extra (`pip install 'tribal-agent[web,pty]'`, or `[all]` covers both)
 - POSIX kernel (Linux, macOS, or WSL2).  The `/chat` terminal pane specifically needs a POSIX PTY — native Windows Python has no equivalent, so on a native Windows install the rest of the dashboard (sessions, jobs, metrics, config editor) works but the `/chat` tab will show a banner telling you to use WSL2 for that feature.
 
 Close the browser tab and the PTY is reaped cleanly on the server. Re-opening spawns a fresh session.
@@ -116,7 +116,7 @@ Fields with known valid values (terminal backend, skin, approval mode, etc.) ren
 - **Import** — uploads a JSON config file to replace the current values
 
 :::tip
-Config changes take effect on the next agent session or gateway restart. The web dashboard edits the same `config.yaml` file that `triibal config set` and the gateway read from.
+Config changes take effect on the next agent session or gateway restart. The web dashboard edits the same `config.yaml` file that `tribal config set` and the gateway read from.
 :::
 
 ### API Keys
@@ -178,7 +178,7 @@ Create and manage scheduled cron jobs that run agent prompts on a recurring sche
 
 ### Skills
 
-Browse, search, and toggle skills and toolsets. Skills are loaded from `~/.triibal/skills/` and grouped by category.
+Browse, search, and toggle skills and toolsets. Skills are loaded from `~/.tribal/skills/` and grouped by category.
 
 - **Search** — filter skills and toolsets by name, description, or category
 - **Category filter** — click category pills to narrow the list (e.g. MLOps, MCP, Red Teaming, AI)
@@ -198,7 +198,7 @@ You → /reload
   Reloaded .env (3 var(s) updated)
 ```
 
-This re-reads `~/.triibal/.env` into the running process's environment. Useful when you've added a new provider key via the dashboard and want to use it immediately.
+This re-reads `~/.tribal/.env` into the running process's environment. Useful when you've added a new provider key via the dashboard and want to use it immediately.
 
 ## REST API
 
@@ -302,7 +302,7 @@ Returns all toolsets with their label, description, tools list, and active/confi
 
 ## OAuth Authentication (gated mode)
 
-When the dashboard is bound to a public address — anything other than `127.0.0.1` / `localhost` — Triibal Agent engages an OAuth-based auth gate. Every request must carry a verified session cookie or it's bounced through a full OAuth round-trip via the Nous Portal.
+When the dashboard is bound to a public address — anything other than `127.0.0.1` / `localhost` — Tribal Agent engages an OAuth-based auth gate. Every request must carry a verified session cookie or it's bounced through a full OAuth round-trip via the Nous Portal.
 
 This is intended for hosted deployments (typically Fly.io) where the dashboard is reachable over the public internet. Operator-owned dashboards bound to loopback are unaffected.
 
@@ -310,9 +310,9 @@ This is intended for hosted deployments (typically Fly.io) where the dashboard i
 
 | Flags | Auth gate | Use case |
 |-------|-----------|----------|
-| `triibal dashboard` (default — binds to `127.0.0.1`) | OFF | Local development |
-| `triibal dashboard --host 0.0.0.0` | **ON** | Production / Fly.io deployment |
-| `triibal dashboard --host 192.168.1.10 --insecure` | OFF | Trusted LAN; user opts into legacy session-token auth |
+| `tribal dashboard` (default — binds to `127.0.0.1`) | OFF | Local development |
+| `tribal dashboard --host 0.0.0.0` | **ON** | Production / Fly.io deployment |
+| `tribal dashboard --host 192.168.1.10 --insecure` | OFF | Trusted LAN; user opts into legacy session-token auth |
 
 The gate is on if and only if:
 
@@ -323,7 +323,7 @@ Setting `--insecure` keeps the existing single-process session-token behaviour �
 
 ### Fail-closed semantics
 
-If the gate would engage but **no** `DashboardAuthProvider` is registered (no Nous plugin, no custom plugin), `triibal dashboard` refuses to bind with an explicit error message. There is no "default-deny but accept everything" fallback — a misconfigured gated dashboard never starts.
+If the gate would engage but **no** `DashboardAuthProvider` is registered (no Nous plugin, no custom plugin), `tribal dashboard` refuses to bind with an explicit error message. There is no "default-deny but accept everything" fallback — a misconfigured gated dashboard never starts.
 
 ### Default provider: Nous Research
 
@@ -346,10 +346,10 @@ dashboard:
 
 | Env var | Overrides | Format | Provisioned by |
 |---------|-----------|--------|----------------|
-| `TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID` | `dashboard.oauth.client_id` | `agent:{instance_id}` | Nous Portal at Fly.io provisioning time |
-| `TRIIBAL_DASHBOARD_PORTAL_URL` | `dashboard.oauth.portal_url` | URL (default: `https://portal.nousresearch.com`) | Portal — override only for staging or a custom deployment |
+| `TRIBAL_DASHBOARD_OAUTH_CLIENT_ID` | `dashboard.oauth.client_id` | `agent:{instance_id}` | Nous Portal at Fly.io provisioning time |
+| `TRIBAL_DASHBOARD_PORTAL_URL` | `dashboard.oauth.portal_url` | URL (default: `https://portal.nousresearch.com`) | Portal — override only for staging or a custom deployment |
 
-Per the Triibal Agent convention (`~/.triibal/.env` is for API keys / secrets only), **`config.yaml` is the recommended place to set these values** for local dev, on-prem, and any deployment you control directly. The environment-variable path exists so Fly.io's platform-secret injection can push per-deploy `client_id`s without anyone having to edit `config.yaml` inside the image — that's its primary purpose.
+Per the Tribal Agent convention (`~/.tribal/.env` is for API keys / secrets only), **`config.yaml` is the recommended place to set these values** for local dev, on-prem, and any deployment you control directly. The environment-variable path exists so Fly.io's platform-secret injection can push per-deploy `client_id`s without anyone having to edit `config.yaml` inside the image — that's its primary purpose.
 
 Empty environment values are treated as unset, so a provisioned-but-not-populated Fly secret can't accidentally shadow a valid `config.yaml` entry.
 
@@ -360,10 +360,10 @@ Refusing to bind dashboard to 0.0.0.0 — the OAuth auth gate engages on
 non-loopback binds, but no auth providers are registered.
 
 Bundled providers reported these issues:
-  • nous: TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID is not set (and
+  • nous: TRIBAL_DASHBOARD_OAUTH_CLIENT_ID is not set (and
     dashboard.oauth.client_id in config.yaml is empty). The Nous Portal
     provisions this env var (shape 'agent:{instance_id}') when it
-    deploys a Triibal Agent instance — set it to your provisioned
+    deploys a Tribal Agent instance — set it to your provisioned
     client id (either as an env var or under dashboard.oauth.client_id
     in config.yaml), or pass --insecure to skip the OAuth gate entirely.
 
@@ -375,11 +375,11 @@ networks).
 
 By default, the dashboard reconstructs the OAuth callback URL from the request — `X-Forwarded-Host` + `X-Forwarded-Proto` + `X-Forwarded-Prefix` (when uvicorn is configured with `proxy_headers=True`, which `start_server` enables under the gate). This works out of the box on Fly.io, which sets all three headers correctly.
 
-For deploys behind reverse proxies that don't reliably forward those headers (manual nginx setups, on-prem ingresses, custom-domain Fly deploys with partial proxy chains), set `dashboard.public_url` (or `TRIIBAL_DASHBOARD_PUBLIC_URL`) to the **complete public URL** the dashboard is reached at:
+For deploys behind reverse proxies that don't reliably forward those headers (manual nginx setups, on-prem ingresses, custom-domain Fly deploys with partial proxy chains), set `dashboard.public_url` (or `TRIBAL_DASHBOARD_PUBLIC_URL`) to the **complete public URL** the dashboard is reached at:
 
 ```yaml
 dashboard:
-  public_url: "https://dashboard.example.com/triibal"
+  public_url: "https://dashboard.example.com/tribal"
 ```
 
 When set, the OAuth callback URL becomes `<public_url>/auth/callback` verbatim — `X-Forwarded-Prefix` is ignored on that code path because the operator has explicitly declared the public URL. This is intentional: stacking the prefix on top would double-prefix the common case where the prefix is already baked into `public_url`.
@@ -388,8 +388,8 @@ Same precedence as the other dashboard settings — env wins over `config.yaml`:
 
 | Surface | Override path | When to use |
 |---------|---------------|-------------|
-| `dashboard.public_url` in `config.yaml` | `TRIIBAL_DASHBOARD_PUBLIC_URL` | Local dev / on-prem (canonical) |
-| `TRIIBAL_DASHBOARD_PUBLIC_URL` env var | — | Fly.io platform secrets / CI |
+| `dashboard.public_url` in `config.yaml` | `TRIBAL_DASHBOARD_PUBLIC_URL` | Local dev / on-prem (canonical) |
+| `TRIBAL_DASHBOARD_PUBLIC_URL` env var | — | Fly.io platform secrets / CI |
 | (unset) | — | Default — reconstruct from `X-Forwarded-*` headers |
 
 Validation rejects values without `http://` / `https://` scheme, without a host, or containing quote / angle / whitespace / control characters. A malformed value silently falls through to header reconstruction so the login flow keeps working rather than dispatching the user to a hostile URL.
@@ -404,7 +404,7 @@ The provider implements the [Nous Portal OAuth contract v1](https://github.com/N
 2. Login page shows a "Continue with Nous Research" button → `/auth/login?provider=nous`.
 3. Server stashes PKCE state in a short-lived cookie, redirects user to `https://portal.nousresearch.com/oauth/authorize?…`.
 4. User authenticates with Portal, lands at `/auth/callback?code=…&state=…`.
-5. Server exchanges the code for an access token at `POST /api/oauth/token`, verifies the JWT signature against the Portal's JWKS (`/.well-known/jwks.json`), and sets the `triibal_session_at` cookie.
+5. Server exchanges the code for an access token at `POST /api/oauth/token`, verifies the JWT signature against the Portal's JWKS (`/.well-known/jwks.json`), and sets the `tribal_session_at` cookie.
 6. User is redirected to `/` (or to the original deep-link path via the `next=` query parameter).
 
 Access tokens have a 15-minute TTL. **There is no refresh token in contract v1** — when the token expires, the SPA's fetch wrapper detects the 401 envelope and full-page-navigates back to `/login` to re-run the flow.
@@ -413,9 +413,9 @@ Access tokens have a 15-minute TTL. **There is no refresh token in contract v1**
 
 | Name | Lifetime | Notes |
 |------|----------|-------|
-| `triibal_session_at` | Token TTL (15 min) | HttpOnly, SameSite=Lax, Secure-when-HTTPS |
-| `triibal_session_pkce` | 10 min | HttpOnly; holds the PKCE verifier + provider hint during the round trip |
-| `triibal_session_rt` | unused in v1 | Reserved for forward-compat; not written when `refresh_token` is empty |
+| `tribal_session_at` | Token TTL (15 min) | HttpOnly, SameSite=Lax, Secure-when-HTTPS |
+| `tribal_session_pkce` | 10 min | HttpOnly; holds the PKCE verifier + provider hint during the round trip |
+| `tribal_session_rt` | unused in v1 | Reserved for forward-compat; not written when `refresh_token` is empty |
 
 All three are `Path=/` and `SameSite=Lax`. The `Secure` flag is set when the dashboard is reached over HTTPS (detected via the request URL scheme — honours `X-Forwarded-Proto` from Fly's TLS terminator under `proxy_headers=True`).
 
@@ -425,15 +425,15 @@ The sidebar widget shows `Logged in as <user_id…> via nous` with a logout icon
 
 ### Audit log
 
-Every login start, success, failure, and session-verify failure is written as a JSON line to `$TRIIBAL_HOME/logs/dashboard-auth.log`. Sensitive fields (`access_token`, `refresh_token`, `code`, `code_verifier`, `state`, `Authorization` header) are redacted before logging.
+Every login start, success, failure, and session-verify failure is written as a JSON line to `$TRIBAL_HOME/logs/dashboard-auth.log`. Sensitive fields (`access_token`, `refresh_token`, `code`, `code_verifier`, `state`, `Authorization` header) are redacted before logging.
 
 ### Custom providers
 
 To plug a non-Nous OAuth provider (e.g. Google, GitHub, custom OIDC), create a plugin that registers a `DashboardAuthProvider`:
 
 ```python
-# ~/.triibal/plugins/dashboard-auth-myidp/__init__.py
-from triibal_cli.dashboard_auth import DashboardAuthProvider, Session, LoginStart
+# ~/.tribal/plugins/dashboard-auth-myidp/__init__.py
+from tribal_cli.dashboard_auth import DashboardAuthProvider, Session, LoginStart
 
 class MyIdPProvider(DashboardAuthProvider):
     name = "myidp"
@@ -454,10 +454,10 @@ The login page lists all registered providers; multiple providers can be stacked
 ### Verifying the gate is on
 
 ```bash
-# Quick env-var path (Fly.io shape). TRIIBAL_DASHBOARD_PORTAL_URL is
+# Quick env-var path (Fly.io shape). TRIBAL_DASHBOARD_PORTAL_URL is
 # optional — defaults to production.
-TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID=agent:test \
-  triibal dashboard --host 0.0.0.0
+TRIBAL_DASHBOARD_OAUTH_CLIENT_ID=agent:test \
+  tribal dashboard --host 0.0.0.0
 
 # Or the equivalent via config.yaml (recommended for local dev / on-prem):
 #
@@ -466,7 +466,7 @@ TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID=agent:test \
 #       client_id: agent:test
 #
 # then just:
-triibal dashboard --host 0.0.0.0
+tribal dashboard --host 0.0.0.0
 
 # Hit /api/status to see the gate state:
 curl -s http://127.0.0.1:9119/api/status | jq '.auth_required, .auth_providers'
@@ -492,7 +492,7 @@ If you're contributing to the web dashboard frontend:
 
 ```bash
 # Terminal 1: start the backend API
-triibal dashboard --no-open
+tribal dashboard --no-open
 
 # Terminal 2: start the Vite dev server with HMR
 cd web/
@@ -502,11 +502,11 @@ npm run dev
 
 The Vite dev server at `http://localhost:5173` proxies `/api` requests to the FastAPI backend at `http://127.0.0.1:9119`.
 
-The frontend is built with React 19, TypeScript, Tailwind CSS v4, and shadcn/ui-style components. Production builds output to `triibal_cli/web_dist/` which the FastAPI server serves as a static SPA.
+The frontend is built with React 19, TypeScript, Tailwind CSS v4, and shadcn/ui-style components. Production builds output to `tribal_cli/web_dist/` which the FastAPI server serves as a static SPA.
 
 ## Automatic Build on Update
 
-When you run `triibal update`, the web frontend is automatically rebuilt if `npm` is available. This keeps the dashboard in sync with code updates. If `npm` isn't installed, the update skips the frontend build and `triibal dashboard` will build it on first launch.
+When you run `tribal update`, the web frontend is automatically rebuilt if `npm` is available. This keeps the dashboard in sync with code updates. If `npm` isn't installed, the update skips the frontend build and `tribal dashboard` will build it on first launch.
 
 ## Themes & plugins
 
@@ -518,8 +518,8 @@ Built-in themes:
 
 | Theme | Character |
 |-------|-----------|
-| **Triibal Teal** (`default`) | Dark teal + cream, system fonts, comfortable spacing |
-| **Triibal Teal (Large)** (`default-large`) | Same as default with 18px text and roomier spacing |
+| **Tribal Teal** (`default`) | Dark teal + cream, system fonts, comfortable spacing |
+| **Tribal Teal (Large)** (`default-large`) | Same as default with 18px text and roomier spacing |
 | **Midnight** (`midnight`) | Deep blue-violet, Inter + JetBrains Mono |
 | **Ember** (`ember`) | Warm crimson + bronze, Spectral serif + IBM Plex Mono |
 | **Mono** (`mono`) | Grayscale, IBM Plex, compact |

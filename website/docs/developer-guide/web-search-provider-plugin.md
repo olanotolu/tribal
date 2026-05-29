@@ -1,7 +1,7 @@
 ---
 sidebar_position: 12
 title: "Web Search Provider Plugins"
-description: "How to build a web-search/extract/crawl backend plugin for Triibal Agent"
+description: "How to build a web-search/extract/crawl backend plugin for Tribal Agent"
 ---
 
 # Building a Web Search Provider Plugin
@@ -9,16 +9,16 @@ description: "How to build a web-search/extract/crawl backend plugin for Triibal
 Web-search provider plugins register a backend that services `web_search`, `web_extract`, and (optionally) deep-crawl tool calls. Built-in providers — Firecrawl, SearXNG, Tavily, Exa, Parallel, Brave Search (free tier), xAI, and DDGS — all ship as plugins under `plugins/web/<name>/`. You can add a new one, or override a bundled one, by dropping a directory next to them.
 
 :::tip
-Web search is one of several **backend plugins** Triibal supports. The others (with their own ABCs) are [Image Generation Provider Plugins](/developer-guide/image-gen-provider-plugin), [Video Generation Provider Plugins](/developer-guide/video-gen-provider-plugin), [Memory Provider Plugins](/developer-guide/memory-provider-plugin), [Context Engine Plugins](/developer-guide/context-engine-plugin), and [Model Provider Plugins](/developer-guide/model-provider-plugin). General tool/hook/CLI plugins live in [Build a Triibal Plugin](/guides/build-a-triibal-plugin).
+Web search is one of several **backend plugins** Tribal supports. The others (with their own ABCs) are [Image Generation Provider Plugins](/developer-guide/image-gen-provider-plugin), [Video Generation Provider Plugins](/developer-guide/video-gen-provider-plugin), [Memory Provider Plugins](/developer-guide/memory-provider-plugin), [Context Engine Plugins](/developer-guide/context-engine-plugin), and [Model Provider Plugins](/developer-guide/model-provider-plugin). General tool/hook/CLI plugins live in [Build a Tribal Plugin](/guides/build-a-tribal-plugin).
 :::
 
 ## How discovery works
 
-Triibal scans for web-search backends in three places:
+Tribal scans for web-search backends in three places:
 
 1. **Bundled** — `<repo>/plugins/web/<name>/` (auto-loaded with `kind: backend`, always available)
-2. **User** — `~/.triibal/plugins/web/<name>/` (opt-in via `plugins.enabled` or `triibal plugins enable <name>`)
-3. **Pip** — packages declaring a `triibal_agent.plugins` entry point
+2. **User** — `~/.tribal/plugins/web/<name>/` (opt-in via `plugins.enabled` or `tribal plugins enable <name>`)
+3. **Pip** — packages declaring a `tribal_agent.plugins` entry point
 
 Each plugin's `register(ctx)` function calls `ctx.register_web_search_provider(...)` — that puts the instance into the registry in `agent/web_search_registry.py`. The active provider for each capability is picked by config:
 
@@ -28,7 +28,7 @@ Each plugin's `register(ctx)` function calls `ctx.register_web_search_provider(.
 | `web_extract` | `web.extract_backend` | `web.backend` |
 | Deep crawl modes inside `web_extract` | `web.extract_backend` | `web.backend` |
 
-When neither key is set, Triibal auto-detects the backend from whichever API key/URL is present in the environment. `triibal tools` walks users through selection.
+When neither key is set, Tribal auto-detects the backend from whichever API key/URL is present in the environment. `tribal tools` walks users through selection.
 
 ## Directory structure
 
@@ -66,12 +66,12 @@ class MyBackendWebSearchProvider(WebSearchProvider):
 
     @property
     def display_name(self) -> str:
-        # Human label shown in `triibal tools`. Defaults to `name`.
+        # Human label shown in `tribal tools`. Defaults to `name`.
         return "My Backend"
 
     def is_available(self) -> bool:
         # Cheap check — env var present, optional dep importable, etc.
-        # MUST NOT make network calls (runs on every `triibal tools` paint).
+        # MUST NOT make network calls (runs on every `tribal tools` paint).
         return bool(os.getenv("MY_BACKEND_API_KEY", "").strip())
 
     def supports_search(self) -> bool:
@@ -140,8 +140,8 @@ requires_env:
 | Key | Purpose |
 |---|---|
 | `kind: backend` | Routes the plugin through the backend-loading path |
-| `provides_web_providers` | List of provider `name`s this plugin registers — used by the loader to advertise the plugin in `triibal tools` even before `register()` runs |
-| `requires_env` | Interactive credential prompt during `triibal plugins install` (see [Build a Triibal Plugin](/guides/build-a-triibal-plugin#gate-on-environment-variables) for the rich format) |
+| `provides_web_providers` | List of provider `name`s this plugin registers — used by the loader to advertise the plugin in `tribal tools` even before `register()` runs |
+| `requires_env` | Interactive credential prompt during `tribal plugins install` (see [Build a Tribal Plugin](/guides/build-a-tribal-plugin#gate-on-environment-variables) for the rich format) |
 
 ## ABC reference
 
@@ -150,7 +150,7 @@ Full contract in `agent/web_search_provider.py`. Methods you may override:
 | Member | Required | Default | Purpose |
 |---|---|---|---|
 | `name` | ✅ | — | Stable id used in `web.*_backend` config |
-| `display_name` | — | `name` | Label shown in `triibal tools` |
+| `display_name` | — | `name` | Label shown in `tribal tools` |
 | `is_available()` | ✅ | — | Cheap availability gate — env vars, optional deps |
 | `supports_search()` | — | `True` | Capability flag for `web_search` routing |
 | `supports_extract()` | — | `False` | Capability flag for `web_extract` routing |
@@ -206,20 +206,20 @@ Both `search()` and `extract()` may be `async def` — the dispatcher detects co
 
 ## Capability flags
 
-Triibal routes calls to the right provider based on the `supports_*` flags. A common multi-provider setup:
+Tribal routes calls to the right provider based on the `supports_*` flags. A common multi-provider setup:
 
 ```yaml
-# ~/.triibal/config.yaml
+# ~/.tribal/config.yaml
 web:
   search_backend: "brave-free"     # search-only, fast, free 2k/mo
   extract_backend: "firecrawl"     # extract + crawl, paid quota
 ```
 
-When `web.search_backend` or `web.extract_backend` aren't set, both fall through to `web.backend`. When that's also unset, Triibal picks the first available provider that supports the requested capability based on env-var presence.
+When `web.search_backend` or `web.extract_backend` aren't set, both fall through to `web.backend`. When that's also unset, Tribal picks the first available provider that supports the requested capability based on env-var presence.
 
 If your provider only supports one capability, leave the other flags at their default (`False`) and the registry will skip it for that tool — users won't see misleading "provider X failed" errors when they're using X only for search and asking the agent to extract.
 
-## How Triibal wires it into the tools
+## How Tribal wires it into the tools
 
 The `web_search` and `web_extract` tools live in `tools/web_tools.py`. At call time they:
 
@@ -229,11 +229,11 @@ The `web_search` and `web_extract` tools live in `tools/web_tools.py`. At call t
 4. Dispatch to `search()` / `extract()` / `crawl()`, awaiting if the method is a coroutine
 5. JSON-serialize the response envelope and hand it back to the LLM
 
-Errors surface as the tool result; the LLM decides how to explain them. If no provider is registered (or every available one fails the capability gate), the tool returns a helpful error pointing at `triibal tools`.
+Errors surface as the tool result; the LLM decides how to explain them. If no provider is registered (or every available one fails the capability gate), the tool returns a helpful error pointing at `tribal tools`.
 
 ## Lazy-installing optional dependencies
 
-If your provider wraps a third-party SDK (like DDGS does with the `ddgs` package), don't `import` it at module top level. Use `tools.lazy_deps.ensure(...)` inside `is_available()` or `search()` — Triibal will install the package on first use, gated by `security.allow_lazy_installs`. See [Build a Triibal Plugin → Lazy-install](/guides/build-a-triibal-plugin#lazy-install-optional-python-dependencies) for the security model.
+If your provider wraps a third-party SDK (like DDGS does with the `ddgs` package), don't `import` it at module top level. Use `tools.lazy_deps.ensure(...)` inside `is_available()` or `search()` — Tribal will install the package on first use, gated by `security.allow_lazy_installs`. See [Build a Tribal Plugin → Lazy-install](/guides/build-a-tribal-plugin#lazy-install-optional-python-dependencies) for the security model.
 
 ## Reference implementations
 
@@ -247,14 +247,14 @@ If your provider wraps a third-party SDK (like DDGS does with the `ddgs` package
 
 ```toml
 # pyproject.toml
-[project.entry-points."triibal_agent.plugins"]
+[project.entry-points."tribal_agent.plugins"]
 my-backend-web = "my_backend_web_package"
 ```
 
-`my_backend_web_package` must expose a top-level `register` function. See [Distribute via pip](/guides/build-a-triibal-plugin#distribute-via-pip) in the general plugin guide for the full setup.
+`my_backend_web_package` must expose a top-level `register` function. See [Distribute via pip](/guides/build-a-tribal-plugin#distribute-via-pip) in the general plugin guide for the full setup.
 
 ## Related pages
 
 - [Web Search](/user-guide/features/web-search) — user-facing feature documentation and per-backend configuration
 - [Plugins overview](/user-guide/features/plugins) — all plugin types at a glance
-- [Build a Triibal Plugin](/guides/build-a-triibal-plugin) — general tools/hooks/slash commands guide
+- [Build a Tribal Plugin](/guides/build-a-tribal-plugin) — general tools/hooks/slash commands guide

@@ -3,20 +3,20 @@
 from __future__ import annotations
 
 
-def test_triibal_client_tag_includes_current_version():
-    """The client tag must reflect triibal_cli.__version__ verbatim."""
-    from triibal_cli import __version__
-    from agent.portal_tags import triibal_client_tag
+def test_tribal_client_tag_includes_current_version():
+    """The client tag must reflect tribal_cli.__version__ verbatim."""
+    from tribal_cli import __version__
+    from agent.portal_tags import tribal_client_tag
 
-    assert triibal_client_tag() == f"client=triibal-client-v{__version__}"
+    assert tribal_client_tag() == f"client=tribal-client-v{__version__}"
 
 
-def test_triibal_client_tag_format():
+def test_tribal_client_tag_format():
     """The client tag has the exact shape Nous Portal expects."""
-    from agent.portal_tags import triibal_client_tag
+    from agent.portal_tags import tribal_client_tag
 
-    tag = triibal_client_tag()
-    assert tag.startswith("client=triibal-client-v")
+    tag = tribal_client_tag()
+    assert tag.startswith("client=tribal-client-v")
     # No spaces, no commas — single tag value
     assert " " not in tag
     assert "," not in tag
@@ -24,11 +24,11 @@ def test_triibal_client_tag_format():
 
 def test_nous_portal_tags_contains_product_and_client():
     """Every Nous Portal request gets BOTH the product tag and the version tag."""
-    from agent.portal_tags import triibal_client_tag, nous_portal_tags
+    from agent.portal_tags import tribal_client_tag, nous_portal_tags
 
     tags = nous_portal_tags()
-    assert "product=triibal-agent" in tags
-    assert triibal_client_tag() in tags
+    assert "product=tribal-agent" in tags
+    assert tribal_client_tag() in tags
     assert len(tags) == 2
 
 

@@ -33,26 +33,26 @@ def _restore_tool_and_agent_modules():
     original_modules = {
         name: module
         for name, module in sys.modules.items()
-        if name in {"tools", "agent", "triibal_cli"}
+        if name in {"tools", "agent", "tribal_cli"}
         or name.startswith("tools.")
         or name.startswith("agent.")
-        or name.startswith("triibal_cli.")
+        or name.startswith("tribal_cli.")
     }
     try:
         yield
     finally:
-        _reset_modules(("tools", "agent", "triibal_cli"))
+        _reset_modules(("tools", "agent", "tribal_cli"))
         sys.modules.update(original_modules)
 
 
 def _install_fake_tools_package(*, credential_mounts=None):
-    _reset_modules(("tools", "agent", "triibal_cli"))
+    _reset_modules(("tools", "agent", "tribal_cli"))
 
-    triibal_cli = types.ModuleType("triibal_cli")
-    triibal_cli.__path__ = []  # type: ignore[attr-defined]
-    sys.modules["triibal_cli"] = triibal_cli
-    sys.modules["triibal_cli.config"] = types.SimpleNamespace(
-        get_triibal_home=lambda: Path(tempfile.gettempdir()) / "triibal-home",
+    tribal_cli = types.ModuleType("tribal_cli")
+    tribal_cli.__path__ = []  # type: ignore[attr-defined]
+    sys.modules["tribal_cli"] = tribal_cli
+    sys.modules["tribal_cli.config"] = types.SimpleNamespace(
+        get_tribal_home=lambda: Path(tempfile.gettempdir()) / "tribal-home",
     )
 
     tools_package = types.ModuleType("tools")
@@ -281,7 +281,7 @@ def test_managed_modal_rejects_host_credential_passthrough():
     _install_fake_tools_package(
         credential_mounts=[{
             "host_path": "/tmp/token.json",
-            "container_path": "/root/.triibal/token.json",
+            "container_path": "/root/.tribal/token.json",
         }]
     )
     managed_modal = _load_tool_module("tools.environments.managed_modal", "environments/managed_modal.py")

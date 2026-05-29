@@ -1,7 +1,7 @@
 # Design System: IBM
 
 
-> **Triibal Agent — Implementation Notes**
+> **Tribal Agent — Implementation Notes**
 >
 > The original site uses proprietary fonts. For self-contained HTML output, use these CDN substitutes:
 > - **Primary:** `IBM Plex Sans` | **Mono:** `IBM Plex Mono`

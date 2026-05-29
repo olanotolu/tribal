@@ -8,7 +8,7 @@ instances via ``PluginContext.register_video_gen_provider()``; the active one
 ``video_generate`` tool call.
 
 Providers live in ``<repo>/plugins/video_gen/<name>/`` (built-in, auto-loaded
-as ``kind: backend``) or ``~/.triibal/plugins/video_gen/<name>/`` (user, opt-in
+as ``kind: backend``) or ``~/.tribal/plugins/video_gen/<name>/`` (user, opt-in
 via ``plugins.enabled``).
 
 Mirrors the ``image_gen`` provider design (``agent/image_gen_provider.py``) so
@@ -89,7 +89,7 @@ class VideoGenProvider(abc.ABC):
 
     @property
     def display_name(self) -> str:
-        """Human-readable label shown in ``triibal tools``. Defaults to ``name.title()``."""
+        """Human-readable label shown in ``tribal tools``. Defaults to ``name.title()``."""
         return self.name.title()
 
     def is_available(self) -> bool:
@@ -101,7 +101,7 @@ class VideoGenProvider(abc.ABC):
         return True
 
     def list_models(self) -> List[Dict[str, Any]]:
-        """Return catalog entries for ``triibal tools`` model picker.
+        """Return catalog entries for ``tribal tools`` model picker.
 
         Each entry represents a **model family** that supports text-to-video
         and/or image-to-video routing internally::
@@ -120,7 +120,7 @@ class VideoGenProvider(abc.ABC):
         return []
 
     def get_setup_schema(self) -> Dict[str, Any]:
-        """Return provider metadata for the ``triibal tools`` picker."""
+        """Return provider metadata for the ``tribal tools`` picker."""
         return {
             "name": self.display_name,
             "badge": "",
@@ -151,7 +151,7 @@ class VideoGenProvider(abc.ABC):
                 "max_reference_images": 7,
             }
 
-        Used by the tool layer for soft validation and by ``triibal tools``
+        Used by the tool layer for soft validation and by ``tribal tools``
         for the picker. Default: text-only.
         """
         return {
@@ -202,10 +202,10 @@ class VideoGenProvider(abc.ABC):
 
 
 def _videos_cache_dir() -> Path:
-    """Return ``$TRIIBAL_HOME/cache/videos/``, creating parents as needed."""
-    from triibal_constants import get_triibal_home
+    """Return ``$TRIBAL_HOME/cache/videos/``, creating parents as needed."""
+    from tribal_constants import get_tribal_home
 
-    path = get_triibal_home() / "cache" / "videos"
+    path = get_tribal_home() / "cache" / "videos"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -216,7 +216,7 @@ def save_b64_video(
     prefix: str = "video",
     extension: str = "mp4",
 ) -> Path:
-    """Decode base64 video data and write under ``$TRIIBAL_HOME/cache/videos/``.
+    """Decode base64 video data and write under ``$TRIBAL_HOME/cache/videos/``.
 
     Returns the absolute :class:`Path` to the saved file.
 

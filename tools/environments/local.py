@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 from tools.environments.base import BaseEnvironment, _pipe_stdin
-from triibal_cli._subprocess_compat import windows_hide_flags
+from tribal_cli._subprocess_compat import windows_hide_flags
 
 _IS_WINDOWS = platform.system() == "Windows"
 
@@ -72,8 +72,8 @@ def _resolve_safe_cwd(cwd: str) -> str:
     return tempfile.gettempdir()
 
 
-# Triibal-internal env vars that should NOT leak into terminal subprocesses.
-_TRIIBAL_PROVIDER_ENV_FORCE_PREFIX = "_TRIIBAL_FORCE_"
+# Tribal-internal env vars that should NOT leak into terminal subprocesses.
+_TRIBAL_PROVIDER_ENV_FORCE_PREFIX = "_TRIBAL_FORCE_"
 
 
 def _build_provider_env_blocklist() -> frozenset:
@@ -81,7 +81,7 @@ def _build_provider_env_blocklist() -> frozenset:
     blocked: set[str] = set()
 
     try:
-        from triibal_cli.auth import PROVIDER_REGISTRY
+        from tribal_cli.auth import PROVIDER_REGISTRY
         for pconfig in PROVIDER_REGISTRY.values():
             blocked.update(pconfig.api_key_env_vars)
             if pconfig.base_url_env_var:
@@ -90,7 +90,7 @@ def _build_provider_env_blocklist() -> frozenset:
         pass
 
     try:
-        from triibal_cli.config import OPTIONAL_ENV_VARS
+        from tribal_cli.config import OPTIONAL_ENV_VARS
         for name, metadata in OPTIONAL_ENV_VARS.items():
             category = metadata.get("category")
             if category in {"tool", "messaging"}:
@@ -164,23 +164,23 @@ def _build_provider_env_blocklist() -> frozenset:
     return frozenset(blocked)
 
 
-_TRIIBAL_PROVIDER_ENV_BLOCKLIST = _build_provider_env_blocklist()
+_TRIBAL_PROVIDER_ENV_BLOCKLIST = _build_provider_env_blocklist()
 
 
-def _inject_context_triibal_home(env: dict) -> None:
-    """Bridge the context-local Triibal home override into subprocess env."""
+def _inject_context_tribal_home(env: dict) -> None:
+    """Bridge the context-local Tribal home override into subprocess env."""
     try:
-        from triibal_constants import get_triibal_home_override
+        from tribal_constants import get_tribal_home_override
 
-        value = get_triibal_home_override()
+        value = get_tribal_home_override()
         if value:
-            env["TRIIBAL_HOME"] = value
+            env["TRIBAL_HOME"] = value
     except Exception:
         pass
 
 
 def _sanitize_subprocess_env(base_env: dict | None, extra_env: dict | None = None) -> dict:
-    """Filter Triibal-managed secrets from a subprocess environment."""
+    """Filter Tribal-managed secrets from a subprocess environment."""
     try:
         from tools.env_passthrough import is_env_passthrough as _is_passthrough
     except Exception:
@@ -189,22 +189,22 @@ def _sanitize_subprocess_env(base_env: dict | None, extra_env: dict | None = Non
     sanitized: dict[str, str] = {}
 
     for key, value in (base_env or {}).items():
-        if key.startswith(_TRIIBAL_PROVIDER_ENV_FORCE_PREFIX):
+        if key.startswith(_TRIBAL_PROVIDER_ENV_FORCE_PREFIX):
             continue
-        if key not in _TRIIBAL_PROVIDER_ENV_BLOCKLIST or _is_passthrough(key):
+        if key not in _TRIBAL_PROVIDER_ENV_BLOCKLIST or _is_passthrough(key):
             sanitized[key] = value
 
     for key, value in (extra_env or {}).items():
-        if key.startswith(_TRIIBAL_PROVIDER_ENV_FORCE_PREFIX):
-            real_key = key[len(_TRIIBAL_PROVIDER_ENV_FORCE_PREFIX):]
+        if key.startswith(_TRIBAL_PROVIDER_ENV_FORCE_PREFIX):
+            real_key = key[len(_TRIBAL_PROVIDER_ENV_FORCE_PREFIX):]
             sanitized[real_key] = value
-        elif key not in _TRIIBAL_PROVIDER_ENV_BLOCKLIST or _is_passthrough(key):
+        elif key not in _TRIBAL_PROVIDER_ENV_BLOCKLIST or _is_passthrough(key):
             sanitized[key] = value
 
-    _inject_context_triibal_home(sanitized)
+    _inject_context_tribal_home(sanitized)
 
     # Per-profile HOME isolation for background processes (same as _make_run_env).
-    from triibal_constants import get_subprocess_home
+    from tribal_constants import get_subprocess_home
     _profile_home = get_subprocess_home()
     if _profile_home:
         sanitized["HOME"] = _profile_home
@@ -223,7 +223,7 @@ def _find_bash() -> str:
             or "/bin/sh"
         )
 
-    custom = os.environ.get("TRIIBAL_GIT_BASH_PATH")
+    custom = os.environ.get("TRIBAL_GIT_BASH_PATH")
     if custom and os.path.isfile(custom):
         return custom
 
@@ -234,14 +234,14 @@ def _find_bash() -> str:
     #
     # Layouts (both checked so upgrades between MinGit and PortableGit
     # installs work transparently):
-    #   PortableGit: %LOCALAPPDATA%\triibal\git\bin\bash.exe   (primary)
-    #   MinGit:      %LOCALAPPDATA%\triibal\git\usr\bin\bash.exe (legacy/32-bit fallback)
+    #   PortableGit: %LOCALAPPDATA%\tribal\git\bin\bash.exe   (primary)
+    #   MinGit:      %LOCALAPPDATA%\tribal\git\usr\bin\bash.exe (legacy/32-bit fallback)
     _local_appdata = os.environ.get("LOCALAPPDATA", "")
-    _triibal_portable_git = os.path.join(_local_appdata, "triibal", "git") if _local_appdata else ""
-    if _triibal_portable_git:
+    _tribal_portable_git = os.path.join(_local_appdata, "tribal", "git") if _local_appdata else ""
+    if _tribal_portable_git:
         for candidate in (
-            os.path.join(_triibal_portable_git, "bin", "bash.exe"),        # PortableGit (primary)
-            os.path.join(_triibal_portable_git, "usr", "bin", "bash.exe"), # MinGit fallback
+            os.path.join(_tribal_portable_git, "bin", "bash.exe"),        # PortableGit (primary)
+            os.path.join(_tribal_portable_git, "usr", "bin", "bash.exe"), # MinGit fallback
         ):
             if os.path.isfile(candidate):
                 return candidate
@@ -259,9 +259,9 @@ def _find_bash() -> str:
             return candidate
 
     raise RuntimeError(
-        "Git Bash not found. Triibal Agent requires Git for Windows on Windows.\n"
+        "Git Bash not found. Tribal Agent requires Git for Windows on Windows.\n"
         "Install it from: https://git-scm.com/download/win\n"
-        "Or set TRIIBAL_GIT_BASH_PATH to your bash.exe location."
+        "Or set TRIBAL_GIT_BASH_PATH to your bash.exe location."
     )
 
 
@@ -286,10 +286,10 @@ def _make_run_env(env: dict) -> dict:
     merged = dict(os.environ | env)
     run_env = {}
     for k, v in merged.items():
-        if k.startswith(_TRIIBAL_PROVIDER_ENV_FORCE_PREFIX):
-            real_key = k[len(_TRIIBAL_PROVIDER_ENV_FORCE_PREFIX):]
+        if k.startswith(_TRIBAL_PROVIDER_ENV_FORCE_PREFIX):
+            real_key = k[len(_TRIBAL_PROVIDER_ENV_FORCE_PREFIX):]
             run_env[real_key] = v
-        elif k not in _TRIIBAL_PROVIDER_ENV_BLOCKLIST or _is_passthrough(k):
+        elif k not in _TRIBAL_PROVIDER_ENV_BLOCKLIST or _is_passthrough(k):
             run_env[k] = v
     existing_path = run_env.get("PATH", "")
     # The "/usr/bin not already present → inject sane POSIX path" heuristic
@@ -298,17 +298,17 @@ def _make_run_env(env: dict) -> dict:
     # unrecognisable chunk, which then triggers prepending POSIX paths
     # to a Windows PATH — completely wrong).  Skip the injection entirely
     # on Windows; the native PATH already points at whatever shell
-    # Triibal is driving via _find_bash (Git Bash), and Git Bash itself
+    # Tribal is driving via _find_bash (Git Bash), and Git Bash itself
     # prepends its MSYS2 /usr/bin equivalent via the shell-init files.
     if not _IS_WINDOWS and "/usr/bin" not in existing_path.split(":"):
         run_env["PATH"] = f"{existing_path}:{_SANE_PATH}" if existing_path else _SANE_PATH
 
-    _inject_context_triibal_home(run_env)
+    _inject_context_tribal_home(run_env)
 
     # Per-profile HOME isolation: redirect system tool configs (git, ssh, gh,
-    # npm …) into {TRIIBAL_HOME}/home/ when that directory exists.  Only the
+    # npm …) into {TRIBAL_HOME}/home/ when that directory exists.  Only the
     # subprocess sees the override — the Python process keeps the real HOME.
-    from triibal_constants import get_subprocess_home
+    from tribal_constants import get_subprocess_home
     _profile_home = get_subprocess_home()
     if _profile_home:
         run_env["HOME"] = _profile_home
@@ -334,7 +334,7 @@ def _read_terminal_shell_init_config() -> tuple[list[str], bool]:
     execution never breaks because the config file is unreadable.
     """
     try:
-        from triibal_cli.config import load_config
+        from tribal_cli.config import load_config
 
         cfg = load_config() or {}
         terminal_cfg = cfg.get("terminal") or {}
@@ -353,7 +353,7 @@ def _resolve_shell_init_files() -> list[str]:
     Expands ``~`` and ``${VAR}`` references and drops anything that doesn't
     exist on disk, so a missing ``~/.bashrc`` never breaks the snapshot.
     The ``auto_source_bashrc`` path runs only when the user hasn't supplied
-    an explicit list — once they have, Triibal trusts them.
+    an explicit list — once they have, Tribal trusts them.
     """
     explicit, auto_bashrc = _read_terminal_shell_init_config()
 
@@ -440,20 +440,20 @@ class LocalEnvironment(BaseEnvironment):
         can't open the path, and the Windows default temp (``%TEMP%``) often
         contains spaces (``C:\\Users\\Some Name\\AppData\\Local\\Temp``) that
         break unquoted bash interpolations.  Use a dedicated cache dir under
-        ``TRIIBAL_HOME`` instead — single-word path, guaranteed to exist, same
+        ``TRIBAL_HOME`` instead — single-word path, guaranteed to exist, same
         string resolves in both Git Bash and native Python.
         """
         if _IS_WINDOWS:
-            # Derive a Windows-safe temp dir under TRIIBAL_HOME.  Using
+            # Derive a Windows-safe temp dir under TRIBAL_HOME.  Using
             # forward slashes makes the same string work unchanged in bash
             # command interpolations AND in Python ``open()`` — Windows
             # accepts forward slashes in filesystem paths, and we control
             # the path so we can guarantee no spaces.
             try:
-                from triibal_constants import get_triibal_home
-                cache_dir = get_triibal_home() / "cache" / "terminal"
+                from tribal_constants import get_tribal_home
+                cache_dir = get_tribal_home() / "cache" / "terminal"
             except Exception:
-                cache_dir = Path(tempfile.gettempdir()) / "triibal_terminal"
+                cache_dir = Path(tempfile.gettempdir()) / "tribal_terminal"
             cache_dir.mkdir(parents=True, exist_ok=True)
             # Force forward slashes so the same string serves both contexts.
             return str(cache_dir).replace("\\", "/")
@@ -533,7 +533,7 @@ class LocalEnvironment(BaseEnvironment):
         )
         if not _IS_WINDOWS:
             try:
-                proc._triibal_pgid = os.getpgid(proc.pid)
+                proc._tribal_pgid = os.getpgid(proc.pid)
             except ProcessLookupError:
                 pass
 
@@ -581,7 +581,7 @@ class LocalEnvironment(BaseEnvironment):
                 try:
                     pgid = os.getpgid(proc.pid)
                 except ProcessLookupError:
-                    pgid = getattr(proc, "_triibal_pgid", None)
+                    pgid = getattr(proc, "_tribal_pgid", None)
                     if pgid is None:
                         raise
 

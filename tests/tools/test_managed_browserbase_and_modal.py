@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from triibal_cli.nous_account import NousPortalAccountInfo
+from tribal_cli.nous_account import NousPortalAccountInfo
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -71,10 +71,10 @@ def _enable_managed_nous_tools(monkeypatch):
     The _install_fake_tools_package() helper resets and reimports tool modules,
     so a simple monkeypatch on tool_backend_helpers doesn't survive.  We patch
     the *source* modules that the reimported modules will import from — both
-    triibal_cli.nous_account — so the function body returns True.
+    tribal_cli.nous_account — so the function body returns True.
     """
     monkeypatch.setattr(
-        "triibal_cli.nous_account.get_nous_portal_account_info",
+        "tribal_cli.nous_account.get_nous_portal_account_info",
         lambda: NousPortalAccountInfo(
             logged_in=True,
             source="jwt",
@@ -199,7 +199,7 @@ def test_browser_use_explicit_local_mode_stays_local_even_when_managed_gateway_i
     env = os.environ.copy()
     env.pop("BROWSER_USE_API_KEY", None)
     env.update({
-        "TRIIBAL_HOME": str(tmp_path),
+        "TRIBAL_HOME": str(tmp_path),
         "TOOL_GATEWAY_USER_TOKEN": "nous-token",
         "BROWSER_USE_GATEWAY_URL": "http://127.0.0.1:3009",
     })

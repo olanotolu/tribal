@@ -8,7 +8,7 @@ description: "Use your Nous Portal subscription (or other OAuth provider) as an 
 
 The subscription proxy is a local HTTP server that lets external apps —
 OpenViking, Karakeep, Open WebUI, anything that speaks OpenAI-compatible
-chat completions — use your Triibal-managed provider subscription as their
+chat completions — use your Tribal-managed provider subscription as their
 LLM endpoint. The proxy attaches the right credentials (refreshing them
 automatically) so the app never needs a static API key.
 
@@ -17,7 +17,7 @@ This is different from the [API server](./api-server.md):
 | | API server | Subscription proxy |
 |---|---|---|
 | What it serves | Your agent (full toolset, memory, skills) | Raw model inference |
-| Use case | "Use Triibal as a chat backend" | "Use my Portal sub from another app" |
+| Use case | "Use Tribal as a chat backend" | "Use my Portal sub from another app" |
 | Auth | Your `API_SERVER_KEY` | Any bearer (proxy attaches the real one) |
 | Tool calls | Yes — the agent runs tools | No — passthrough only |
 
@@ -29,21 +29,21 @@ proxy when you just want **the model** through your subscription.
 ### 1. Log into your provider (one-time)
 
 ```bash
-triibal auth add nous
+tribal auth add nous
 ```
 
-This opens your browser for the Nous Portal OAuth flow. Triibal stores
-the refresh token in `~/.triibal/auth.json` — the same place all Triibal
+This opens your browser for the Nous Portal OAuth flow. Tribal stores
+the refresh token in `~/.tribal/auth.json` — the same place all Tribal
 provider logins live.
 
 ### 2. Start the proxy
 
 ```bash
-triibal proxy start
+tribal proxy start
 ```
 
 ```
-Starting Triibal proxy for Nous Portal
+Starting Tribal proxy for Nous Portal
   Listening on:  http://127.0.0.1:8645/v1
   Forwarding to: (resolved per-request from your subscription)
   Use any bearer token in the client — the proxy attaches your real credential.
@@ -59,7 +59,7 @@ Any OpenAI-compatible app config takes the same triple:
 ```
 Base URL:   http://127.0.0.1:8645/v1
 API key:    anything (e.g. "sk-unused")
-Model:      Triibal-4-70B    # or Triibal-4.3-36B, Triibal-4-405B
+Model:      Tribal-4-70B    # or Tribal-4.3-36B, Tribal-4-405B
 ```
 
 The proxy ignores the `Authorization` header from your app and attaches
@@ -69,29 +69,29 @@ automatically when the bearer approaches expiry.
 ## Available providers
 
 ```bash
-triibal proxy providers
+tribal proxy providers
 ```
 
 Currently shipped: `nous` (Nous Portal) and `xai` (xAI / Grok). More
 OAuth providers can be added by implementing the `UpstreamAdapter`
-interface in `triibal_cli/proxy/adapters/`.
+interface in `tribal_cli/proxy/adapters/`.
 
 ## Check status
 
 ```bash
-triibal proxy status
+tribal proxy status
 ```
 
 ```
-Triibal proxy upstream adapters
+Tribal proxy upstream adapters
 
   [nous    ] Nous Portal — ready (bearer expires 2026-05-15T06:43:21Z)
 ```
 
-If you see `not logged in`, run `triibal auth add nous`. If you see
+If you see `not logged in`, run `tribal auth add nous`. If you see
 `credentials need attention`, your refresh token was revoked (rare —
 happens if you signed out from the Portal web UI) — just re-run
-`triibal auth add nous`.
+`tribal auth add nous`.
 
 ## Allowed paths
 
@@ -122,7 +122,7 @@ Edit `~/.openviking/ov.conf`:
 {
   "vlm": {
     "provider": "openai",
-    "model": "Triibal-4-70B",
+    "model": "Tribal-4-70B",
     "api_base": "http://127.0.0.1:8645/v1",
     "api_key": "unused-proxy-attaches-real-creds"
   }
@@ -133,7 +133,7 @@ Then start your proxy in a terminal alongside `openviking-server`:
 
 ```bash
 # Terminal 1
-triibal proxy start
+tribal proxy start
 
 # Terminal 2
 openviking-server
@@ -153,7 +153,7 @@ bookmark summarization. In its config:
 # Karakeep .env
 OPENAI_API_BASE_URL=http://127.0.0.1:8645/v1
 OPENAI_API_KEY=any-non-empty-string
-INFERENCE_TEXT_MODEL=Triibal-4-70B
+INFERENCE_TEXT_MODEL=Tribal-4-70B
 ```
 
 Same pattern works for Open WebUI, LobeChat, NextChat, or any other
@@ -165,7 +165,7 @@ By default the proxy binds `127.0.0.1` (localhost only). To let other
 machines on your network use it:
 
 ```bash
-triibal proxy start --host 0.0.0.0 --port 8645
+tribal proxy start --host 0.0.0.0 --port 8645
 ```
 
 ⚠ **Be aware:** anyone on your network can now use your Portal
@@ -197,7 +197,7 @@ proxy is a credential-attaching pass-through.
 The adapter system is pluggable. Adding a new provider (e.g.
 HuggingFace, GitHub Copilot's chat endpoint, Anthropic via OAuth)
 requires implementing `UpstreamAdapter` in
-`triibal_cli/proxy/adapters/<provider>.py` and registering it in
+`tribal_cli/proxy/adapters/<provider>.py` and registering it in
 `adapters/__init__.py`. Providers that aren't OpenAI-compatible at the
 protocol level (Anthropic Messages API, for example) would need a
 transformation layer, which is out of scope for the current shape.

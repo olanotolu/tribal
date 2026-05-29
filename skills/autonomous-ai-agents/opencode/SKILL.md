@@ -2,18 +2,18 @@
 name: opencode
 description: "Delegate coding to OpenCode CLI (features, PR review)."
 version: 1.2.0
-author: Triibal Agent
+author: Tribal Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  triibal:
+  tribal:
     tags: [Coding-Agent, OpenCode, Autonomous, Refactoring, Code-Review]
-    related_skills: [claude-code, codex, triibal-agent]
+    related_skills: [claude-code, codex, tribal-agent]
 ---
 
 # OpenCode CLI
 
-Use [OpenCode](https://opencode.ai) as an autonomous coding worker orchestrated by Triibal terminal/process tools. OpenCode is a provider-agnostic, open-source AI coding agent with a TUI and CLI.
+Use [OpenCode](https://opencode.ai) as an autonomous coding worker orchestrated by Tribal terminal/process tools. OpenCode is a provider-agnostic, open-source AI coding agent with a TUI and CLI.
 
 ## When to Use
 
@@ -32,7 +32,7 @@ Use [OpenCode](https://opencode.ai) as an autonomous coding worker orchestrated 
 
 ## Binary Resolution (Important)
 
-Shell environments may resolve different OpenCode binaries. If behavior differs between your terminal and Triibal, check:
+Shell environments may resolve different OpenCode binaries. If behavior differs between your terminal and Tribal, check:
 
 ```
 terminal(command="which -a opencode")

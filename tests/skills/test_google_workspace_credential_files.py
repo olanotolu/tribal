@@ -44,10 +44,10 @@ class TestGoogleWorkspaceCredentialFiles:
         )
 
     def test_entries_are_registered_when_files_exist(self, tmp_path):
-        triibal_home = tmp_path / ".triibal"
-        triibal_home.mkdir()
-        (triibal_home / "google_token.json").write_text("{}")
-        (triibal_home / "google_client_secret.json").write_text("{}")
+        tribal_home = tmp_path / ".tribal"
+        tribal_home.mkdir()
+        (tribal_home / "google_token.json").write_text("{}")
+        (tribal_home / "google_client_secret.json").write_text("{}")
 
         from tools.credential_files import (
             clear_credential_files,
@@ -61,22 +61,22 @@ class TestGoogleWorkspaceCredentialFiles:
             fm = _parse_frontmatter(content)
             entries = fm.get("required_credential_files", [])
 
-            with patch.dict(os.environ, {"TRIIBAL_HOME": str(triibal_home)}):
+            with patch.dict(os.environ, {"TRIBAL_HOME": str(tribal_home)}):
                 missing = register_credential_files(entries)
 
             assert missing == [], f"Unexpected missing files: {missing}"
             mounts = get_credential_file_mounts()
             container_paths = {m["container_path"] for m in mounts}
-            assert "/root/.triibal/google_token.json" in container_paths
-            assert "/root/.triibal/google_client_secret.json" in container_paths
+            assert "/root/.tribal/google_token.json" in container_paths
+            assert "/root/.tribal/google_client_secret.json" in container_paths
         finally:
             clear_credential_files()
 
     def test_missing_token_is_reported(self, tmp_path):
         """google_token.json absent (first-time setup) — reported as missing, client secret still mounts."""
-        triibal_home = tmp_path / ".triibal"
-        triibal_home.mkdir()
-        (triibal_home / "google_client_secret.json").write_text("{}")
+        tribal_home = tmp_path / ".tribal"
+        tribal_home.mkdir()
+        (tribal_home / "google_client_secret.json").write_text("{}")
 
         from tools.credential_files import (
             clear_credential_files,
@@ -90,13 +90,13 @@ class TestGoogleWorkspaceCredentialFiles:
             fm = _parse_frontmatter(content)
             entries = fm.get("required_credential_files", [])
 
-            with patch.dict(os.environ, {"TRIIBAL_HOME": str(triibal_home)}):
+            with patch.dict(os.environ, {"TRIBAL_HOME": str(tribal_home)}):
                 missing = register_credential_files(entries)
 
             assert "google_token.json" in missing
             mounts = get_credential_file_mounts()
             container_paths = {m["container_path"] for m in mounts}
-            assert "/root/.triibal/google_client_secret.json" in container_paths
-            assert "/root/.triibal/google_token.json" not in container_paths
+            assert "/root/.tribal/google_client_secret.json" in container_paths
+            assert "/root/.tribal/google_token.json" not in container_paths
         finally:
             clear_credential_files()

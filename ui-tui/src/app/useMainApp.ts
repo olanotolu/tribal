@@ -1,4 +1,4 @@
-import { type ScrollBoxHandle, useApp, useHasSelection, useSelection, useStdout, useTerminalTitle } from '@triibal/ink'
+import { type ScrollBoxHandle, useApp, useHasSelection, useSelection, useStdout, useTerminalTitle } from '@tribal/ink'
 import { useStore } from '@nanostores/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -529,7 +529,7 @@ export function useMainApp(gw: GatewayClient) {
 
   const tabCwd = ui.info?.cwd
 
-  useTerminalTitle(model ? `${marker} ${model}${tabCwd ? ` · ${shortCwd(tabCwd, 24)}` : ''}` : 'Triibal')
+  useTerminalTitle(model ? `${marker} ${model}${tabCwd ? ` · ${shortCwd(tabCwd, 24)}` : ''}` : 'Tribal')
 
   useEffect(() => {
     if (!ui.sid || !stdout) {
@@ -999,7 +999,7 @@ export function useMainApp(gw: GatewayClient) {
   // randomly disappear when the live tail scrolls offscreen.
   const appProgress = useMemo(() => ({ showProgressArea }), [showProgressArea])
 
-  const cwd = ui.info?.cwd || process.env.TRIIBAL_CWD || process.cwd()
+  const cwd = ui.info?.cwd || process.env.TRIBAL_CWD || process.cwd()
   const gitBranch = useGitBranch(cwd)
 
   const appStatus = useMemo(

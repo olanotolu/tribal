@@ -1,8 +1,8 @@
 """
-IRC Platform Adapter for Triibal Agent.
+IRC Platform Adapter for Tribal Agent.
 
 A plugin-based gateway adapter that connects to an IRC server and relays
-messages to/from the Triibal agent.  Zero external dependencies — uses
+messages to/from the Tribal agent.  Zero external dependencies — uses
 Python's stdlib asyncio for the IRC protocol.
 
 Configuration in config.yaml::
@@ -14,8 +14,8 @@ Configuration in config.yaml::
           extra:
             server: irc.libera.chat
             port: 6697
-            nickname: triibal-bot
-            channel: "#triibal"
+            nickname: tribal-bot
+            channel: "#tribal"
             use_tls: true
             server_password: ""       # optional server password
             nickserv_password: ""     # optional NickServ identification
@@ -109,7 +109,7 @@ class IRCAdapter(BasePlatformAdapter):
         # Connection settings (env vars override config.yaml)
         self.server = os.getenv("IRC_SERVER") or extra.get("server", "")
         self.port = int(os.getenv("IRC_PORT") or extra.get("port", 6697))
-        self.nickname = os.getenv("IRC_NICKNAME") or extra.get("nickname", "triibal-bot")
+        self.nickname = os.getenv("IRC_NICKNAME") or extra.get("nickname", "tribal-bot")
         self.channel = os.getenv("IRC_CHANNEL") or extra.get("channel", "")
         self.use_tls = (
             os.getenv("IRC_USE_TLS", "").lower() in {"1", "true", "yes"}
@@ -191,7 +191,7 @@ class IRCAdapter(BasePlatformAdapter):
         if self.server_password:
             await self._send_raw(f"PASS {self.server_password}")
         await self._send_raw(f"NICK {self.nickname}")
-        await self._send_raw(f"USER {self.nickname} 0 * :Triibal Agent")
+        await self._send_raw(f"USER {self.nickname} 0 * :Tribal Agent")
 
         # Start receive loop
         self._recv_task = asyncio.create_task(self._receive_loop())
@@ -229,7 +229,7 @@ class IRCAdapter(BasePlatformAdapter):
         self._mark_disconnected()
         if self._writer and not self._writer.is_closing():
             try:
-                await self._send_raw("QUIT :Triibal Agent shutting down")
+                await self._send_raw("QUIT :Tribal Agent shutting down")
                 await asyncio.sleep(0.5)
             except Exception:
                 pass
@@ -411,7 +411,7 @@ class IRCAdapter(BasePlatformAdapter):
 
         # ERR_NICKNAMEINUSE (433) — nick collision during registration
         if command == "433":
-            # Retry with incrementing suffix: triibal_, triibal_1, triibal_2...
+            # Retry with incrementing suffix: tribal_, tribal_1, tribal_2...
             base = self.nickname.rstrip("_0123456789")
             suffix_match = re.search(r"_(\d+)$", self._current_nick)
             if suffix_match:
@@ -521,7 +521,7 @@ def check_requirements() -> bool:
     channel = os.getenv("IRC_CHANNEL", "")
     # Also accept config.yaml-only configuration (no env vars).
     # The gateway passes PlatformConfig; we just check env for the
-    # triibal setup / requirements check path.
+    # tribal setup / requirements check path.
     return bool(server and channel)
 
 
@@ -534,12 +534,12 @@ def validate_config(config) -> bool:
 
 
 def interactive_setup() -> None:
-    """Interactive `triibal gateway setup` flow for the IRC platform.
+    """Interactive `tribal gateway setup` flow for the IRC platform.
 
-    Lazy-imports ``triibal_cli.setup`` helpers so the plugin stays importable
+    Lazy-imports ``tribal_cli.setup`` helpers so the plugin stays importable
     in non-CLI contexts (gateway runtime, tests).
     """
-    from triibal_cli.setup import (
+    from tribal_cli.setup import (
         prompt,
         prompt_yes_no,
         save_env_value,
@@ -557,7 +557,7 @@ def interactive_setup() -> None:
         if not prompt_yes_no("Reconfigure IRC?", False):
             return
 
-    print_info("Connect Triibal to an IRC network. Uses Python stdlib — no extra packages needed.")
+    print_info("Connect Tribal to an IRC network. Uses Python stdlib — no extra packages needed.")
     print_info("   Works with Libera.Chat, OFTC, your own ZNC/InspIRCd, etc.")
     print()
 
@@ -582,7 +582,7 @@ def interactive_setup() -> None:
         save_env_value("IRC_PORT", "")
 
     nickname = prompt(
-        "Bot nickname (e.g. triibal-bot)",
+        "Bot nickname (e.g. tribal-bot)",
         default=get_env_value("IRC_NICKNAME") or "",
     )
     if not nickname:
@@ -591,7 +591,7 @@ def interactive_setup() -> None:
     save_env_value("IRC_NICKNAME", nickname.strip())
 
     channel = prompt(
-        "Channel to join (e.g. #triibal — comma-separate for multiple)",
+        "Channel to join (e.g. #tribal — comma-separate for multiple)",
         default=get_env_value("IRC_CHANNEL") or "",
     )
     if not channel:
@@ -636,8 +636,8 @@ def interactive_setup() -> None:
             print_info("No nicks allowed — the bot will ignore all messages until you add nicks.")
 
     print()
-    print_success("IRC configuration saved to ~/.triibal/.env")
-    print_info("Restart the gateway for changes to take effect: triibal gateway restart")
+    print_success("IRC configuration saved to ~/.tribal/.env")
+    print_info("Restart the gateway for changes to take effect: tribal gateway restart")
 
 
 def is_connected(config) -> bool:
@@ -726,8 +726,8 @@ async def _standalone_send(
     """Open an ephemeral IRC connection, send a PRIVMSG, and quit.
 
     Used by ``tools/send_message_tool._send_via_adapter`` when the gateway
-    runner is not in this process (e.g. ``triibal cron`` running as a
-    separate process from ``triibal gateway``).  Without this hook,
+    runner is not in this process (e.g. ``tribal cron`` running as a
+    separate process from ``tribal gateway``).  Without this hook,
     ``deliver=irc`` cron jobs fail with ``No live adapter for platform``.
 
     The standalone client uses a distinct nick suffix (``-cron``) so it
@@ -753,7 +753,7 @@ async def _standalone_send(
     except (TypeError, ValueError):
         return {"error": f"IRC standalone send: invalid port {port_value!r}"}
 
-    nickname = os.getenv("IRC_NICKNAME") or extra.get("nickname", "triibal-bot")
+    nickname = os.getenv("IRC_NICKNAME") or extra.get("nickname", "tribal-bot")
     use_tls_env = os.getenv("IRC_USE_TLS")
     if use_tls_env is not None:
         use_tls = use_tls_env.lower() in {"1", "true", "yes"}
@@ -773,7 +773,7 @@ async def _standalone_send(
     # that may already be holding the configured nickname.  Cap to 24 chars
     # so subsequent collision retries do not overflow the 30-char NICKLEN
     # most networks enforce.
-    nick_base = nickname.rstrip("_0123456789-")[:24] or "triibal-bot"
+    nick_base = nickname.rstrip("_0123456789-")[:24] or "tribal-bot"
     standalone_nick = f"{nick_base}-cron"[:30]
     plain = IRCAdapter._strip_markdown(message)
 
@@ -798,7 +798,7 @@ async def _standalone_send(
         if server_password:
             await _raw(f"PASS {_strip_irc_control_chars(server_password)}")
         await _raw(f"NICK {standalone_nick}")
-        await _raw(f"USER {standalone_nick} 0 * :Triibal Agent (cron)")
+        await _raw(f"USER {standalone_nick} 0 * :Tribal Agent (cron)")
 
         loop = asyncio.get_running_loop()
         deadline = loop.time() + 15.0
@@ -925,7 +925,7 @@ async def _standalone_send(
 
 
 def register(ctx):
-    """Plugin entry point: called by the Triibal plugin system."""
+    """Plugin entry point: called by the Tribal plugin system."""
     ctx.register_platform(
         name="irc",
         label="IRC",

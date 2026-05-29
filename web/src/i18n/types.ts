@@ -137,8 +137,8 @@ export interface Translations {
     starting: string;
     startedInBackground: string;
     stopped: string;
-    updateTriibal: string;
-    updatingTriibal: string;
+    updateTribal: string;
+    updatingTribal: string;
     waitingForOutput: string;
   };
 
@@ -454,7 +454,7 @@ export interface Translations {
     switchTheme: string;
   };
 
-  // ── Achievements plugin (plugins/triibal-achievements) ──
+  // ── Achievements plugin (plugins/tribal-achievements) ──
   achievements: {
     hero: {
       kicker: string;

@@ -11,7 +11,7 @@ class TestResolveRuntimeAgentKwargsAuthFallback:
 
     def test_auth_error_tries_fallback(self, tmp_path, monkeypatch):
         """When primary provider raises AuthError, fallback is attempted."""
-        from triibal_cli.auth import AuthError
+        from tribal_cli.auth import AuthError
 
         # Create a config with fallback
         config_path = tmp_path / "config.yaml"
@@ -21,7 +21,7 @@ class TestResolveRuntimeAgentKwargsAuthFallback:
             "  model: meta-llama/llama-4-maverick\n"
         )
 
-        monkeypatch.setattr("gateway.run._triibal_home", tmp_path)
+        monkeypatch.setattr("gateway.run._tribal_home", tmp_path)
 
         call_count = {"n": 0}
 
@@ -44,7 +44,7 @@ class TestResolveRuntimeAgentKwargsAuthFallback:
             }
 
         with patch(
-            "triibal_cli.runtime_provider.resolve_runtime_provider",
+            "tribal_cli.runtime_provider.resolve_runtime_provider",
             side_effect=_mock_resolve,
         ):
             from gateway.run import _resolve_runtime_agent_kwargs
@@ -57,15 +57,15 @@ class TestResolveRuntimeAgentKwargsAuthFallback:
 
     def test_auth_error_no_fallback_raises(self, tmp_path, monkeypatch):
         """When primary fails and no fallback configured, RuntimeError is raised."""
-        from triibal_cli.auth import AuthError
+        from tribal_cli.auth import AuthError
 
         config_path = tmp_path / "config.yaml"
         config_path.write_text("model:\n  provider: openai-codex\n")
 
-        monkeypatch.setattr("gateway.run._triibal_home", tmp_path)
+        monkeypatch.setattr("gateway.run._tribal_home", tmp_path)
 
         with patch(
-            "triibal_cli.runtime_provider.resolve_runtime_provider",
+            "tribal_cli.runtime_provider.resolve_runtime_provider",
             side_effect=AuthError("token expired"),
         ):
             from gateway.run import _resolve_runtime_agent_kwargs
@@ -81,10 +81,10 @@ class TestResolveRuntimeAgentKwargsAuthFallback:
             "    model: anthropic/claude-sonnet-4.6\n"
             "fallback_model:\n"
             "  provider: nous\n"
-            "  model: Triibal-4\n"
+            "  model: Tribal-4\n"
         )
 
-        monkeypatch.setattr("gateway.run._triibal_home", tmp_path)
+        monkeypatch.setattr("gateway.run._tribal_home", tmp_path)
 
         calls = []
 
@@ -104,7 +104,7 @@ class TestResolveRuntimeAgentKwargsAuthFallback:
             }
 
         with patch(
-            "triibal_cli.runtime_provider.resolve_runtime_provider",
+            "tribal_cli.runtime_provider.resolve_runtime_provider",
             side_effect=_mock_resolve,
         ):
             from gateway.run import _try_resolve_fallback_provider
@@ -113,4 +113,4 @@ class TestResolveRuntimeAgentKwargsAuthFallback:
 
         assert calls == ["openrouter", "nous"]
         assert result["provider"] == "nous"
-        assert result["model"] == "Triibal-4"
+        assert result["model"] == "Tribal-4"

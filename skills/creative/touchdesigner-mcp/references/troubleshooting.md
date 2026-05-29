@@ -133,11 +133,11 @@ n.cook(force=True)
 actual = str(n.width) + 'x' + str(n.height)
 ```
 
-## 5. Triibal Configuration
+## 5. Tribal Configuration
 
 ### Config location
 
-`$TRIIBAL_HOME/config.yaml` (defaults to `~/.triibal/config.yaml` when `TRIIBAL_HOME` is unset)
+`$TRIBAL_HOME/config.yaml` (defaults to `~/.tribal/config.yaml` when `TRIBAL_HOME` is unset)
 
 ### MCP entry format
 
@@ -150,7 +150,7 @@ mcpServers:
 
 ### After config changes
 
-Restart the Triibal session for changes to take effect. The MCP connection is
+Restart the Tribal session for changes to take effect. The MCP connection is
 established at session startup.
 
 ### Verifying MCP tools are available

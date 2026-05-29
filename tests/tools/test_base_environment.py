@@ -32,11 +32,11 @@ class TestWrapCommand:
         assert "source" in wrapped
         assert "cd -- /tmp" in wrapped or "cd -- '/tmp'" in wrapped
         assert "eval 'echo hello'" in wrapped
-        assert "__triibal_ec=$?" in wrapped
+        assert "__tribal_ec=$?" in wrapped
         assert "export -p >" in wrapped
         assert "pwd -P >" in wrapped
         assert env._cwd_marker in wrapped
-        assert "exit $__triibal_ec" in wrapped
+        assert "exit $__tribal_ec" in wrapped
 
     def test_no_snapshot_skips_source(self):
         env = _TestableEnv()
@@ -140,7 +140,7 @@ class TestEmbedStdinHeredoc:
 
         assert result.startswith("cat << '")
         assert "hello world" in result
-        assert "TRIIBAL_STDIN_" in result
+        assert "TRIBAL_STDIN_" in result
 
     def test_unique_delimiter_each_call(self):
         r1 = BaseEnvironment._embed_stdin_heredoc("cat", "data")

@@ -1,4 +1,4 @@
-# Triibal statik mesaj katalogu -- Turkce
+# Tribal statik mesaj katalogu -- Turkce
 # See locales/en.yaml for the source of truth; keep keys in sync.
 
 approval:
@@ -98,8 +98,8 @@ gateway:
     upload_failed:         "✗ Hata ayıklama raporu yüklenemedi: {error}"
     header:                "**Hata ayıklama raporu yüklendi:**"
     auto_delete:           "⏱ Paste'ler 6 saat içinde otomatik olarak silinecek."
-    full_logs_hint:        "Tam günlük yüklemeleri için CLI'dan `triibal debug share` kullanın."
-    share_hint:            "Destek için bu bağlantıları Triibal ekibiyle paylaşın."
+    full_logs_hint:        "Tam günlük yüklemeleri için CLI'dan `tribal debug share` kullanın."
+    share_hint:            "Destek için bu bağlantıları Tribal ekibiyle paylaşın."
 
   deny:
     stale:                 "❌ Komut reddedildi (onay geçersizdi)."
@@ -136,7 +136,7 @@ gateway:
     set:                   "⊙ Hedef ayarlandı ({budget} turluk bütçe): {goal}\nHedef tamamlanana, siz duraklatana/temizleyene veya bütçe tükenene kadar çalışmaya devam edeceğim.\nKontroller: /goal status · /goal pause · /goal resume · /goal clear"
 
   help:
-    header:                "📖 **Triibal Komutları**\n"
+    header:                "📖 **Tribal Komutları**\n"
     skill_header:          "\n⚡ **Skill Komutları** ({count} aktif):"
     more_use_commands:     "\n... ve {count} tane daha. Tam sayfalı liste için `/commands` kullanın."
 
@@ -147,7 +147,7 @@ gateway:
   kanban:
     error_prefix:          "⚠ kanban hatası: {error}"
     subscribed_suffix:     "(abone olundu — {task_id} tamamlandığında veya engellendiğinde bildirim alacaksınız)"
-    truncated_suffix:      "… (kısaltıldı; tam çıktı için terminalinizde `triibal kanban …` komutunu kullanın)"
+    truncated_suffix:      "… (kısaltıldı; tam çıktı için terminalinizde `tribal kanban …` komutunu kullanın)"
     no_output:             "(çıktı yok)"
 
   personality:
@@ -215,7 +215,7 @@ gateway:
 
   restart:
     in_progress:           "⏳ Gateway yeniden başlatma zaten sürüyor..."
-    restarting:            "♻ Gateway yeniden başlatılıyor. 60 saniye içinde bildirim almazsanız konsoldan `triibal gateway restart` ile yeniden başlatın."
+    restarting:            "♻ Gateway yeniden başlatılıyor. 60 saniye içinde bildirim almazsanız konsoldan `tribal gateway restart` ile yeniden başlatın."
 
   resume:
     db_unavailable:        "Oturum veritabanı kullanılamıyor."
@@ -250,7 +250,7 @@ gateway:
     success:               "✅ Ana kanal **{name}** (ID: {chat_id}) olarak ayarlandı.\nCron işleri ve platformlar arası mesajlar buraya iletilecek."
 
   status:
-    header:                "📊 **Triibal Gateway Durumu**"
+    header:                "📊 **Tribal Gateway Durumu**"
     session_id:            "**Oturum kimliği:** `{session_id}`"
     title:                 "**Başlık:** {title}"
     created:               "**Oluşturuldu:** {timestamp}"
@@ -285,7 +285,7 @@ gateway:
     topics_user_disallowed:  "Telegram topic'leri etkin, ancak kullanıcıların topic oluşturmasına izin verilmiyor.\n\n@BotFather → botunuz → Bot Settings → Threads Settings yolunu açın ve 'Disallow users to create new threads' seçeneğini kapatın.\n\nArdından /topic'i tekrar gönderin."
     enable_failed:           "Telegram topic modu etkinleştirilemedi: {error}"
     bound_status:            "Bu topic şuna bağlı:\nOturum: {label}\nID: {session_id}\n\nBu topic'i yeni bir oturumla değiştirmek için /new kullanın.\nParalel çalışma için All Messages'ı açıp orada bir mesaj göndererek başka bir topic oluşturun."
-    thread_ready:            "Telegram çok oturumlu topic'leri etkin.\n\nBu topic bağımsız bir Triibal oturumu olarak kullanılacak. Bu topic'in mevcut oturumunu değiştirmek için /new kullanın. Paralel çalışma için All Messages'ı açıp orada bir mesaj göndererek başka bir topic oluşturun."
+    thread_ready:            "Telegram çok oturumlu topic'leri etkin.\n\nBu topic bağımsız bir Tribal oturumu olarak kullanılacak. Bu topic'in mevcut oturumunu değiştirmek için /new kullanın. Paralel çalışma için All Messages'ı açıp orada bir mesaj göndererek başka bir topic oluşturun."
     untitled_session:        "Adsız oturum"
 
   undo:
@@ -293,11 +293,11 @@ gateway:
     removed:               "↩️ {count} mesaj geri alındı.\nKaldırıldı: \"{preview}\""
 
   update:
-    platform_not_messaging:  "✗ /update yalnızca mesajlaşma platformlarında kullanılabilir. Terminalden `triibal update` komutunu çalıştırın."
+    platform_not_messaging:  "✗ /update yalnızca mesajlaşma platformlarında kullanılabilir. Terminalden `tribal update` komutunu çalıştırın."
     not_git_repo:            "✗ Git deposu değil — güncellenemiyor."
-    triibal_cmd_not_found:    "✗ `triibal` komutu bulunamadı. Triibal çalışıyor, ancak güncelleme komutu yürütülebilir dosyayı PATH'te veya mevcut Python yorumlayıcısı aracılığıyla bulamadı. Terminalde `triibal update` komutunu manuel olarak çalıştırmayı deneyin."
+    tribal_cmd_not_found:    "✗ `tribal` komutu bulunamadı. Tribal çalışıyor, ancak güncelleme komutu yürütülebilir dosyayı PATH'te veya mevcut Python yorumlayıcısı aracılığıyla bulamadı. Terminalde `tribal update` komutunu manuel olarak çalıştırmayı deneyin."
     start_failed:            "✗ Güncelleme başlatılamadı: {error}"
-    starting:                "⚕ Triibal güncellemesi başlatılıyor… İlerlemeyi buraya akıtacağım."
+    starting:                "⚕ Tribal güncellemesi başlatılıyor… İlerlemeyi buraya akıtacağım."
 
   usage:
     rate_limits:              "⏱️ **Hız Sınırları:** {state}"

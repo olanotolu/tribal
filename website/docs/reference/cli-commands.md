@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "CLI Commands Reference"
-description: "Authoritative reference for Triibal terminal commands and command families"
+description: "Authoritative reference for Tribal terminal commands and command families"
 ---
 
 # CLI Commands Reference
@@ -13,7 +13,7 @@ For in-chat slash commands, see [Slash Commands Reference](./slash-commands.md).
 ## Global entrypoint
 
 ```bash
-triibal [global-options] <command> [subcommand/options]
+tribal [global-options] <command> [subcommand/options]
 ```
 
 ### Global options
@@ -21,74 +21,74 @@ triibal [global-options] <command> [subcommand/options]
 | Option | Description |
 |--------|-------------|
 | `--version`, `-V` | Show version and exit. |
-| `--profile <name>`, `-p <name>` | Select which Triibal profile to use for this invocation. Overrides the sticky default set by `triibal profile use`. |
+| `--profile <name>`, `-p <name>` | Select which Tribal profile to use for this invocation. Overrides the sticky default set by `tribal profile use`. |
 | `--resume <session>`, `-r <session>` | Resume a previous session by ID or title. |
 | `--continue [name]`, `-c [name]` | Resume the most recent session, or the most recent session matching a title. |
 | `--worktree`, `-w` | Start in an isolated git worktree for parallel-agent workflows. |
 | `--yolo` | Bypass dangerous-command approval prompts. |
 | `--pass-session-id` | Include the session ID in the agent's system prompt. |
-| `--ignore-user-config` | Ignore `~/.triibal/config.yaml` and fall back to built-in defaults. Credentials in `.env` are still loaded. |
+| `--ignore-user-config` | Ignore `~/.tribal/config.yaml` and fall back to built-in defaults. Credentials in `.env` are still loaded. |
 | `--ignore-rules` | Skip auto-injection of `AGENTS.md`, `SOUL.md`, `.cursorrules`, memory, and preloaded skills. |
-| `--tui` | Launch the [TUI](../user-guide/tui.md) instead of the classic CLI. Equivalent to `TRIIBAL_TUI=1`. |
+| `--tui` | Launch the [TUI](../user-guide/tui.md) instead of the classic CLI. Equivalent to `TRIBAL_TUI=1`. |
 | `--dev` | With `--tui`: run the TypeScript sources directly via `tsx` instead of the prebuilt bundle (for TUI contributors). |
 
 ## Top-level commands
 
 | Command | Purpose |
 |---------|---------|
-| `triibal chat` | Interactive or one-shot chat with the agent. |
-| `triibal model` | Interactively choose the default provider and model. |
-| `triibal fallback` | Manage fallback providers tried when the primary model errors. |
-| `triibal gateway` | Run or manage the messaging gateway service. |
-| `triibal proxy` | Local OpenAI-compatible proxy that attaches OAuth provider credentials. See [Subscription Proxy](../user-guide/features/subscription-proxy.md). |
-| `triibal lsp` | Manage Language Server Protocol integration (semantic diagnostics for write_file/patch). |
-| `triibal setup` | Interactive setup wizard for all or part of the configuration. |
-| `triibal whatsapp` | Configure and pair the WhatsApp bridge. |
-| `triibal slack` | Slack helpers (currently: generate the app manifest with every command as a native slash). |
-| `triibal auth` | Manage credentials — add, list, remove, reset, set strategy. Handles OAuth flows for Codex/Nous/Anthropic. |
-| `triibal login` / `logout` | **Deprecated** — use `triibal auth` instead. |
-| `triibal send` | Send a one-shot message to a configured messaging platform (Telegram, Discord, Slack, Signal, SMS, …). Useful from shell scripts, cron jobs, CI hooks, and monitoring daemons — no agent loop, no LLM. |
-| `triibal secrets` | Manage external secret sources (currently Bitwarden Secrets Manager) for pulling API keys at process startup instead of from `~/.triibal/.env`. |
-| `triibal migrate` | Diagnose and (optionally) rewrite `config.yaml` to replace references to retired models or deprecated settings (e.g. `migrate xai`). |
-| `triibal status` | Show agent, auth, and platform status. |
-| `triibal cron` | Inspect and tick the cron scheduler. |
-| `triibal kanban` | Multi-profile collaboration board (tasks, links, dispatcher). |
-| `triibal webhook` | Manage dynamic webhook subscriptions for event-driven activation. |
-| `triibal hooks` | Inspect, approve, or remove shell-script hooks declared in `config.yaml`. |
-| `triibal doctor` | Diagnose config and dependency issues. |
-| `triibal security audit` | On-demand supply-chain audit (OSV.dev) for the venv, plugin requirements, and pinned MCP servers. |
-| `triibal dump` | Copy-pasteable setup summary for support/debugging. |
-| `triibal debug` | Debug tools — upload logs and system info for support. |
-| `triibal backup` | Back up Triibal home directory to a zip file. |
-| `triibal checkpoints` | Inspect / prune / clear `~/.triibal/checkpoints/` (the shadow store used by `/rollback`). Run with no args for a status overview. |
-| `triibal import` | Restore a Triibal backup from a zip file. |
-| `triibal logs` | View, tail, and filter agent/gateway/error log files. |
-| `triibal config` | Show, edit, migrate, and query configuration files. |
-| `triibal pairing` | Approve or revoke messaging pairing codes. |
-| `triibal skills` | Browse, install, publish, audit, and configure skills. |
-| `triibal bundles` | Group several skills under a single `/<name>` slash command. See [Skill Bundles](../user-guide/features/skills.md#skill-bundles). |
-| `triibal curator` | Background skill maintenance — status, run, pause, pin. See [Curator](../user-guide/features/curator.md). |
-| `triibal memory` | Configure external memory provider. Plugin-specific subcommands (e.g. `triibal honcho`) register automatically when their provider is active. |
-| `triibal acp` | Run Triibal as an ACP server for editor integration. |
-| `triibal mcp` | Manage MCP server configurations and run Triibal as an MCP server. |
-| `triibal plugins` | Manage Triibal Agent plugins (install, enable, disable, remove). |
-| `triibal portal` | Nous Portal status, subscription link, and Tool Gateway routing. See [Tool Gateway](../user-guide/features/tool-gateway.md). |
-| `triibal tools` | Configure enabled tools per platform. |
-| `triibal computer-use` | Install or check the cua-driver backend (macOS Computer Use). |
-| `triibal sessions` | Browse, export, prune, rename, and delete sessions. |
-| `triibal insights` | Show token/cost/activity analytics. |
-| `triibal claw` | OpenClaw migration helpers. |
-| `triibal dashboard` | Launch the web dashboard for managing config, API keys, and sessions. |
-| `triibal profile` | Manage profiles — multiple isolated Triibal instances. |
-| `triibal completion` | Print shell completion scripts (bash/zsh/fish). |
-| `triibal version` | Show version information. |
-| `triibal update` | Pull latest code and reinstall dependencies (git installs), or check PyPI and `pip install --upgrade` (pip installs). `--check` previews without installing; `--backup` takes a pre-pull `TRIIBAL_HOME` snapshot. |
-| `triibal uninstall` | Remove Triibal from the system. |
+| `tribal chat` | Interactive or one-shot chat with the agent. |
+| `tribal model` | Interactively choose the default provider and model. |
+| `tribal fallback` | Manage fallback providers tried when the primary model errors. |
+| `tribal gateway` | Run or manage the messaging gateway service. |
+| `tribal proxy` | Local OpenAI-compatible proxy that attaches OAuth provider credentials. See [Subscription Proxy](../user-guide/features/subscription-proxy.md). |
+| `tribal lsp` | Manage Language Server Protocol integration (semantic diagnostics for write_file/patch). |
+| `tribal setup` | Interactive setup wizard for all or part of the configuration. |
+| `tribal whatsapp` | Configure and pair the WhatsApp bridge. |
+| `tribal slack` | Slack helpers (currently: generate the app manifest with every command as a native slash). |
+| `tribal auth` | Manage credentials — add, list, remove, reset, set strategy. Handles OAuth flows for Codex/Nous/Anthropic. |
+| `tribal login` / `logout` | **Deprecated** — use `tribal auth` instead. |
+| `tribal send` | Send a one-shot message to a configured messaging platform (Telegram, Discord, Slack, Signal, SMS, …). Useful from shell scripts, cron jobs, CI hooks, and monitoring daemons — no agent loop, no LLM. |
+| `tribal secrets` | Manage external secret sources (currently Bitwarden Secrets Manager) for pulling API keys at process startup instead of from `~/.tribal/.env`. |
+| `tribal migrate` | Diagnose and (optionally) rewrite `config.yaml` to replace references to retired models or deprecated settings (e.g. `migrate xai`). |
+| `tribal status` | Show agent, auth, and platform status. |
+| `tribal cron` | Inspect and tick the cron scheduler. |
+| `tribal kanban` | Multi-profile collaboration board (tasks, links, dispatcher). |
+| `tribal webhook` | Manage dynamic webhook subscriptions for event-driven activation. |
+| `tribal hooks` | Inspect, approve, or remove shell-script hooks declared in `config.yaml`. |
+| `tribal doctor` | Diagnose config and dependency issues. |
+| `tribal security audit` | On-demand supply-chain audit (OSV.dev) for the venv, plugin requirements, and pinned MCP servers. |
+| `tribal dump` | Copy-pasteable setup summary for support/debugging. |
+| `tribal debug` | Debug tools — upload logs and system info for support. |
+| `tribal backup` | Back up Tribal home directory to a zip file. |
+| `tribal checkpoints` | Inspect / prune / clear `~/.tribal/checkpoints/` (the shadow store used by `/rollback`). Run with no args for a status overview. |
+| `tribal import` | Restore a Tribal backup from a zip file. |
+| `tribal logs` | View, tail, and filter agent/gateway/error log files. |
+| `tribal config` | Show, edit, migrate, and query configuration files. |
+| `tribal pairing` | Approve or revoke messaging pairing codes. |
+| `tribal skills` | Browse, install, publish, audit, and configure skills. |
+| `tribal bundles` | Group several skills under a single `/<name>` slash command. See [Skill Bundles](../user-guide/features/skills.md#skill-bundles). |
+| `tribal curator` | Background skill maintenance — status, run, pause, pin. See [Curator](../user-guide/features/curator.md). |
+| `tribal memory` | Configure external memory provider. Plugin-specific subcommands (e.g. `tribal honcho`) register automatically when their provider is active. |
+| `tribal acp` | Run Tribal as an ACP server for editor integration. |
+| `tribal mcp` | Manage MCP server configurations and run Tribal as an MCP server. |
+| `tribal plugins` | Manage Tribal Agent plugins (install, enable, disable, remove). |
+| `tribal portal` | Nous Portal status, subscription link, and Tool Gateway routing. See [Tool Gateway](../user-guide/features/tool-gateway.md). |
+| `tribal tools` | Configure enabled tools per platform. |
+| `tribal computer-use` | Install or check the cua-driver backend (macOS Computer Use). |
+| `tribal sessions` | Browse, export, prune, rename, and delete sessions. |
+| `tribal insights` | Show token/cost/activity analytics. |
+| `tribal claw` | OpenClaw migration helpers. |
+| `tribal dashboard` | Launch the web dashboard for managing config, API keys, and sessions. |
+| `tribal profile` | Manage profiles — multiple isolated Tribal instances. |
+| `tribal completion` | Print shell completion scripts (bash/zsh/fish). |
+| `tribal version` | Show version information. |
+| `tribal update` | Pull latest code and reinstall dependencies (git installs), or check PyPI and `pip install --upgrade` (pip installs). `--check` previews without installing; `--backup` takes a pre-pull `TRIBAL_HOME` snapshot. |
+| `tribal uninstall` | Remove Tribal from the system. |
 
-## `triibal chat`
+## `tribal chat`
 
 ```bash
-triibal chat [options]
+tribal chat [options]
 ```
 
 Common options:
@@ -108,7 +108,7 @@ Common options:
 | `--checkpoints` | Enable filesystem checkpoints before destructive file changes. |
 | `--yolo` | Skip approval prompts. |
 | `--pass-session-id` | Pass the session ID into the system prompt. |
-| `--ignore-user-config` | Ignore `~/.triibal/config.yaml` and use built-in defaults. Credentials in `.env` are still loaded. Useful for isolated CI runs, reproducible bug reports, and third-party integrations. |
+| `--ignore-user-config` | Ignore `~/.tribal/config.yaml` and use built-in defaults. Credentials in `.env` are still loaded. Useful for isolated CI runs, reproducible bug reports, and third-party integrations. |
 | `--ignore-rules` | Skip auto-injection of `AGENTS.md`, `SOUL.md`, `.cursorrules`, persistent memory, and preloaded skills. Combine with `--ignore-user-config` for a fully isolated run. |
 | `--source <tag>` | Session source tag for filtering (default: `cli`). Use `tool` for third-party integrations that should not appear in user session lists. |
 | `--max-turns <N>` | Maximum tool-calling iterations per conversation turn (default: 90, or `agent.max_turns` in config). |
@@ -116,48 +116,48 @@ Common options:
 Examples:
 
 ```bash
-triibal
-triibal chat -q "Summarize the latest PRs"
-triibal chat --provider openrouter --model anthropic/claude-sonnet-4.6
-triibal chat --toolsets web,terminal,skills
-triibal chat --quiet -q "Return only JSON"
-triibal chat --worktree -q "Review this repo and open a PR"
-triibal chat --ignore-user-config --ignore-rules -q "Repro without my personal setup"
+tribal
+tribal chat -q "Summarize the latest PRs"
+tribal chat --provider openrouter --model anthropic/claude-sonnet-4.6
+tribal chat --toolsets web,terminal,skills
+tribal chat --quiet -q "Return only JSON"
+tribal chat --worktree -q "Review this repo and open a PR"
+tribal chat --ignore-user-config --ignore-rules -q "Repro without my personal setup"
 ```
 
-### `triibal -z <prompt>` — scripted one-shot
+### `tribal -z <prompt>` — scripted one-shot
 
-For programmatic callers (shell scripts, CI, cron, parent processes piping in a prompt), `triibal -z` is the purest one-shot entry point: **single prompt in, final response text out, nothing else on stdout or stderr.** No banner, no spinner, no tool previews, no `Session:` line — just the agent's final reply as plain text.
+For programmatic callers (shell scripts, CI, cron, parent processes piping in a prompt), `tribal -z` is the purest one-shot entry point: **single prompt in, final response text out, nothing else on stdout or stderr.** No banner, no spinner, no tool previews, no `Session:` line — just the agent's final reply as plain text.
 
 ```bash
-triibal -z "What's the capital of France?"
+tribal -z "What's the capital of France?"
 # → Paris.
 
 # Parent scripts can cleanly capture the response:
-answer=$(triibal -z "summarize this" < /path/to/file.txt)
+answer=$(tribal -z "summarize this" < /path/to/file.txt)
 ```
 
-Per-run overrides (no mutation to `~/.triibal/config.yaml`):
+Per-run overrides (no mutation to `~/.tribal/config.yaml`):
 
 | Flag | Equivalent env var | Purpose |
 |---|---|---|
-| `-m` / `--model <model>` | `TRIIBAL_INFERENCE_MODEL` | Override the model for this run |
+| `-m` / `--model <model>` | `TRIBAL_INFERENCE_MODEL` | Override the model for this run |
 | `--provider <provider>` | _(none)_ | Override the provider for this run |
 
 ```bash
-triibal -z "…" --provider openrouter --model openai/gpt-5.5
+tribal -z "…" --provider openrouter --model openai/gpt-5.5
 # or:
-TRIIBAL_INFERENCE_MODEL=anthropic/claude-sonnet-4.6 triibal -z "…"
+TRIBAL_INFERENCE_MODEL=anthropic/claude-sonnet-4.6 tribal -z "…"
 ```
 
-Same agent, same tools, same skills — just strips every interactive / cosmetic layer. If you need tool output in the transcript too, use `triibal chat -q` instead; `-z` is explicitly for "I only want the final answer".
+Same agent, same tools, same skills — just strips every interactive / cosmetic layer. If you need tool output in the transcript too, use `tribal chat -q` instead; `-z` is explicitly for "I only want the final answer".
 
-## `triibal model`
+## `tribal model`
 
-Interactive provider + model selector. **This is the command for adding new providers, setting up API keys, and running OAuth flows.** Run it from your terminal — not from inside an active Triibal chat session.
+Interactive provider + model selector. **This is the command for adding new providers, setting up API keys, and running OAuth flows.** Run it from your terminal — not from inside an active Tribal chat session.
 
 ```bash
-triibal model
+tribal model
 ```
 
 Use this when you want to:
@@ -168,12 +168,12 @@ Use this when you want to:
 - configure a custom/self-hosted endpoint
 - save the new default into config
 
-:::warning triibal model vs /model — know the difference
-**`triibal model`** (run from your terminal, outside any Triibal session) is the **full provider setup wizard**. It can add new providers, run OAuth flows, prompt for API keys, and configure endpoints.
+:::warning tribal model vs /model — know the difference
+**`tribal model`** (run from your terminal, outside any Tribal session) is the **full provider setup wizard**. It can add new providers, run OAuth flows, prompt for API keys, and configure endpoints.
 
-**`/model`** (typed inside an active Triibal chat session) can only **switch between providers and models you've already set up**. It cannot add new providers, run OAuth, or prompt for API keys.
+**`/model`** (typed inside an active Tribal chat session) can only **switch between providers and models you've already set up**. It cannot add new providers, run OAuth, or prompt for API keys.
 
-**If you need to add a new provider:** Exit your Triibal session first (`Ctrl+C` or `/quit`), then run `triibal model` from your terminal prompt.
+**If you need to add a new provider:** Exit your Tribal session first (`Ctrl+C` or `/quit`), then run `tribal model` from your terminal prompt.
 :::
 
 ### `/model` slash command (mid-session)
@@ -197,15 +197,15 @@ By default, `/model` changes apply **to the current session only**. Add `--globa
 ```
 
 :::info What if I only see OpenRouter models?
-If you've only configured OpenRouter, `/model` will only show OpenRouter models. To add another provider (Anthropic, DeepSeek, Copilot, etc.), exit your session and run `triibal model` from the terminal.
+If you've only configured OpenRouter, `/model` will only show OpenRouter models. To add another provider (Anthropic, DeepSeek, Copilot, etc.), exit your session and run `tribal model` from the terminal.
 :::
 
 Provider and base URL changes are persisted to `config.yaml` automatically. When switching away from a custom endpoint, the stale base URL is cleared to prevent it leaking into other providers.
 
-## `triibal gateway`
+## `tribal gateway`
 
 ```bash
-triibal gateway <subcommand>
+tribal gateway <subcommand>
 ```
 
 Subcommands:
@@ -226,17 +226,17 @@ Options:
 
 | Option | Description |
 |--------|-------------|
-| `--all` | On `start` / `restart` / `stop`: act on **every profile's** gateway, not just the active `TRIIBAL_HOME`. Useful if you run multiple profiles side-by-side and want to restart them all after `triibal update`. |
-| `--no-supervise` | On `run`: inside the s6-overlay Docker image, opt out of auto-supervision and use pre-s6 foreground semantics — gateway runs as the container's main process with no auto-restart. No-op outside the s6 image. Equivalent to setting `TRIIBAL_GATEWAY_NO_SUPERVISE=1`. |
+| `--all` | On `start` / `restart` / `stop`: act on **every profile's** gateway, not just the active `TRIBAL_HOME`. Useful if you run multiple profiles side-by-side and want to restart them all after `tribal update`. |
+| `--no-supervise` | On `run`: inside the s6-overlay Docker image, opt out of auto-supervision and use pre-s6 foreground semantics — gateway runs as the container's main process with no auto-restart. No-op outside the s6 image. Equivalent to setting `TRIBAL_GATEWAY_NO_SUPERVISE=1`. |
 
 :::tip WSL users
-Use `triibal gateway run` instead of `triibal gateway start` — WSL's systemd support is unreliable. Wrap it in tmux for persistence: `tmux new -s triibal 'triibal gateway run'`. See [WSL FAQ](/reference/faq#wsl-gateway-keeps-disconnecting-or-triibal-gateway-start-fails) for details.
+Use `tribal gateway run` instead of `tribal gateway start` — WSL's systemd support is unreliable. Wrap it in tmux for persistence: `tmux new -s tribal 'tribal gateway run'`. See [WSL FAQ](/reference/faq#wsl-gateway-keeps-disconnecting-or-tribal-gateway-start-fails) for details.
 :::
 
-## `triibal lsp`
+## `tribal lsp`
 
 ```bash
-triibal lsp <subcommand>
+tribal lsp <subcommand>
 ```
 
 Manage the Language Server Protocol integration. LSP runs real
@@ -260,13 +260,13 @@ Subcommands:
 See [LSP — Semantic Diagnostics](/user-guide/features/lsp) for
 the full guide, supported languages, and configuration knobs.
 
-## `triibal setup`
+## `tribal setup`
 
 ```bash
-triibal setup [model|tts|terminal|gateway|tools|agent] [--non-interactive] [--reset] [--quick] [--reconfigure] [--portal]
+tribal setup [model|tts|terminal|gateway|tools|agent] [--non-interactive] [--reset] [--quick] [--reconfigure] [--portal]
 ```
 
-**Easiest path:** `triibal setup --portal` — OAuth into Nous Portal and opt into the [Tool Gateway](../user-guide/features/tool-gateway.md) in one shot.
+**Easiest path:** `tribal setup --portal` — OAuth into Nous Portal and opt into the [Tool Gateway](../user-guide/features/tool-gateway.md) in one shot.
 
 **First run:** launches the first-time wizard.
 
@@ -289,13 +289,13 @@ Options:
 | `--quick` | On returning-user runs: only prompt for items that are missing or unset. Skip items you already have configured. |
 | `--non-interactive` | Use defaults / environment values without prompts. |
 | `--reset` | Reset configuration to defaults before setup. |
-| `--reconfigure` | Backwards-compat alias — bare `triibal setup` on an existing install now does this by default. |
+| `--reconfigure` | Backwards-compat alias — bare `tribal setup` on an existing install now does this by default. |
 | `--portal` | One-shot Nous Portal setup: log in via OAuth, set Nous as the inference provider, and opt into the [Tool Gateway](../user-guide/features/tool-gateway.md). Skips the rest of the wizard. |
 
-## `triibal portal`
+## `tribal portal`
 
 ```bash
-triibal portal [status|open|tools]
+tribal portal [status|open|tools]
 ```
 
 Inspect Nous Portal auth, Tool Gateway routing, and reach the subscription page. Subcommand-less invocation runs `status`.
@@ -306,22 +306,22 @@ Inspect Nous Portal auth, Tool Gateway routing, and reach the subscription page.
 | `open` | Open `portal.nousresearch.com/manage-subscription` in your default browser. |
 | `tools` | List every Tool Gateway partner (Firecrawl, FAL, OpenAI TTS, Browser Use, Modal) and which are routed via Nous. |
 
-For configuration of the gateway itself, see [Tool Gateway](../user-guide/features/tool-gateway.md). For the one-shot setup path, see `triibal setup --portal` above.
+For configuration of the gateway itself, see [Tool Gateway](../user-guide/features/tool-gateway.md). For the one-shot setup path, see `tribal setup --portal` above.
 
-## `triibal whatsapp`
+## `tribal whatsapp`
 
 ```bash
-triibal whatsapp
+tribal whatsapp
 ```
 
 Runs the WhatsApp pairing/setup flow, including mode selection and QR-code pairing.
 
-## `triibal slack`
+## `tribal slack`
 
 ```bash
-triibal slack manifest              # print manifest to stdout
-triibal slack manifest --write      # write to ~/.triibal/slack-manifest.json
-triibal slack manifest --slashes-only  # just the features.slash_commands array
+tribal slack manifest              # print manifest to stdout
+tribal slack manifest --write      # write to ~/.tribal/slack-manifest.json
+tribal slack manifest --slashes-only  # just the features.slash_commands array
 ```
 
 Generates a Slack app manifest that registers every gateway command in
@@ -334,27 +334,27 @@ reinstall if scopes or slash commands changed.
 
 | Flag | Default | Purpose |
 |------|---------|---------|
-| `--write [PATH]` | stdout | Write to a file instead of stdout. Bare `--write` writes `$TRIIBAL_HOME/slack-manifest.json`. |
-| `--name NAME` | `Triibal` | Bot display name in Slack. |
+| `--write [PATH]` | stdout | Write to a file instead of stdout. Bare `--write` writes `$TRIBAL_HOME/slack-manifest.json`. |
+| `--name NAME` | `Tribal` | Bot display name in Slack. |
 | `--description DESC` | default blurb | Bot description shown in the Slack app directory. |
 | `--slashes-only` | off | Emit only `features.slash_commands` for merging into a manually-maintained manifest. |
 
-Run `triibal slack manifest --write` again after `triibal update` to pick
+Run `tribal slack manifest --write` again after `tribal update` to pick
 up any new commands.
 
 
-## `triibal send`
+## `tribal send`
 
 ```bash
-triibal send --to <target> "message text"
-triibal send --to <target> --file <path>
-echo "message" | triibal send --to <target>
-triibal send --list [platform]
+tribal send --to <target> "message text"
+tribal send --to <target> --file <path>
+echo "message" | tribal send --to <target>
+tribal send --list [platform]
 ```
 
-Send a one-shot message to a configured messaging platform without spinning up an agent or gateway loop. Reuses the gateway's already-configured credentials (`~/.triibal/.env` + `~/.triibal/config.yaml`) so ops scripts, cron jobs, CI hooks, and monitoring daemons can post status updates without reimplementing each platform's REST client.
+Send a one-shot message to a configured messaging platform without spinning up an agent or gateway loop. Reuses the gateway's already-configured credentials (`~/.tribal/.env` + `~/.tribal/config.yaml`) so ops scripts, cron jobs, CI hooks, and monitoring daemons can post status updates without reimplementing each platform's REST client.
 
-For bot-token platforms (Telegram, Discord, Slack, Signal, SMS, WhatsApp-CloudAPI) no running gateway is required — `triibal send` talks directly to the platform's REST endpoint. Plugin platforms that need a persistent adapter still require a live gateway.
+For bot-token platforms (Telegram, Discord, Slack, Signal, SMS, WhatsApp-CloudAPI) no running gateway is required — `tribal send` talks directly to the platform's REST endpoint. Plugin platforms that need a persistent adapter still require a live gateway.
 
 | Option | Description |
 |--------|-------------|
@@ -365,28 +365,28 @@ For bot-token platforms (Telegram, Discord, Slack, Signal, SMS, WhatsApp-CloudAP
 | `-q`, `--quiet` | Suppress stdout on success — useful in scripts (rely on exit code only). |
 | `--json` | Emit raw JSON result instead of human-readable output. |
 
-If neither a positional `message` argument nor `--file` is provided, `triibal send` reads from stdin when it is not a TTY. Exit codes: `0` on success, `1` on delivery/backend failure, `2` on usage errors.
+If neither a positional `message` argument nor `--file` is provided, `tribal send` reads from stdin when it is not a TTY. Exit codes: `0` on success, `1` on delivery/backend failure, `2` on usage errors.
 
 Examples:
 
 ```bash
-triibal send --to telegram "deploy finished"
-echo "RAM 92%" | triibal send --to telegram:-1001234567890
-triibal send --to discord:#ops --file /tmp/report.md
-triibal send --to slack:#eng --subject "[CI]" --file build.log
-triibal send --list                  # all platforms
-triibal send --list telegram         # filter by platform
+tribal send --to telegram "deploy finished"
+echo "RAM 92%" | tribal send --to telegram:-1001234567890
+tribal send --to discord:#ops --file /tmp/report.md
+tribal send --to slack:#eng --subject "[CI]" --file build.log
+tribal send --list                  # all platforms
+tribal send --list telegram         # filter by platform
 ```
 
 
-## `triibal secrets`
+## `tribal secrets`
 
 ```bash
-triibal secrets bitwarden <subcommand>
-triibal secrets bw <subcommand>          # short alias
+tribal secrets bitwarden <subcommand>
+tribal secrets bw <subcommand>          # short alias
 ```
 
-Pull API keys from an external secret manager at process startup instead of storing them in `~/.triibal/.env`. Currently supports **Bitwarden Secrets Manager**. See the full guide: [Bitwarden integration](../user-guide/secrets/bitwarden.md).
+Pull API keys from an external secret manager at process startup instead of storing them in `~/.tribal/.env`. Currently supports **Bitwarden Secrets Manager**. See the full guide: [Bitwarden integration](../user-guide/secrets/bitwarden.md).
 
 `bitwarden` (alias `bw`) subcommands:
 
@@ -399,10 +399,10 @@ Pull API keys from an external secret manager at process startup instead of stor
 | `disable` | Turn off the Bitwarden integration. |
 
 
-## `triibal migrate`
+## `tribal migrate`
 
 ```bash
-triibal migrate <type>
+tribal migrate <type>
 ```
 
 Diagnose and (optionally) rewrite the active `config.yaml` to replace references to retired models or deprecated settings. A timestamped backup of the original `config.yaml` is taken before any rewrite (skip with `--no-backup`).
@@ -418,13 +418,13 @@ Common flags for migration subcommands:
 | `--apply` | Rewrite `config.yaml` in-place (default: dry-run, no writes). |
 | `--no-backup` | Skip the timestamped backup of `config.yaml` when applying. |
 
-> Not to be confused with `triibal claw migrate` (one-shot import of OpenClaw configuration into Triibal) — `triibal migrate` is the top-level config-rewrite command.
+> Not to be confused with `tribal claw migrate` (one-shot import of OpenClaw configuration into Tribal) — `tribal migrate` is the top-level config-rewrite command.
 
 
-## `triibal proxy`
+## `tribal proxy`
 
 ```bash
-triibal proxy <subcommand>
+tribal proxy <subcommand>
 ```
 
 Run a local OpenAI-compatible HTTP server that forwards requests to an OAuth-authenticated upstream provider (e.g. Nous Portal, xAI). External apps can point at the proxy with any bearer token; the proxy attaches your real OAuth credentials on the way out. See [Subscription Proxy](../user-guide/features/subscription-proxy.md) for the full guide.
@@ -436,13 +436,13 @@ Run a local OpenAI-compatible HTTP server that forwards requests to an OAuth-aut
 | `providers` | List available proxy upstream providers. |
 
 
-## `triibal security`
+## `tribal security`
 
 ```bash
-triibal security <subcommand>
+tribal security <subcommand>
 ```
 
-On-demand vulnerability scan against [OSV.dev](https://osv.dev). Covers the Triibal venv (installed PyPI distributions), Python dependencies declared by plugins under `~/.triibal/plugins/`, and pinned `npx`/`uvx` MCP servers in `config.yaml`. Does NOT scan globally-installed packages or editor/browser extensions.
+On-demand vulnerability scan against [OSV.dev](https://osv.dev). Covers the Tribal venv (installed PyPI distributions), Python dependencies declared by plugins under `~/.tribal/plugins/`, and pinned `npx`/`uvx` MCP servers in `config.yaml`. Does NOT scan globally-installed packages or editor/browser extensions.
 
 | Subcommand | Description |
 |------------|-------------|
@@ -454,40 +454,40 @@ On-demand vulnerability scan against [OSV.dev](https://osv.dev). Covers the Trii
 |------|---------|-------------|
 | `--json` | off | Emit machine-readable JSON instead of human-readable text. |
 | `--fail-on <level>` | `critical` | Exit non-zero when any finding meets this severity (`low`, `moderate`, `high`, `critical`). |
-| `--skip-venv` | off | Skip scanning the Triibal Python venv. |
+| `--skip-venv` | off | Skip scanning the Tribal Python venv. |
 | `--skip-plugins` | off | Skip scanning plugin requirements files. |
 | `--skip-mcp` | off | Skip scanning pinned MCP servers in `config.yaml`. |
 
 
-## `triibal login` / `triibal logout` *(Deprecated)*
+## `tribal login` / `tribal logout` *(Deprecated)*
 
 :::caution
-`triibal login` has been removed. Use `triibal auth` to manage OAuth credentials, `triibal model` to select a provider, or `triibal setup` for full interactive setup.
+`tribal login` has been removed. Use `tribal auth` to manage OAuth credentials, `tribal model` to select a provider, or `tribal setup` for full interactive setup.
 :::
 
-## `triibal auth`
+## `tribal auth`
 
 Manage credential pools for same-provider key rotation. See [Credential Pools](/user-guide/features/credential-pools) for full documentation.
 
 ```bash
-triibal auth                                              # Interactive wizard
-triibal auth list                                         # Show all pools
-triibal auth list openrouter                              # Show specific provider
-triibal auth add openrouter --api-key sk-or-v1-xxx        # Add API key
-triibal auth add anthropic --type oauth                   # Add OAuth credential
-triibal auth remove openrouter 2                          # Remove by index
-triibal auth reset openrouter                             # Clear cooldowns
-triibal auth status anthropic                             # Show auth status for a provider
-triibal auth logout anthropic                             # Log out and clear stored auth state
-triibal auth spotify                                      # Authenticate Triibal with Spotify via PKCE
+tribal auth                                              # Interactive wizard
+tribal auth list                                         # Show all pools
+tribal auth list openrouter                              # Show specific provider
+tribal auth add openrouter --api-key sk-or-v1-xxx        # Add API key
+tribal auth add anthropic --type oauth                   # Add OAuth credential
+tribal auth remove openrouter 2                          # Remove by index
+tribal auth reset openrouter                             # Clear cooldowns
+tribal auth status anthropic                             # Show auth status for a provider
+tribal auth logout anthropic                             # Log out and clear stored auth state
+tribal auth spotify                                      # Authenticate Tribal with Spotify via PKCE
 ```
 
 Subcommands: `add`, `list`, `remove`, `reset`, `status`, `logout`, `spotify`. When called with no subcommand, launches the interactive management wizard.
 
-## `triibal status`
+## `tribal status`
 
 ```bash
-triibal status [--all] [--deep]
+tribal status [--all] [--deep]
 ```
 
 | Option | Description |
@@ -495,10 +495,10 @@ triibal status [--all] [--deep]
 | `--all` | Show all details in a shareable redacted format. |
 | `--deep` | Run deeper checks that may take longer. |
 
-## `triibal cron`
+## `tribal cron`
 
 ```bash
-triibal cron <list|create|edit|pause|resume|run|remove|status|tick>
+tribal cron <list|create|edit|pause|resume|run|remove|status|tick>
 ```
 
 | Subcommand | Description |
@@ -513,28 +513,28 @@ triibal cron <list|create|edit|pause|resume|run|remove|status|tick>
 | `status` | Check whether the cron scheduler is running. |
 | `tick` | Run due jobs once and exit. |
 
-## `triibal kanban`
+## `tribal kanban`
 
 ```bash
-triibal kanban [--board <slug>] <action> [options]
+tribal kanban [--board <slug>] <action> [options]
 ```
 
-Multi-profile, multi-project collaboration board. Each install can host many boards (one per project, repo, or domain); each board is a standalone queue with its own SQLite DB and dispatcher scope. New installs start with one board called `default`, whose DB is `~/.triibal/kanban.db` for back-compat; additional boards live at `~/.triibal/kanban/boards/<slug>/kanban.db`. The gateway-embedded dispatcher sweeps every board per tick.
+Multi-profile, multi-project collaboration board. Each install can host many boards (one per project, repo, or domain); each board is a standalone queue with its own SQLite DB and dispatcher scope. New installs start with one board called `default`, whose DB is `~/.tribal/kanban.db` for back-compat; additional boards live at `~/.tribal/kanban/boards/<slug>/kanban.db`. The gateway-embedded dispatcher sweeps every board per tick.
 
 **Global flags (apply to every action below):**
 
 | Flag | Purpose |
 |------|---------|
-| `--board <slug>` | Operate on a specific board. Defaults to the current board (set via `triibal kanban boards switch`, the `TRIIBAL_KANBAN_BOARD` env var, or `default`). |
+| `--board <slug>` | Operate on a specific board. Defaults to the current board (set via `tribal kanban boards switch`, the `TRIBAL_KANBAN_BOARD` env var, or `default`). |
 
-**This is the human / scripting surface.** Agent workers spawned by the dispatcher drive the board through a dedicated `kanban_*` [toolset](/user-guide/features/kanban#how-workers-interact-with-the-board) (`kanban_show`, `kanban_complete`, `kanban_block`, `kanban_create`, `kanban_link`, `kanban_comment`, `kanban_heartbeat`; orchestrator profiles also get `kanban_list` and `kanban_unblock`) instead of shelling to `triibal kanban`. Workers have `TRIIBAL_KANBAN_BOARD` pinned in their env so they physically cannot see other boards.
+**This is the human / scripting surface.** Agent workers spawned by the dispatcher drive the board through a dedicated `kanban_*` [toolset](/user-guide/features/kanban#how-workers-interact-with-the-board) (`kanban_show`, `kanban_complete`, `kanban_block`, `kanban_create`, `kanban_link`, `kanban_comment`, `kanban_heartbeat`; orchestrator profiles also get `kanban_list` and `kanban_unblock`) instead of shelling to `tribal kanban`. Workers have `TRIBAL_KANBAN_BOARD` pinned in their env so they physically cannot see other boards.
 
 | Action | Purpose |
 |--------|---------|
 | `init` | Create `kanban.db` if missing. Idempotent. |
 | `boards list` / `boards ls` | List all boards with task counts. `--json`, `--all` (include archived). |
 | `boards create <slug>` | Create a new board. Flags: `--name`, `--description`, `--icon`, `--color`, `--switch` (make active). Slug is kebab-case, auto-downcased. |
-| `boards switch <slug>` / `boards use` | Persist `<slug>` as the active board (writes `~/.triibal/kanban/current`). |
+| `boards switch <slug>` / `boards use` | Persist `<slug>` as the active board (writes `~/.tribal/kanban/current`). |
 | `boards show` / `boards current` | Print the currently-active board's name, DB path, and task counts. |
 | `boards rename <slug> "<name>"` | Change a board's display name. Slug is immutable. |
 | `boards rm <slug>` | Archive (default) or hard-delete a board. `--delete` skips the archive step. Archived boards move to `boards/_archived/<slug>-<ts>/`. Refused for `default`. |
@@ -562,28 +562,28 @@ Examples:
 
 ```bash
 # Create a second board and put a task on it without switching away.
-triibal kanban boards create atm10-server --name "ATM10 Server" --icon 🎮
-triibal kanban --board atm10-server create "Restart server" --assignee ops
+tribal kanban boards create atm10-server --name "ATM10 Server" --icon 🎮
+tribal kanban --board atm10-server create "Restart server" --assignee ops
 
 # Switch the active board for subsequent calls.
-triibal kanban boards switch atm10-server
-triibal kanban list                  # shows atm10-server tasks
+tribal kanban boards switch atm10-server
+tribal kanban list                  # shows atm10-server tasks
 
 # Archive a board (recoverable) or hard-delete it.
-triibal kanban boards rm atm10-server
-triibal kanban boards rm atm10-server --delete
+tribal kanban boards rm atm10-server
+tribal kanban boards rm atm10-server --delete
 ```
 
-Board resolution order (highest precedence first): `--board <slug>` flag → `TRIIBAL_KANBAN_BOARD` env var → `~/.triibal/kanban/current` file → `default`.
+Board resolution order (highest precedence first): `--board <slug>` flag → `TRIBAL_KANBAN_BOARD` env var → `~/.tribal/kanban/current` file → `default`.
 
 All actions are also available as a slash command in the gateway (`/kanban …`), with the same argument surface — including `boards` subcommands and the `--board` flag.
 
-For the full design — comparison with Cline Kanban / Paperclip / NanoClaw / Gemini Enterprise, eight collaboration patterns, four user stories, concurrency correctness proof — see `docs/triibal-kanban-v1-spec.pdf` in the repository or the [Kanban user guide](/user-guide/features/kanban).
+For the full design — comparison with Cline Kanban / Paperclip / NanoClaw / Gemini Enterprise, eight collaboration patterns, four user stories, concurrency correctness proof — see `docs/tribal-kanban-v1-spec.pdf` in the repository or the [Kanban user guide](/user-guide/features/kanban).
 
-## `triibal webhook`
+## `tribal webhook`
 
 ```bash
-triibal webhook <subscribe|list|remove|test>
+tribal webhook <subscribe|list|remove|test>
 ```
 
 Manage dynamic webhook subscriptions for event-driven agent activation. Requires the webhook platform to be enabled in config — if not configured, prints setup instructions.
@@ -595,10 +595,10 @@ Manage dynamic webhook subscriptions for event-driven agent activation. Requires
 | `remove` / `rm` | Delete a dynamic subscription. Static routes from config.yaml are not affected. |
 | `test` | Send a test POST to verify a subscription is working. |
 
-### `triibal webhook subscribe`
+### `tribal webhook subscribe`
 
 ```bash
-triibal webhook subscribe <name> [options]
+tribal webhook subscribe <name> [options]
 ```
 
 | Option | Description |
@@ -612,25 +612,25 @@ triibal webhook subscribe <name> [options]
 | `--secret` | Custom HMAC secret. Auto-generated if omitted. |
 | `--deliver-only` | Skip the agent — deliver the rendered `--prompt` as the literal message. Zero LLM cost, sub-second delivery. Requires `--deliver` to be a real target (not `log`). |
 
-Subscriptions persist to `~/.triibal/webhook_subscriptions.json` and are hot-reloaded by the webhook adapter without a gateway restart.
+Subscriptions persist to `~/.tribal/webhook_subscriptions.json` and are hot-reloaded by the webhook adapter without a gateway restart.
 
-## `triibal doctor`
+## `tribal doctor`
 
 ```bash
-triibal doctor [--fix]
+tribal doctor [--fix]
 ```
 
 | Option | Description |
 |--------|-------------|
 | `--fix` | Attempt automatic repairs where possible. |
 
-## `triibal dump`
+## `tribal dump`
 
 ```bash
-triibal dump [--show-keys]
+tribal dump [--show-keys]
 ```
 
-Outputs a compact, plain-text summary of your entire Triibal setup. Designed to be copy-pasted into Discord, GitHub issues, or Telegram when asking for support — no ANSI colors, no special formatting, just data.
+Outputs a compact, plain-text summary of your entire Tribal setup. Designed to be copy-pasted into Discord, GitHub issues, or Telegram when asking for support — no ANSI colors, no special formatting, just data.
 
 | Option | Description |
 |--------|-------------|
@@ -640,9 +640,9 @@ Outputs a compact, plain-text summary of your entire Triibal setup. Designed to 
 
 | Section | Details |
 |---------|---------|
-| **Header** | Triibal version, release date, git commit hash |
+| **Header** | Tribal version, release date, git commit hash |
 | **Environment** | OS, Python version, OpenAI SDK version |
-| **Identity** | Active profile name, TRIIBAL_HOME path |
+| **Identity** | Active profile name, TRIBAL_HOME path |
 | **Model** | Configured default model and provider |
 | **Terminal** | Backend type (local, docker, ssh, etc.) |
 | **API keys** | Presence check for all 22 provider/tool API keys |
@@ -654,13 +654,13 @@ Outputs a compact, plain-text summary of your entire Triibal setup. Designed to 
 ### Example output
 
 ```
---- triibal dump ---
+--- tribal dump ---
 version:          0.8.0 (2026.4.8) [af4abd2f]
 os:               Linux 6.14.0-37-generic x86_64
 python:           3.11.14
 openai_sdk:       2.24.0
 profile:          default
-triibal_home:      ~/.triibal
+tribal_home:      ~/.tribal
 model:            anthropic/claude-opus-4.6
 provider:         openrouter
 terminal:         local
@@ -697,13 +697,13 @@ config_overrides:
 - Quick sanity check when something isn't working
 
 :::tip
-`triibal dump` is specifically designed for sharing. For interactive diagnostics, use `triibal doctor`. For a visual overview, use `triibal status`.
+`tribal dump` is specifically designed for sharing. For interactive diagnostics, use `tribal doctor`. For a visual overview, use `tribal status`.
 :::
 
-## `triibal debug`
+## `tribal debug`
 
 ```bash
-triibal debug share [options]
+tribal debug share [options]
 ```
 
 Upload a debug report (system info + recent logs) to a paste service and get a shareable URL. Useful for quick support requests — includes everything a helper needs to diagnose your issue.
@@ -714,61 +714,61 @@ Upload a debug report (system info + recent logs) to a paste service and get a s
 | `--expire <days>` | Paste expiry in days (default: 7). |
 | `--local` | Print the report locally instead of uploading. |
 
-The report includes system info (OS, Python version, Triibal version), recent agent and gateway logs (512 KB limit per file), and redacted API key status. Keys are always redacted — no secrets are uploaded.
+The report includes system info (OS, Python version, Tribal version), recent agent and gateway logs (512 KB limit per file), and redacted API key status. Keys are always redacted — no secrets are uploaded.
 
 Paste services tried in order: paste.rs, dpaste.com.
 
 ### Examples
 
 ```bash
-triibal debug share              # Upload debug report, print URL
-triibal debug share --lines 500  # Include more log lines
-triibal debug share --expire 30  # Keep paste for 30 days
-triibal debug share --local      # Print report to terminal (no upload)
+tribal debug share              # Upload debug report, print URL
+tribal debug share --lines 500  # Include more log lines
+tribal debug share --expire 30  # Keep paste for 30 days
+tribal debug share --local      # Print report to terminal (no upload)
 ```
 
-## `triibal backup`
+## `tribal backup`
 
 ```bash
-triibal backup [options]
+tribal backup [options]
 ```
 
-Create a zip archive of your Triibal configuration, skills, sessions, and data. The backup excludes the triibal-agent codebase itself.
+Create a zip archive of your Tribal configuration, skills, sessions, and data. The backup excludes the tribal-agent codebase itself.
 
 | Option | Description |
 |--------|-------------|
-| `-o`, `--output <path>` | Output path for the zip file (default: `~/triibal-backup-<timestamp>.zip`). |
+| `-o`, `--output <path>` | Output path for the zip file (default: `~/tribal-backup-<timestamp>.zip`). |
 | `-q`, `--quick` | Quick snapshot: only critical state files (config.yaml, state.db, .env, auth, cron jobs). Much faster than a full backup. |
 | `-l`, `--label <name>` | Label for the snapshot (only used with `--quick`). |
 
-The backup uses SQLite's `backup()` API for safe copying, so it works correctly even when Triibal is running (WAL-mode safe).
+The backup uses SQLite's `backup()` API for safe copying, so it works correctly even when Tribal is running (WAL-mode safe).
 
 **What's excluded from the zip:**
 
 - `*.db-wal`, `*.db-shm`, `*.db-journal` — SQLite's WAL / shared-memory / journal sidecars. The `*.db` file already got a consistent snapshot via `sqlite3.backup()`; shipping the live sidecars alongside it would let a restore see a half-committed state.
 - `checkpoints/` — per-session trajectory caches. Hash-keyed and regenerated per session; wouldn't port cleanly to another install anyway.
-- The `triibal-agent` code itself (this is a user-data backup, not a repo snapshot).
+- The `tribal-agent` code itself (this is a user-data backup, not a repo snapshot).
 
 ### Examples
 
 ```bash
-triibal backup                           # Full backup to ~/triibal-backup-*.zip
-triibal backup -o /tmp/triibal.zip        # Full backup to specific path
-triibal backup --quick                   # Quick state-only snapshot
-triibal backup --quick --label "pre-upgrade"  # Quick snapshot with label
+tribal backup                           # Full backup to ~/tribal-backup-*.zip
+tribal backup -o /tmp/tribal.zip        # Full backup to specific path
+tribal backup --quick                   # Quick state-only snapshot
+tribal backup --quick --label "pre-upgrade"  # Quick snapshot with label
 ```
 
-## `triibal checkpoints`
+## `tribal checkpoints`
 
 ```bash
-triibal checkpoints [COMMAND]
+tribal checkpoints [COMMAND]
 ```
 
-Inspect and manage the shadow git store at `~/.triibal/checkpoints/` — the storage layer behind the in-session `/rollback` command. Safe to run any time; does not require the agent to be running.
+Inspect and manage the shadow git store at `~/.tribal/checkpoints/` — the storage layer behind the in-session `/rollback` command. Safe to run any time; does not require the agent to be running.
 
 | Subcommand | Description |
 |------------|-------------|
-| `status` (default) | Show total size, project count, and per-project breakdown. Bare `triibal checkpoints` is equivalent. |
+| `status` (default) | Show total size, project count, and per-project breakdown. Bare `tribal checkpoints` is equivalent. |
 | `list` | Alias for `status`. |
 | `prune` | Force a cleanup sweep — delete orphan and stale projects, GC the store, enforce the size cap. Ignores the 24h idempotency marker. |
 | `clear` | Delete the entire checkpoint base. Irreversible; asks for confirmation unless `-f`. |
@@ -787,22 +787,22 @@ Inspect and manage the shadow git store at `~/.triibal/checkpoints/` — the sto
 ### Examples
 
 ```bash
-triibal checkpoints                                  # status overview
-triibal checkpoints prune --retention-days 3         # aggressive cleanup
-triibal checkpoints prune --max-size-mb 200          # tighten size cap once
-triibal checkpoints clear-legacy -f                  # drop v1 archive dirs
-triibal checkpoints clear -f                         # wipe everything
+tribal checkpoints                                  # status overview
+tribal checkpoints prune --retention-days 3         # aggressive cleanup
+tribal checkpoints prune --max-size-mb 200          # tighten size cap once
+tribal checkpoints clear-legacy -f                  # drop v1 archive dirs
+tribal checkpoints clear -f                         # wipe everything
 ```
 
 See [Checkpoints and `/rollback`](../user-guide/checkpoints-and-rollback.md) for the full architecture and the in-session commands.
 
-## `triibal import`
+## `tribal import`
 
 ```bash
-triibal import <zipfile> [options]
+tribal import <zipfile> [options]
 ```
 
-Restore a previously created Triibal backup into your Triibal home directory. All files in the archive overwrite existing files in your Triibal home; `--force` only skips the confirmation prompt that fires when the target already has a Triibal installation.
+Restore a previously created Tribal backup into your Tribal home directory. All files in the archive overwrite existing files in your Tribal home; `--force` only skips the confirmation prompt that fires when the target already has a Tribal installation.
 
 | Option | Description |
 |--------|-------------|
@@ -814,17 +814,17 @@ Stop the gateway before importing to avoid conflicts with running processes.
 
 ### Examples
 ```bash
-triibal import ~/triibal-backup-20260423.zip           # Prompts before overwriting existing config
-triibal import ~/triibal-backup-20260423.zip --force   # Overwrite without prompting
+tribal import ~/tribal-backup-20260423.zip           # Prompts before overwriting existing config
+tribal import ~/tribal-backup-20260423.zip --force   # Overwrite without prompting
 ```
 
-## `triibal logs`
+## `tribal logs`
 
 ```bash
-triibal logs [log_name] [options]
+tribal logs [log_name] [options]
 ```
 
-View, tail, and filter Triibal log files. All logs are stored in `~/.triibal/logs/` (or `<profile>/logs/` for non-default profiles).
+View, tail, and filter Tribal log files. All logs are stored in `~/.tribal/logs/` (or `<profile>/logs/` for non-default profiles).
 
 ### Log files
 
@@ -850,25 +850,25 @@ View, tail, and filter Triibal log files. All logs are stored in `~/.triibal/log
 
 ```bash
 # View the last 50 lines of agent.log (default)
-triibal logs
+tribal logs
 
 # Follow agent.log in real time
-triibal logs -f
+tribal logs -f
 
 # View the last 100 lines of gateway.log
-triibal logs gateway -n 100
+tribal logs gateway -n 100
 
 # Show only warnings and errors from the last hour
-triibal logs --level WARNING --since 1h
+tribal logs --level WARNING --since 1h
 
 # Filter by a specific session
-triibal logs --session abc123
+tribal logs --session abc123
 
 # Follow errors.log, starting from 30 minutes ago
-triibal logs errors --since 30m -f
+tribal logs errors --since 30m -f
 
 # List all log files with their sizes
-triibal logs list
+tribal logs list
 ```
 
 ### Filtering
@@ -877,19 +877,19 @@ Filters can be combined. When multiple filters are active, a log line must pass 
 
 ```bash
 # WARNING+ lines from the last 2 hours containing session "tg-12345"
-triibal logs --level WARNING --since 2h --session tg-12345
+tribal logs --level WARNING --since 2h --session tg-12345
 ```
 
 Lines without a parseable timestamp are included when `--since` is active (they may be continuation lines from a multi-line log entry). Lines without a detectable level are included when `--level` is active.
 
 ### Log rotation
 
-Triibal uses Python's `RotatingFileHandler`. Old logs are rotated automatically — look for `agent.log.1`, `agent.log.2`, etc. The `triibal logs list` subcommand shows all log files including rotated ones.
+Tribal uses Python's `RotatingFileHandler`. Old logs are rotated automatically — look for `agent.log.1`, `agent.log.2`, etc. The `tribal logs list` subcommand shows all log files including rotated ones.
 
-## `triibal config`
+## `tribal config`
 
 ```bash
-triibal config <subcommand>
+tribal config <subcommand>
 ```
 
 Subcommands:
@@ -904,10 +904,10 @@ Subcommands:
 | `check` | Check for missing or stale config. |
 | `migrate` | Add newly introduced options interactively. |
 
-## `triibal pairing`
+## `tribal pairing`
 
 ```bash
-triibal pairing <list|approve|revoke|clear-pending>
+tribal pairing <list|approve|revoke|clear-pending>
 ```
 
 | Subcommand | Description |
@@ -917,10 +917,10 @@ triibal pairing <list|approve|revoke|clear-pending>
 | `revoke <platform> <user-id>` | Revoke a user's access. |
 | `clear-pending` | Clear pending pairing codes. |
 
-## `triibal skills`
+## `tribal skills`
 
 ```bash
-triibal skills <subcommand>
+tribal skills <subcommand>
 ```
 
 Subcommands:
@@ -945,38 +945,38 @@ Subcommands:
 Common examples:
 
 ```bash
-triibal skills browse
-triibal skills browse --source official
-triibal skills search react --source skills-sh
-triibal skills search https://mintlify.com/docs --source well-known
-triibal skills inspect official/security/1password
-triibal skills inspect skills-sh/vercel-labs/json-render/json-render-react
-triibal skills install official/migration/openclaw-migration
-triibal skills install skills-sh/anthropics/skills/pdf --force
-triibal skills install https://sharethis.chat/SKILL.md                     # Direct URL (single-file SKILL.md)
-triibal skills install https://example.com/SKILL.md --name my-skill        # Override name when frontmatter has none
-triibal skills check
-triibal skills update
-triibal skills config
-triibal skills reset google-workspace
-triibal skills reset google-workspace --restore --yes
+tribal skills browse
+tribal skills browse --source official
+tribal skills search react --source skills-sh
+tribal skills search https://mintlify.com/docs --source well-known
+tribal skills inspect official/security/1password
+tribal skills inspect skills-sh/vercel-labs/json-render/json-render-react
+tribal skills install official/migration/openclaw-migration
+tribal skills install skills-sh/anthropics/skills/pdf --force
+tribal skills install https://sharethis.chat/SKILL.md                     # Direct URL (single-file SKILL.md)
+tribal skills install https://example.com/SKILL.md --name my-skill        # Override name when frontmatter has none
+tribal skills check
+tribal skills update
+tribal skills config
+tribal skills reset google-workspace
+tribal skills reset google-workspace --restore --yes
 ```
 
 Notes:
 - `--force` can override non-dangerous policy blocks for third-party/community skills.
 - `--force` does not override a `dangerous` scan verdict.
 - `--source skills-sh` searches the public `skills.sh` directory.
-- `--source well-known` lets you point Triibal at a site exposing `/.well-known/skills/index.json`.
+- `--source well-known` lets you point Tribal at a site exposing `/.well-known/skills/index.json`.
 - `--source browse-sh` searches [browse.sh](https://browse.sh)'s catalog of 200+ site-specific browser-automation skills. Identifiers look like `browse-sh/airbnb.com/search-listings-ddgioa`.
 - Passing an `http(s)://…/*.md` URL installs a single-file SKILL.md directly. When frontmatter has no `name:` and the URL slug isn't a valid identifier, an interactive terminal prompts for a name; non-interactive surfaces (`/skills install` inside the TUI, gateway platforms) require `--name <x>` instead.
 
-## `triibal bundles`
+## `tribal bundles`
 
 ```bash
-triibal bundles <subcommand>
+tribal bundles <subcommand>
 ```
 
-Skill bundles group several skills under one `/<bundle-name>` slash command. Invoking the bundle loads every referenced skill into a single combined user message. Storage: `~/.triibal/skill-bundles/<slug>.yaml`. See [Skill Bundles](../user-guide/features/skills.md#skill-bundles) for the YAML schema and behavior.
+Skill bundles group several skills under one `/<bundle-name>` slash command. Invoking the bundle loads every referenced skill into a single combined user message. Storage: `~/.tribal/skill-bundles/<slug>.yaml`. See [Skill Bundles](../user-guide/features/skills.md#skill-bundles) for the YAML schema and behavior.
 
 Subcommands:
 
@@ -986,28 +986,28 @@ Subcommands:
 | `show <name>` | Show one bundle's name, description, skills, and file path |
 | `create <name>` | Create a new bundle. Pass `--skill <id>` (repeat) or omit for interactive entry. `--description`, `--instruction`, `--force` available. |
 | `delete <name>` | Remove a bundle file |
-| `reload` | Re-scan `~/.triibal/skill-bundles/` and report added/removed bundles |
+| `reload` | Re-scan `~/.tribal/skill-bundles/` and report added/removed bundles |
 
 Examples:
 
 ```bash
-triibal bundles create backend-dev \
+tribal bundles create backend-dev \
   --skill github-code-review \
   --skill test-driven-development \
   --skill github-pr-workflow \
   -d "Backend feature work"
 
-triibal bundles list
-triibal bundles show backend-dev
-triibal bundles delete backend-dev
+tribal bundles list
+tribal bundles show backend-dev
+tribal bundles delete backend-dev
 ```
 
 In a chat session, `/bundles` lists installed bundles and `/<bundle-name>` loads one.
 
-## `triibal curator`
+## `tribal curator`
 
 ```bash
-triibal curator <subcommand>
+tribal curator <subcommand>
 ```
 
 The curator is an auxiliary-model background task that periodically reviews agent-created skills, prunes stale ones, consolidates overlaps, and archives obsolete skills. Bundled and hub-installed skills are never touched. Archives are recoverable; auto-deletion never happens.
@@ -1018,8 +1018,8 @@ The curator is an auxiliary-model background task that periodically reviews agen
 | `run` | Trigger a curator review now (blocks until the LLM pass finishes) |
 | `run --background` | Start the LLM pass in a background thread and return immediately |
 | `run --dry-run` | Preview only — produce the review report with no mutations |
-| `backup` | Take a manual tar.gz snapshot of `~/.triibal/skills/` (curator also snapshots automatically before every real run) |
-| `rollback` | Restore `~/.triibal/skills/` from a snapshot (defaults to newest) |
+| `backup` | Take a manual tar.gz snapshot of `~/.tribal/skills/` (curator also snapshots automatically before every real run) |
+| `rollback` | Restore `~/.tribal/skills/` from a snapshot (defaults to newest) |
 | `rollback --list` | List available snapshots |
 | `rollback --id <ts>` | Restore a specific snapshot by id |
 | `rollback -y` | Skip the confirmation prompt |
@@ -1032,14 +1032,14 @@ The curator is an auxiliary-model background task that periodically reviews agen
 | `prune` | Manually prune skills the curator would normally clean up |
 | `list-archived` | List archived skills (recoverable via `restore`) |
 
-On a fresh install the first scheduled pass is deferred by one full `interval_hours` (7 days by default) — the gateway will not curate immediately on the first tick after `triibal update`. Use `triibal curator run --dry-run` to preview before that happens.
+On a fresh install the first scheduled pass is deferred by one full `interval_hours` (7 days by default) — the gateway will not curate immediately on the first tick after `tribal update`. Use `tribal curator run --dry-run` to preview before that happens.
 
 See [Curator](../user-guide/features/curator.md) for behavior and config.
 
-## `triibal fallback`
+## `tribal fallback`
 
 ```bash
-triibal fallback <subcommand>
+tribal fallback <subcommand>
 ```
 
 Manage the fallback provider chain. Fallback providers are tried in order when the primary model fails with rate-limit, overload, or connection errors.
@@ -1047,19 +1047,19 @@ Manage the fallback provider chain. Fallback providers are tried in order when t
 | Subcommand | Description |
 |------------|-------------|
 | `list` (alias: `ls`) | Show the current fallback chain (default when no subcommand) |
-| `add` | Pick a provider + model (same picker as `triibal model`) and append to the chain |
+| `add` | Pick a provider + model (same picker as `tribal model`) and append to the chain |
 | `remove` (alias: `rm`) | Pick an entry to delete from the chain |
 | `clear` | Remove all fallback entries |
 
 See [Fallback Providers](../user-guide/features/fallback-providers.md).
 
-## `triibal hooks`
+## `tribal hooks`
 
 ```bash
-triibal hooks <subcommand>
+tribal hooks <subcommand>
 ```
 
-Inspect shell-script hooks declared in `~/.triibal/config.yaml`, test them against synthetic payloads, and manage the first-use consent allowlist at `~/.triibal/shell-hooks-allowlist.json`.
+Inspect shell-script hooks declared in `~/.tribal/config.yaml`, test them against synthetic payloads, and manage the first-use consent allowlist at `~/.tribal/shell-hooks-allowlist.json`.
 
 | Subcommand | Description |
 |------------|-------------|
@@ -1070,10 +1070,10 @@ Inspect shell-script hooks declared in `~/.triibal/config.yaml`, test them again
 
 See [Hooks](../user-guide/features/hooks.md) for event signatures and payload shapes.
 
-## `triibal memory`
+## `tribal memory`
 
 ```bash
-triibal memory <subcommand>
+tribal memory <subcommand>
 ```
 
 Set up and manage external memory provider plugins. Available providers: honcho, openviking, mem0, hindsight, holographic, retaindb, byterover, supermemory. Only one external provider can be active at a time. Built-in memory (MEMORY.md/USER.md) is always active.
@@ -1087,21 +1087,21 @@ Subcommands:
 | `off` | Disable external provider (built-in only). |
 
 :::info Provider-specific subcommands
-When an external memory provider is active, it may register its own top-level `triibal <provider>` command for provider-specific management (e.g. `triibal honcho` when Honcho is active). Inactive providers do not expose their subcommands. Run `triibal --help` to see what's currently wired in.
+When an external memory provider is active, it may register its own top-level `tribal <provider>` command for provider-specific management (e.g. `tribal honcho` when Honcho is active). Inactive providers do not expose their subcommands. Run `tribal --help` to see what's currently wired in.
 :::
 
-## `triibal acp`
+## `tribal acp`
 
 ```bash
-triibal acp
+tribal acp
 ```
 
-Starts Triibal as an ACP (Agent Client Protocol) stdio server for editor integration.
+Starts Tribal as an ACP (Agent Client Protocol) stdio server for editor integration.
 
 Related entrypoints:
 
 ```bash
-triibal-acp
+tribal-acp
 python -m acp_adapter
 ```
 
@@ -1113,20 +1113,20 @@ pip install -e '.[acp]'
 
 See [ACP Editor Integration](../user-guide/features/acp.md) and [ACP Internals](../developer-guide/acp-internals.md).
 
-## `triibal mcp`
+## `tribal mcp`
 
 ```bash
-triibal mcp <subcommand>
+tribal mcp <subcommand>
 ```
 
-Manage MCP (Model Context Protocol) server configurations and run Triibal as an MCP server.
+Manage MCP (Model Context Protocol) server configurations and run Tribal as an MCP server.
 
 | Subcommand | Description |
 |------------|-------------|
 | *(none)* or `picker` | Interactive catalog picker — browse Nous-approved MCPs and install/enable/disable. |
 | `catalog` | List Nous-approved MCPs (plain text, scriptable). |
-| `install <name>` | Install a catalog entry (e.g. `triibal mcp install n8n`). |
-| `serve [-v\|--verbose]` | Run Triibal as an MCP server — expose conversations to other agents. |
+| `install <name>` | Install a catalog entry (e.g. `tribal mcp install n8n`). |
+| `serve [-v\|--verbose]` | Run Tribal as an MCP server — expose conversations to other agents. |
 | `add <name> [--url URL] [--command CMD] [--args ...] [--auth oauth\|header]` | Add a custom MCP server with automatic tool discovery. |
 | `remove <name>` (alias: `rm`) | Remove an MCP server from config. |
 | `list` (alias: `ls`) | List configured MCP servers. |
@@ -1134,15 +1134,15 @@ Manage MCP (Model Context Protocol) server configurations and run Triibal as an 
 | `configure <name>` (alias: `config`) | Toggle tool selection for a server. |
 | `login <name>` | Force re-authentication for an OAuth-based MCP server. |
 
-See [MCP Config Reference](./mcp-config-reference.md), [Use MCP with Triibal](../guides/use-mcp-with-triibal.md), and [MCP Server Mode](../user-guide/features/mcp.md#running-triibal-as-an-mcp-server).
+See [MCP Config Reference](./mcp-config-reference.md), [Use MCP with Tribal](../guides/use-mcp-with-tribal.md), and [MCP Server Mode](../user-guide/features/mcp.md#running-tribal-as-an-mcp-server).
 
-## `triibal plugins`
+## `tribal plugins`
 
 ```bash
-triibal plugins [subcommand]
+tribal plugins [subcommand]
 ```
 
-Unified plugin management — general plugins, memory providers, and context engines in one place. Running `triibal plugins` with no subcommand opens a composite interactive screen with two sections:
+Unified plugin management — general plugins, memory providers, and context engines in one place. Running `tribal plugins` with no subcommand opens a composite interactive screen with two sections:
 
 - **General Plugins** — multi-select checkboxes to enable/disable installed plugins
 - **Provider Plugins** — single-select configuration for Memory Provider and Context Engine. Press ENTER on a category to open a radio picker.
@@ -1163,12 +1163,12 @@ Provider plugin selections are saved to `config.yaml`:
 
 General plugin disabled list is stored in `config.yaml` under `plugins.disabled`.
 
-See [Plugins](../user-guide/features/plugins.md) and [Build a Triibal Plugin](../guides/build-a-triibal-plugin.md).
+See [Plugins](../user-guide/features/plugins.md) and [Build a Tribal Plugin](../guides/build-a-tribal-plugin.md).
 
-## `triibal tools`
+## `tribal tools`
 
 ```bash
-triibal tools [--summary]
+tribal tools [--summary]
 ```
 
 | Option | Description |
@@ -1177,10 +1177,10 @@ triibal tools [--summary]
 
 Without `--summary`, this launches the interactive per-platform tool configuration UI.
 
-## `triibal computer-use`
+## `tribal computer-use`
 
 ```bash
-triibal computer-use <subcommand>
+tribal computer-use <subcommand>
 ```
 
 Subcommands:
@@ -1191,22 +1191,22 @@ Subcommands:
 | `install --upgrade` | Re-run the installer even if cua-driver is already on PATH. The upstream script always pulls the latest release, so this performs an in-place upgrade. |
 | `status` | Print whether `cua-driver` is on `$PATH` and which version is installed. |
 
-`triibal computer-use install` is the stable entry point for installing the
+`tribal computer-use install` is the stable entry point for installing the
 [cua-driver](https://github.com/trycua/cua) binary used by the
 `computer_use` toolset. It runs the same upstream installer that
-`triibal tools` invokes when you first enable Computer Use, so it's safe
+`tribal tools` invokes when you first enable Computer Use, so it's safe
 to use for re-running the install if the toolset toggle didn't trigger
 it (for example, on returning-user setups).
 
-`triibal update` automatically re-runs the upstream installer at the end
+`tribal update` automatically re-runs the upstream installer at the end
 of the update if cua-driver is on PATH, so most users will not need to
 call `--upgrade` manually. Use it when upstream ships a fix you want
-right now without waiting for the next Triibal update.
+right now without waiting for the next Tribal update.
 
-## `triibal sessions`
+## `tribal sessions`
 
 ```bash
-triibal sessions <subcommand>
+tribal sessions <subcommand>
 ```
 
 Subcommands:
@@ -1221,10 +1221,10 @@ Subcommands:
 | `stats` | Show session-store statistics. |
 | `rename <session-id> <title>` | Set or change a session title. |
 
-## `triibal insights`
+## `tribal insights`
 
 ```bash
-triibal insights [--days N] [--source platform]
+tribal insights [--days N] [--source platform]
 ```
 
 | Option | Description |
@@ -1232,21 +1232,21 @@ triibal insights [--days N] [--source platform]
 | `--days <n>` | Analyze the last `n` days (default: 30). |
 | `--source <platform>` | Filter by source such as `cli`, `telegram`, or `discord`. |
 
-## `triibal claw`
+## `tribal claw`
 
 ```bash
-triibal claw migrate [options]
+tribal claw migrate [options]
 ```
 
-Migrate your OpenClaw setup to Triibal. Reads from `~/.openclaw` (or a custom path) and writes to `~/.triibal`. Automatically detects legacy directory names (`~/.clawdbot`, `~/.moltbot`) and config filenames (`clawdbot.json`, `moltbot.json`).
+Migrate your OpenClaw setup to Tribal. Reads from `~/.openclaw` (or a custom path) and writes to `~/.tribal`. Automatically detects legacy directory names (`~/.clawdbot`, `~/.moltbot`) and config filenames (`clawdbot.json`, `moltbot.json`).
 
 | Option | Description |
 |--------|-------------|
 | `--dry-run` | Preview what would be migrated without writing anything. |
 | `--preset <name>` | Migration preset: `full` (all compatible settings) or `user-data` (excludes infrastructure config). Neither preset imports secrets — pass `--migrate-secrets` explicitly. |
-| `--overwrite` | Overwrite existing Triibal files on conflicts (default: refuse to apply when the plan has conflicts). |
+| `--overwrite` | Overwrite existing Tribal files on conflicts (default: refuse to apply when the plan has conflicts). |
 | `--migrate-secrets` | Include API keys in migration. Required even under `--preset full`. |
-| `--no-backup` | Skip the pre-migration zip snapshot of `~/.triibal/` (by default a single restore-point archive is written to `~/.triibal/backups/pre-migration-*.zip` before apply; restorable with `triibal import`). |
+| `--no-backup` | Skip the pre-migration zip snapshot of `~/.tribal/` (by default a single restore-point archive is written to `~/.tribal/backups/pre-migration-*.zip` before apply; restorable with `tribal import`). |
 | `--source <path>` | Custom OpenClaw directory (default: `~/.openclaw`). |
 | `--workspace-target <path>` | Target directory for workspace instructions (AGENTS.md). |
 | `--skill-conflict <mode>` | Handle skill name collisions: `skip` (default), `overwrite`, or `rename`. |
@@ -1254,7 +1254,7 @@ Migrate your OpenClaw setup to Triibal. Reads from `~/.openclaw` (or a custom pa
 
 ### What gets migrated
 
-The migration covers 30+ categories across persona, memory, skills, model providers, messaging platforms, agent behavior, session policies, MCP servers, TTS, and more. Items are either **directly imported** into Triibal equivalents or **archived** for manual review.
+The migration covers 30+ categories across persona, memory, skills, model providers, messaging platforms, agent behavior, session policies, MCP servers, TTS, and more. Items are either **directly imported** into Tribal equivalents or **archived** for manual review.
 
 **Directly imported:** SOUL.md, MEMORY.md, USER.md, AGENTS.md, skills (4 source directories), default model, custom providers, MCP servers, messaging platform tokens and allowlists (Telegram, Discord, Slack, WhatsApp, Signal, Matrix, Mattermost), agent defaults (reasoning effort, compression, human delay, timezone, sandbox), session reset policies, approval rules, TTS config, browser settings, tool settings, exec timeout, command allowlist, gateway config, and API keys from 3 sources.
 
@@ -1268,57 +1268,57 @@ For the complete config key mapping, SecretRef handling details, and post-migrat
 
 ```bash
 # Preview what would be migrated
-triibal claw migrate --dry-run
+tribal claw migrate --dry-run
 
 # Full migration (all compatible settings, no secrets)
-triibal claw migrate --preset full
+tribal claw migrate --preset full
 
 # Full migration including API keys
-triibal claw migrate --preset full --migrate-secrets
+tribal claw migrate --preset full --migrate-secrets
 
 # Migrate user data only (no secrets), overwrite conflicts
-triibal claw migrate --preset user-data --overwrite
+tribal claw migrate --preset user-data --overwrite
 
 # Migrate from a custom OpenClaw path
-triibal claw migrate --source /home/user/old-openclaw
+tribal claw migrate --source /home/user/old-openclaw
 ```
 
-## `triibal dashboard`
+## `tribal dashboard`
 
 ```bash
-triibal dashboard [options]
+tribal dashboard [options]
 ```
 
-Launch the web dashboard — a browser-based UI for managing configuration, API keys, and monitoring sessions. Requires `pip install triibal-agent[web]` (FastAPI + Uvicorn). The embedded browser Chat tab requires `--tui` plus the `pty` extra. See [Web Dashboard](/user-guide/features/web-dashboard) for full documentation.
+Launch the web dashboard — a browser-based UI for managing configuration, API keys, and monitoring sessions. Requires `pip install tribal-agent[web]` (FastAPI + Uvicorn). The embedded browser Chat tab requires `--tui` plus the `pty` extra. See [Web Dashboard](/user-guide/features/web-dashboard) for full documentation.
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--port` | `9119` | Port to run the web server on |
 | `--host` | `127.0.0.1` | Bind address |
 | `--no-open` | — | Don't auto-open the browser |
-| `--tui` | off | Enable the in-browser Chat tab by running `triibal --tui` behind a PTY/WebSocket bridge. Requires `pip install 'triibal-agent[web,pty]'` and a POSIX PTY environment such as Linux, macOS, or WSL2. |
+| `--tui` | off | Enable the in-browser Chat tab by running `tribal --tui` behind a PTY/WebSocket bridge. Requires `pip install 'tribal-agent[web,pty]'` and a POSIX PTY environment such as Linux, macOS, or WSL2. |
 | `--insecure` | off | Allow binding to non-localhost hosts. Exposes dashboard credentials on the network; use only behind trusted network controls. |
-| `--stop` | — | Stop running `triibal dashboard` processes and exit. |
-| `--status` | — | List running `triibal dashboard` processes and exit. |
+| `--stop` | — | Stop running `tribal dashboard` processes and exit. |
+| `--status` | — | List running `tribal dashboard` processes and exit. |
 
 ```bash
 # Default — opens browser to http://127.0.0.1:9119
-triibal dashboard
+tribal dashboard
 
 # Custom port, no browser
-triibal dashboard --port 8080 --no-open
+tribal dashboard --port 8080 --no-open
 
 # Enable the browser Chat tab
-triibal dashboard --tui
+tribal dashboard --tui
 ```
 
-## `triibal profile`
+## `tribal profile`
 
 ```bash
-triibal profile <subcommand>
+tribal profile <subcommand>
 ```
 
-Manage profiles — multiple isolated Triibal instances, each with its own config, sessions, skills, and home directory.
+Manage profiles — multiple isolated Tribal instances, each with its own config, sessions, skills, and home directory.
 
 | Subcommand | Description |
 |------------|-------------|
@@ -1338,68 +1338,68 @@ Manage profiles — multiple isolated Triibal instances, each with its own confi
 Examples:
 
 ```bash
-triibal profile list
-triibal profile create work --clone
-triibal profile use work
-triibal profile alias work --name h-work
-triibal profile export work -o work-backup.tar.gz
-triibal profile import work-backup.tar.gz --name restored
-triibal profile install github.com/user/my-distro --alias
-triibal profile update work
-triibal -p work chat -q "Hello from work profile"
+tribal profile list
+tribal profile create work --clone
+tribal profile use work
+tribal profile alias work --name h-work
+tribal profile export work -o work-backup.tar.gz
+tribal profile import work-backup.tar.gz --name restored
+tribal profile install github.com/user/my-distro --alias
+tribal profile update work
+tribal -p work chat -q "Hello from work profile"
 ```
 
-## `triibal completion`
+## `tribal completion`
 
 ```bash
-triibal completion [bash|zsh|fish]
+tribal completion [bash|zsh|fish]
 ```
 
-Print a shell completion script to stdout. Source the output in your shell profile for tab-completion of Triibal commands, subcommands, and profile names.
+Print a shell completion script to stdout. Source the output in your shell profile for tab-completion of Tribal commands, subcommands, and profile names.
 
 Examples:
 
 ```bash
 # Bash
-triibal completion bash >> ~/.bashrc
+tribal completion bash >> ~/.bashrc
 
 # Zsh
-triibal completion zsh >> ~/.zshrc
+tribal completion zsh >> ~/.zshrc
 
 # Fish
-triibal completion fish > ~/.config/fish/completions/triibal.fish
+tribal completion fish > ~/.config/fish/completions/tribal.fish
 ```
 
-## `triibal update`
+## `tribal update`
 
 ```bash
-triibal update [--check] [--backup] [--restart-gateway]
+tribal update [--check] [--backup] [--restart-gateway]
 ```
 
-Pulls the latest `triibal-agent` code and reinstalls dependencies in your venv, then re-runs the post-install hooks (MCP servers, skills sync, completion install). Safe to run on a live install.
+Pulls the latest `tribal-agent` code and reinstalls dependencies in your venv, then re-runs the post-install hooks (MCP servers, skills sync, completion install). Safe to run on a live install.
 
-**pip installs:** `triibal update` detects pip-based installations automatically — it queries PyPI for the latest release and runs `pip install --upgrade triibal-agent` instead of `git pull`. PyPI releases track tagged versions (major/minor releases), not every commit on `main`. Use `--check` to see if a newer PyPI release is available without installing.
+**pip installs:** `tribal update` detects pip-based installations automatically — it queries PyPI for the latest release and runs `pip install --upgrade tribal-agent` instead of `git pull`. PyPI releases track tagged versions (major/minor releases), not every commit on `main`. Use `--check` to see if a newer PyPI release is available without installing.
 
 | Option | Description |
 |--------|-------------|
 | `--check` | Print the current commit and the latest `origin/main` commit side by side, and exit 0 if in sync or 1 if behind. Does not pull, install, or restart anything. |
-| `--backup` | Create a labeled pre-update snapshot of `TRIIBAL_HOME` (config, auth, sessions, skills, pairing data) before pulling. Default is **off** — the previous always-backup behavior was adding minutes to every update on large homes. Flip it on permanently via `update.backup: true` in `config.yaml`. |
+| `--backup` | Create a labeled pre-update snapshot of `TRIBAL_HOME` (config, auth, sessions, skills, pairing data) before pulling. Default is **off** — the previous always-backup behavior was adding minutes to every update on large homes. Flip it on permanently via `update.backup: true` in `config.yaml`. |
 | `--restart-gateway` | After a successful update, restart the running gateway service. Implies `--all` semantics if multiple profiles are installed. |
 
 Additional behavior:
 
-- **Pairing data snapshot.** Even when `--backup` is off, `triibal update` takes a lightweight snapshot of `~/.triibal/pairing/` and the Feishu comment rules before `git pull`. You can roll it back with `triibal backup restore --state pre-update` if a pull rewrites a file you were editing.
-- **Legacy `triibal.service` warning.** If Triibal detects a pre-rename `triibal.service` systemd unit (instead of the current `triibal-gateway.service`), it prints a one-time migration hint so you can avoid flap-loop issues.
+- **Pairing data snapshot.** Even when `--backup` is off, `tribal update` takes a lightweight snapshot of `~/.tribal/pairing/` and the Feishu comment rules before `git pull`. You can roll it back with `tribal backup restore --state pre-update` if a pull rewrites a file you were editing.
+- **Legacy `tribal.service` warning.** If Tribal detects a pre-rename `tribal.service` systemd unit (instead of the current `tribal-gateway.service`), it prints a one-time migration hint so you can avoid flap-loop issues.
 - **Exit codes.** `0` on success, `1` on pull/install/post-install errors, `2` on unexpected working-tree changes that block `git pull`.
 
 ## Maintenance commands
 
 | Command | Description |
 |---------|-------------|
-| `triibal version` | Print version information. |
-| `triibal update` | Pull latest changes and reinstall dependencies. |
-| `triibal postinstall` | Internal bootstrap. Runs once after `pip install triibal-agent` (or `triibal update` on pip installs) to install non-Python dependencies that pip cannot provide — Node.js runtime, headless browser, ripgrep, ffmpeg — and then trigger `triibal setup` if the profile has not been configured yet. Safe to re-run idempotently. |
-| `triibal uninstall [--full] [--yes]` | Remove Triibal, optionally deleting all config/data. |
+| `tribal version` | Print version information. |
+| `tribal update` | Pull latest changes and reinstall dependencies. |
+| `tribal postinstall` | Internal bootstrap. Runs once after `pip install tribal-agent` (or `tribal update` on pip installs) to install non-Python dependencies that pip cannot provide — Node.js runtime, headless browser, ripgrep, ffmpeg — and then trigger `tribal setup` if the profile has not been configured yet. Safe to re-run idempotently. |
+| `tribal uninstall [--full] [--yes]` | Remove Tribal, optionally deleting all config/data. |
 
 ## See also
 

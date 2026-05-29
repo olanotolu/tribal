@@ -15,7 +15,7 @@ Security features (based on OWASP + NIST SP 800-63-4 guidance):
   - File permissions: chmod 0600 on all data files
   - Codes are never logged to stdout
 
-Storage: ~/.triibal/pairing/
+Storage: ~/.tribal/pairing/
 """
 
 import hashlib
@@ -32,7 +32,7 @@ from gateway.whatsapp_identity import (
     expand_whatsapp_aliases,
     normalize_whatsapp_identifier,
 )
-from triibal_constants import get_triibal_dir
+from tribal_constants import get_tribal_dir
 from utils import atomic_replace
 
 
@@ -49,7 +49,7 @@ LOCKOUT_SECONDS = 3600              # Lockout duration after too many failures
 MAX_PENDING_PER_PLATFORM = 3        # Max pending codes per platform
 MAX_FAILED_ATTEMPTS = 5             # Failed approvals before lockout
 
-PAIRING_DIR = get_triibal_dir("platforms/pairing", "pairing")
+PAIRING_DIR = get_tribal_dir("platforms/pairing", "pairing")
 
 
 def _secure_write(path: Path, data: str) -> None:

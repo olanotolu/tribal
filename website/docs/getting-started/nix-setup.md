@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: "Nix & NixOS Setup"
-description: "Install and deploy Triibal Agent with Nix — from quick `nix run` to fully declarative NixOS module with container mode"
+description: "Install and deploy Tribal Agent with Nix — from quick `nix run` to fully declarative NixOS module with container mode"
 ---
 
 # Nix & NixOS Setup
 
-Triibal Agent ships a Nix flake with three levels of integration:
+Tribal Agent ships a Nix flake with three levels of integration:
 
 | Level | Who it's for | What you get |
 |-------|-------------|--------------|
@@ -17,9 +17,9 @@ Triibal Agent ships a Nix flake with three levels of integration:
 :::info What's different from the standard install
 The `curl | bash` installer manages Python, Node, and dependencies itself. The Nix flake replaces all of that — every Python dependency is a Nix derivation built by [uv2nix](https://github.com/pyproject-nix/uv2nix), and runtime tools (Node.js, git, ripgrep, ffmpeg) are wrapped into the binary's PATH. There is no runtime pip, no venv activation, no `npm install`.
 
-**For non-NixOS users**, this only changes the install step. Everything after (`triibal setup`, `triibal gateway install`, config editing) works identically to the standard install.
+**For non-NixOS users**, this only changes the install step. Everything after (`tribal setup`, `tribal gateway install`, config editing) works identically to the standard install.
 
-**For NixOS module users**, the entire lifecycle is different: configuration lives in `configuration.nix`, secrets go through sops-nix/agenix, the service is a systemd unit, and CLI config commands are blocked. You manage triibal the same way you manage any other NixOS service.
+**For NixOS module users**, the entire lifecycle is different: configuration lives in `configuration.nix`, secrets go through sops-nix/agenix, the service is a systemd unit, and CLI config commands are blocked. You manage tribal the same way you manage any other NixOS service.
 :::
 
 ## Prerequisites
@@ -35,28 +35,28 @@ No clone needed. Nix fetches, builds, and runs everything:
 
 ```bash
 # Run directly (builds on first use, cached after)
-nix run github:Triibal/triibal -- setup
-nix run github:Triibal/triibal -- chat
+nix run github:Tribal/tribal -- setup
+nix run github:Tribal/tribal -- chat
 
 # Or install persistently
-nix profile install github:Triibal/triibal
-triibal setup
-triibal chat
+nix profile install github:Tribal/tribal
+tribal setup
+tribal chat
 ```
 
-After `nix profile install`, `triibal`, `triibal-agent`, and `triibal-acp` are on your PATH. From here, the workflow is identical to the [standard installation](./installation.md) — `triibal setup` walks you through provider selection, `triibal gateway install` sets up a launchd (macOS) or systemd user service, and config lives in `~/.triibal/`.
+After `nix profile install`, `tribal`, `tribal-agent`, and `tribal-acp` are on your PATH. From here, the workflow is identical to the [standard installation](./installation.md) — `tribal setup` walks you through provider selection, `tribal gateway install` sets up a launchd (macOS) or systemd user service, and config lives in `~/.tribal/`.
 
 :::warning Messaging platforms (Discord, Telegram, Slack)
 The default package doesn't include messaging platform libraries — they were moved to on-demand installation, which can't work in Nix's read-only environment. If you plan to connect the agent to Discord, Telegram, or Slack, install the `messaging` variant:
 
 ```bash
-nix profile install github:Triibal/triibal#messaging
+nix profile install github:Tribal/tribal#messaging
 ```
 
 For all optional extras (voice, all providers, all platforms):
 
 ```bash
-nix profile install github:Triibal/triibal#full
+nix profile install github:Tribal/tribal#full
 ```
 
 The `full` variant adds ~700 MB to the closure. If you only need messaging platforms, `#messaging` adds just ~33 MB.
@@ -66,10 +66,10 @@ The `full` variant adds ~700 MB to the closure. If you only need messaging platf
 <summary><strong>Building from a local clone</strong></summary>
 
 ```bash
-git clone https://github.com/Triibal/triibal.git
-cd triibal-agent
+git clone https://github.com/Tribal/tribal.git
+cd tribal-agent
 nix build
-./result/bin/triibal setup
+./result/bin/tribal setup
 ```
 
 </details>
@@ -91,14 +91,14 @@ This module requires NixOS. For non-NixOS systems (macOS, other Linux distros), 
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    triibal-agent.url = "github:Triibal/triibal";
+    tribal-agent.url = "github:Tribal/tribal";
   };
 
-  outputs = { nixpkgs, triibal-agent, ... }: {
+  outputs = { nixpkgs, tribal-agent, ... }: {
     nixosConfigurations.your-host = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
-        triibal-agent.nixosModules.default
+        tribal-agent.nixosModules.default
         ./configuration.nix
       ];
     };
@@ -111,54 +111,54 @@ This module requires NixOS. For non-NixOS systems (macOS, other Linux distros), 
 ```nix
 # configuration.nix
 { config, ... }: {
-  services.triibal-agent = {
+  services.tribal-agent = {
     enable = true;
     settings.model.default = "anthropic/claude-sonnet-4";
-    environmentFiles = [ config.sops.secrets."triibal-env".path ];
+    environmentFiles = [ config.sops.secrets."tribal-env".path ];
     addToSystemPackages = true;
   };
 }
 ```
 
-That's it. `nixos-rebuild switch` creates the `triibal` user, generates `config.yaml`, wires up secrets, and starts the gateway — a long-running service that connects the agent to messaging platforms (Telegram, Discord, etc.) and listens for incoming messages.
+That's it. `nixos-rebuild switch` creates the `tribal` user, generates `config.yaml`, wires up secrets, and starts the gateway — a long-running service that connects the agent to messaging platforms (Telegram, Discord, etc.) and listens for incoming messages.
 
 :::warning Secrets are required
 The `environmentFiles` line above assumes you have [sops-nix](https://github.com/Mic92/sops-nix) or [agenix](https://github.com/ryantm/agenix) configured. The file should contain at least one LLM provider key (e.g., `OPENROUTER_API_KEY=sk-or-...`). See [Secrets Management](#secrets-management) for full setup. If you don't have a secrets manager yet, you can use a plain file as a starting point — just ensure it's not world-readable:
 
 ```bash
-echo "OPENROUTER_API_KEY=sk-or-your-key" | sudo install -m 0600 -o triibal /dev/stdin /var/lib/triibal/env
+echo "OPENROUTER_API_KEY=sk-or-your-key" | sudo install -m 0600 -o tribal /dev/stdin /var/lib/tribal/env
 ```
 
 ```nix
-services.triibal-agent.environmentFiles = [ "/var/lib/triibal/env" ];
+services.tribal-agent.environmentFiles = [ "/var/lib/tribal/env" ];
 ```
 :::
 
 :::tip addToSystemPackages
-Setting `addToSystemPackages = true` does two things: puts the `triibal` CLI on your system PATH **and** sets `TRIIBAL_HOME` system-wide so the interactive CLI shares state (sessions, skills, cron) with the gateway service. Without it, running `triibal` in your shell creates a separate `~/.triibal/` directory.
+Setting `addToSystemPackages = true` does two things: puts the `tribal` CLI on your system PATH **and** sets `TRIBAL_HOME` system-wide so the interactive CLI shares state (sessions, skills, cron) with the gateway service. Without it, running `tribal` in your shell creates a separate `~/.tribal/` directory.
 :::
 
 ### Container-aware CLI
 
 :::info
-When `container.enable = true` and `addToSystemPackages = true`, **every** `triibal` command on the host automatically routes into the managed container. This means your interactive CLI session runs inside the same environment as the gateway service — with access to all container-installed packages and tools.
+When `container.enable = true` and `addToSystemPackages = true`, **every** `tribal` command on the host automatically routes into the managed container. This means your interactive CLI session runs inside the same environment as the gateway service — with access to all container-installed packages and tools.
 
-- The routing is transparent: `triibal chat`, `triibal sessions list`, `triibal version`, etc. all exec into the container under the hood
+- The routing is transparent: `tribal chat`, `tribal sessions list`, `tribal version`, etc. all exec into the container under the hood
 - All CLI flags are forwarded as-is
 - If the container isn't running, the CLI retries briefly (5s with a spinner for interactive use, 10s silently for scripts) then fails with a clear error — no silent fallback
-- For developers working on the triibal codebase, set `TRIIBAL_DEV=1` to bypass container routing and run the local checkout directly
+- For developers working on the tribal codebase, set `TRIBAL_DEV=1` to bypass container routing and run the local checkout directly
 
-Set `container.hostUsers` to create a `~/.triibal` symlink to the service state directory, so the host CLI and the container share sessions, config, and memories:
+Set `container.hostUsers` to create a `~/.tribal` symlink to the service state directory, so the host CLI and the container share sessions, config, and memories:
 
 ```nix
-services.triibal-agent = {
+services.tribal-agent = {
   container.enable = true;
   container.hostUsers = [ "your-username" ];
   addToSystemPackages = true;
 };
 ```
 
-Users listed in `hostUsers` are automatically added to the `triibal` group for file permission access.
+Users listed in `hostUsers` are automatically added to the `tribal` group for file permission access.
 
 **Podman users:** The NixOS service runs the container as root. Docker users get access via the `docker` group socket, but Podman's rootful containers require sudo. Grant passwordless sudo for your container runtime:
 
@@ -172,7 +172,7 @@ security.sudo.extraRules = [{
 }];
 ```
 
-The CLI auto-detects when sudo is needed and uses it transparently. Without this, you'll need to run `sudo triibal chat` manually.
+The CLI auto-detects when sudo is needed and uses it transparently. Without this, you'll need to run `sudo tribal chat` manually.
 :::
 
 ### Verify It Works
@@ -181,14 +181,14 @@ After `nixos-rebuild switch`, check that the service is running:
 
 ```bash
 # Check service status
-systemctl status triibal-agent
+systemctl status tribal-agent
 
 # Watch logs (Ctrl+C to stop)
-journalctl -u triibal-agent -f
+journalctl -u tribal-agent -f
 
 # If addToSystemPackages is true, test the CLI
-triibal version
-triibal config       # shows the generated config
+tribal version
+tribal config       # shows the generated config
 ```
 
 ### Choosing a Deployment Mode
@@ -207,7 +207,7 @@ To enable container mode, add one line:
 
 ```nix
 {
-  services.triibal-agent = {
+  services.tribal-agent = {
     enable = true;
     container.enable = true;
     # ... rest of config is identical
@@ -229,14 +229,14 @@ The `settings` option accepts an arbitrary attrset that is rendered as `config.y
 
 ```nix
 # base.nix
-services.triibal-agent.settings = {
+services.tribal-agent.settings = {
   model.default = "anthropic/claude-sonnet-4";
   toolsets = [ "all" ];
   terminal = { backend = "local"; timeout = 180; };
 };
 
 # personality.nix
-services.triibal-agent.settings = {
+services.tribal-agent.settings = {
   display = { compact = false; personality = "kawaii"; };
   memory = { memory_enabled = true; user_profile_enabled = true; };
 };
@@ -245,7 +245,7 @@ services.triibal-agent.settings = {
 Both are deep-merged at evaluation time. Nix-declared keys always win over keys in an existing `config.yaml` on disk, but **user-added keys that Nix doesn't touch are preserved**. This means if the agent or a manual edit adds keys like `skills.disabled` or `streaming.enabled`, they survive `nixos-rebuild switch`.
 
 :::note Model naming
-`settings.model.default` uses the model identifier your provider expects. With [OpenRouter](https://openrouter.ai) (the default), these look like `"anthropic/claude-sonnet-4"` or `"google/gemini-3-flash"`. If you're using a provider directly (Anthropic, OpenAI), set `settings.model.base_url` to point at their API and use their native model IDs (e.g., `"claude-sonnet-4-20250514"`). When no `base_url` is set, Triibal defaults to OpenRouter.
+`settings.model.default` uses the model identifier your provider expects. With [OpenRouter](https://openrouter.ai) (the default), these look like `"anthropic/claude-sonnet-4"` or `"google/gemini-3-flash"`. If you're using a provider directly (Anthropic, OpenAI), set `settings.model.base_url` to point at their API and use their native model IDs (e.g., `"claude-sonnet-4-20250514"`). When no `base_url` is set, Tribal defaults to OpenRouter.
 :::
 
 :::tip Discovering available config keys
@@ -257,7 +257,7 @@ Run `nix build .#configKeys && cat result` to see every leaf config key extracte
 
 ```nix
 { config, ... }: {
-  services.triibal-agent = {
+  services.tribal-agent = {
     enable = true;
     container.enable = true;
 
@@ -281,7 +281,7 @@ Run `nix build .#configKeys && cat result` to see every leaf config key extracte
     };
 
     # ── Secrets ────────────────────────────────────────────────────────
-    environmentFiles = [ config.sops.secrets."triibal-env".path ];
+    environmentFiles = [ config.sops.secrets."tribal-env".path ];
 
     # ── Documents ──────────────────────────────────────────────────────
     documents = {
@@ -319,10 +319,10 @@ Run `nix build .#configKeys && cat result` to see every leaf config key extracte
 If you'd rather manage `config.yaml` entirely outside Nix, use `configFile`:
 
 ```nix
-services.triibal-agent.configFile = /etc/triibal/config.yaml;
+services.tribal-agent.configFile = /etc/tribal/config.yaml;
 ```
 
-This bypasses `settings` entirely — no merge, no generation. The file is copied as-is to `$TRIIBAL_HOME/config.yaml` on each activation.
+This bypasses `settings` entirely — no merge, no generation. The file is copied as-is to `$TRIBAL_HOME/config.yaml` on each activation.
 
 ### Customization Cheatsheet
 
@@ -332,8 +332,8 @@ Quick reference for the most common things Nix users want to customize:
 |---|---|---|
 | Change the LLM model | `settings.model.default` | `"anthropic/claude-sonnet-4"` |
 | Use a different provider endpoint | `settings.model.base_url` | `"https://openrouter.ai/api/v1"` |
-| Add API keys | `environmentFiles` | `[ config.sops.secrets."triibal-env".path ]` |
-| Give the agent a personality | `${services.triibal-agent.stateDir}/.triibal/SOUL.md` | manage the file directly |
+| Add API keys | `environmentFiles` | `[ config.sops.secrets."tribal-env".path ]` |
+| Give the agent a personality | `${services.tribal-agent.stateDir}/.tribal/SOUL.md` | manage the file directly |
 | Add MCP tool servers | `mcpServers.<name>` | See [MCP Servers](#mcp-servers) |
 | Enable Discord/Telegram/Slack | `extraDependencyGroups` | `[ "messaging" ]` |
 | Mount host directories into container | `container.extraVolumes` | `[ "/data:/data:rw" ]` |
@@ -342,8 +342,8 @@ Quick reference for the most common things Nix users want to customize:
 | Share state between host CLI and container | `container.hostUsers` | `[ "sidbin" ]` |
 | Make extra tools available to the agent | `extraPackages` | `[ pkgs.pandoc pkgs.imagemagick ]` |
 | Use a custom base image | `container.image` | `"ubuntu:24.04"` |
-| Override the triibal package | `package` | `inputs.triibal-agent.packages.${system}.default.override { ... }` |
-| Change state directory | `stateDir` | `"/opt/triibal"` |
+| Override the tribal package | `package` | `inputs.tribal-agent.packages.${system}.default.override { ... }` |
+| Change state directory | `stateDir` | `"/opt/tribal"` |
 | Set the agent's working directory | `workingDirectory` | `"/home/user/projects"` |
 
 ---
@@ -354,20 +354,20 @@ Quick reference for the most common things Nix users want to customize:
 Values in Nix expressions end up in `/nix/store`, which is world-readable. Always use `environmentFiles` with a secrets manager.
 :::
 
-Both `environment` (non-secret vars) and `environmentFiles` (secret files) are merged into `$TRIIBAL_HOME/.env` at activation time (`nixos-rebuild switch`). Triibal reads this file on every startup, so changes take effect with a `systemctl restart triibal-agent` — no container recreation needed.
+Both `environment` (non-secret vars) and `environmentFiles` (secret files) are merged into `$TRIBAL_HOME/.env` at activation time (`nixos-rebuild switch`). Tribal reads this file on every startup, so changes take effect with a `systemctl restart tribal-agent` — no container recreation needed.
 
 ### sops-nix
 
 ```nix
 {
   sops = {
-    defaultSopsFile = ./secrets/triibal.yaml;
+    defaultSopsFile = ./secrets/tribal.yaml;
     age.keyFile = "/home/user/.config/sops/age/keys.txt";
-    secrets."triibal-env" = { format = "yaml"; };
+    secrets."tribal-env" = { format = "yaml"; };
   };
 
-  services.triibal-agent.environmentFiles = [
-    config.sops.secrets."triibal-env".path
+  services.tribal-agent.environmentFiles = [
+    config.sops.secrets."tribal-env".path
   ];
 }
 ```
@@ -375,8 +375,8 @@ Both `environment` (non-secret vars) and `environmentFiles` (secret files) are m
 The secrets file contains key-value pairs:
 
 ```yaml
-# secrets/triibal.yaml (encrypted with sops)
-triibal-env: |
+# secrets/tribal.yaml (encrypted with sops)
+tribal-env: |
     OPENROUTER_API_KEY=sk-or-...
     TELEGRAM_BOT_TOKEN=123456:ABC...
     ANTHROPIC_API_KEY=sk-ant-...
@@ -386,10 +386,10 @@ triibal-env: |
 
 ```nix
 {
-  age.secrets.triibal-env.file = ./secrets/triibal-env.age;
+  age.secrets.tribal-env.file = ./secrets/tribal-env.age;
 
-  services.triibal-agent.environmentFiles = [
-    config.age.secrets.triibal-env.path
+  services.tribal-agent.environmentFiles = [
+    config.age.secrets.tribal-env.path
   ];
 }
 ```
@@ -400,8 +400,8 @@ For platforms requiring OAuth (e.g., Discord), use `authFile` to seed credential
 
 ```nix
 {
-  services.triibal-agent = {
-    authFile = config.sops.secrets."triibal/auth.json".path;
+  services.tribal-agent = {
+    authFile = config.sops.secrets."tribal/auth.json".path;
     # authFileForceOverwrite = true;  # overwrite on every activation
   };
 }
@@ -413,16 +413,16 @@ The file is only copied if `auth.json` doesn't already exist (unless `authFileFo
 
 ## Documents
 
-The `documents` option installs files into the agent's working directory (the `workingDirectory`, which the agent reads as its workspace). Triibal looks for specific filenames by convention:
+The `documents` option installs files into the agent's working directory (the `workingDirectory`, which the agent reads as its workspace). Tribal looks for specific filenames by convention:
 
 - **`USER.md`** — context about the user the agent is interacting with.
 - Any other files you place here are visible to the agent as workspace files.
 
-The agent identity file is separate: Triibal loads its primary `SOUL.md` from `$TRIIBAL_HOME/SOUL.md`, which in the NixOS module is `${services.triibal-agent.stateDir}/.triibal/SOUL.md`. Putting `SOUL.md` in `documents` only creates a workspace file and will not replace the main persona file.
+The agent identity file is separate: Tribal loads its primary `SOUL.md` from `$TRIBAL_HOME/SOUL.md`, which in the NixOS module is `${services.tribal-agent.stateDir}/.tribal/SOUL.md`. Putting `SOUL.md` in `documents` only creates a workspace file and will not replace the main persona file.
 
 ```nix
 {
-  services.triibal-agent.documents = {
+  services.tribal-agent.documents = {
     "USER.md" = ./documents/USER.md;  # path reference, copied from Nix store
   };
 }
@@ -440,7 +440,7 @@ The `mcpServers` option declaratively configures [MCP (Model Context Protocol)](
 
 ```nix
 {
-  services.triibal-agent.mcpServers = {
+  services.tribal-agent.mcpServers = {
     filesystem = {
       command = "npx";
       args = [ "-y" "@modelcontextprotocol/server-filesystem" "/data/workspace" ];
@@ -455,14 +455,14 @@ The `mcpServers` option declaratively configures [MCP (Model Context Protocol)](
 ```
 
 :::tip
-Environment variables in `env` values are resolved from `$TRIIBAL_HOME/.env` at runtime. Use `environmentFiles` to inject secrets — never put tokens directly in Nix config.
+Environment variables in `env` values are resolved from `$TRIBAL_HOME/.env` at runtime. Use `environmentFiles` to inject secrets — never put tokens directly in Nix config.
 :::
 
 ### HTTP Transport (Remote Servers)
 
 ```nix
 {
-  services.triibal-agent.mcpServers.remote-api = {
+  services.tribal-agent.mcpServers.remote-api = {
     url = "https://mcp.example.com/v1/mcp";
     headers.Authorization = "Bearer \${MCP_REMOTE_API_KEY}";
     timeout = 180;
@@ -472,34 +472,34 @@ Environment variables in `env` values are resolved from `$TRIIBAL_HOME/.env` at 
 
 ### HTTP Transport with OAuth
 
-Set `auth = "oauth"` for servers using OAuth 2.1. Triibal implements the full PKCE flow — metadata discovery, dynamic client registration, token exchange, and automatic refresh.
+Set `auth = "oauth"` for servers using OAuth 2.1. Tribal implements the full PKCE flow — metadata discovery, dynamic client registration, token exchange, and automatic refresh.
 
 ```nix
 {
-  services.triibal-agent.mcpServers.my-oauth-server = {
+  services.tribal-agent.mcpServers.my-oauth-server = {
     url = "https://mcp.example.com/mcp";
     auth = "oauth";
   };
 }
 ```
 
-Tokens are stored in `$TRIIBAL_HOME/mcp-tokens/<server-name>.json` and persist across restarts and rebuilds.
+Tokens are stored in `$TRIBAL_HOME/mcp-tokens/<server-name>.json` and persist across restarts and rebuilds.
 
 <details>
 <summary><strong>Initial OAuth authorization on headless servers</strong></summary>
 
-The first OAuth authorization requires a browser-based consent flow. In a headless deployment, Triibal prints the authorization URL to stdout/logs instead of opening a browser.
+The first OAuth authorization requires a browser-based consent flow. In a headless deployment, Tribal prints the authorization URL to stdout/logs instead of opening a browser.
 
-**Option A: Interactive bootstrap** — run the flow once via `docker exec` (container) or `sudo -u triibal` (native):
+**Option A: Interactive bootstrap** — run the flow once via `docker exec` (container) or `sudo -u tribal` (native):
 
 ```bash
 # Container mode
-docker exec -it triibal-agent \
-  triibal mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
+docker exec -it tribal-agent \
+  tribal mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
 
 # Native mode
-sudo -u triibal TRIIBAL_HOME=/var/lib/triibal/.triibal \
-  triibal mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
+sudo -u tribal TRIBAL_HOME=/var/lib/tribal/.tribal \
+  tribal mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
 ```
 
 The container uses `--network=host`, so the OAuth callback listener on `127.0.0.1` is reachable from the host browser.
@@ -507,10 +507,10 @@ The container uses `--network=host`, so the OAuth callback listener on `127.0.0.
 **Option B: Pre-seed tokens** — complete the flow on a workstation, then copy tokens:
 
 ```bash
-triibal mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
-scp ~/.triibal/mcp-tokens/my-oauth-server{,.client}.json \
-    server:/var/lib/triibal/.triibal/mcp-tokens/
-# Ensure: chown triibal:triibal, chmod 0600
+tribal mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
+scp ~/.tribal/mcp-tokens/my-oauth-server{,.client}.json \
+    server:/var/lib/tribal/.tribal/mcp-tokens/
+# Ensure: chown tribal:tribal, chmod 0600
 ```
 
 </details>
@@ -521,7 +521,7 @@ Some MCP servers can request LLM completions from the agent:
 
 ```nix
 {
-  services.triibal-agent.mcpServers.analysis = {
+  services.tribal-agent.mcpServers.analysis = {
     command = "npx";
     args = [ "-y" "analysis-server" ];
     sampling = {
@@ -539,20 +539,20 @@ Some MCP servers can request LLM completions from the agent:
 
 ## Managed Mode
 
-When triibal runs via the NixOS module, the following CLI commands are **blocked** with a descriptive error pointing you to `configuration.nix`:
+When tribal runs via the NixOS module, the following CLI commands are **blocked** with a descriptive error pointing you to `configuration.nix`:
 
 | Blocked command | Why |
 |---|---|
-| `triibal setup` | Config is declarative — edit `settings` in your Nix config |
-| `triibal config edit` | Config is generated from `settings` |
-| `triibal config set <key> <value>` | Config is generated from `settings` |
-| `triibal gateway install` | The systemd service is managed by NixOS |
-| `triibal gateway uninstall` | The systemd service is managed by NixOS |
+| `tribal setup` | Config is declarative — edit `settings` in your Nix config |
+| `tribal config edit` | Config is generated from `settings` |
+| `tribal config set <key> <value>` | Config is generated from `settings` |
+| `tribal gateway install` | The systemd service is managed by NixOS |
+| `tribal gateway uninstall` | The systemd service is managed by NixOS |
 
 This prevents drift between what Nix declares and what's on disk. Detection uses two signals:
 
-1. **`TRIIBAL_MANAGED=true`** environment variable — set by the systemd service, visible to the gateway process
-2. **`.managed` marker file** in `TRIIBAL_HOME` — set by the activation script, visible to interactive shells (e.g., `docker exec -it triibal-agent triibal config set ...` is also blocked)
+1. **`TRIBAL_MANAGED=true`** environment variable — set by the systemd service, visible to the gateway process
+2. **`.managed` marker file** in `TRIBAL_HOME` — set by the activation script, visible to interactive shells (e.g., `docker exec -it tribal-agent tribal config set ...` is also blocked)
 
 To change configuration, edit your Nix config and run `sudo nixos-rebuild switch`.
 
@@ -564,25 +564,25 @@ To change configuration, edit your Nix config and run `sudo nixos-rebuild switch
 This section is only relevant if you're using `container.enable = true`. Skip it for native mode deployments.
 :::
 
-When container mode is enabled, triibal runs inside a persistent Ubuntu container with the Nix-built binary bind-mounted read-only from the host:
+When container mode is enabled, tribal runs inside a persistent Ubuntu container with the Nix-built binary bind-mounted read-only from the host:
 
 ```
 Host                                    Container
 ────                                    ─────────
-/nix/store/...-triibal-agent-0.1.0  ──►  /nix/store/... (ro)
-~/.triibal -> /var/lib/triibal/.triibal       (symlink bridge, per hostUsers)
-/var/lib/triibal/                    ──►  /data/          (rw)
+/nix/store/...-tribal-agent-0.1.0  ──►  /nix/store/... (ro)
+~/.tribal -> /var/lib/tribal/.tribal       (symlink bridge, per hostUsers)
+/var/lib/tribal/                    ──►  /data/          (rw)
   ├── current-package -> /nix/store/...    (symlink, updated each rebuild)
   ├── .gc-root -> /nix/store/...           (prevents nix-collect-garbage)
   ├── .container-identity                  (sha256 hash, triggers recreation)
-  ├── .triibal/                             (TRIIBAL_HOME)
+  ├── .tribal/                             (TRIBAL_HOME)
   │   ├── .env                             (merged from environment + environmentFiles)
   │   ├── config.yaml                      (Nix-generated, deep-merged by activation)
   │   ├── .managed                         (marker file)
   │   ├── .container-mode                  (routing metadata: backend, exec_user, etc.)
   │   ├── state.db, sessions/, memories/   (runtime state)
   │   └── mcp-tokens/                      (OAuth tokens for MCP servers)
-  ├── home/                                ──►  /home/triibal    (rw)
+  ├── home/                                ──►  /home/tribal    (rw)
   └── workspace/                           (MESSAGING_CWD)
       ├── SOUL.md                          (from documents option)
       └── (agent-created files)
@@ -590,13 +590,13 @@ Host                                    Container
 Container writable layer (apt/pip/npm):   /usr, /usr/local, /tmp
 ```
 
-The Nix-built binary works inside the Ubuntu container because `/nix/store` is bind-mounted — it brings its own interpreter and all dependencies, so there's no reliance on the container's system libraries. The container entrypoint resolves through a `current-package` symlink: `/data/current-package/bin/triibal gateway run --replace`. On `nixos-rebuild switch`, only the symlink is updated — the container keeps running.
+The Nix-built binary works inside the Ubuntu container because `/nix/store` is bind-mounted — it brings its own interpreter and all dependencies, so there's no reliance on the container's system libraries. The container entrypoint resolves through a `current-package` symlink: `/data/current-package/bin/tribal gateway run --replace`. On `nixos-rebuild switch`, only the symlink is updated — the container keeps running.
 
 ### What Persists Across What
 
-| Event | Container recreated? | `/data` (state) | `/home/triibal` | Writable layer (`apt`/`pip`/`npm`) |
+| Event | Container recreated? | `/data` (state) | `/home/tribal` | Writable layer (`apt`/`pip`/`npm`) |
 |---|---|---|---|---|
-| `systemctl restart triibal-agent` | No | Persists | Persists | Persists |
+| `systemctl restart tribal-agent` | No | Persists | Persists | Persists |
 | `nixos-rebuild switch` (code change) | No (symlink updated) | Persists | Persists | Persists |
 | Host reboot | No | Persists | Persists | Persists |
 | `nix-collect-garbage` | No (GC root) | Persists | Persists | Persists |
@@ -604,53 +604,53 @@ The Nix-built binary works inside the Ubuntu container because `/nix/store` is b
 | Volume/options change | **Yes** | Persists | Persists | **Lost** |
 | `environment`/`environmentFiles` change | No | Persists | Persists | Persists |
 
-The container is only recreated when its **identity hash** changes. The hash covers: schema version, image, `extraVolumes`, `extraOptions`, and the entrypoint script. Changes to environment variables, settings, documents, or the triibal package itself do **not** trigger recreation.
+The container is only recreated when its **identity hash** changes. The hash covers: schema version, image, `extraVolumes`, `extraOptions`, and the entrypoint script. Changes to environment variables, settings, documents, or the tribal package itself do **not** trigger recreation.
 
 :::warning Writable layer loss
-When the identity hash changes (image upgrade, new volumes, new container options), the container is destroyed and recreated from a fresh pull of `container.image`. Any `apt install`, `pip install`, or `npm install` packages in the writable layer are lost. State in `/data` and `/home/triibal` is preserved (these are bind mounts).
+When the identity hash changes (image upgrade, new volumes, new container options), the container is destroyed and recreated from a fresh pull of `container.image`. Any `apt install`, `pip install`, or `npm install` packages in the writable layer are lost. State in `/data` and `/home/tribal` is preserved (these are bind mounts).
 
-If the agent relies on specific packages, consider baking them into a custom image (`container.image = "my-registry/triibal-base:latest"`) or scripting their installation in the agent's SOUL.md.
+If the agent relies on specific packages, consider baking them into a custom image (`container.image = "my-registry/tribal-base:latest"`) or scripting their installation in the agent's SOUL.md.
 :::
 
 ### GC Root Protection
 
-The `preStart` script creates a GC root at `${stateDir}/.gc-root` pointing to the current triibal package. This prevents `nix-collect-garbage` from removing the running binary. If the GC root somehow breaks, restarting the service recreates it.
+The `preStart` script creates a GC root at `${stateDir}/.gc-root` pointing to the current tribal package. This prevents `nix-collect-garbage` from removing the running binary. If the GC root somehow breaks, restarting the service recreates it.
 
 ---
 
 ## Plugins
 
-The NixOS module supports declarative plugin installation — no imperative `triibal plugins install` needed.
+The NixOS module supports declarative plugin installation — no imperative `tribal plugins install` needed.
 
 ### Directory Plugins (`extraPlugins`)
 
-For plugins that are just a source tree with `plugin.yaml` + `__init__.py` (e.g., [triibal-lcm](https://github.com/stephenschoettler/triibal-lcm)):
+For plugins that are just a source tree with `plugin.yaml` + `__init__.py` (e.g., [tribal-lcm](https://github.com/stephenschoettler/tribal-lcm)):
 
 ```nix
-services.triibal-agent.extraPlugins = [
+services.tribal-agent.extraPlugins = [
   (pkgs.fetchFromGitHub {
     owner = "stephenschoettler";
-    repo = "triibal-lcm";
+    repo = "tribal-lcm";
     rev = "v0.7.0";
     hash = "sha256-...";
   })
 ];
 ```
 
-Plugins are symlinked into `$TRIIBAL_HOME/plugins/` at activation time. Triibal discovers them via its normal directory scan. Removing a plugin from the list and running `nixos-rebuild switch` removes the symlink.
+Plugins are symlinked into `$TRIBAL_HOME/plugins/` at activation time. Tribal discovers them via its normal directory scan. Removing a plugin from the list and running `nixos-rebuild switch` removes the symlink.
 
 ### Entry-Point Plugins (`extraPythonPackages`)
 
-For pip-packaged plugins that register via `[project.entry-points."triibal_agent.plugins"]` (e.g., [rtk-triibal](https://github.com/ogallotti/rtk-triibal)):
+For pip-packaged plugins that register via `[project.entry-points."tribal_agent.plugins"]` (e.g., [rtk-tribal](https://github.com/ogallotti/rtk-tribal)):
 
 ```nix
-services.triibal-agent.extraPythonPackages = [
+services.tribal-agent.extraPythonPackages = [
   (pkgs.python312Packages.buildPythonPackage {
-    pname = "rtk-triibal";
+    pname = "rtk-tribal";
     version = "1.0.0";
     src = pkgs.fetchFromGitHub {
       owner = "ogallotti";
-      repo = "rtk-triibal";
+      repo = "rtk-tribal";
       rev = "v1.0.0";
       hash = "sha256-...";
     };
@@ -660,20 +660,20 @@ services.triibal-agent.extraPythonPackages = [
 ];
 ```
 
-The package's `site-packages` is added to PYTHONPATH in the triibal wrapper. `importlib.metadata` discovers the entry point at session start.
+The package's `site-packages` is added to PYTHONPATH in the tribal wrapper. `importlib.metadata` discovers the entry point at session start.
 
 ### Optional Dependency Groups (`extraDependencyGroups`)
 
-For optional extras declared in triibal-agent's `pyproject.toml`, use `extraDependencyGroups` to include them in the sealed venv at build time. This is required for any extra not in the default `[all]` set — on Nix, runtime installation into the read-only store is not possible.
+For optional extras declared in tribal-agent's `pyproject.toml`, use `extraDependencyGroups` to include them in the sealed venv at build time. This is required for any extra not in the default `[all]` set — on Nix, runtime installation into the read-only store is not possible.
 
 ```nix
 # Enable Discord, Telegram, Slack
-services.triibal-agent.extraDependencyGroups = [ "messaging" ];
+services.tribal-agent.extraDependencyGroups = [ "messaging" ];
 ```
 
 ```nix
 # Enable a memory provider
-services.triibal-agent = {
+services.tribal-agent = {
   extraDependencyGroups = [ "hindsight" ];
   settings.memory.provider = "hindsight";
 };
@@ -717,7 +717,7 @@ Or use the pre-built `#messaging` or `#full` flake packages instead of per-extra
 A directory plugin with third-party Python dependencies needs both options:
 
 ```nix
-services.triibal-agent = {
+services.tribal-agent = {
   extraPlugins = [ my-plugin-src ];          # plugin source
   extraPythonPackages = [ pkgs.python312Packages.redis ];  # its Python dep
   extraPackages = [ pkgs.redis ];            # system binary it needs
@@ -730,12 +730,12 @@ External flakes can override the package directly:
 
 ```nix
 {
-  inputs.triibal-agent.url = "github:Triibal/triibal";
-  outputs = { triibal-agent, nixpkgs, ... }: {
-    nixpkgs.overlays = [ triibal-agent.overlays.default ];
+  inputs.tribal-agent.url = "github:Tribal/tribal";
+  outputs = { tribal-agent, nixpkgs, ... }: {
+    nixpkgs.overlays = [ tribal-agent.overlays.default ];
     # Then:
-    #   pkgs.triibal-agent.override { extraPythonPackages = [...]; }
-    #   pkgs.triibal-agent.override { extraDependencyGroups = [ "hindsight" ]; }
+    #   pkgs.tribal-agent.override { extraPythonPackages = [...]; }
+    #   pkgs.tribal-agent.override { extraDependencyGroups = [ "hindsight" ]; }
   };
 }
 ```
@@ -745,14 +745,14 @@ External flakes can override the package directly:
 Plugins still need to be enabled in `config.yaml`. Add them via the declarative settings:
 
 ```nix
-services.triibal-agent.settings.plugins.enabled = [
-  "triibal-lcm"
+services.tribal-agent.settings.plugins.enabled = [
+  "tribal-lcm"
   "rtk-rewrite"
 ];
 ```
 
 :::note
-A build-time collision check prevents plugin packages from shadowing core triibal dependencies. If a plugin provides a package already in the sealed venv, `nixos-rebuild` fails with a clear error.
+A build-time collision check prevents plugin packages from shadowing core tribal dependencies. If a plugin provides a package already in the sealed venv, `nixos-rebuild` fails with a clear error.
 :::
 
 ---
@@ -764,7 +764,7 @@ A build-time collision check prevents plugin packages from shadowing core triiba
 The flake provides a development shell with Python 3.12, uv, Node.js, and all runtime tools:
 
 ```bash
-cd triibal-agent
+cd tribal-agent
 nix develop
 
 # Shell provides:
@@ -772,8 +772,8 @@ nix develop
 #   - Node.js 22, ripgrep, git, openssh, ffmpeg on PATH
 #   - Stamp-file optimization: re-entry is near-instant if deps haven't changed
 
-triibal setup
-triibal chat
+tribal setup
+tribal chat
 ```
 
 ### direnv (Recommended)
@@ -781,7 +781,7 @@ triibal chat
 The included `.envrc` activates the dev shell automatically:
 
 ```bash
-cd triibal-agent
+cd tribal-agent
 direnv allow    # one-time
 # Subsequent entries are near-instant (stamp file skips dep install)
 ```
@@ -798,7 +798,7 @@ nix flake check
 nix build .#checks.x86_64-linux.package-contents   # binaries exist + version
 nix build .#checks.x86_64-linux.entry-points-sync  # pyproject.toml ↔ Nix package sync
 nix build .#checks.x86_64-linux.cli-commands        # gateway/config subcommands
-nix build .#checks.x86_64-linux.managed-guard       # TRIIBAL_MANAGED blocks mutation
+nix build .#checks.x86_64-linux.managed-guard       # TRIBAL_MANAGED blocks mutation
 nix build .#checks.x86_64-linux.bundled-skills      # skills present in package
 nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves user keys
 ```
@@ -808,11 +808,11 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 
 | Check | What it tests |
 |---|---|
-| `package-contents` | `triibal` and `triibal-agent` binaries exist and `triibal version` runs |
+| `package-contents` | `tribal` and `tribal-agent` binaries exist and `tribal version` runs |
 | `entry-points-sync` | Every `[project.scripts]` entry in `pyproject.toml` has a wrapped binary in the Nix package |
-| `cli-commands` | `triibal --help` exposes `gateway` and `config` subcommands |
-| `managed-guard` | `TRIIBAL_MANAGED=true triibal config set ...` prints the NixOS error |
-| `bundled-skills` | Skills directory exists, contains SKILL.md files, `TRIIBAL_BUNDLED_SKILLS` is set in wrapper |
+| `cli-commands` | `tribal --help` exposes `gateway` and `config` subcommands |
+| `managed-guard` | `TRIBAL_MANAGED=true tribal config set ...` prints the NixOS error |
+| `bundled-skills` | Skills directory exists, contains SKILL.md files, `TRIBAL_BUNDLED_SKILLS` is set in wrapper |
 | `config-roundtrip` | 7 merge scenarios: fresh install, Nix override, user key preservation, mixed merge, MCP additive merge, nested deep merge, idempotency |
 
 </details>
@@ -825,14 +825,14 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `enable` | `bool` | `false` | Enable the triibal-agent service |
-| `package` | `package` | `triibal-agent` | The triibal-agent package to use |
-| `user` | `str` | `"triibal"` | System user |
-| `group` | `str` | `"triibal"` | System group |
+| `enable` | `bool` | `false` | Enable the tribal-agent service |
+| `package` | `package` | `tribal-agent` | The tribal-agent package to use |
+| `user` | `str` | `"tribal"` | System user |
+| `group` | `str` | `"tribal"` | System group |
 | `createUser` | `bool` | `true` | Auto-create user/group |
-| `stateDir` | `str` | `"/var/lib/triibal"` | State directory (`TRIIBAL_HOME` parent) |
+| `stateDir` | `str` | `"/var/lib/tribal"` | State directory (`TRIBAL_HOME` parent) |
 | `workingDirectory` | `str` | `"${stateDir}/workspace"` | Agent working directory (`MESSAGING_CWD`) |
-| `addToSystemPackages` | `bool` | `false` | Add `triibal` CLI to system PATH and set `TRIIBAL_HOME` system-wide |
+| `addToSystemPackages` | `bool` | `false` | Add `tribal` CLI to system PATH and set `TRIBAL_HOME` system-wide |
 
 ### Configuration
 
@@ -845,7 +845,7 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `environmentFiles` | `listOf str` | `[]` | Paths to env files with secrets. Merged into `$TRIIBAL_HOME/.env` at activation time |
+| `environmentFiles` | `listOf str` | `[]` | Paths to env files with secrets. Merged into `$TRIBAL_HOME/.env` at activation time |
 | `environment` | `attrsOf str` | `{}` | Non-secret env vars. **Visible in Nix store** — do not put secrets here |
 | `authFile` | `null` or `path` | `null` | OAuth credentials seed. Only copied on first deploy |
 | `authFileForceOverwrite` | `bool` | `false` | Always overwrite `auth.json` from `authFile` on activation |
@@ -877,9 +877,9 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `extraArgs` | `listOf str` | `[]` | Extra args for `triibal gateway` |
-| `extraPackages` | `listOf package` | `[]` | Extra packages available to the agent. Added to the triibal user's per-user profile so terminal commands, skills, and cron jobs all see them |
-| `extraPlugins` | `listOf package` | `[]` | Directory plugin packages to symlink into `$TRIIBAL_HOME/plugins/`. Each must contain `plugin.yaml` |
+| `extraArgs` | `listOf str` | `[]` | Extra args for `tribal gateway` |
+| `extraPackages` | `listOf package` | `[]` | Extra packages available to the agent. Added to the tribal user's per-user profile so terminal commands, skills, and cron jobs all see them |
+| `extraPlugins` | `listOf package` | `[]` | Directory plugin packages to symlink into `$TRIBAL_HOME/plugins/`. Each must contain `plugin.yaml` |
 | `extraPythonPackages` | `listOf package` | `[]` | Python packages added to PYTHONPATH for entry-point plugin discovery. Build with `python312Packages` |
 | `extraDependencyGroups` | `listOf str` | `[]` | pyproject.toml optional extras to include in the sealed venv (e.g. `["hindsight"]`). Resolved by uv — no collisions |
 | `restart` | `str` | `"always"` | systemd `Restart=` policy |
@@ -894,7 +894,7 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 | `container.image` | `str` | `"ubuntu:24.04"` | Base image (pulled at runtime) |
 | `container.extraVolumes` | `listOf str` | `[]` | Extra volume mounts (`host:container:mode`) |
 | `container.extraOptions` | `listOf str` | `[]` | Extra args passed to `docker create` |
-| `container.hostUsers` | `listOf str` | `[]` | Interactive users who get a `~/.triibal` symlink to the service stateDir and are auto-added to the `triibal` group |
+| `container.hostUsers` | `listOf str` | `[]` | Interactive users who get a `~/.tribal` symlink to the service stateDir and are auto-added to the `tribal` group |
 
 ---
 
@@ -903,8 +903,8 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 ### Native Mode
 
 ```
-/var/lib/triibal/                     # stateDir (owned by triibal:triibal, 0750)
-├── .triibal/                         # TRIIBAL_HOME
+/var/lib/tribal/                     # stateDir (owned by tribal:tribal, 0750)
+├── .tribal/                         # TRIBAL_HOME
 │   ├── config.yaml                  # Nix-generated (deep-merged each rebuild)
 │   ├── .managed                     # Marker: CLI config mutation blocked
 │   ├── .env                         # Merged from environment + environmentFiles
@@ -929,9 +929,9 @@ Same layout, mounted into the container:
 
 | Container path | Host path | Mode | Notes |
 |---|---|---|---|
-| `/nix/store` | `/nix/store` | `ro` | Triibal binary + all Nix deps |
-| `/data` | `/var/lib/triibal` | `rw` | All state, config, workspace |
-| `/home/triibal` | `${stateDir}/home` | `rw` | Persistent agent home — `pip install --user`, tool caches |
+| `/nix/store` | `/nix/store` | `ro` | Tribal binary + all Nix deps |
+| `/data` | `/var/lib/tribal` | `rw` | All state, config, workspace |
+| `/home/tribal` | `${stateDir}/home` | `rw` | Persistent agent home — `pip install --user`, tool caches |
 | `/usr`, `/usr/local`, `/tmp` | (writable layer) | `rw` | `apt`/`pip`/`npm` installs — persists across restarts, lost on recreation |
 
 ---
@@ -940,7 +940,7 @@ Same layout, mounted into the container:
 
 ```bash
 # Update the flake input (run from the directory containing flake.nix)
-cd /etc/nixos && nix flake update triibal-agent
+cd /etc/nixos && nix flake update tribal-agent
 
 # Rebuild
 sudo nixos-rebuild switch
@@ -960,21 +960,21 @@ All `docker` commands below work the same with `podman`. Substitute accordingly 
 
 ```bash
 # Both modes use the same systemd unit
-journalctl -u triibal-agent -f
+journalctl -u tribal-agent -f
 
 # Container mode: also available directly
-docker logs -f triibal-agent
+docker logs -f tribal-agent
 ```
 
 ### Container Inspection
 
 ```bash
-systemctl status triibal-agent
-docker ps -a --filter name=triibal-agent
-docker inspect triibal-agent --format='{{.State.Status}}'
-docker exec -it triibal-agent bash
-docker exec triibal-agent readlink /data/current-package
-docker exec triibal-agent cat /data/.container-identity
+systemctl status tribal-agent
+docker ps -a --filter name=tribal-agent
+docker inspect tribal-agent --format='{{.State.Status}}'
+docker exec -it tribal-agent bash
+docker exec tribal-agent readlink /data/current-package
+docker exec tribal-agent cat /data/.container-identity
 ```
 
 ### Force Container Recreation
@@ -982,10 +982,10 @@ docker exec triibal-agent cat /data/.container-identity
 If you need to reset the writable layer (fresh Ubuntu):
 
 ```bash
-sudo systemctl stop triibal-agent
-docker rm -f triibal-agent
-sudo rm /var/lib/triibal/.container-identity
-sudo systemctl start triibal-agent
+sudo systemctl stop tribal-agent
+docker rm -f tribal-agent
+sudo rm /var/lib/tribal/.container-identity
+sudo systemctl start tribal-agent
 ```
 
 ### Verify Secrets Are Loaded
@@ -994,16 +994,16 @@ If the agent starts but can't authenticate with the LLM provider, check that the
 
 ```bash
 # Native mode
-sudo -u triibal cat /var/lib/triibal/.triibal/.env
+sudo -u tribal cat /var/lib/tribal/.tribal/.env
 
 # Container mode
-docker exec triibal-agent cat /data/.triibal/.env
+docker exec tribal-agent cat /data/.tribal/.env
 ```
 
 ### GC Root Verification
 
 ```bash
-nix-store --query --roots $(docker exec triibal-agent readlink /data/current-package)
+nix-store --query --roots $(docker exec tribal-agent readlink /data/current-package)
 ```
 
 ### Common Issues
@@ -1011,11 +1011,11 @@ nix-store --query --roots $(docker exec triibal-agent readlink /data/current-pac
 | Symptom | Cause | Fix |
 |---|---|---|
 | `Cannot save configuration: managed by NixOS` | CLI guards active | Edit `configuration.nix` and `nixos-rebuild switch` |
-| `No adapter available for discord` (or telegram/slack) | Messaging deps missing from the sealed Nix venv | Install `#messaging` variant: `nix profile install ...#messaging`. For NixOS module: `extraDependencyGroups = [ "messaging" ]`. Check `journalctl -u triibal-agent` for `FeatureUnavailable` or `requirements not met` for the underlying error. |
+| `No adapter available for discord` (or telegram/slack) | Messaging deps missing from the sealed Nix venv | Install `#messaging` variant: `nix profile install ...#messaging`. For NixOS module: `extraDependencyGroups = [ "messaging" ]`. Check `journalctl -u tribal-agent` for `FeatureUnavailable` or `requirements not met` for the underlying error. |
 | Container recreated unexpectedly | `extraVolumes`, `extraOptions`, or `image` changed | Expected — writable layer resets. Reinstall packages or use a custom image |
-| `triibal version` shows old version | Container not restarted | `systemctl restart triibal-agent` |
-| Permission denied on `/var/lib/triibal` | State dir is `0750 triibal:triibal` | Use `docker exec` or `sudo -u triibal` |
-| `nix-collect-garbage` removed triibal | GC root missing | Restart the service (preStart recreates the GC root) |
-| `no container with name or ID "triibal-agent"` (Podman) | Podman rootful container not visible to regular user | Add passwordless sudo for podman (see [Container Mode](#container-mode) section) |
-| `unable to find user triibal` | Container still starting (entrypoint hasn't created user yet) | Wait a few seconds and retry — the CLI retries automatically |
-| Tool added via `extraPackages` not found in terminal | Requires `nixos-rebuild switch` to update the per-user profile | Rebuild and restart: `nixos-rebuild switch && systemctl restart triibal-agent` |
+| `tribal version` shows old version | Container not restarted | `systemctl restart tribal-agent` |
+| Permission denied on `/var/lib/tribal` | State dir is `0750 tribal:tribal` | Use `docker exec` or `sudo -u tribal` |
+| `nix-collect-garbage` removed tribal | GC root missing | Restart the service (preStart recreates the GC root) |
+| `no container with name or ID "tribal-agent"` (Podman) | Podman rootful container not visible to regular user | Add passwordless sudo for podman (see [Container Mode](#container-mode) section) |
+| `unable to find user tribal` | Container still starting (entrypoint hasn't created user yet) | Wait a few seconds and retry — the CLI retries automatically |
+| Tool added via `extraPackages` not found in terminal | Requires `nixos-rebuild switch` to update the per-user profile | Rebuild and restart: `nixos-rebuild switch && systemctl restart tribal-agent` |

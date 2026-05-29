@@ -1,16 +1,16 @@
 # Session Storage
 
-Triibal Agent uses a SQLite database (`~/.triibal/state.db`) to persist session
+Tribal Agent uses a SQLite database (`~/.tribal/state.db`) to persist session
 metadata, full message history, and model configuration across CLI and gateway
 sessions. This replaces the earlier per-session JSONL file approach.
 
-Source file: `triibal_state.py`
+Source file: `tribal_state.py`
 
 
 ## Architecture Overview
 
 ```
-~/.triibal/state.db (SQLite, WAL mode)
+~/.tribal/state.db (SQLite, WAL mode)
 ├── sessions              — Session metadata, token counts, billing
 ├── messages              — Full message history per session
 ├── messages_fts          — FTS5 virtual table (content + tool_name + tool_calls)
@@ -156,7 +156,7 @@ Declarative column adds use `ALTER TABLE ADD COLUMN` wrapped in try/except to ha
 
 ## Write Contention Handling
 
-Multiple triibal processes (gateway + CLI sessions + worktree agents) share one
+Multiple tribal processes (gateway + CLI sessions + worktree agents) share one
 `state.db`. The `SessionDB` class handles write contention with:
 
 - **Short SQLite timeout** (1 second) instead of the default 30s
@@ -180,9 +180,9 @@ _CHECKPOINT_EVERY_N_WRITES = 50
 ### Initialize
 
 ```python
-from triibal_state import SessionDB
+from tribal_state import SessionDB
 
-db = SessionDB()                           # Default: ~/.triibal/state.db
+db = SessionDB()                           # Default: ~/.tribal/state.db
 db = SessionDB(db_path=Path("/tmp/test.db"))  # Custom path
 ```
 
@@ -386,10 +386,10 @@ db.delete_session("sess_abc123")
 
 ## Database Location
 
-Default path: `~/.triibal/state.db`
+Default path: `~/.tribal/state.db`
 
-This is derived from `triibal_constants.get_triibal_home()` which resolves to
-`~/.triibal/` by default, or the value of `TRIIBAL_HOME` environment variable.
+This is derived from `tribal_constants.get_tribal_home()` which resolves to
+`~/.tribal/` by default, or the value of `TRIBAL_HOME` environment variable.
 
 The database file, WAL file (`state.db-wal`), and shared-memory file
 (`state.db-shm`) are all created in the same directory.

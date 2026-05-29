@@ -212,14 +212,14 @@ class TestToolsetConsistency:
             for inc in ts["includes"]:
                 assert inc in TOOLSETS, f"{name} includes unknown toolset '{inc}'"
 
-    def test_triibal_platforms_share_core_tools(self):
-        """All triibal-* platform toolsets share the same core tools.
+    def test_tribal_platforms_share_core_tools(self):
+        """All tribal-* platform toolsets share the same core tools.
 
         Platform-specific additions (e.g. ``discord`` / ``discord_admin``
-        on triibal-discord, gated on DISCORD_BOT_TOKEN) are allowed on top —
+        on tribal-discord, gated on DISCORD_BOT_TOKEN) are allowed on top —
         the invariant is that the core set is identical across platforms.
         """
-        platforms = ["triibal-cli", "triibal-telegram", "triibal-discord", "triibal-whatsapp", "triibal-slack", "triibal-signal", "triibal-homeassistant"]
+        platforms = ["tribal-cli", "tribal-telegram", "tribal-discord", "tribal-whatsapp", "tribal-slack", "tribal-signal", "tribal-homeassistant"]
         tool_sets = [set(TOOLSETS[p]["tools"]) for p in platforms]
         # All platforms must contain the shared core; platform-specific
         # extras are OK (subset check, not equality).
@@ -249,8 +249,8 @@ class TestPluginToolsets:
 
 
 class TestDefaultPlatformWebSearchCoverage:
-    def test_triibal_whatsapp_toolset_includes_web_search(self):
-        assert "web_search" in resolve_toolset("triibal-whatsapp")
+    def test_tribal_whatsapp_toolset_includes_web_search(self):
+        assert "web_search" in resolve_toolset("tribal-whatsapp")
 
-    def test_triibal_api_server_toolset_includes_web_search(self):
-        assert "web_search" in resolve_toolset("triibal-api-server")
+    def test_tribal_api_server_toolset_includes_web_search(self):
+        assert "web_search" in resolve_toolset("tribal-api-server")

@@ -1,6 +1,6 @@
 # providers/
 
-Registry and ABC for every inference provider Triibal knows about.
+Registry and ABC for every inference provider Tribal knows about.
 
 Each provider is declared once as a `ProviderProfile`. Every other layer —
 auth resolution, transport kwargs, model listing, runtime routing — reads from
@@ -19,7 +19,7 @@ providers/
 
 The **profiles themselves** live as plugins under
 `plugins/model-providers/<name>/` (bundled in this repo) and
-`$TRIIBAL_HOME/plugins/model-providers/<name>/` (per-user overrides). The
+`$TRIBAL_HOME/plugins/model-providers/<name>/` (per-user overrides). The
 registry in `providers/__init__.py` lazily discovers them the first time any
 consumer calls `get_provider_profile()` or `list_providers()`. See
 `plugins/model-providers/README.md` for the plugin contract and examples.
@@ -31,16 +31,16 @@ consumer calls `get_provider_profile()` or `list_providers()`. See
 The registry is populated on first access. After that, every downstream
 layer reads from it:
 
-- `triibal_cli/auth.py` extends `PROVIDER_REGISTRY` with every api-key
+- `tribal_cli/auth.py` extends `PROVIDER_REGISTRY` with every api-key
   profile it sees (skipping `copilot`, `kimi-coding`, `kimi-coding-cn`,
   `zai`, `openrouter`, `custom` — those need bespoke token resolution).
-- `triibal_cli/models.py` extends `CANONICAL_PROVIDERS` and calls
+- `tribal_cli/models.py` extends `CANONICAL_PROVIDERS` and calls
   `profile.fetch_models()` inside `provider_model_ids()`.
-- `triibal_cli/doctor.py` adds a `/models` health check for each
+- `tribal_cli/doctor.py` adds a `/models` health check for each
   `auth_type="api_key"` profile.
-- `triibal_cli/config.py` injects every `env_var` into
+- `tribal_cli/config.py` injects every `env_var` into
   `OPTIONAL_ENV_VARS` so the setup wizard knows about it.
-- `triibal_cli/runtime_provider.py` reads `profile.api_mode` as a fallback
+- `tribal_cli/runtime_provider.py` reads `profile.api_mode` as a fallback
   when URL detection finds nothing.
 - `agent/model_metadata.py` maps hostname → provider via
   `profile.get_hostname()`.
@@ -57,7 +57,7 @@ layer reads from it:
 ## Adding a provider
 
 See `plugins/model-providers/README.md` — drop a new directory there (or
-under `$TRIIBAL_HOME/plugins/model-providers/` for a private plugin).
+under `$TRIBAL_HOME/plugins/model-providers/` for a private plugin).
 
 ---
 

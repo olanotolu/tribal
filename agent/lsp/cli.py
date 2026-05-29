@@ -1,4 +1,4 @@
-"""``triibal lsp`` CLI subcommand.
+"""``tribal lsp`` CLI subcommand.
 
 Subcommands:
 
@@ -10,7 +10,7 @@ Subcommands:
 - ``list`` — print the registry of supported servers.
 
 The handlers are kept here (rather than in
-``triibal_cli/main.py``) so the LSP module ships self-contained.
+``tribal_cli/main.py``) so the LSP module ships self-contained.
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from typing import Optional
 
 
 def register_subparser(subparsers: argparse._SubParsersAction) -> None:
-    """Wire the ``triibal lsp`` subcommand tree into the main argparse."""
+    """Wire the ``tribal lsp`` subcommand tree into the main argparse."""
     parser = subparsers.add_parser(
         "lsp",
         help="Language Server Protocol management",
@@ -68,7 +68,7 @@ def register_subparser(subparsers: argparse._SubParsersAction) -> None:
 
 
 def run_lsp_command(args: argparse.Namespace) -> int:
-    """Top-level dispatcher for ``triibal lsp <subcommand>``."""
+    """Top-level dispatcher for ``tribal lsp <subcommand>``."""
     sub = getattr(args, "lsp_command", None) or "status"
     try:
         if sub == "status":
@@ -248,13 +248,13 @@ def _cmd_restart() -> int:
 
 
 def _cmd_which(server_id: str) -> int:
-    from agent.lsp.install import INSTALL_RECIPES, triibal_lsp_bin_dir
+    from agent.lsp.install import INSTALL_RECIPES, tribal_lsp_bin_dir
     import os
     import shutil as _shutil
 
     recipe = INSTALL_RECIPES.get(server_id)
     bin_name = (recipe or {}).get("bin", server_id)
-    staged = triibal_lsp_bin_dir() / bin_name
+    staged = tribal_lsp_bin_dir() / bin_name
     if staged.exists():
         sys.stdout.write(str(staged) + "\n")
         return 0
@@ -294,10 +294,10 @@ def _backend_warnings() -> list:
     suggestion across common platforms.
     """
     import shutil as _shutil
-    from agent.lsp.install import triibal_lsp_bin_dir
+    from agent.lsp.install import tribal_lsp_bin_dir
     notes: list = []
     bash_installed = _shutil.which("bash-language-server") is not None or (
-        (triibal_lsp_bin_dir() / "bash-language-server").exists()
+        (tribal_lsp_bin_dir() / "bash-language-server").exists()
     )
     if bash_installed and _shutil.which("shellcheck") is None:
         notes.append(

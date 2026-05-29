@@ -10,19 +10,19 @@ zero changes to call sites.
 Design notes
 ------------
 * Python plugins and shell hooks compose naturally: both flow through
-  :func:`triibal_cli.plugins.invoke_hook` and its aggregators.  Python
+  :func:`tribal_cli.plugins.invoke_hook` and its aggregators.  Python
   plugins are registered first (via ``discover_and_load()``) so their
   block decisions win ties over shell-hook blocks.
 * Subprocess execution uses ``shlex.split(os.path.expanduser(command))``
   with ``shell=False`` — no shell injection footguns.  Users that need
   pipes/redirection wrap their logic in a script.
 * First-use consent is gated by the allowlist under
-  ``~/.triibal/shell-hooks-allowlist.json``.  Non-TTY callers must pass
+  ``~/.tribal/shell-hooks-allowlist.json``.  Non-TTY callers must pass
   ``accept_hooks=True`` (resolved from ``--accept-hooks``,
-  ``TRIIBAL_ACCEPT_HOOKS``, or ``hooks_auto_accept: true`` in config)
+  ``TRIBAL_ACCEPT_HOOKS``, or ``hooks_auto_accept: true`` in config)
   for registration to succeed without a prompt.
 * Registration is idempotent — safe to invoke from both the CLI entry
-  point (``triibal_cli/main.py``) and the gateway entry point
+  point (``tribal_cli/main.py``) and the gateway entry point
   (``gateway/run.py``).
 
 Wire protocol
@@ -42,7 +42,7 @@ Wire protocol
 
     # Block a pre_tool_call (either shape accepted; normalised internally):
     {"decision": "block", "reason":  "Forbidden command"}   # Claude-Code-style
-    {"action":   "block", "message": "Forbidden command"}   # Triibal-canonical
+    {"action":   "block", "message": "Forbidden command"}   # Tribal-canonical
 
     # Inject context for pre_llm_call:
     {"context": "Today is Friday"}
@@ -75,7 +75,7 @@ try:
 except ImportError:  # pragma: no cover
     fcntl = None  # type: ignore[assignment]
 
-from triibal_constants import get_triibal_home
+from tribal_constants import get_tribal_home
 from utils import atomic_replace
 
 logger = logging.getLogger(__name__)
@@ -153,13 +153,13 @@ def register_from_config(
 ) -> List[ShellHookSpec]:
     """Register every configured shell hook on the plugin manager.
 
-    ``cfg`` is the full parsed config dict (``triibal_cli.config.load_config``
+    ``cfg`` is the full parsed config dict (``tribal_cli.config.load_config``
     output).  The ``hooks:`` key is read out of it.  Missing, empty, or
     non-dict ``hooks`` is treated as zero configured hooks.
 
     ``accept_hooks=True`` skips the TTY consent prompt — the caller is
     promising that the user has opted in via a flag, env var, or config
-    setting.  ``TRIIBAL_ACCEPT_HOOKS=1`` and ``hooks_auto_accept: true`` are
+    setting.  ``TRIBAL_ACCEPT_HOOKS=1`` and ``hooks_auto_accept: true`` are
     also honored inside this function so either CLI or gateway call sites
     pick them up.
 
@@ -179,7 +179,7 @@ def register_from_config(
     registered: List[ShellHookSpec] = []
 
     # Import lazily — avoids circular imports at module-load time.
-    from triibal_cli.plugins import get_plugin_manager
+    from tribal_cli.plugins import get_plugin_manager
 
     manager = get_plugin_manager()
 
@@ -200,7 +200,7 @@ def register_from_config(
             ):
                 logger.warning(
                     "shell hook for %s (%s) not allowlisted — skipped. "
-                    "Use --accept-hooks / TRIIBAL_ACCEPT_HOOKS=1 / "
+                    "Use --accept-hooks / TRIBAL_ACCEPT_HOOKS=1 / "
                     "hooks_auto_accept: true, or approve at the TTY "
                     "prompt next run.",
                     spec.event, spec.command,
@@ -223,7 +223,7 @@ def register_from_config(
 
 def iter_configured_hooks(cfg: Optional[Dict[str, Any]]) -> List[ShellHookSpec]:
     """Return the parsed ``ShellHookSpec`` entries from config without
-    registering anything.  Used by ``triibal hooks list`` and ``doctor``."""
+    registering anything.  Used by ``tribal hooks list`` and ``doctor``."""
     if not isinstance(cfg, dict):
         return []
     return _parse_hooks_block(cfg.get("hooks"))
@@ -245,7 +245,7 @@ def _parse_hooks_block(hooks_cfg: Any) -> List[ShellHookSpec]:
     Malformed entries warn-and-skip — we never raise from config parsing
     because a broken hook must not crash the agent.
     """
-    from triibal_cli.plugins import VALID_HOOKS
+    from tribal_cli.plugins import VALID_HOOKS
 
     if not isinstance(hooks_cfg, dict):
         return []
@@ -494,12 +494,12 @@ def _block_message(primary: Any, secondary: Any) -> str:
 
 
 def _parse_response(event: str, stdout: str) -> Optional[Dict[str, Any]]:
-    """Translate stdout JSON into a Triibal wire-shape dict.
+    """Translate stdout JSON into a Tribal wire-shape dict.
 
     For ``pre_tool_call`` the Claude-Code-style ``{"decision": "block",
-    "reason": "..."}`` payload is translated into the canonical Triibal
+    "reason": "..."}`` payload is translated into the canonical Tribal
     ``{"action": "block", "message": "..."}`` shape expected by
-    :func:`triibal_cli.plugins.get_pre_tool_call_block_message`.  This is
+    :func:`tribal_cli.plugins.get_pre_tool_call_block_message`.  This is
     the single most important correctness invariant in this module —
     skipping the translation silently breaks every ``pre_tool_call``
     block directive.
@@ -545,7 +545,7 @@ def _parse_response(event: str, stdout: str) -> Optional[Dict[str, Any]]:
 
 def allowlist_path() -> Path:
     """Path to the per-user shell-hook allowlist file."""
-    return get_triibal_home() / ALLOWLIST_FILENAME
+    return get_tribal_home() / ALLOWLIST_FILENAME
 
 
 def load_allowlist() -> Dict[str, Any]:
@@ -589,7 +589,7 @@ def save_allowlist(data: Dict[str, Any]) -> None:
             "Failed to persist shell hook allowlist to %s: %s. "
             "The approval is in-memory for this run, but the next "
             "startup will re-prompt (or skip registration on non-TTY "
-            "runs without --accept-hooks / TRIIBAL_ACCEPT_HOOKS).",
+            "runs without --accept-hooks / TRIBAL_ACCEPT_HOOKS).",
             p, exc,
         )
 
@@ -656,7 +656,7 @@ def _prompt_and_record(
         return False
 
     print(
-        f"\n⚠ Triibal is about to register a shell hook that will run a\n"
+        f"\n⚠ Tribal is about to register a shell hook that will run a\n"
         f"  command on your behalf.\n\n"
         f"    Event:   {event}\n"
         f"    Command: {command}\n\n"
@@ -757,12 +757,12 @@ def _resolve_effective_accept(
 
     Precedence (any truthy source flips us on):
       1. ``--accept-hooks`` flag (CLI) / explicit argument
-      2. ``TRIIBAL_ACCEPT_HOOKS`` env var
+      2. ``TRIBAL_ACCEPT_HOOKS`` env var
       3. ``hooks_auto_accept: true`` in ``cli-config.yaml``
     """
     if accept_hooks_arg:
         return True
-    env = os.environ.get("TRIIBAL_ACCEPT_HOOKS", "").strip().lower()
+    env = os.environ.get("TRIBAL_ACCEPT_HOOKS", "").strip().lower()
     if env in {"1", "true", "yes", "on"}:
         return True
     cfg_val = cfg.get("hooks_auto_accept", False)
@@ -774,7 +774,7 @@ def _resolve_effective_accept(
 
 
 # ---------------------------------------------------------------------------
-# Introspection (used by `triibal hooks` CLI)
+# Introspection (used by `tribal hooks` CLI)
 # ---------------------------------------------------------------------------
 
 def allowlist_entry_for(event: str, command: str) -> Optional[Dict[str, Any]]:
@@ -831,16 +831,16 @@ def run_once(
     spec: ShellHookSpec, kwargs: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Fire a single shell-hook invocation with a synthetic payload.
-    Used by ``triibal hooks test`` and ``triibal hooks doctor``.
+    Used by ``tribal hooks test`` and ``tribal hooks doctor``.
 
-    ``kwargs`` is the same dict that :func:`triibal_cli.plugins.invoke_hook`
+    ``kwargs`` is the same dict that :func:`tribal_cli.plugins.invoke_hook`
     would pass at runtime.  It is routed through :func:`_serialize_payload`
     so the synthetic stdin exactly matches what a real hook firing would
-    produce — otherwise scripts tested via ``triibal hooks test`` could
+    produce — otherwise scripts tested via ``tribal hooks test`` could
     diverge silently from production behaviour.
 
     Returns the :func:`_spawn` diagnostic dict plus a ``parsed`` field
-    holding the canonical Triibal-wire-shape response."""
+    holding the canonical Tribal-wire-shape response."""
     stdin_json = _serialize_payload(spec.event, kwargs)
     result = _spawn(spec, stdin_json)
     result["parsed"] = _parse_response(spec.event, result["stdout"])

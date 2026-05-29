@@ -40,7 +40,7 @@ result = agent.run_conversation(
 
 ## API Modes
 
-Triibal supports three API execution modes, resolved from provider selection, explicit args, and base URL heuristics:
+Tribal supports three API execution modes, resolved from provider selection, explicit args, and base URL heuristics:
 
 | API mode | Used for | Client type |
 |----------|----------|-------------|
@@ -214,9 +214,9 @@ The fallback system also covers auxiliary tasks independently — vision, compre
 ### Session Persistence
 
 After each turn:
-- Messages are saved to the session store (SQLite via `triibal_state.py`)
+- Messages are saved to the session store (SQLite via `tribal_state.py`)
 - Memory changes are flushed to `MEMORY.md` / `USER.md`
-- The session can be resumed later via `/resume` or `triibal chat --resume`
+- The session can be resumed later via `/resume` or `tribal chat --resume`
 
 ## Key Source Files
 

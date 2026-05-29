@@ -1,4 +1,4 @@
-"""disk_cleanup — ephemeral file cleanup for Triibal Agent.
+"""disk_cleanup — ephemeral file cleanup for Tribal Agent.
 
 Library module wrapping the deterministic cleanup rules written by
 @LVT382009 in PR #12212. The plugin ``__init__.py`` wires these
@@ -10,13 +10,13 @@ Rules:
   - test files    → delete immediately at task end (age >= 0)
   - temp files    → delete after 7 days
   - cron-output   → delete after 14 days
-  - empty dirs    → always delete (under TRIIBAL_HOME)
+  - empty dirs    → always delete (under TRIBAL_HOME)
   - research      → keep 10 newest, prompt for older (deep only)
   - chrome-profile→ prompt after 14 days (deep only)
   - >500 MB files → prompt always (deep only)
 
-Scope: strictly TRIIBAL_HOME and /tmp/triibal-*
-Never touches: ~/.triibal/logs/ or any system directory.
+Scope: strictly TRIBAL_HOME and /tmp/tribal-*
+Never touches: ~/.tribal/logs/ or any system directory.
 """
 
 from __future__ import annotations
@@ -29,13 +29,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    from triibal_constants import get_triibal_home
+    from tribal_constants import get_tribal_home
 except Exception:  # pragma: no cover — plugin may load before constants resolves
     import os
 
-    def get_triibal_home() -> Path:  # type: ignore[no-redef]
-        val = (os.environ.get("TRIIBAL_HOME") or "").strip()
-        return Path(val).resolve() if val else (Path.home() / ".triibal").resolve()
+    def get_tribal_home() -> Path:  # type: ignore[no-redef]
+        val = (os.environ.get("TRIBAL_HOME") or "").strip()
+        return Path(val).resolve() if val else (Path.home() / ".tribal").resolve()
 
 
 logger = logging.getLogger(__name__)
@@ -46,8 +46,8 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 def get_state_dir() -> Path:
-    """State dir — separate from ``$TRIIBAL_HOME/logs/``."""
-    return get_triibal_home() / "disk-cleanup"
+    """State dir — separate from ``$TRIBAL_HOME/logs/``."""
+    return get_tribal_home() / "disk-cleanup"
 
 
 def get_tracked_file() -> Path:
@@ -55,7 +55,7 @@ def get_tracked_file() -> Path:
 
 
 def get_log_file() -> Path:
-    """Audit log — intentionally NOT under ``$TRIIBAL_HOME/logs/``."""
+    """Audit log — intentionally NOT under ``$TRIBAL_HOME/logs/``."""
     return get_state_dir() / "cleanup.log"
 
 
@@ -64,19 +64,19 @@ def get_log_file() -> Path:
 # ---------------------------------------------------------------------------
 
 def is_safe_path(path: Path) -> bool:
-    """Accept only paths under TRIIBAL_HOME or ``/tmp/triibal-*``.
+    """Accept only paths under TRIBAL_HOME or ``/tmp/tribal-*``.
 
     Rejects Windows mounts (``/mnt/c`` etc.) and any system directory.
     """
-    triibal_home = get_triibal_home()
+    tribal_home = get_tribal_home()
     try:
-        path.resolve().relative_to(triibal_home)
+        path.resolve().relative_to(tribal_home)
         return True
     except (ValueError, OSError):
         pass
-    # Allow /tmp/triibal-* explicitly
+    # Allow /tmp/tribal-* explicitly
     parts = path.parts
-    if len(parts) >= 3 and parts[1] == "tmp" and parts[2].startswith("triibal-"):
+    if len(parts) >= 3 and parts[1] == "tmp" and parts[2].startswith("tribal-"):
         return True
     return False
 
@@ -170,7 +170,7 @@ def track(path_str: str, category: str, silent: bool = False) -> bool:
         return False
 
     if not is_safe_path(path):
-        _log(f"REJECT: {path} (outside TRIIBAL_HOME)")
+        _log(f"REJECT: {path} (outside TRIBAL_HOME)")
         return False
 
     size = path.stat().st_size if path.is_file() else 0
@@ -291,22 +291,22 @@ def quick() -> Dict[str, Any]:
         else:
             new_tracked.append(item)
 
-    # Remove empty dirs under TRIIBAL_HOME (but leave TRIIBAL_HOME itself and
+    # Remove empty dirs under TRIBAL_HOME (but leave TRIBAL_HOME itself and
     # a short list of well-known top-level state dirs alone — a fresh install
     # has these empty, and deleting them would surprise the user).
-    triibal_home = get_triibal_home()
+    tribal_home = get_tribal_home()
     _PROTECTED_TOP_LEVEL = {
         "logs", "memories", "sessions", "cron", "cronjobs",
         "cache", "skills", "plugins", "disk-cleanup", "optional-skills",
-        "triibal-agent", "backups", "profiles", ".worktrees",
+        "tribal-agent", "backups", "profiles", ".worktrees",
     }
     empty_removed = 0
     try:
-        for dirpath in sorted(triibal_home.rglob("*"), reverse=True):
-            if not dirpath.is_dir() or dirpath == triibal_home:
+        for dirpath in sorted(tribal_home.rglob("*"), reverse=True):
+            if not dirpath.is_dir() or dirpath == tribal_home:
                 continue
             try:
-                rel_parts = dirpath.relative_to(triibal_home).parts
+                rel_parts = dirpath.relative_to(tribal_home).parts
             except ValueError:
                 continue
             # Skip the well-known top-level state dirs themselves.
@@ -470,14 +470,14 @@ def guess_category(path: Path) -> Optional[str]:
         return None
 
     # Skip the state dir itself, logs, memory files, sessions, config.
-    triibal_home = get_triibal_home()
+    tribal_home = get_tribal_home()
     try:
-        rel = path.resolve().relative_to(triibal_home)
+        rel = path.resolve().relative_to(tribal_home)
         top = rel.parts[0] if rel.parts else ""
         if top in {
             "disk-cleanup", "logs", "memories", "sessions", "config.yaml",
             "skills", "plugins", ".env", "USER.md", "MEMORY.md", "SOUL.md",
-            "auth.json", "triibal-agent",
+            "auth.json", "tribal-agent",
         }:
             return None
         if top == "cron" or top == "cronjobs":
@@ -485,7 +485,7 @@ def guess_category(path: Path) -> Optional[str]:
         if top == "cache":
             return "temp"
     except ValueError:
-        # Path isn't under TRIIBAL_HOME (e.g. /tmp/triibal-*) — fall through.
+        # Path isn't under TRIBAL_HOME (e.g. /tmp/tribal-*) — fall through.
         pass
 
     name = path.name

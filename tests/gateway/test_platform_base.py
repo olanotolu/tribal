@@ -21,7 +21,7 @@ class TestSecretCaptureGuidance:
     def test_gateway_secret_capture_message_points_to_local_setup(self):
         message = GATEWAY_SECRET_CAPTURE_UNSUPPORTED_MESSAGE
         assert "local cli" in message.lower()
-        assert "~/.triibal/.env" in message
+        assert "~/.tribal/.env" in message
 
 
 class TestSafeUrlForLog:
@@ -372,11 +372,11 @@ class TestMediaDeliveryPathValidation:
         # recency window + denylist). Force strict on so they keep
         # exercising the legacy path even though the public default
         # flipped to off in 2026-05.
-        monkeypatch.setenv("TRIIBAL_MEDIA_DELIVERY_STRICT", "1")
+        monkeypatch.setenv("TRIBAL_MEDIA_DELIVERY_STRICT", "1")
         # Disable recency-based trust by default so the original allowlist
         # tests continue to exercise the strict-allowlist path. Tests that
         # specifically cover recency trust re-enable it themselves.
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_FILES", "0")
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_FILES", "0")
 
     def test_allows_existing_file_inside_safe_root(self, tmp_path, monkeypatch):
         root = tmp_path / "media-cache"
@@ -432,7 +432,7 @@ class TestMediaDeliveryPathValidation:
         media_file.parent.mkdir(parents=True)
         media_file.write_bytes(b"%PDF-1.4")
         self._patch_roots(monkeypatch)
-        monkeypatch.setenv("TRIIBAL_MEDIA_ALLOW_DIRS", str(extra_root))
+        monkeypatch.setenv("TRIBAL_MEDIA_ALLOW_DIRS", str(extra_root))
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(media_file)) == str(media_file.resolve())
 
@@ -445,9 +445,9 @@ class TestMediaDeliveryPathValidation:
         allowlist are accepted because the file's mtime is within the window.
         """
         self._patch_roots(monkeypatch)  # zero cache allowlist
-        monkeypatch.delenv("TRIIBAL_MEDIA_ALLOW_DIRS", raising=False)
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_FILES", "1")
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_SECONDS", "600")
+        monkeypatch.delenv("TRIBAL_MEDIA_ALLOW_DIRS", raising=False)
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_FILES", "1")
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_SECONDS", "600")
 
         fresh = tmp_path / "scratch" / "report.pdf"
         fresh.parent.mkdir(parents=True)
@@ -463,9 +463,9 @@ class TestMediaDeliveryPathValidation:
         the trust window.
         """
         self._patch_roots(monkeypatch)
-        monkeypatch.delenv("TRIIBAL_MEDIA_ALLOW_DIRS", raising=False)
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_FILES", "1")
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_SECONDS", "60")
+        monkeypatch.delenv("TRIBAL_MEDIA_ALLOW_DIRS", raising=False)
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_FILES", "1")
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_SECONDS", "60")
 
         stale = tmp_path / "stale.pdf"
         stale.write_bytes(b"%PDF-1.4")
@@ -477,8 +477,8 @@ class TestMediaDeliveryPathValidation:
     def test_recency_trust_disabled_falls_back_to_pure_allowlist(self, tmp_path, monkeypatch):
         """Setting trust_recent_files=false reverts to pre-existing strict behavior."""
         self._patch_roots(monkeypatch)
-        monkeypatch.delenv("TRIIBAL_MEDIA_ALLOW_DIRS", raising=False)
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_FILES", "0")
+        monkeypatch.delenv("TRIBAL_MEDIA_ALLOW_DIRS", raising=False)
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_FILES", "0")
 
         fresh = tmp_path / "report.pdf"
         fresh.write_bytes(b"%PDF-1.4")  # mtime = now
@@ -494,9 +494,9 @@ class TestMediaDeliveryPathValidation:
         ~/.ssh, ~/.aws, etc.
         """
         self._patch_roots(monkeypatch)
-        monkeypatch.delenv("TRIIBAL_MEDIA_ALLOW_DIRS", raising=False)
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_FILES", "1")
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_SECONDS", "600")
+        monkeypatch.delenv("TRIBAL_MEDIA_ALLOW_DIRS", raising=False)
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_FILES", "1")
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_SECONDS", "600")
 
         # Simulate $HOME so ~/.ssh resolves into our tmp dir.
         fake_home = tmp_path / "home"
@@ -512,13 +512,13 @@ class TestMediaDeliveryPathValidation:
         """The motivating case: agent produces a PDF in a project directory.
 
         Reproduces the Discord-PDF-not-delivered bug. Before recency trust,
-        files outside ~/.triibal/cache/* were silently dropped, leaving the
+        files outside ~/.tribal/cache/* were silently dropped, leaving the
         user with a raw filepath in chat instead of an attachment.
         """
         self._patch_roots(monkeypatch)
-        monkeypatch.delenv("TRIIBAL_MEDIA_ALLOW_DIRS", raising=False)
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_FILES", "1")
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_SECONDS", "600")
+        monkeypatch.delenv("TRIBAL_MEDIA_ALLOW_DIRS", raising=False)
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_FILES", "1")
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_SECONDS", "600")
 
         project = tmp_path / "my-project"
         report = project / "build" / "weekly-report.pdf"
@@ -530,9 +530,9 @@ class TestMediaDeliveryPathValidation:
     def test_filter_keeps_recently_produced_files(self, tmp_path, monkeypatch):
         """End-to-end: filter_local_delivery_paths routes a fresh PDF through."""
         self._patch_roots(monkeypatch)
-        monkeypatch.delenv("TRIIBAL_MEDIA_ALLOW_DIRS", raising=False)
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_FILES", "1")
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_SECONDS", "600")
+        monkeypatch.delenv("TRIBAL_MEDIA_ALLOW_DIRS", raising=False)
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_FILES", "1")
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_SECONDS", "600")
 
         fresh = tmp_path / "report.pdf"
         fresh.write_bytes(b"%PDF-1.4")
@@ -560,8 +560,8 @@ class TestMediaDeliveryDefaultMode:
         )
         # Pin strict OFF — the public default. Tests that exercise the
         # strict path live in TestMediaDeliveryPathValidation.
-        monkeypatch.delenv("TRIIBAL_MEDIA_DELIVERY_STRICT", raising=False)
-        monkeypatch.delenv("TRIIBAL_MEDIA_ALLOW_DIRS", raising=False)
+        monkeypatch.delenv("TRIBAL_MEDIA_DELIVERY_STRICT", raising=False)
+        monkeypatch.delenv("TRIBAL_MEDIA_ALLOW_DIRS", raising=False)
 
     def test_accepts_stale_file_outside_allowlist(self, tmp_path, monkeypatch):
         """The motivating case — agent says ``MEDIA:/home/user/notes.md``
@@ -621,34 +621,34 @@ class TestMediaDeliveryDefaultMode:
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(secret)) is None
 
-    def test_denylist_blocks_triibal_credentials(self, tmp_path, monkeypatch):
-        """~/.triibal/.env and ~/.triibal/auth.json stay blocked even in
+    def test_denylist_blocks_tribal_credentials(self, tmp_path, monkeypatch):
+        """~/.tribal/.env and ~/.tribal/auth.json stay blocked even in
         default mode. They live under $HOME (not the system prefix list)
         so this exercises the home-relative denied paths.
         """
         self._patch_roots(monkeypatch)
 
         fake_home = tmp_path / "home"
-        triibal_dir = fake_home / ".triibal"
-        triibal_dir.mkdir(parents=True)
-        env_file = triibal_dir / ".env"
+        tribal_dir = fake_home / ".tribal"
+        tribal_dir.mkdir(parents=True)
+        env_file = tribal_dir / ".env"
         env_file.write_text("OPENAI_API_KEY=sk-...")
         monkeypatch.setenv("HOME", str(fake_home))
         monkeypatch.setattr(
-            "gateway.platforms.base._TRIIBAL_HOME",
-            triibal_dir,
+            "gateway.platforms.base._TRIBAL_HOME",
+            tribal_dir,
         )
 
         assert BasePlatformAdapter.validate_media_delivery_path(str(env_file)) is None
 
     def test_strict_mode_envvar_restores_legacy_behavior(self, tmp_path, monkeypatch):
-        """Setting TRIIBAL_MEDIA_DELIVERY_STRICT=1 reactivates the older
+        """Setting TRIBAL_MEDIA_DELIVERY_STRICT=1 reactivates the older
         allowlist+recency logic. A stale file outside the allowlist is
         rejected.
         """
         self._patch_roots(monkeypatch)
-        monkeypatch.setenv("TRIIBAL_MEDIA_DELIVERY_STRICT", "1")
-        monkeypatch.setenv("TRIIBAL_MEDIA_TRUST_RECENT_FILES", "0")
+        monkeypatch.setenv("TRIBAL_MEDIA_DELIVERY_STRICT", "1")
+        monkeypatch.setenv("TRIBAL_MEDIA_TRUST_RECENT_FILES", "0")
 
         stale = tmp_path / "old.pdf"
         stale.write_bytes(b"%PDF-1.4")
@@ -658,16 +658,16 @@ class TestMediaDeliveryDefaultMode:
         assert BasePlatformAdapter.validate_media_delivery_path(str(stale)) is None
 
     def test_strict_mode_truthy_aliases(self, monkeypatch, tmp_path):
-        """``TRIIBAL_MEDIA_DELIVERY_STRICT=true|yes|on|1`` all enable strict mode."""
+        """``TRIBAL_MEDIA_DELIVERY_STRICT=true|yes|on|1`` all enable strict mode."""
         self._patch_roots(monkeypatch)
         from gateway.platforms.base import _media_delivery_strict_mode
 
         for raw in ("1", "true", "TRUE", "yes", "on"):
-            monkeypatch.setenv("TRIIBAL_MEDIA_DELIVERY_STRICT", raw)
+            monkeypatch.setenv("TRIBAL_MEDIA_DELIVERY_STRICT", raw)
             assert _media_delivery_strict_mode() is True
 
         for raw in ("0", "false", "no", "off", ""):
-            monkeypatch.setenv("TRIIBAL_MEDIA_DELIVERY_STRICT", raw)
+            monkeypatch.setenv("TRIBAL_MEDIA_DELIVERY_STRICT", raw)
             assert _media_delivery_strict_mode() is False
 
     def test_filter_passes_default_files_through(self, tmp_path, monkeypatch):
@@ -833,24 +833,24 @@ class TestTruncateMessage:
 
 class TestGetHumanDelay:
     def test_off_mode(self):
-        with patch.dict(os.environ, {"TRIIBAL_HUMAN_DELAY_MODE": "off"}):
+        with patch.dict(os.environ, {"TRIBAL_HUMAN_DELAY_MODE": "off"}):
             assert BasePlatformAdapter._get_human_delay() == 0.0
 
     def test_default_is_off(self):
         with patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("TRIIBAL_HUMAN_DELAY_MODE", None)
+            os.environ.pop("TRIBAL_HUMAN_DELAY_MODE", None)
             assert BasePlatformAdapter._get_human_delay() == 0.0
 
     def test_natural_mode_range(self):
-        with patch.dict(os.environ, {"TRIIBAL_HUMAN_DELAY_MODE": "natural"}):
+        with patch.dict(os.environ, {"TRIBAL_HUMAN_DELAY_MODE": "natural"}):
             delay = BasePlatformAdapter._get_human_delay()
             assert 0.8 <= delay <= 2.5
 
     def test_natural_mode_ignores_malformed_custom_env_vars(self):
         env = {
-            "TRIIBAL_HUMAN_DELAY_MODE": "natural",
-            "TRIIBAL_HUMAN_DELAY_MIN_MS": "oops",
-            "TRIIBAL_HUMAN_DELAY_MAX_MS": "still-bad",
+            "TRIBAL_HUMAN_DELAY_MODE": "natural",
+            "TRIBAL_HUMAN_DELAY_MIN_MS": "oops",
+            "TRIBAL_HUMAN_DELAY_MAX_MS": "still-bad",
         }
         with patch.dict(os.environ, env):
             delay = BasePlatformAdapter._get_human_delay()
@@ -858,9 +858,9 @@ class TestGetHumanDelay:
 
     def test_custom_mode_uses_env_vars(self):
         env = {
-            "TRIIBAL_HUMAN_DELAY_MODE": "custom",
-            "TRIIBAL_HUMAN_DELAY_MIN_MS": "100",
-            "TRIIBAL_HUMAN_DELAY_MAX_MS": "200",
+            "TRIBAL_HUMAN_DELAY_MODE": "custom",
+            "TRIBAL_HUMAN_DELAY_MIN_MS": "100",
+            "TRIBAL_HUMAN_DELAY_MAX_MS": "200",
         }
         with patch.dict(os.environ, env):
             delay = BasePlatformAdapter._get_human_delay()
@@ -868,9 +868,9 @@ class TestGetHumanDelay:
 
     def test_custom_mode_tolerates_malformed_env_vars(self):
         env = {
-            "TRIIBAL_HUMAN_DELAY_MODE": "custom",
-            "TRIIBAL_HUMAN_DELAY_MIN_MS": "oops",
-            "TRIIBAL_HUMAN_DELAY_MAX_MS": "still-bad",
+            "TRIBAL_HUMAN_DELAY_MODE": "custom",
+            "TRIBAL_HUMAN_DELAY_MIN_MS": "oops",
+            "TRIBAL_HUMAN_DELAY_MAX_MS": "still-bad",
         }
         with patch.dict(os.environ, env):
             # falls back to the custom-mode defaults instead of crashing

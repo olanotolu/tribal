@@ -32,9 +32,9 @@ def _state_dir() -> Path:
     override = os.environ.get("WATCHER_STATE_DIR")
     if override:
         return Path(override)
-    # Default: $TRIIBAL_HOME/watcher-state/, falling back to ~/.triibal/watcher-state/.
-    triibal_home = os.environ.get("TRIIBAL_HOME") or str(Path.home() / ".triibal")
-    return Path(triibal_home) / "watcher-state"
+    # Default: $TRIBAL_HOME/watcher-state/, falling back to ~/.tribal/watcher-state/.
+    tribal_home = os.environ.get("TRIBAL_HOME") or str(Path.home() / ".tribal")
+    return Path(tribal_home) / "watcher-state"
 
 
 class Watermark:

@@ -27,7 +27,7 @@ def test_manager_is_singleton():
 
 def test_manager_get_or_build_provider_caches(tmp_path, monkeypatch):
     """Calling get_or_build_provider twice with same name returns same provider."""
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
     from tools.mcp_oauth_manager import MCPOAuthManager
 
     mgr = MCPOAuthManager()
@@ -38,7 +38,7 @@ def test_manager_get_or_build_provider_caches(tmp_path, monkeypatch):
 
 def test_manager_get_or_build_rebuilds_on_url_change(tmp_path, monkeypatch):
     """Changing the URL discards the cached provider."""
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
     from tools.mcp_oauth_manager import MCPOAuthManager
 
     mgr = MCPOAuthManager()
@@ -49,7 +49,7 @@ def test_manager_get_or_build_rebuilds_on_url_change(tmp_path, monkeypatch):
 
 def test_manager_remove_evicts_cache(tmp_path, monkeypatch):
     """remove(name) evicts the provider from cache AND deletes disk files."""
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
     from tools.mcp_oauth_manager import MCPOAuthManager
 
     # Pre-seed tokens on disk
@@ -72,13 +72,13 @@ def test_manager_remove_evicts_cache(tmp_path, monkeypatch):
     assert p1 is not p2
 
 
-def test_triibal_provider_subclass_exists():
-    """TriibalMCPOAuthProvider is defined and subclasses OAuthClientProvider."""
-    from tools.mcp_oauth_manager import _TRIIBAL_PROVIDER_CLS
+def test_tribal_provider_subclass_exists():
+    """TribalMCPOAuthProvider is defined and subclasses OAuthClientProvider."""
+    from tools.mcp_oauth_manager import _TRIBAL_PROVIDER_CLS
     from mcp.client.auth.oauth2 import OAuthClientProvider
 
-    assert _TRIIBAL_PROVIDER_CLS is not None
-    assert issubclass(_TRIIBAL_PROVIDER_CLS, OAuthClientProvider)
+    assert _TRIBAL_PROVIDER_CLS is not None
+    assert issubclass(_TRIBAL_PROVIDER_CLS, OAuthClientProvider)
 
 
 @pytest.mark.asyncio
@@ -89,7 +89,7 @@ async def test_disk_watch_invalidates_on_mtime_change(tmp_path, monkeypatch):
     invalidateOAuthCacheIfDiskChanged (CC-1096 / GH#24317) and is the core
     fix for Cthulhu's external-cron refresh workflow.
     """
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
     from tools.mcp_oauth_manager import MCPOAuthManager, reset_manager_for_tests
 
     reset_manager_for_tests()
@@ -124,18 +124,18 @@ async def test_disk_watch_invalidates_on_mtime_change(tmp_path, monkeypatch):
     assert provider._initialized is False
 
 
-def test_manager_builds_triibal_provider_subclass(tmp_path, monkeypatch):
-    """get_or_build_provider returns TriibalMCPOAuthProvider, not plain OAuthClientProvider."""
+def test_manager_builds_tribal_provider_subclass(tmp_path, monkeypatch):
+    """get_or_build_provider returns TribalMCPOAuthProvider, not plain OAuthClientProvider."""
     from tools.mcp_oauth_manager import (
-        MCPOAuthManager, _TRIIBAL_PROVIDER_CLS, reset_manager_for_tests,
+        MCPOAuthManager, _TRIBAL_PROVIDER_CLS, reset_manager_for_tests,
     )
     reset_manager_for_tests()
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
 
     mgr = MCPOAuthManager()
     provider = mgr.get_or_build_provider("srv", "https://example.com/mcp", None)
 
-    assert _TRIIBAL_PROVIDER_CLS is not None
-    assert isinstance(provider, _TRIIBAL_PROVIDER_CLS)
-    assert provider._triibal_server_name == "srv"
+    assert _TRIBAL_PROVIDER_CLS is not None
+    assert isinstance(provider, _TRIBAL_PROVIDER_CLS)
+    assert provider._tribal_server_name == "srv"
 

@@ -2,8 +2,8 @@
   "version": 1,
   "updated_at": "2026-05-28T17:19:08Z",
   "metadata": {
-    "source": "triibal-agent repo",
-    "docs": "https://triibal.dev/docs/reference/model-catalog"
+    "source": "tribal-agent repo",
+    "docs": "https://tribal.dev/docs/reference/model-catalog"
   },
   "providers": {
     "openrouter": {

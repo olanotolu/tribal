@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from cli import TriibalCLI
+from cli import TribalCLI
 
 
 class _InsightsEngineStub:
@@ -18,10 +18,10 @@ class _InsightsEngineStub:
 
 
 def _run_show_insights(command: str):
-    cli_obj = TriibalCLI.__new__(TriibalCLI)
+    cli_obj = TribalCLI.__new__(TribalCLI)
     db = MagicMock()
     _InsightsEngineStub.calls = []
-    with patch("triibal_state.SessionDB", return_value=db), \
+    with patch("tribal_state.SessionDB", return_value=db), \
          patch("agent.insights.InsightsEngine", _InsightsEngineStub):
         cli_obj._show_insights(command)
     return _InsightsEngineStub.calls, db

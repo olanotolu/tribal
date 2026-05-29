@@ -43,15 +43,15 @@ familiar with that flow can read this without surprises.
 Token storage layout
 --------------------
 - Per-user tokens (keyed by sender email):
-    ``${TRIIBAL_HOME}/google_chat_user_tokens/<sanitized_email>.json``
+    ``${TRIBAL_HOME}/google_chat_user_tokens/<sanitized_email>.json``
 - Legacy single-user token (fallback, untouched for backward compat):
-    ``${TRIIBAL_HOME}/google_chat_user_token.json``
+    ``${TRIBAL_HOME}/google_chat_user_token.json``
 - Per-user pending OAuth state during /setup-files start → exchange:
-    ``${TRIIBAL_HOME}/google_chat_user_oauth_pending/<sanitized_email>.json``
+    ``${TRIBAL_HOME}/google_chat_user_oauth_pending/<sanitized_email>.json``
 - Legacy pending state:
-    ``${TRIIBAL_HOME}/google_chat_user_oauth_pending.json``
+    ``${TRIBAL_HOME}/google_chat_user_oauth_pending.json``
 - Shared OAuth client (one per host):
-    ``${TRIIBAL_HOME}/google_chat_user_client_secret.json``
+    ``${TRIBAL_HOME}/google_chat_user_client_secret.json``
 """
 
 from __future__ import annotations
@@ -72,20 +72,20 @@ from typing import Any, List, Optional, Tuple
 # after the in-tree → plugin migration. See adapter.py for context.
 logger = logging.getLogger("gateway.platforms.google_chat_user_oauth")
 
-# Use the project's TRIIBAL_HOME helper so the token follows the user's
-# profile (e.g. tests can override via TRIIBAL_HOME=/tmp/...).
+# Use the project's TRIBAL_HOME helper so the token follows the user's
+# profile (e.g. tests can override via TRIBAL_HOME=/tmp/...).
 try:
-    from triibal_constants import display_triibal_home, get_triibal_home
+    from tribal_constants import display_tribal_home, get_tribal_home
 except (ModuleNotFoundError, ImportError):
-    # Fallback for environments where triibal_constants isn't importable
+    # Fallback for environments where tribal_constants isn't importable
     # (mirrors the same fallback used by the google-workspace skill's
-    # _triibal_home.py shim).
-    def get_triibal_home() -> Path:
-        val = os.environ.get("TRIIBAL_HOME", "").strip()
-        return Path(val) if val else Path.home() / ".triibal"
+    # _tribal_home.py shim).
+    def get_tribal_home() -> Path:
+        val = os.environ.get("TRIBAL_HOME", "").strip()
+        return Path(val) if val else Path.home() / ".tribal"
 
-    def display_triibal_home() -> str:
-        home = get_triibal_home()
+    def display_tribal_home() -> str:
+        home = get_tribal_home()
         try:
             return "~/" + str(home.relative_to(Path.home()))
         except ValueError:
@@ -94,20 +94,20 @@ except (ModuleNotFoundError, ImportError):
 from utils import atomic_replace
 
 
-def _triibal_home() -> Path:
-    """Resolve TRIIBAL_HOME at call time (NOT module import).
+def _tribal_home() -> Path:
+    """Resolve TRIBAL_HOME at call time (NOT module import).
 
-    Tests and ``TRIIBAL_HOME=...`` env overrides need this to be late-
+    Tests and ``TRIBAL_HOME=...`` env overrides need this to be late-
     binding. If we cached the path at import time, switching profiles
     or tweaking env vars in tests would silently keep using the old
     path."""
-    return get_triibal_home()
+    return get_tribal_home()
 
 
 # Filesystem-safe key: lowercase, allow ``[a-z0-9._-@]``, replace anything
 # else with ``_``. ``ramon.fernandez@nttdata.com`` stays human-readable
 # (``ramon.fernandez@nttdata.com.json``) which makes admin debugging by
-# ``ls ~/.triibal/google_chat_user_tokens/`` trivial.
+# ``ls ~/.tribal/google_chat_user_tokens/`` trivial.
 _EMAIL_FS_RE = re.compile(r"[^a-z0-9._@-]+")
 
 
@@ -117,19 +117,19 @@ def _sanitize_email(email: str) -> str:
 
 
 def _legacy_token_path() -> Path:
-    return _triibal_home() / "google_chat_user_token.json"
+    return _tribal_home() / "google_chat_user_token.json"
 
 
 def _user_tokens_dir() -> Path:
-    return _triibal_home() / "google_chat_user_tokens"
+    return _tribal_home() / "google_chat_user_tokens"
 
 
 def _legacy_pending_path() -> Path:
-    return _triibal_home() / "google_chat_user_oauth_pending.json"
+    return _tribal_home() / "google_chat_user_oauth_pending.json"
 
 
 def _user_pending_dir() -> Path:
-    return _triibal_home() / "google_chat_user_oauth_pending"
+    return _tribal_home() / "google_chat_user_oauth_pending"
 
 
 def _token_path(email: Optional[str] = None) -> Path:
@@ -140,7 +140,7 @@ def _token_path(email: Optional[str] = None) -> Path:
 
 
 def _client_secret_path() -> Path:
-    return _triibal_home() / "google_chat_user_client_secret.json"
+    return _tribal_home() / "google_chat_user_client_secret.json"
 
 
 def _pending_auth_path(email: Optional[str] = None) -> Path:
@@ -199,7 +199,7 @@ def load_user_credentials(email: Optional[str] = None) -> Optional[Any]:
     except ImportError:
         logger.warning(
             "[google_chat_user_oauth] google-auth not installed; user-OAuth "
-            "attachment delivery is disabled. Install triibal-agent[google_chat]."
+            "attachment delivery is disabled. Install tribal-agent[google_chat]."
         )
         return None
 
@@ -388,7 +388,7 @@ def install_deps() -> bool:
     except subprocess.CalledProcessError as exc:
         print(f"ERROR: Failed to install dependencies: {exc}")
         print("Or install via the optional extra:")
-        print("  pip install 'triibal-agent[google_chat]'")
+        print("  pip install 'tribal-agent[google_chat]'")
         return False
 
 
@@ -412,7 +412,7 @@ def check_auth(email: Optional[str] = None) -> bool:
 
 
 def store_client_secret(path: str) -> None:
-    """Validate and copy the user's OAuth client_secret.json into TRIIBAL_HOME."""
+    """Validate and copy the user's OAuth client_secret.json into TRIBAL_HOME."""
     src = Path(path).expanduser().resolve()
     if not src.exists():
         print(f"ERROR: File not found: {src}")
@@ -582,9 +582,9 @@ def exchange_auth_code(code: str, email: Optional[str] = None) -> None:
 
     print(f"OK: Authenticated. Token saved to {token_path}")
     rel_label = (
-        f"{display_triibal_home()}/google_chat_user_tokens/{_sanitize_email(email)}.json"
+        f"{display_tribal_home()}/google_chat_user_tokens/{_sanitize_email(email)}.json"
         if email
-        else f"{display_triibal_home()}/google_chat_user_token.json"
+        else f"{display_tribal_home()}/google_chat_user_token.json"
     )
     print(f"Profile path: {rel_label}")
 
@@ -628,7 +628,7 @@ def revoke(email: Optional[str] = None) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Google Chat user-OAuth setup for Triibal (native attachment delivery)"
+        description="Google Chat user-OAuth setup for Tribal (native attachment delivery)"
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--check", action="store_true",

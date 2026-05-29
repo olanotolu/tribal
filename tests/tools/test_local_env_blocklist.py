@@ -1,11 +1,11 @@
 """Tests for subprocess env sanitization in LocalEnvironment.
 
-Verifies that Triibal-managed provider, tool, and gateway env vars are
+Verifies that Tribal-managed provider, tool, and gateway env vars are
 stripped from subprocess environments so external CLIs are not silently
-misrouted or handed Triibal secrets.
+misrouted or handed Tribal secrets.
 
-See: https://github.com/Triibal/triibal/issues/1002
-See: https://github.com/Triibal/triibal/issues/1264
+See: https://github.com/Tribal/tribal/issues/1002
+See: https://github.com/Tribal/tribal/issues/1264
 """
 
 import os
@@ -14,8 +14,8 @@ from unittest.mock import MagicMock, patch
 
 from tools.environments.local import (
     LocalEnvironment,
-    _TRIIBAL_PROVIDER_ENV_BLOCKLIST,
-    _TRIIBAL_PROVIDER_ENV_FORCE_PREFIX,
+    _TRIBAL_PROVIDER_ENV_BLOCKLIST,
+    _TRIBAL_PROVIDER_ENV_FORCE_PREFIX,
 )
 
 
@@ -64,7 +64,7 @@ def _run_with_env(extra_os_env=None, self_env=None):
 
 
 class TestProviderEnvBlocklist:
-    """Provider env vars loaded from ~/.triibal/.env must not leak."""
+    """Provider env vars loaded from ~/.tribal/.env must not leak."""
 
     def test_blocked_vars_are_stripped(self):
         """OPENAI_BASE_URL and other provider vars must not appear in subprocess env."""
@@ -167,24 +167,24 @@ class TestProviderEnvBlocklist:
 
 
 class TestForceEnvOptIn:
-    """Callers can opt in to passing a blocked var via _TRIIBAL_FORCE_ prefix."""
+    """Callers can opt in to passing a blocked var via _TRIBAL_FORCE_ prefix."""
 
     def test_force_prefix_passes_blocked_var(self):
-        """_TRIIBAL_FORCE_OPENAI_API_KEY in self.env should inject OPENAI_API_KEY."""
+        """_TRIBAL_FORCE_OPENAI_API_KEY in self.env should inject OPENAI_API_KEY."""
         result_env = _run_with_env(self_env={
-            f"{_TRIIBAL_PROVIDER_ENV_FORCE_PREFIX}OPENAI_API_KEY": "sk-explicit",
+            f"{_TRIBAL_PROVIDER_ENV_FORCE_PREFIX}OPENAI_API_KEY": "sk-explicit",
         })
 
         assert "OPENAI_API_KEY" in result_env
         assert result_env["OPENAI_API_KEY"] == "sk-explicit"
         # The force-prefixed key itself must not appear
-        assert f"{_TRIIBAL_PROVIDER_ENV_FORCE_PREFIX}OPENAI_API_KEY" not in result_env
+        assert f"{_TRIBAL_PROVIDER_ENV_FORCE_PREFIX}OPENAI_API_KEY" not in result_env
 
     def test_force_prefix_overrides_os_environ_block(self):
         """Force-prefix in self.env wins even when os.environ has the blocked var."""
         result_env = _run_with_env(
             extra_os_env={"OPENAI_BASE_URL": "http://leaked/v1"},
-            self_env={f"{_TRIIBAL_PROVIDER_ENV_FORCE_PREFIX}OPENAI_BASE_URL": "http://intended/v1"},
+            self_env={f"{_TRIBAL_PROVIDER_ENV_FORCE_PREFIX}OPENAI_BASE_URL": "http://intended/v1"},
         )
 
         assert result_env["OPENAI_BASE_URL"] == "http://intended/v1"
@@ -202,20 +202,20 @@ class TestBlocklistCoverage:
             "ANTHROPIC_API_KEY",
             "LLM_MODEL",
         }
-        assert must_block.issubset(_TRIIBAL_PROVIDER_ENV_BLOCKLIST)
+        assert must_block.issubset(_TRIBAL_PROVIDER_ENV_BLOCKLIST)
 
     def test_registry_vars_are_in_blocklist(self):
         """Every api_key_env_var and base_url_env_var from PROVIDER_REGISTRY
         must appear in the blocklist — ensures no drift."""
-        from triibal_cli.auth import PROVIDER_REGISTRY
+        from tribal_cli.auth import PROVIDER_REGISTRY
 
         for pconfig in PROVIDER_REGISTRY.values():
             for var in pconfig.api_key_env_vars:
-                assert var in _TRIIBAL_PROVIDER_ENV_BLOCKLIST, (
+                assert var in _TRIBAL_PROVIDER_ENV_BLOCKLIST, (
                     f"Registry var {var} (provider={pconfig.id}) missing from blocklist"
                 )
             if pconfig.base_url_env_var:
-                assert pconfig.base_url_env_var in _TRIIBAL_PROVIDER_ENV_BLOCKLIST, (
+                assert pconfig.base_url_env_var in _TRIBAL_PROVIDER_ENV_BLOCKLIST, (
                     f"Registry base_url_env_var {pconfig.base_url_env_var} "
                     f"(provider={pconfig.id}) missing from blocklist"
                 )
@@ -224,7 +224,7 @@ class TestBlocklistCoverage:
         """Non-registry auth vars (ANTHROPIC_TOKEN, CLAUDE_CODE_OAUTH_TOKEN)
         must also be in the blocklist."""
         extras = {"ANTHROPIC_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN"}
-        assert extras.issubset(_TRIIBAL_PROVIDER_ENV_BLOCKLIST)
+        assert extras.issubset(_TRIBAL_PROVIDER_ENV_BLOCKLIST)
 
     def test_non_registry_provider_vars_are_in_blocklist(self):
         extras = {
@@ -239,20 +239,20 @@ class TestBlocklistCoverage:
             "XAI_API_KEY",
             "HELICONE_API_KEY",
         }
-        assert extras.issubset(_TRIIBAL_PROVIDER_ENV_BLOCKLIST)
+        assert extras.issubset(_TRIBAL_PROVIDER_ENV_BLOCKLIST)
 
     def test_optional_tool_and_messaging_vars_are_in_blocklist(self):
         """Tool/messaging vars from OPTIONAL_ENV_VARS should stay covered."""
-        from triibal_cli.config import OPTIONAL_ENV_VARS
+        from tribal_cli.config import OPTIONAL_ENV_VARS
 
         for name, metadata in OPTIONAL_ENV_VARS.items():
             category = metadata.get("category")
             if category in {"tool", "messaging"}:
-                assert name in _TRIIBAL_PROVIDER_ENV_BLOCKLIST, (
+                assert name in _TRIBAL_PROVIDER_ENV_BLOCKLIST, (
                     f"Optional env var {name} (category={category}) missing from blocklist"
                 )
             elif category == "setting" and metadata.get("password"):
-                assert name in _TRIIBAL_PROVIDER_ENV_BLOCKLIST, (
+                assert name in _TRIBAL_PROVIDER_ENV_BLOCKLIST, (
                     f"Secret setting env var {name} missing from blocklist"
                 )
 
@@ -295,7 +295,7 @@ class TestBlocklistCoverage:
             "MODAL_TOKEN_SECRET",
             "DAYTONA_API_KEY",
         }
-        assert extras.issubset(_TRIIBAL_PROVIDER_ENV_BLOCKLIST)
+        assert extras.issubset(_TRIBAL_PROVIDER_ENV_BLOCKLIST)
 
 
 class TestSanePathIncludesHomebrew:

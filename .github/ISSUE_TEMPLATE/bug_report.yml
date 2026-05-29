@@ -9,9 +9,9 @@ body:
         Thanks for reporting a bug! Please fill out the sections below so we can reproduce and fix it quickly.
 
         **Before submitting**, please:
-        - [ ] Search [existing issues](https://github.com/Triibal/triibal/issues) to avoid duplicates
-        - [ ] Update to the latest version (`triibal update`) and confirm the bug still exists
-        - [ ] Run `triibal debug share` and paste the links below (see Debug Report section)
+        - [ ] Search [existing issues](https://github.com/Tribal/tribal/issues) to avoid duplicates
+        - [ ] Update to the latest version (`tribal update`) and confirm the bug still exists
+        - [ ] Run `tribal debug share` and paste the links below (see Debug Report section)
 
   - type: textarea
     id: description
@@ -29,7 +29,7 @@ body:
       label: Steps to Reproduce
       description: Minimal steps to trigger the bug. The more specific, the faster we can fix it.
       placeholder: |
-        1. Run `triibal chat`
+        1. Run `tribal chat`
         2. Send the message "..."
         3. Agent calls tool X
         4. Error appears: ...
@@ -56,7 +56,7 @@ body:
     id: component
     attributes:
       label: Affected Component
-      description: Which part of Triibal is affected?
+      description: Which part of Tribal is affected?
       multiple: true
       options:
         - CLI (interactive chat)
@@ -65,7 +65,7 @@ body:
         - Tools (terminal, file ops, web, code execution, etc.)
         - Skills (skill loading, skill hub, skill guard)
         - Agent Core (conversation loop, context compression, memory)
-        - Configuration (config.yaml, .env, triibal setup)
+        - Configuration (config.yaml, .env, tribal setup)
         - Other
     validations:
       required: true
@@ -88,12 +88,12 @@ body:
     attributes:
       label: Debug Report
       description: |
-        Run `triibal debug share` from your terminal and paste the links it prints here.
+        Run `tribal debug share` from your terminal and paste the links it prints here.
         This uploads your system info, config, and recent logs to a paste service automatically.
 
         If you're in an interactive chat session, you can also use the `/debug` slash command — it does the same thing.
 
-        If the upload fails, run `triibal debug share --local` and paste the output directly.
+        If the upload fails, run `tribal debug share --local` and paste the output directly.
       placeholder: |
         Report   https://paste.rs/abc123
         agent.log   https://paste.rs/def456
@@ -119,10 +119,10 @@ body:
       placeholder: "3.11.9"
 
   - type: input
-    id: triibal-version
+    id: tribal-version
     attributes:
-      label: Triibal Version
-      description: Output of `triibal version`
+      label: Tribal Version
+      description: Output of `tribal version`
       placeholder: "2.1.0"
 
   - type: textarea
@@ -131,7 +131,7 @@ body:
       label: Additional Logs / Traceback (optional)
       description: |
         The debug report above covers most logs. Use this field for any extra error output, 
-        tracebacks, or screenshots not captured by `triibal debug share`.
+        tracebacks, or screenshots not captured by `tribal debug share`.
       render: shell
 
   - type: textarea

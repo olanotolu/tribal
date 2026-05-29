@@ -11,24 +11,24 @@ from agent.model_metadata import MINIMUM_CONTEXT_LENGTH
 
 @pytest.fixture
 def _isolate(tmp_path, monkeypatch):
-    """Isolate TRIIBAL_HOME so tests don't touch real config."""
-    home = tmp_path / ".triibal"
+    """Isolate TRIBAL_HOME so tests don't touch real config."""
+    home = tmp_path / ".tribal"
     home.mkdir()
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
 
 
 @pytest.fixture
 def cli_obj(_isolate):
-    """Create a minimal TriibalCLI instance for banner testing."""
+    """Create a minimal TribalCLI instance for banner testing."""
     with patch("cli.load_cli_config", return_value={
         "display": {"tool_progress": "new"},
         "terminal": {},
     }), patch("cli.get_tool_definitions", return_value=[]), \
          patch("cli.build_welcome_banner"):
-        from cli import TriibalCLI
-        obj = TriibalCLI.__new__(TriibalCLI)
+        from cli import TribalCLI
+        obj = TribalCLI.__new__(TribalCLI)
         obj.model = "test-model"
-        obj.enabled_toolsets = ["triibal-core"]
+        obj.enabled_toolsets = ["tribal-core"]
         obj.compact = False
         obj.console = MagicMock()
         obj.session_id = None
@@ -47,7 +47,7 @@ class TestLowContextWarning:
     """Tests that the CLI warns about low context lengths."""
 
     def test_warning_for_below_minimum_context(self, cli_obj):
-        """Warning shown when context is below Triibal' minimum."""
+        """Warning shown when context is below Tribal' minimum."""
         cli_obj.agent.context_compressor.context_length = 32768
         with patch("cli.get_tool_definitions", return_value=[]), \
              patch("cli.build_welcome_banner"):
@@ -83,7 +83,7 @@ class TestLowContextWarning:
         assert len(warning_calls) == 1
 
     def test_no_warning_at_boundary(self, cli_obj):
-        """No warning at exactly Triibal' minimum context length."""
+        """No warning at exactly Tribal' minimum context length."""
         cli_obj.agent.context_compressor.context_length = MINIMUM_CONTEXT_LENGTH
         with patch("cli.get_tool_definitions", return_value=[]), \
              patch("cli.build_welcome_banner"):
@@ -94,7 +94,7 @@ class TestLowContextWarning:
         assert len(warning_calls) == 0
 
     def test_no_warning_above_boundary(self, cli_obj):
-        """No warning above Triibal' minimum context length."""
+        """No warning above Tribal' minimum context length."""
         cli_obj.agent.context_compressor.context_length = MINIMUM_CONTEXT_LENGTH + 1
         with patch("cli.get_tool_definitions", return_value=[]), \
              patch("cli.build_welcome_banner"):

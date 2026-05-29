@@ -45,15 +45,15 @@ from utils import base_url_host_matches, base_url_hostname
 import fire
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn, TimeRemainingColumn
 from rich.console import Console
-from triibal_constants import OPENROUTER_BASE_URL, get_triibal_home
+from tribal_constants import OPENROUTER_BASE_URL, get_tribal_home
 from agent.retry_utils import jittered_backoff
 
-# Load .env from TRIIBAL_HOME first, then project root as a dev fallback.
-from triibal_cli.env_loader import load_triibal_dotenv
+# Load .env from TRIBAL_HOME first, then project root as a dev fallback.
+from tribal_cli.env_loader import load_tribal_dotenv
 
-_triibal_home = get_triibal_home()
+_tribal_home = get_tribal_home()
 _project_env = Path(__file__).parent / ".env"
-load_triibal_dotenv(triibal_home=_triibal_home, project_env=_project_env)
+load_tribal_dotenv(tribal_home=_tribal_home, project_env=_project_env)
 
 
 def _effective_temperature_for_model(
@@ -391,7 +391,7 @@ class TrajectoryCompressor:
             if client is None:
                 raise RuntimeError(
                     f"Provider '{provider}' is not configured. "
-                    f"Check your API key or run: triibal setup")
+                    f"Check your API key or run: tribal setup")
             self.client = None  # Not used directly
             self.async_client = None  # Not used directly
         else:

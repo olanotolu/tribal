@@ -326,7 +326,7 @@ export default function ConfigPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "triibal-config.json";
+    a.download = "tribal-config.json";
     a.click();
     URL.revokeObjectURL(url);
   };

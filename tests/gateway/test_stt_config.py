@@ -17,14 +17,14 @@ def test_gateway_config_stt_disabled_from_dict_nested():
 
 
 def test_load_gateway_config_bridges_stt_enabled_from_config_yaml(tmp_path, monkeypatch):
-    triibal_home = tmp_path / ".triibal"
-    triibal_home.mkdir()
-    (triibal_home / "config.yaml").write_text(
+    tribal_home = tmp_path / ".tribal"
+    tribal_home.mkdir()
+    (tribal_home / "config.yaml").write_text(
         yaml.dump({"stt": {"enabled": False}}),
         encoding="utf-8",
     )
 
-    monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
+    monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     config = load_gateway_config()

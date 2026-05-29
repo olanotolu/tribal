@@ -92,7 +92,7 @@ def check_compression_model_feasibility(agent: Any) -> None:
                 msg = (
                     "⚠ No auxiliary LLM provider configured — context "
                     "compression will drop middle turns without a summary. "
-                    "Run `triibal setup` or set OPENROUTER_API_KEY."
+                    "Run `tribal setup` or set OPENROUTER_API_KEY."
                 )
             agent._compression_warning = msg
             agent._emit_status(msg)
@@ -135,7 +135,7 @@ def check_compression_model_feasibility(agent: Any) -> None:
             raise ValueError(
                 f"Auxiliary compression model {aux_model} has a context "
                 f"window of {aux_context:,} tokens, which is below the "
-                f"minimum {MINIMUM_CONTEXT_LENGTH:,} required by Triibal "
+                f"minimum {MINIMUM_CONTEXT_LENGTH:,} required by Tribal "
                 f"Agent.  Choose a compression model with at least "
                 f"{MINIMUM_CONTEXT_LENGTH // 1000}K context (set "
                 f"auxiliary.compression.model in config.yaml), or set "
@@ -386,11 +386,11 @@ def compress_context(
 
                 set_current_session_id(agent.session_id)
             except Exception:
-                os.environ["TRIIBAL_SESSION_ID"] = agent.session_id
+                os.environ["TRIBAL_SESSION_ID"] = agent.session_id
             agent._session_db_created = False
             agent._session_db.create_session(
                 session_id=agent.session_id,
-                source=agent.platform or os.environ.get("TRIIBAL_SESSION_SOURCE", "cli"),
+                source=agent.platform or os.environ.get("TRIBAL_SESSION_SOURCE", "cli"),
                 model=agent.model,
                 model_config=agent._session_init_model_config,
                 parent_session_id=old_session_id,
@@ -410,10 +410,10 @@ def compress_context(
             logger.warning("Session DB compression split failed — new session will NOT be indexed: %s", e)
 
     # Notify the context engine that the session_id rotated because of
-    # compression (not a fresh /new). Plugin engines (e.g. triibal-lcm) use
+    # compression (not a fresh /new). Plugin engines (e.g. tribal-lcm) use
     # boundary_reason="compression" to preserve DAG lineage across the
     # rollover instead of re-initializing fresh per-session state.
-    # See triibal-lcm#68. Built-in ContextCompressor ignores kwargs.
+    # See tribal-lcm#68. Built-in ContextCompressor ignores kwargs.
     try:
         _old_sid = locals().get("old_session_id")
         if _old_sid and hasattr(agent.context_compressor, "on_session_start"):
@@ -538,7 +538,7 @@ def try_shrink_image_parts_in_messages(api_messages: list) -> bool:
                 "image/jpeg": ".jpg", "image/jpg": ".jpg", "image/bmp": ".bmp",
             }.get(mime, ".jpg")
             tmp = tempfile.NamedTemporaryFile(
-                prefix="triibal_shrink_", suffix=suffix, delete=False,
+                prefix="tribal_shrink_", suffix=suffix, delete=False,
             )
             try:
                 tmp.write(raw)

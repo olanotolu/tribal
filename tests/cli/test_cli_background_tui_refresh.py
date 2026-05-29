@@ -10,12 +10,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from cli import TriibalCLI
+from cli import TribalCLI
 
 
 def _make_cli():
-    """Create a minimal TriibalCLI instance for testing."""
-    cli_obj = TriibalCLI.__new__(TriibalCLI)
+    """Create a minimal TribalCLI instance for testing."""
+    cli_obj = TribalCLI.__new__(TribalCLI)
     cli_obj.model = "test-model"
     cli_obj._background_tasks = {}
     cli_obj._background_task_counter = 0

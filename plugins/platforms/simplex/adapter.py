@@ -1,11 +1,11 @@
-"""SimpleX Chat platform adapter (Triibal plugin).
+"""SimpleX Chat platform adapter (Tribal plugin).
 
 Connects to a simplex-chat daemon running in WebSocket mode.
 Inbound messages arrive via a persistent WebSocket connection.
 Outbound messages use the same WebSocket with JSON commands.
 
-This adapter ships as a Triibal platform plugin under
-``plugins/platforms/simplex/``. The Triibal plugin loader scans the
+This adapter ships as a Tribal platform plugin under
+``plugins/platforms/simplex/``. The Tribal plugin loader scans the
 directory at startup, calls ``register(ctx)``, and the platform
 becomes available to ``gateway/run.py`` and ``tools/send_message_tool``
 through the registry — no edits to core files are required.
@@ -26,7 +26,7 @@ Optional environment variables:
     SIMPLEX_HOME_CHANNEL_NAME  Human label for the home channel
 
 The ``websockets`` Python package is imported lazily — the plugin is
-discoverable and `triibal setup` can describe it even when websockets is
+discoverable and `tribal setup` can describe it even when websockets is
 not installed. ``check_requirements()`` returns False until the package
 is present, so the gateway will not attempt to instantiate the adapter.
 """
@@ -41,7 +41,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 # Lazy import: BasePlatformAdapter and friends live in the main repo.
-# Imported at module top because they're stdlib-only inside Triibal — no
+# Imported at module top because they're stdlib-only inside Tribal — no
 # external dependency that would block the plugin from loading.
 from gateway.config import Platform, PlatformConfig
 from gateway.platforms.base import (
@@ -67,7 +67,7 @@ HEALTH_CHECK_INTERVAL = 30.0
 HEALTH_CHECK_STALE_THRESHOLD = 120.0
 
 # Correlation ID prefix for requests we send so we can ignore our own echoes.
-_CORR_PREFIX = "triibal-"
+_CORR_PREFIX = "tribal-"
 
 
 # ---------------------------------------------------------------------------
@@ -618,8 +618,8 @@ async def _standalone_send(
     """Open an ephemeral WebSocket to the daemon, send, and close.
 
     Used by ``tools/send_message_tool._send_via_adapter`` when the gateway
-    runner is not in this process (e.g. ``triibal cron`` running as a
-    separate process from ``triibal gateway``). Without this hook,
+    runner is not in this process (e.g. ``tribal cron`` running as a
+    separate process from ``tribal gateway``). Without this hook,
     ``deliver=simplex`` cron jobs fail with "No live adapter for platform".
 
     ``thread_id`` and ``force_document`` are accepted for signature parity
@@ -646,7 +646,7 @@ async def _standalone_send(
             cmd_str = f"@[{chat_id}] {message}"
 
         payload = {
-            "corrId": f"triibal-snd-{int(time.time() * 1000)}",
+            "corrId": f"tribal-snd-{int(time.time() * 1000)}",
             "cmd": cmd_str,
         }
 
@@ -661,10 +661,10 @@ async def _standalone_send(
 
 
 def interactive_setup() -> None:
-    """Minimal stdin wizard for ``triibal setup gateway`` → SimpleX.
+    """Minimal stdin wizard for ``tribal setup gateway`` → SimpleX.
 
     Prompts for the WebSocket URL and the optional allowlist / home channel.
-    Writes to ``~/.triibal/.env`` via ``triibal_cli.config``.
+    Writes to ``~/.tribal/.env`` via ``tribal_cli.config``.
     """
     print()
     print("SimpleX Chat setup")
@@ -675,9 +675,9 @@ def interactive_setup() -> None:
     print()
 
     try:
-        from triibal_cli.config import get_env_value, save_env_value
+        from tribal_cli.config import get_env_value, save_env_value
     except ImportError:
-        print("triibal_cli.config not available; set SIMPLEX_* vars manually in ~/.triibal/.env")
+        print("tribal_cli.config not available; set SIMPLEX_* vars manually in ~/.tribal/.env")
         return
 
     def _prompt(var: str, prompt: str, *, secret: bool = False) -> None:
@@ -685,7 +685,7 @@ def interactive_setup() -> None:
         suffix = " [keep current]" if existing else ""
         try:
             if secret:
-                from triibal_cli.secret_prompt import masked_secret_prompt
+                from tribal_cli.secret_prompt import masked_secret_prompt
                 value = masked_secret_prompt(f"{prompt}{suffix}: ")
             else:
                 value = input(f"{prompt}{suffix}: ").strip()
@@ -702,7 +702,7 @@ def interactive_setup() -> None:
 
 
 def register(ctx) -> None:
-    """Plugin entry point — called by the Triibal plugin system at startup."""
+    """Plugin entry point — called by the Tribal plugin system at startup."""
     ctx.register_platform(
         name="simplex",
         label="SimpleX Chat",
@@ -714,7 +714,7 @@ def register(ctx) -> None:
         install_hint="pip install websockets   # SimpleX adapter requires the websockets package",
         setup_fn=interactive_setup,
         # Env-driven auto-configuration: seeds PlatformConfig.extra so
-        # env-only setups show up in `triibal gateway status` without
+        # env-only setups show up in `tribal gateway status` without
         # instantiating the adapter.
         env_enablement_fn=_env_enablement,
         # Cron home-channel delivery support — `deliver=simplex` cron jobs

@@ -1,21 +1,21 @@
 // The dashboard can be served either at the root of its host (e.g.
 // https://kanban.tilos.com/) or under a URL prefix when reverse-proxied
-// (e.g. https://mission-control.tilos.com/triibal/). The Python backend
-// injects ``window.__TRIIBAL_BASE_PATH__`` into index.html based on the
+// (e.g. https://mission-control.tilos.com/tribal/). The Python backend
+// injects ``window.__TRIBAL_BASE_PATH__`` into index.html based on the
 // incoming ``X-Forwarded-Prefix`` header so the SPA can address its own
 // ``/api/...`` and ``/dashboard-plugins/...`` URLs correctly without a
 // rebuild. Empty string means "served at root".
 function readBasePath(): string {
   if (typeof window === "undefined") return "";
-  const raw = window.__TRIIBAL_BASE_PATH__ ?? "";
+  const raw = window.__TRIBAL_BASE_PATH__ ?? "";
   if (!raw) return "";
   // Normalise: ensure leading slash, strip trailing slash.
   const withLead = raw.startsWith("/") ? raw : `/${raw}`;
   return withLead.replace(/\/+$/, "");
 }
 
-export const TRIIBAL_BASE_PATH = readBasePath();
-const BASE = TRIIBAL_BASE_PATH;
+export const TRIBAL_BASE_PATH = readBasePath();
+const BASE = TRIBAL_BASE_PATH;
 
 import type { DashboardTheme } from "@/themes/types";
 
@@ -23,17 +23,17 @@ import type { DashboardTheme } from "@/themes/types";
 // Injected into index.html by the server — never fetched via API.
 declare global {
   interface Window {
-    __TRIIBAL_SESSION_TOKEN__?: string;
-    __TRIIBAL_BASE_PATH__?: string;
+    __TRIBAL_SESSION_TOKEN__?: string;
+    __TRIBAL_BASE_PATH__?: string;
     /** Server-injected flag: ``true`` when the dashboard's OAuth gate is
      * engaged (public bind, no ``--insecure``). Toggles the SPA's
      * WS-upgrade path from legacy ``?token=`` to single-use ``?ticket=``
      * fetched via :func:`getWsTicket`. */
-    __TRIIBAL_AUTH_REQUIRED__?: boolean;
+    __TRIBAL_AUTH_REQUIRED__?: boolean;
   }
 }
 let _sessionToken: string | null = null;
-const SESSION_HEADER = "X-Triibal-Session-Token";
+const SESSION_HEADER = "X-Tribal-Session-Token";
 
 function setSessionHeader(headers: Headers, token: string): void {
   if (!headers.has(SESSION_HEADER)) {
@@ -44,7 +44,7 @@ function setSessionHeader(headers: Headers, token: string): void {
 export async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
   // Inject the session token into all /api/ requests.
   const headers = new Headers(init?.headers);
-  const token = window.__TRIIBAL_SESSION_TOKEN__;
+  const token = window.__TRIBAL_SESSION_TOKEN__;
   if (token) {
     setSessionHeader(headers, token);
   }
@@ -81,7 +81,7 @@ export async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> 
       // fallback the post-login handler can read.
       try {
         sessionStorage.setItem(
-          "triibal.lastLocation",
+          "tribal.lastLocation",
           window.location.pathname + window.location.search,
         );
       } catch {
@@ -92,25 +92,25 @@ export async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> 
       return new Promise<T>(() => {});
     }
     // Loopback mode: ``_SESSION_TOKEN`` rotates on every server restart
-    // (``triibal update``, ``triibal gateway restart``, etc.). A tab kept
+    // (``tribal update``, ``tribal gateway restart``, etc.). A tab kept
     // open across the restart holds the OLD token in
-    // ``window.__TRIIBAL_SESSION_TOKEN__`` from the previous HTML render,
+    // ``window.__TRIBAL_SESSION_TOKEN__`` from the previous HTML render,
     // so every fetch returns 401. The HTML is served ``Cache-Control:
     // no-store`` so a reload picks up the freshly-injected token. Trigger
     // that reload once on the first stale-token 401 — gated mode is
     // handled above, so reaching here in gated mode means a real
     // middleware failure that should not reload-loop.
-    if (!window.__TRIIBAL_AUTH_REQUIRED__) {
+    if (!window.__TRIBAL_AUTH_REQUIRED__) {
       let alreadyReloaded = false;
       try {
         alreadyReloaded =
-          sessionStorage.getItem("triibal.tokenReloadAttempted") === "1";
+          sessionStorage.getItem("tribal.tokenReloadAttempted") === "1";
       } catch {
         /* SSR / privacy mode — fall through to throw */
       }
       if (!alreadyReloaded) {
         try {
-          sessionStorage.setItem("triibal.tokenReloadAttempted", "1");
+          sessionStorage.setItem("tribal.tokenReloadAttempted", "1");
         } catch {
           /* SSR / privacy mode — best effort */
         }
@@ -121,10 +121,10 @@ export async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> 
   }
   if (res.ok) {
     // Clear the stale-token reload guard: a successful 2xx proves the
-    // current ``window.__TRIIBAL_SESSION_TOKEN__`` is valid, so the next
+    // current ``window.__TRIBAL_SESSION_TOKEN__`` is valid, so the next
     // 401 — if any — should be allowed to trigger its own reload cycle.
     try {
-      sessionStorage.removeItem("triibal.tokenReloadAttempted");
+      sessionStorage.removeItem("tribal.tokenReloadAttempted");
     } catch {
       /* SSR / privacy mode — ignore */
     }
@@ -143,18 +143,18 @@ function pluginPath(name: string): string {
 
 async function getSessionToken(): Promise<string> {
   if (_sessionToken) return _sessionToken;
-  const injected = window.__TRIIBAL_SESSION_TOKEN__;
+  const injected = window.__TRIBAL_SESSION_TOKEN__;
   if (injected) {
     _sessionToken = injected;
     return _sessionToken;
   }
-  throw new Error("Session token not available — page must be served by the Triibal dashboard server");
+  throw new Error("Session token not available — page must be served by the Tribal dashboard server");
 }
 
 /**
  * Fetch a single-use ticket for a WebSocket upgrade in gated mode.
  *
- * The dashboard's gated-mode WS auth (``triibal_cli.web_server._ws_auth_ok``)
+ * The dashboard's gated-mode WS auth (``tribal_cli.web_server._ws_auth_ok``)
  * rejects the legacy ``?token=<_SESSION_TOKEN>`` path and only accepts
  * ``?ticket=<minted>`` consumed against the in-memory ticket store. Browsers
  * can't set ``Authorization`` on a WS upgrade, so this round-trip via the
@@ -180,11 +180,11 @@ export async function getWsTicket(): Promise<{ ticket: string; ttl_seconds: numb
  * mode returns the injected session token.
  */
 export async function buildWsAuthParam(): Promise<[string, string]> {
-  if (window.__TRIIBAL_AUTH_REQUIRED__) {
+  if (window.__TRIBAL_AUTH_REQUIRED__) {
     const { ticket } = await getWsTicket();
     return ["ticket", ticket];
   }
-  const token = window.__TRIIBAL_SESSION_TOKEN__ ?? "";
+  const token = window.__TRIBAL_SESSION_TOKEN__ ?? "";
   return ["token", token];
 }
 
@@ -417,8 +417,8 @@ export const api = {
   // Gateway / update actions
   restartGateway: () =>
     fetchJSON<ActionResponse>("/api/gateway/restart", { method: "POST" }),
-  updateTriibal: () =>
-    fetchJSON<ActionResponse>("/api/triibal/update", { method: "POST" }),
+  updateTribal: () =>
+    fetchJSON<ActionResponse>("/api/tribal/update", { method: "POST" }),
   getActionStatus: (name: string, lines = 200) =>
     fetchJSON<ActionStatusResponse>(
       `/api/actions/${encodeURIComponent(name)}/status?lines=${lines}`,
@@ -549,7 +549,7 @@ export interface StatusResponse {
   gateway_running: boolean;
   gateway_state: string | null;
   gateway_updated_at: string | null;
-  triibal_home: string;
+  tribal_home: string;
   latest_config_version: number;
   release_date: string;
   version: string;
@@ -729,7 +729,7 @@ export interface CronJob {
   id: string;
   profile?: string | null;
   profile_name?: string | null;
-  triibal_home?: string | null;
+  tribal_home?: string | null;
   is_default_profile?: boolean;
   name?: string | null;
   prompt?: string | null;

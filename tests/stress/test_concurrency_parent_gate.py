@@ -8,7 +8,7 @@ Simulates the create-then-link race described in RCA t_a6acd07d:
   Thread B: repeatedly runs claim_task against every ready task.
 
 Pass criteria: no task is ever 'claimed' while any of its parents is
-not 'done'. The claim_task gate added in triibal_cli/kanban_db.py must
+not 'done'. The claim_task gate added in tribal_cli/kanban_db.py must
 demote such tasks back to 'todo' and emit a 'claim_rejected' event
 instead of spawning.
 
@@ -34,11 +34,11 @@ WORKERS_RUN_DURATION_S = 8
 
 
 def run() -> int:
-    home = tempfile.mkdtemp(prefix="triibal_parent_gate_stress_")
-    os.environ["TRIIBAL_HOME"] = home
+    home = tempfile.mkdtemp(prefix="tribal_parent_gate_stress_")
+    os.environ["TRIBAL_HOME"] = home
     os.environ["HOME"] = home
 
-    from triibal_cli import kanban_db as kb
+    from tribal_cli import kanban_db as kb
 
     kb.init_db()
 

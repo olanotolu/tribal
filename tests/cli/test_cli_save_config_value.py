@@ -12,14 +12,14 @@ class TestSaveConfigValueAtomic:
     @pytest.fixture
     def config_env(self, tmp_path, monkeypatch):
         """Isolated config environment with a writable config.yaml."""
-        triibal_home = tmp_path / ".triibal"
-        triibal_home.mkdir()
-        config_path = triibal_home / "config.yaml"
+        tribal_home = tmp_path / ".tribal"
+        tribal_home.mkdir()
+        config_path = tribal_home / "config.yaml"
         config_path.write_text(yaml.dump({
             "model": {"default": "test-model", "provider": "openrouter"},
             "display": {"skin": "default"},
         }))
-        monkeypatch.setattr("cli._triibal_home", triibal_home)
+        monkeypatch.setattr("cli._tribal_home", tribal_home)
         return config_path
 
     def test_calls_roundtrip_yaml_update(self, config_env, monkeypatch):

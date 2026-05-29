@@ -1,5 +1,5 @@
-# nix/web.nix — Triibal Web Dashboard (Vite/React) frontend build
-{ pkgs, triibalNpmLib, ... }:
+# nix/web.nix — Tribal Web Dashboard (Vite/React) frontend build
+{ pkgs, tribalNpmLib, ... }:
 let
   src = ../web;
   npmDeps = pkgs.fetchNpmDeps {
@@ -7,13 +7,13 @@ let
     hash = "sha256-CmGZlAYLKRyNCjuHfRIzzbAdbm1ng7+owW8vMFciz5g=";
   };
 
-  npm = triibalNpmLib.mkNpmPassthru { folder = "web"; attr = "web"; pname = "triibal-web"; };
+  npm = tribalNpmLib.mkNpmPassthru { folder = "web"; attr = "web"; pname = "tribal-web"; };
 
   packageJson = builtins.fromJSON (builtins.readFile (src + "/package.json"));
   version = packageJson.version;
 in
 pkgs.buildNpmPackage (npm // {
-  pname = "triibal-web";
+  pname = "tribal-web";
   inherit src npmDeps version;
 
   doCheck = false;

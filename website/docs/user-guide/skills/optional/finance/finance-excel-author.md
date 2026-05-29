@@ -14,10 +14,10 @@ Build auditable Excel workbooks headless with openpyxl — blue/black/green cell
 
 | | |
 |---|---|
-| Source | Optional — install with `triibal skills install official/finance/excel-author` |
+| Source | Optional — install with `tribal skills install official/finance/excel-author` |
 | Path | `optional-skills/finance/excel-author` |
 | Version | `1.0.0` |
-| Author | Anthropic (adapted by Triibal) |
+| Author | Anthropic (adapted by Tribal) |
 | License | Apache-2.0 |
 | Platforms | linux, macos, windows |
 | Tags | `excel`, `openpyxl`, `finance`, `spreadsheet`, `modeling` |
@@ -26,7 +26,7 @@ Build auditable Excel workbooks headless with openpyxl — blue/black/green cell
 ## Reference: full SKILL.md
 
 :::info
-The following is the complete skill definition that Triibal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
+The following is the complete skill definition that Tribal loads when this skill is triggered. This is what the agent sees as instructions when the skill is active.
 :::
 
 # excel-author

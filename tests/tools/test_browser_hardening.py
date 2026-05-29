@@ -83,7 +83,7 @@ class TestFindAgentBrowserCache:
         with patch("shutil.which", return_value=None), \
              patch("os.path.isdir", return_value=False), \
              patch.object(Path, "exists", mock_exists), \
-             patch("triibal_cli.dep_ensure.ensure_dependency", return_value=False):
+             patch("tribal_cli.dep_ensure.ensure_dependency", return_value=False):
             with pytest.raises(FileNotFoundError):
                 bt._find_agent_browser()
         # Second call should also raise (from cache)
@@ -99,19 +99,19 @@ class TestCommandTimeoutCache:
 
     def test_default_is_30(self):
         from tools.browser_tool import _get_command_timeout
-        with patch("triibal_cli.config.read_raw_config", return_value={}):
+        with patch("tribal_cli.config.read_raw_config", return_value={}):
             assert _get_command_timeout() == 30
 
     def test_reads_from_config(self):
         from tools.browser_tool import _get_command_timeout
         cfg = {"browser": {"command_timeout": 60}}
-        with patch("triibal_cli.config.read_raw_config", return_value=cfg):
+        with patch("tribal_cli.config.read_raw_config", return_value=cfg):
             assert _get_command_timeout() == 60
 
     def test_cached_after_first_call(self):
         from tools.browser_tool import _get_command_timeout
         mock_read = MagicMock(return_value={"browser": {"command_timeout": 45}})
-        with patch("triibal_cli.config.read_raw_config", mock_read):
+        with patch("tribal_cli.config.read_raw_config", mock_read):
             _get_command_timeout()
             _get_command_timeout()
         mock_read.assert_called_once()

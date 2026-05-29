@@ -29,25 +29,25 @@ def _reset_modules(prefixes: tuple[str, ...]):
 
 @pytest.fixture(autouse=True)
 def _restore_tool_modules():
-    original_triibal_home = os.environ.get("TRIIBAL_HOME")
+    original_tribal_home = os.environ.get("TRIBAL_HOME")
     original_modules = {
         name: module
         for name, module in sys.modules.items()
         if name == "tools"
         or name.startswith("tools.")
-        or name == "triibal_cli"
-        or name.startswith("triibal_cli.")
+        or name == "tribal_cli"
+        or name.startswith("tribal_cli.")
         or name == "modal"
         or name.startswith("modal.")
     }
     try:
         yield
     finally:
-        if original_triibal_home is None:
-            os.environ.pop("TRIIBAL_HOME", None)
+        if original_tribal_home is None:
+            os.environ.pop("TRIBAL_HOME", None)
         else:
-            os.environ["TRIIBAL_HOME"] = original_triibal_home
-        _reset_modules(("tools", "triibal_cli", "modal"))
+            os.environ["TRIBAL_HOME"] = original_tribal_home
+        _reset_modules(("tools", "tribal_cli", "modal"))
         sys.modules.update(original_modules)
 
 
@@ -57,15 +57,15 @@ def _install_modal_test_modules(
     fail_on_snapshot_ids: set[str] | None = None,
     snapshot_id: str = "im-fresh",
 ):
-    _reset_modules(("tools", "triibal_cli", "modal"))
+    _reset_modules(("tools", "tribal_cli", "modal"))
 
-    triibal_cli = types.ModuleType("triibal_cli")
-    triibal_cli.__path__ = []  # type: ignore[attr-defined]
-    sys.modules["triibal_cli"] = triibal_cli
-    triibal_home = tmp_path / "triibal-home"
-    os.environ["TRIIBAL_HOME"] = str(triibal_home)
-    sys.modules["triibal_cli.config"] = types.SimpleNamespace(
-        get_triibal_home=lambda: triibal_home,
+    tribal_cli = types.ModuleType("tribal_cli")
+    tribal_cli.__path__ = []  # type: ignore[attr-defined]
+    sys.modules["tribal_cli"] = tribal_cli
+    tribal_home = tmp_path / "tribal-home"
+    os.environ["TRIBAL_HOME"] = str(tribal_home)
+    sys.modules["tribal_cli.config"] = types.SimpleNamespace(
+        get_tribal_home=lambda: tribal_home,
     )
 
     tools_package = types.ModuleType("tools")
@@ -144,7 +144,7 @@ def _install_modal_test_modules(
             return {"kind": "registry", "image": image}
 
     async def _lookup_aio(_name: str, create_if_missing: bool = False):
-        return types.SimpleNamespace(name="triibal-agent", create_if_missing=create_if_missing)
+        return types.SimpleNamespace(name="tribal-agent", create_if_missing=create_if_missing)
 
     class _FakeSandboxInstance:
         def __init__(self, image):
@@ -190,7 +190,7 @@ def _install_modal_test_modules(
     )
 
     return {
-        "snapshot_store": triibal_home / "modal_snapshots.json",
+        "snapshot_store": tribal_home / "modal_snapshots.json",
         "create_calls": create_calls,
         "from_id_calls": from_id_calls,
         "registry_calls": registry_calls,

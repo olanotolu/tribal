@@ -24,7 +24,7 @@ Add a first-class `gemini` provider that authenticates via Google OAuth, using t
 - Alternatively: accept user-provided client_id via env vars as override
 
 ## Token Lifecycle
-- Store at `~/.triibal/gemini_oauth.json` (NOT sharing with `~/.gemini/oauth_creds.json`)
+- Store at `~/.tribal/gemini_oauth.json` (NOT sharing with `~/.gemini/oauth_creds.json`)
 - Fields: `client_id`, `client_secret`, `refresh_token`, `access_token`, `expires_at`, `email`
 - File permissions: 0o600
 - Before each API call: check expiry, refresh if within 5 min of expiration
@@ -49,11 +49,11 @@ Add a first-class `gemini` provider that authenticates via Google OAuth, using t
    - ~200 lines
 
 ### Existing files to modify
-2. `triibal_cli/auth.py` — Add ProviderConfig for "gemini" with auth_type="oauth_google"
-3. `triibal_cli/models.py` — Add Gemini model catalog
-4. `triibal_cli/runtime_provider.py` — Add gemini branch (read OAuth token, build OpenAI client)
-5. `triibal_cli/main.py` — Add `_model_flow_gemini()`, add to provider choices
-6. `triibal_cli/setup.py` — Add gemini auth flow (trigger browser OAuth)
+2. `tribal_cli/auth.py` — Add ProviderConfig for "gemini" with auth_type="oauth_google"
+3. `tribal_cli/models.py` — Add Gemini model catalog
+4. `tribal_cli/runtime_provider.py` — Add gemini branch (read OAuth token, build OpenAI client)
+5. `tribal_cli/main.py` — Add `_model_flow_gemini()`, add to provider choices
+6. `tribal_cli/setup.py` — Add gemini auth flow (trigger browser OAuth)
 7. `run_agent.py` — Token refresh before API calls (like Copilot pattern)
 8. `agent/auxiliary_client.py` — Add gemini to aux resolution chain
 9. `agent/model_metadata.py` — Add Gemini model context lengths
@@ -72,9 +72,9 @@ Add a first-class `gemini` provider that authenticates via Google OAuth, using t
 
 ## Prerequisites
 - Nous Research GCP project with Desktop OAuth client registered
-- OR: accept user-provided client_id via TRIIBAL_GEMINI_CLIENT_ID env var
+- OR: accept user-provided client_id via TRIBAL_GEMINI_CLIENT_ID env var
 
 ## Reference implementations
 - clawdbot: `extensions/google/oauth.flow.ts` (PKCE + localhost server)
 - pi-mono: `packages/ai/src/utils/oauth/google-gemini-cli.ts` (same flow)
-- triibal-agent Copilot OAuth: `triibal_cli/main.py` `_copilot_device_flow()` (different flow type but same lifecycle pattern)
+- tribal-agent Copilot OAuth: `tribal_cli/main.py` `_copilot_device_flow()` (different flow type but same lifecycle pattern)

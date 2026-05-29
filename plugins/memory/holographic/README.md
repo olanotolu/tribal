@@ -9,21 +9,21 @@ None — uses SQLite (always available). NumPy optional for HRR algebra.
 ## Setup
 
 ```bash
-triibal memory setup    # select "holographic"
+tribal memory setup    # select "holographic"
 ```
 
 Or manually:
 ```bash
-triibal config set memory.provider holographic
+tribal config set memory.provider holographic
 ```
 
 ## Config
 
-Config in `config.yaml` under `plugins.triibal-memory-store`:
+Config in `config.yaml` under `plugins.tribal-memory-store`:
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `db_path` | `$TRIIBAL_HOME/memory_store.db` | SQLite database path |
+| `db_path` | `$TRIBAL_HOME/memory_store.db` | SQLite database path |
 | `auto_extract` | `false` | Auto-extract facts at session end |
 | `default_trust` | `0.5` | Default trust score for new facts |
 | `hrr_dim` | `1024` | HRR vector dimensions |

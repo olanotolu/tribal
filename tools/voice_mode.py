@@ -6,7 +6,7 @@ sounddevice or system audio players.
 
 Dependencies (optional):
     pip install sounddevice numpy
-    or: pip install triibal-agent[voice]
+    or: pip install tribal-agent[voice]
 """
 
 import logging
@@ -49,7 +49,7 @@ def _audio_available() -> bool:
         return False
 
 
-from triibal_constants import is_termux as _is_termux_environment
+from tribal_constants import is_termux as _is_termux_environment
 
 
 def _voice_capture_install_hint() -> str:
@@ -106,7 +106,7 @@ def detect_audio_environment() -> dict:
     # When the user mounts a PulseAudio/PipeWire socket into the container
     # and points PULSE_SERVER / PIPEWIRE_REMOTE at it, audio works fine
     # (issue #21203).  Only block when no forwarding is configured.
-    from triibal_constants import is_container
+    from tribal_constants import is_container
     if is_container():
         if os.environ.get('PULSE_SERVER') or os.environ.get('PIPEWIRE_REMOTE'):
             notices.append("Running inside container (Docker/Podman/LXC) with host audio forwarding")
@@ -207,7 +207,7 @@ SILENCE_RMS_THRESHOLD = 200  # RMS below this = silence (int16 range 0-32767)
 SILENCE_DURATION_SECONDS = 3.0  # Seconds of continuous silence before auto-stop
 
 # Temp directory for voice recordings
-_TEMP_DIR = os.path.join(tempfile.gettempdir(), "triibal_voice")
+_TEMP_DIR = os.path.join(tempfile.gettempdir(), "tribal_voice")
 
 
 # ============================================================================

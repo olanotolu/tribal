@@ -1,2 +1,2 @@
 Optional migration workflows for importing user state and customizations from
-other agent systems into Triibal Agent.
+other agent systems into Tribal Agent.

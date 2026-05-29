@@ -3,27 +3,27 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
-const BACKEND = process.env.TRIIBAL_DASHBOARD_URL ?? "http://127.0.0.1:9119";
+const BACKEND = process.env.TRIBAL_DASHBOARD_URL ?? "http://127.0.0.1:9119";
 
 /**
- * In production the Python `triibal dashboard` server injects a one-shot
- * session token into `index.html` (see `triibal_cli/web_server.py`). The
+ * In production the Python `tribal dashboard` server injects a one-shot
+ * session token into `index.html` (see `tribal_cli/web_server.py`). The
  * Vite dev server serves its own `index.html`, so unless we forward that
  * token, every protected `/api/*` call 401s.
  *
  * This plugin fetches the running dashboard's `index.html` on each dev page
- * load, scrapes the `window.__TRIIBAL_SESSION_TOKEN__` assignment, and
+ * load, scrapes the `window.__TRIBAL_SESSION_TOKEN__` assignment, and
  * re-injects it into the dev HTML. No-op in production builds.
  */
-function triibalDevToken(): Plugin {
-  const TOKEN_RE = /window\.__TRIIBAL_SESSION_TOKEN__\s*=\s*"([^"]+)"/;
+function tribalDevToken(): Plugin {
+  const TOKEN_RE = /window\.__TRIBAL_SESSION_TOKEN__\s*=\s*"([^"]+)"/;
   const EMBEDDED_RE =
-    /window\.__TRIIBAL_DASHBOARD_EMBEDDED_CHAT__\s*=\s*(true|false)/;
+    /window\.__TRIBAL_DASHBOARD_EMBEDDED_CHAT__\s*=\s*(true|false)/;
   const LEGACY_TUI_RE =
-    /window\.__TRIIBAL_DASHBOARD_TUI__\s*=\s*(true|false)/;
+    /window\.__TRIBAL_DASHBOARD_TUI__\s*=\s*(true|false)/;
 
   return {
-    name: "triibal:dev-session-token",
+    name: "tribal:dev-session-token",
     apply: "serve",
     async transformIndexHtml() {
       try {
@@ -32,8 +32,8 @@ function triibalDevToken(): Plugin {
         const match = html.match(TOKEN_RE);
         if (!match) {
           console.warn(
-            `[triibal] Could not find session token in ${BACKEND} — ` +
-              `is \`triibal dashboard\` running? /api calls will 401.`,
+            `[tribal] Could not find session token in ${BACKEND} — ` +
+              `is \`tribal dashboard\` running? /api calls will 401.`,
           );
           return;
         }
@@ -49,14 +49,14 @@ function triibalDevToken(): Plugin {
             tag: "script",
             injectTo: "head",
             children:
-              `window.__TRIIBAL_SESSION_TOKEN__="${match[1]}";` +
-              `window.__TRIIBAL_DASHBOARD_EMBEDDED_CHAT__=${embeddedJs};`,
+              `window.__TRIBAL_SESSION_TOKEN__="${match[1]}";` +
+              `window.__TRIBAL_DASHBOARD_EMBEDDED_CHAT__=${embeddedJs};`,
           },
         ];
       } catch (err) {
         console.warn(
-          `[triibal] Dashboard at ${BACKEND} unreachable — ` +
-            `start it with \`triibal dashboard\` or set TRIIBAL_DASHBOARD_URL. ` +
+          `[tribal] Dashboard at ${BACKEND} unreachable — ` +
+            `start it with \`tribal dashboard\` or set TRIBAL_DASHBOARD_URL. ` +
             `(${(err as Error).message})`,
         );
       }
@@ -65,7 +65,7 @@ function triibalDevToken(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), triibalDevToken()],
+  plugins: [react(), tailwindcss(), tribalDevToken()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -90,7 +90,7 @@ export default defineConfig({
     ],
   },
   build: {
-    outDir: "../triibal_cli/web_dist",
+    outDir: "../tribal_cli/web_dist",
     emptyOutDir: true,
   },
   server: {
@@ -99,7 +99,7 @@ export default defineConfig({
         target: BACKEND,
         ws: true,
       },
-      // Same host as `triibal dashboard` must serve these; Vite has no
+      // Same host as `tribal dashboard` must serve these; Vite has no
       // dashboard-plugins/* files, so without this, plugin scripts 404
       // or receive index.html in dev.
       "/dashboard-plugins": BACKEND,

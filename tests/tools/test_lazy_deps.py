@@ -120,18 +120,18 @@ class TestSecurityGating:
             ld.ensure("test.feat", prompt=False)
 
     def test_disabled_via_env_var(self, monkeypatch):
-        monkeypatch.setenv("TRIIBAL_DISABLE_LAZY_INSTALLS", "1")
+        monkeypatch.setenv("TRIBAL_DISABLE_LAZY_INSTALLS", "1")
         # Bypass config layer; the env var alone must disable.
         monkeypatch.setattr(
-            "triibal_cli.config.load_config",
+            "tribal_cli.config.load_config",
             lambda: {"security": {"allow_lazy_installs": True}},
         )
         assert ld._allow_lazy_installs() is False
 
     def test_default_allows(self, monkeypatch):
-        monkeypatch.delenv("TRIIBAL_DISABLE_LAZY_INSTALLS", raising=False)
+        monkeypatch.delenv("TRIBAL_DISABLE_LAZY_INSTALLS", raising=False)
         monkeypatch.setattr(
-            "triibal_cli.config.load_config",
+            "tribal_cli.config.load_config",
             lambda: {"security": {}},
         )
         assert ld._allow_lazy_installs() is True
@@ -139,9 +139,9 @@ class TestSecurityGating:
     def test_config_failure_fails_open(self, monkeypatch):
         # If config can't be read at all, we ALLOW installs rather than
         # blocking the user out of their own backends.
-        monkeypatch.delenv("TRIIBAL_DISABLE_LAZY_INSTALLS", raising=False)
+        monkeypatch.delenv("TRIBAL_DISABLE_LAZY_INSTALLS", raising=False)
         monkeypatch.setattr(
-            "triibal_cli.config.load_config",
+            "tribal_cli.config.load_config",
             lambda: (_ for _ in ()).throw(RuntimeError("config broken")),
         )
         assert ld._allow_lazy_installs() is True
@@ -296,7 +296,7 @@ class TestIsSatisfiedVersionAware:
 
 
 # ---------------------------------------------------------------------------
-# active_features + refresh_active_features (Piece A — triibal update wiring)
+# active_features + refresh_active_features (Piece A — tribal update wiring)
 # ---------------------------------------------------------------------------
 
 
@@ -361,7 +361,7 @@ class TestRefreshActiveFeatures:
         assert result == {"test.feat": "refreshed"}
 
     def test_install_failure_recorded_not_raised(self, monkeypatch):
-        # A failed refresh must NOT raise out of triibal update.
+        # A failed refresh must NOT raise out of tribal update.
         monkeypatch.setattr(ld, "active_features", lambda: ["test.feat"])
         monkeypatch.setitem(ld.LAZY_DEPS, "test.feat", ("zzzfake==2.0.0",))
         monkeypatch.setattr(ld, "_is_satisfied", lambda spec: False)
@@ -379,7 +379,7 @@ class TestRefreshActiveFeatures:
 
     def test_lazy_installs_disabled_marked_skipped(self, monkeypatch):
         # security.allow_lazy_installs=false → don't error, mark skipped
-        # so triibal update can render "respecting your config" message.
+        # so tribal update can render "respecting your config" message.
         monkeypatch.setattr(ld, "active_features", lambda: ["test.feat"])
         monkeypatch.setitem(ld.LAZY_DEPS, "test.feat", ("zzzfake==2.0.0",))
         monkeypatch.setattr(ld, "_is_satisfied", lambda spec: False)

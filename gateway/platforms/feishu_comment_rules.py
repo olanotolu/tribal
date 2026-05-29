@@ -3,8 +3,8 @@ Feishu document comment access-control rules.
 
 3-tier rule resolution: exact doc > wildcard "*" > top-level > code defaults.
 Each field (enabled/policy/allow_from) falls back independently.
-Config: ~/.triibal/feishu_comment_rules.json (mtime-cached, hot-reload).
-Pairing store: ~/.triibal/feishu_comment_pairing.json.
+Config: ~/.tribal/feishu_comment_rules.json (mtime-cached, hot-reload).
+Pairing store: ~/.tribal/feishu_comment_pairing.json.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from triibal_constants import get_triibal_home
+from tribal_constants import get_tribal_home
 
 logger = logging.getLogger(__name__)
 
@@ -24,13 +24,13 @@ logger = logging.getLogger(__name__)
 # Paths
 # ---------------------------------------------------------------------------
 #
-# Uses the canonical ``get_triibal_home()`` helper (TRIIBAL_HOME-aware and
+# Uses the canonical ``get_tribal_home()`` helper (TRIBAL_HOME-aware and
 # profile-safe). Resolved at import time; this module is lazy-imported by
 # the Feishu comment event handler, which runs long after profile overrides
 # have been applied, so freezing paths here is safe.
 
-RULES_FILE = get_triibal_home() / "feishu_comment_rules.json"
-PAIRING_FILE = get_triibal_home() / "feishu_comment_pairing.json"
+RULES_FILE = get_tribal_home() / "feishu_comment_rules.json"
+PAIRING_FILE = get_tribal_home() / "feishu_comment_pairing.json"
 
 # ---------------------------------------------------------------------------
 # Data models
@@ -351,8 +351,8 @@ def _main() -> int:
     import sys
 
     try:
-        from triibal_cli.env_loader import load_triibal_dotenv
-        load_triibal_dotenv()
+        from tribal_cli.env_loader import load_tribal_dotenv
+        load_tribal_dotenv()
     except Exception:
         pass
 

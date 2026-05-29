@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from triibal_cli.runtime_provider import (
+from tribal_cli.runtime_provider import (
     _VALID_API_MODES,
     _maybe_apply_codex_app_server_runtime,
 )
@@ -245,7 +245,7 @@ class TestSpawnEnvIsolation:
     def test_kanban_worker_adds_only_kanban_writable_root(self, monkeypatch):
         """Codex-runtime Kanban workers need to write board state outside
         their scratch/worktree workspace, but should not fall back to
-        danger-full-access. Triibal passes a narrow app-server config override
+        danger-full-access. Tribal passes a narrow app-server config override
         for the Kanban root only.
         """
         import subprocess
@@ -277,11 +277,11 @@ class TestSpawnEnvIsolation:
 
         monkeypatch.setattr(subprocess, "Popen", FakePopen)
         monkeypatch.setenv("HOME", "/users/alice")
-        monkeypatch.setenv("TRIIBAL_HOME", "/users/alice/.triibal/profiles/backend-worker")
-        monkeypatch.setenv("TRIIBAL_KANBAN_TASK", "t_smoke")
+        monkeypatch.setenv("TRIBAL_HOME", "/users/alice/.tribal/profiles/backend-worker")
+        monkeypatch.setenv("TRIBAL_KANBAN_TASK", "t_smoke")
         monkeypatch.setenv(
-            "TRIIBAL_KANBAN_DB",
-            "/users/alice/.triibal/kanban/boards/smoke/kanban.db",
+            "TRIBAL_KANBAN_DB",
+            "/users/alice/.tribal/kanban/boards/smoke/kanban.db",
         )
 
         client = cas.CodexAppServerClient(codex_bin="codex")
@@ -291,7 +291,7 @@ class TestSpawnEnvIsolation:
         assert cmd[:2] == ["codex", "app-server"]
         assert 'sandbox_mode="workspace-write"' in cmd
         assert (
-            'sandbox_workspace_write.writable_roots=["/users/alice/.triibal/kanban/boards/smoke"]'
+            'sandbox_workspace_write.writable_roots=["/users/alice/.tribal/kanban/boards/smoke"]'
             in cmd
         )
         assert "sandbox_workspace_write.network_access=false" in cmd

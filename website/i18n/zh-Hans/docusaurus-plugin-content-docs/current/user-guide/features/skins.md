@@ -1,12 +1,12 @@
 ---
 sidebar_position: 10
 title: "皮肤与主题"
-description: "使用内置和用户自定义皮肤定制 Triibal CLI 的外观"
+description: "使用内置和用户自定义皮肤定制 Tribal CLI 的外观"
 ---
 
 # 皮肤与主题
 
-皮肤控制 Triibal CLI 的**视觉呈现**：横幅颜色、spinner（加载动画）面孔与动词、响应框标签、品牌文本以及工具活动前缀。
+皮肤控制 Tribal CLI 的**视觉呈现**：横幅颜色、spinner（加载动画）面孔与动词、响应框标签、品牌文本以及工具活动前缀。
 
 对话风格与视觉风格是两个独立的概念：
 
@@ -18,10 +18,10 @@ description: "使用内置和用户自定义皮肤定制 Triibal CLI 的外观"
 ```bash
 /skin                # show the current skin and list available skins
 /skin ares           # switch to a built-in skin
-/skin mytheme        # switch to a custom skin from ~/.triibal/skins/mytheme.yaml
+/skin mytheme        # switch to a custom skin from ~/.tribal/skins/mytheme.yaml
 ```
 
-或在 `~/.triibal/config.yaml` 中设置默认皮肤：
+或在 `~/.tribal/config.yaml` 中设置默认皮肤：
 
 ```yaml
 display:
@@ -32,12 +32,12 @@ display:
 
 | 皮肤 | 描述 | Agent 品牌 | 视觉特征 |
 |------|------|-----------|---------|
-| `default` | 经典 Triibal — 金色与 kawaii 风格 | `Triibal Agent` | 暖金色边框，cornsilk 文字，spinner 中的 kawaii 面孔。熟悉的双蛇杖横幅。简洁亲切。 |
+| `default` | 经典 Tribal — 金色与 kawaii 风格 | `Tribal Agent` | 暖金色边框，cornsilk 文字，spinner 中的 kawaii 面孔。熟悉的双蛇杖横幅。简洁亲切。 |
 | `ares` | 战神主题 — 深红与青铜 | `Ares Agent` | 深红色边框配青铜点缀。激进的 spinner 动词（"forging"、"marching"、"tempering steel"）。自定义剑盾 ASCII 艺术横幅。 |
-| `mono` | 单色 — 简洁灰度 | `Triibal Agent` | 全灰色，无彩色。边框为 `#555555`，文字为 `#c9d1d9`。适合极简终端或录屏场景。 |
-| `slate` | 冷蓝色 — 面向开发者 | `Triibal Agent` | 皇家蓝边框（`#4169e1`），柔和蓝色文字。沉稳专业。无自定义 spinner，使用默认面孔。 |
-| `daylight` | 适用于亮色终端的浅色主题，深色文字配冷蓝点缀 | `Triibal Agent` | 专为白色或亮色终端设计。深石板色文字配蓝色边框，浅色状态面板，补全菜单在亮色终端配置下保持清晰可读。 |
-| `warm-lightmode` | 适用于浅色终端背景的暖棕/金色文字 | `Triibal Agent` | 适合浅色终端的暖羊皮纸色调。深棕色文字配马鞍棕点缀，奶油色状态面板。比 daylight 主题更温暖的大地色系选择。 |
+| `mono` | 单色 — 简洁灰度 | `Tribal Agent` | 全灰色，无彩色。边框为 `#555555`，文字为 `#c9d1d9`。适合极简终端或录屏场景。 |
+| `slate` | 冷蓝色 — 面向开发者 | `Tribal Agent` | 皇家蓝边框（`#4169e1`），柔和蓝色文字。沉稳专业。无自定义 spinner，使用默认面孔。 |
+| `daylight` | 适用于亮色终端的浅色主题，深色文字配冷蓝点缀 | `Tribal Agent` | 专为白色或亮色终端设计。深石板色文字配蓝色边框，浅色状态面板，补全菜单在亮色终端配置下保持清晰可读。 |
+| `warm-lightmode` | 适用于浅色终端背景的暖棕/金色文字 | `Tribal Agent` | 适合浅色终端的暖羊皮纸色调。深棕色文字配马鞍棕点缀，奶油色状态面板。比 daylight 主题更温暖的大地色系选择。 |
 | `poseidon` | 海神主题 — 深蓝与海沫绿 | `Poseidon Agent` | 深蓝到海沫绿渐变。海洋主题 spinner（"charting currents"、"sounding the depth"）。三叉戟 ASCII 艺术横幅。 |
 | `sisyphus` | 西西弗斯主题 — 朴素灰度，彰显坚韧 | `Sisyphus Agent` | 浅灰色配强烈对比。巨石主题 spinner（"pushing uphill"、"resetting the boulder"、"enduring the loop"）。巨石与山丘 ASCII 艺术横幅。 |
 | `charizard` | 火山主题 — 焦橙与余烬色 | `Charizard Agent` | 暖焦橙到余烬色渐变。火焰主题 spinner（"banking into the draft"、"measuring burn"）。龙剪影 ASCII 艺术横幅。 |
@@ -92,10 +92,10 @@ CLI 界面中使用的文字字符串。
 
 | 键 | 描述 | 默认值 |
 |----|------|--------|
-| `agent_name` | 横幅标题和状态显示中的名称 | `Triibal Agent` |
-| `welcome` | CLI 启动时显示的欢迎消息 | `Welcome to Triibal Agent! Type your message or /help for commands.` |
+| `agent_name` | 横幅标题和状态显示中的名称 | `Tribal Agent` |
+| `welcome` | CLI 启动时显示的欢迎消息 | `Welcome to Tribal Agent! Type your message or /help for commands.` |
 | `goodbye` | 退出时显示的消息 | `Goodbye! ⚕` |
-| `response_label` | 响应框标题上的标签 | ` ⚕ Triibal ` |
+| `response_label` | 响应框标题上的标签 | ` ⚕ Tribal ` |
 | `prompt_symbol` | 用户输入 prompt 前的符号（裸 token，渲染器会在后面添加空格） | `❯` |
 | `help_header` | `/help` 命令输出的标题文字 | `(^_^)? Available Commands` |
 
@@ -105,17 +105,17 @@ CLI 界面中使用的文字字符串。
 |----|------|------|--------|
 | `tool_prefix` | 字符串 | CLI 中工具输出行的前缀字符 | `┊` |
 | `tool_emojis` | 字典 | 各工具的 emoji 覆盖，用于 spinner 和进度显示（`{tool_name: emoji}`） | `{}` |
-| `banner_logo` | 字符串 | Rich 标记 ASCII 艺术 logo（替换默认的 TRIIBAL_AGENT 横幅） | `""` |
+| `banner_logo` | 字符串 | Rich 标记 ASCII 艺术 logo（替换默认的 TRIBAL_AGENT 横幅） | `""` |
 | `banner_hero` | 字符串 | Rich 标记英雄艺术图（替换默认的双蛇杖图案） | `""` |
 
 ## 自定义皮肤
 
-在 `~/.triibal/skins/` 下创建 YAML 文件。用户皮肤会从内置 `default` 皮肤继承缺失的值，因此只需指定要更改的键。
+在 `~/.tribal/skins/` 下创建 YAML 文件。用户皮肤会从内置 `default` 皮肤继承缺失的值，因此只需指定要更改的键。
 
 ### 完整自定义皮肤 YAML 模板
 
 ```yaml
-# ~/.triibal/skins/mytheme.yaml
+# ~/.tribal/skins/mytheme.yaml
 # Complete skin template — all keys shown. Delete any you don't need;
 # missing values automatically inherit from the 'default' skin.
 
@@ -212,20 +212,20 @@ branding:
 tool_prefix: "▏"
 ```
 
-## Triibal Mod — 可视化皮肤编辑器
+## Tribal Mod — 可视化皮肤编辑器
 
-[Triibal Mod](https://github.com/cocktailpeanut/triibal-mod) 是一个社区构建的 Web UI，用于可视化创建和管理皮肤。无需手写 YAML，提供带实时预览的点击式编辑器。
+[Tribal Mod](https://github.com/cocktailpeanut/tribal-mod) 是一个社区构建的 Web UI，用于可视化创建和管理皮肤。无需手写 YAML，提供带实时预览的点击式编辑器。
 
-![Triibal Mod skin editor](https://raw.githubusercontent.com/cocktailpeanut/triibal-mod/master/nous.png)
+![Tribal Mod skin editor](https://raw.githubusercontent.com/cocktailpeanut/tribal-mod/master/nous.png)
 
 **功能说明：**
 
 - 列出所有内置和自定义皮肤
-- 将任意皮肤在可视化编辑器中打开，涵盖所有 Triibal 皮肤字段（颜色、spinner、品牌、工具前缀、工具 emoji）
+- 将任意皮肤在可视化编辑器中打开，涵盖所有 Tribal 皮肤字段（颜色、spinner、品牌、工具前缀、工具 emoji）
 - 根据文字 prompt 生成 `banner_logo` 文字艺术
 - 将上传的图片（PNG、JPG、GIF、WEBP）转换为 `banner_hero` ASCII 艺术，支持多种渲染风格（盲文点阵、ASCII 字符渐变、方块、点阵）
-- 直接保存到 `~/.triibal/skins/`
-- 通过更新 `~/.triibal/config.yaml` 激活皮肤
+- 直接保存到 `~/.tribal/skins/`
+- 通过更新 `~/.tribal/config.yaml` 激活皮肤
 - 显示生成的 YAML 及实时预览
 
 ### 安装
@@ -237,14 +237,14 @@ tool_prefix: "▏"
 **方式二 — npx（终端最快方式）：**
 
 ```bash
-npx -y triibal-mod
+npx -y tribal-mod
 ```
 
 **方式三 — 手动安装：**
 
 ```bash
-git clone https://github.com/cocktailpeanut/triibal-mod.git
-cd triibal-mod/app
+git clone https://github.com/cocktailpeanut/tribal-mod.git
+cd tribal-mod/app
 npm install
 npm start
 ```
@@ -256,16 +256,16 @@ npm start
 3. 选择要编辑的内置或自定义皮肤。
 4. 从文字生成 logo，和/或上传图片作为英雄艺术图。选择渲染风格和宽度。
 5. 编辑颜色、spinner、品牌及其他字段。
-6. 点击 **Save** 将皮肤 YAML 写入 `~/.triibal/skins/`。
+6. 点击 **Save** 将皮肤 YAML 写入 `~/.tribal/skins/`。
 7. 点击 **Activate** 将其设为当前皮肤（更新 `config.yaml` 中的 `display.skin`）。
 
-Triibal Mod 遵循 `TRIIBAL_HOME` 环境变量，因此也适用于[配置文件](/user-guide/profiles)。
+Tribal Mod 遵循 `TRIBAL_HOME` 环境变量，因此也适用于[配置文件](/user-guide/profiles)。
 
 ## 操作说明
 
-- 内置皮肤从 `triibal_cli/skin_engine.py` 加载。
+- 内置皮肤从 `tribal_cli/skin_engine.py` 加载。
 - 未知皮肤自动回退到 `default`。
 - `/skin` 立即更新当前会话的活动 CLI 主题。
-- `~/.triibal/skins/` 中的用户皮肤优先于同名内置皮肤。
+- `~/.tribal/skins/` 中的用户皮肤优先于同名内置皮肤。
 - 通过 `/skin` 切换皮肤仅对当前会话有效。如需永久设为默认皮肤，请在 `config.yaml` 中配置。
 - `banner_logo` 和 `banner_hero` 字段支持 Rich 控制台标记（例如 `[bold #FF0000]text[/]`），可用于彩色 ASCII 艺术。

@@ -34,37 +34,37 @@ class TestWriteDenyExactPaths:
         path = os.path.join(str(Path.home()), ".netrc")
         assert _is_write_denied(path) is True
 
-    def test_triibal_env(self):
-        # ``.env`` under the active TRIIBAL_HOME (profile-aware, not just
-        # ``~/.triibal``) must be write-denied. The hermetic test conftest
-        # points TRIIBAL_HOME at a tempdir — resolve via get_triibal_home()
+    def test_tribal_env(self):
+        # ``.env`` under the active TRIBAL_HOME (profile-aware, not just
+        # ``~/.tribal``) must be write-denied. The hermetic test conftest
+        # points TRIBAL_HOME at a tempdir — resolve via get_tribal_home()
         # to match the denylist.
-        from triibal_constants import get_triibal_home
-        path = str(get_triibal_home() / ".env")
+        from tribal_constants import get_tribal_home
+        path = str(get_tribal_home() / ".env")
         assert _is_write_denied(path) is True
 
-    def test_triibal_root_env_when_running_under_profile(self, tmp_path, monkeypatch):
+    def test_tribal_root_env_when_running_under_profile(self, tmp_path, monkeypatch):
         """Top-level ``<root>/.env`` stays write-denied even when running under
         a profile (#15981).
 
         Before the fix, ``build_write_denied_paths`` only added
         ``<active_profile>/.env`` to the deny list, so the global
-        ``~/.triibal/.env`` (whose credentials are inherited by every profile)
+        ``~/.tribal/.env`` (whose credentials are inherited by every profile)
         could be silently overwritten by ``write_file`` while a profile was
         active.
         """
-        root = tmp_path / "triibal_root"
+        root = tmp_path / "tribal_root"
         profile_home = root / "profiles" / "coder"
         profile_home.mkdir(parents=True)
         global_env = root / ".env"
         global_env.write_text("OPENAI_API_KEY=sk-real\n")
 
-        monkeypatch.setenv("TRIIBAL_HOME", str(profile_home))
+        monkeypatch.setenv("TRIBAL_HOME", str(profile_home))
 
-        # Sanity check: TRIIBAL_HOME does point to the profile dir, not the root.
-        from triibal_constants import get_triibal_home, get_default_triibal_root
-        assert get_triibal_home() == profile_home
-        assert get_default_triibal_root() == root
+        # Sanity check: TRIBAL_HOME does point to the profile dir, not the root.
+        from tribal_constants import get_tribal_home, get_default_tribal_root
+        assert get_tribal_home() == profile_home
+        assert get_default_tribal_root() == root
 
         assert _is_write_denied(str(global_env)) is True
 
@@ -124,6 +124,6 @@ class TestWriteAllowed:
     def test_project_file(self):
         assert _is_write_denied("/home/user/project/main.py") is False
 
-    def test_triibal_config_not_env(self):
-        path = os.path.join(str(Path.home()), ".triibal", "config.yaml")
+    def test_tribal_config_not_env(self):
+        path = os.path.join(str(Path.home()), ".tribal", "config.yaml")
         assert _is_write_denied(path) is False

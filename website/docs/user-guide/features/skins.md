@@ -1,12 +1,12 @@
 ---
 sidebar_position: 10
 title: "Skins & Themes"
-description: "Customize the Triibal CLI with built-in and user-defined skins"
+description: "Customize the Tribal CLI with built-in and user-defined skins"
 ---
 
 # Skins & Themes
 
-Skins control the **visual presentation** of the Triibal CLI: banner colors, spinner faces and verbs, response-box labels, branding text, and the tool activity prefix.
+Skins control the **visual presentation** of the Tribal CLI: banner colors, spinner faces and verbs, response-box labels, branding text, and the tool activity prefix.
 
 Conversational style and visual style are separate concepts:
 
@@ -18,10 +18,10 @@ Conversational style and visual style are separate concepts:
 ```bash
 /skin                # show the current skin and list available skins
 /skin ares           # switch to a built-in skin
-/skin mytheme        # switch to a custom skin from ~/.triibal/skins/mytheme.yaml
+/skin mytheme        # switch to a custom skin from ~/.tribal/skins/mytheme.yaml
 ```
 
-Or set the default skin in `~/.triibal/config.yaml`:
+Or set the default skin in `~/.tribal/config.yaml`:
 
 ```yaml
 display:
@@ -32,12 +32,12 @@ display:
 
 | Skin | Description | Agent branding | Visual character |
 |------|-------------|----------------|------------------|
-| `default` | Classic Triibal — gold and kawaii | `Triibal Agent` | Warm gold borders, cornsilk text, kawaii faces in spinners. The familiar caduceus banner. Clean and inviting. |
+| `default` | Classic Tribal — gold and kawaii | `Tribal Agent` | Warm gold borders, cornsilk text, kawaii faces in spinners. The familiar caduceus banner. Clean and inviting. |
 | `ares` | War-god theme — crimson and bronze | `Ares Agent` | Deep crimson borders with bronze accents. Aggressive spinner verbs ("forging", "marching", "tempering steel"). Custom sword-and-shield ASCII art banner. |
-| `mono` | Monochrome — clean grayscale | `Triibal Agent` | All grays — no color. Borders are `#555555`, text is `#c9d1d9`. Ideal for minimal terminal setups or screen recordings. |
-| `slate` | Cool blue — developer-focused | `Triibal Agent` | Royal blue borders (`#4169e1`), soft blue text. Calm and professional. No custom spinner — uses default faces. |
-| `daylight` | Light theme for bright terminals with dark text and cool blue accents | `Triibal Agent` | Designed for white or bright terminals. Dark slate text with blue borders, pale status surfaces, and a light completion menu that stays readable in light terminal profiles. |
-| `warm-lightmode` | Warm brown/gold text for light terminal backgrounds | `Triibal Agent` | Warm parchment tones for light terminals. Dark brown text with saddle-brown accents, cream-colored status surfaces. An earthy alternative to the cooler daylight theme. |
+| `mono` | Monochrome — clean grayscale | `Tribal Agent` | All grays — no color. Borders are `#555555`, text is `#c9d1d9`. Ideal for minimal terminal setups or screen recordings. |
+| `slate` | Cool blue — developer-focused | `Tribal Agent` | Royal blue borders (`#4169e1`), soft blue text. Calm and professional. No custom spinner — uses default faces. |
+| `daylight` | Light theme for bright terminals with dark text and cool blue accents | `Tribal Agent` | Designed for white or bright terminals. Dark slate text with blue borders, pale status surfaces, and a light completion menu that stays readable in light terminal profiles. |
+| `warm-lightmode` | Warm brown/gold text for light terminal backgrounds | `Tribal Agent` | Warm parchment tones for light terminals. Dark brown text with saddle-brown accents, cream-colored status surfaces. An earthy alternative to the cooler daylight theme. |
 | `poseidon` | Ocean-god theme — deep blue and seafoam | `Poseidon Agent` | Deep blue to seafoam gradient. Ocean-themed spinners ("charting currents", "sounding the depth"). Trident ASCII art banner. |
 | `sisyphus` | Sisyphean theme — austere grayscale with persistence | `Sisyphus Agent` | Light grays with stark contrast. Boulder-themed spinners ("pushing uphill", "resetting the boulder", "enduring the loop"). Boulder-and-hill ASCII art banner. |
 | `charizard` | Volcanic theme — burnt orange and ember | `Charizard Agent` | Warm burnt orange to ember gradient. Fire-themed spinners ("banking into the draft", "measuring burn"). Dragon-silhouette ASCII art banner. |
@@ -92,10 +92,10 @@ Text strings used throughout the CLI interface.
 
 | Key | Description | Default |
 |-----|-------------|---------|
-| `agent_name` | Name shown in banner title and status display | `Triibal Agent` |
-| `welcome` | Welcome message shown at CLI startup | `Welcome to Triibal Agent! Type your message or /help for commands.` |
+| `agent_name` | Name shown in banner title and status display | `Tribal Agent` |
+| `welcome` | Welcome message shown at CLI startup | `Welcome to Tribal Agent! Type your message or /help for commands.` |
 | `goodbye` | Message shown on exit | `Goodbye! ⚕` |
-| `response_label` | Label on the response box header | ` ⚕ Triibal ` |
+| `response_label` | Label on the response box header | ` ⚕ Tribal ` |
 | `prompt_symbol` | Symbol before the user input prompt (bare token, renderers add a trailing space) | `❯` |
 | `help_header` | Header text for the `/help` command output | `(^_^)? Available Commands` |
 
@@ -105,17 +105,17 @@ Text strings used throughout the CLI interface.
 |-----|------|-------------|---------|
 | `tool_prefix` | string | Character prefixed to tool output lines in the CLI | `┊` |
 | `tool_emojis` | dict | Per-tool emoji overrides for spinners and progress (`{tool_name: emoji}`) | `{}` |
-| `banner_logo` | string | Rich-markup ASCII art logo (replaces the default TRIIBAL_AGENT banner) | `""` |
+| `banner_logo` | string | Rich-markup ASCII art logo (replaces the default TRIBAL_AGENT banner) | `""` |
 | `banner_hero` | string | Rich-markup hero art (replaces the default caduceus art) | `""` |
 
 ## Custom skins
 
-Create YAML files under `~/.triibal/skins/`. User skins inherit missing values from the built-in `default` skin, so you only need to specify the keys you want to change.
+Create YAML files under `~/.tribal/skins/`. User skins inherit missing values from the built-in `default` skin, so you only need to specify the keys you want to change.
 
 ### Full custom skin YAML template
 
 ```yaml
-# ~/.triibal/skins/mytheme.yaml
+# ~/.tribal/skins/mytheme.yaml
 # Complete skin template — all keys shown. Delete any you don't need;
 # missing values automatically inherit from the 'default' skin.
 
@@ -212,20 +212,20 @@ branding:
 tool_prefix: "▏"
 ```
 
-## Triibal Mod — Visual Skin Editor
+## Tribal Mod — Visual Skin Editor
 
-[Triibal Mod](https://github.com/cocktailpeanut/triibal-mod) is a community-built web UI for creating and managing skins visually. Instead of writing YAML by hand, you get a point-and-click editor with live preview.
+[Tribal Mod](https://github.com/cocktailpeanut/tribal-mod) is a community-built web UI for creating and managing skins visually. Instead of writing YAML by hand, you get a point-and-click editor with live preview.
 
-![Triibal Mod skin editor](https://raw.githubusercontent.com/cocktailpeanut/triibal-mod/master/nous.png)
+![Tribal Mod skin editor](https://raw.githubusercontent.com/cocktailpeanut/tribal-mod/master/nous.png)
 
 **What it does:**
 
 - Lists all built-in and custom skins
-- Opens any skin into a visual editor with all Triibal skin fields (colors, spinner, branding, tool prefix, tool emojis)
+- Opens any skin into a visual editor with all Tribal skin fields (colors, spinner, branding, tool prefix, tool emojis)
 - Generates `banner_logo` text art from a text prompt
 - Converts uploaded images (PNG, JPG, GIF, WEBP) into `banner_hero` ASCII art with multiple render styles (braille, ASCII ramp, blocks, dots)
-- Saves directly to `~/.triibal/skins/`
-- Activates a skin by updating `~/.triibal/config.yaml`
+- Saves directly to `~/.tribal/skins/`
+- Activates a skin by updating `~/.tribal/config.yaml`
 - Shows the generated YAML and a live preview
 
 ### Install
@@ -237,14 +237,14 @@ Find it on [pinokio.computer](https://pinokio.computer) and install with one cli
 **Option 2 — npx (quickest from terminal):**
 
 ```bash
-npx -y triibal-mod
+npx -y tribal-mod
 ```
 
 **Option 3 — Manual:**
 
 ```bash
-git clone https://github.com/cocktailpeanut/triibal-mod.git
-cd triibal-mod/app
+git clone https://github.com/cocktailpeanut/tribal-mod.git
+cd tribal-mod/app
 npm install
 npm start
 ```
@@ -256,16 +256,16 @@ npm start
 3. Choose a built-in or custom skin to edit.
 4. Generate a logo from text and/or upload an image for hero art. Pick a render style and width.
 5. Edit colors, spinner, branding, and other fields.
-6. Click **Save** to write the skin YAML to `~/.triibal/skins/`.
+6. Click **Save** to write the skin YAML to `~/.tribal/skins/`.
 7. Click **Activate** to set it as the current skin (updates `display.skin` in `config.yaml`).
 
-Triibal Mod respects the `TRIIBAL_HOME` environment variable, so it works with [profiles](/user-guide/profiles) too.
+Tribal Mod respects the `TRIBAL_HOME` environment variable, so it works with [profiles](/user-guide/profiles) too.
 
 ## Operational notes
 
-- Built-in skins load from `triibal_cli/skin_engine.py`.
+- Built-in skins load from `tribal_cli/skin_engine.py`.
 - Unknown skins automatically fall back to `default`.
 - `/skin` updates the active CLI theme immediately for the current session.
-- User skins in `~/.triibal/skins/` take precedence over built-in skins with the same name.
+- User skins in `~/.tribal/skins/` take precedence over built-in skins with the same name.
 - Skin changes via `/skin` are session-only. To make a skin your permanent default, set it in `config.yaml`.
 - The `banner_logo` and `banner_hero` fields support Rich console markup (e.g., `[bold #FF0000]text[/]`) for colored ASCII art.

@@ -1,4 +1,4 @@
-"""Tests for _setup_feishu() in triibal_cli/gateway.py.
+"""Tests for _setup_feishu() in tribal_cli/gateway.py.
 
 Verifies that the interactive setup writes env vars that correctly drive the
 Feishu adapter: credentials, connection mode, DM policy, and group policy.
@@ -39,19 +39,19 @@ def _run_setup_feishu(
     def mock_get(name):
         return existing_env.get(name, "")
 
-    with patch("triibal_cli.gateway.save_env_value", side_effect=mock_save), \
-         patch("triibal_cli.gateway.get_env_value", side_effect=mock_get), \
-         patch("triibal_cli.gateway.prompt_yes_no", side_effect=prompt_yes_no_responses), \
-         patch("triibal_cli.gateway.prompt_choice", side_effect=prompt_choice_responses), \
-         patch("triibal_cli.gateway.prompt", side_effect=prompt_responses), \
-         patch("triibal_cli.gateway.print_info"), \
-         patch("triibal_cli.gateway.print_success"), \
-         patch("triibal_cli.gateway.print_warning"), \
-         patch("triibal_cli.gateway.print_error"), \
-         patch("triibal_cli.gateway.color", side_effect=lambda t, c: t), \
+    with patch("tribal_cli.gateway.save_env_value", side_effect=mock_save), \
+         patch("tribal_cli.gateway.get_env_value", side_effect=mock_get), \
+         patch("tribal_cli.gateway.prompt_yes_no", side_effect=prompt_yes_no_responses), \
+         patch("tribal_cli.gateway.prompt_choice", side_effect=prompt_choice_responses), \
+         patch("tribal_cli.gateway.prompt", side_effect=prompt_responses), \
+         patch("tribal_cli.gateway.print_info"), \
+         patch("tribal_cli.gateway.print_success"), \
+         patch("tribal_cli.gateway.print_warning"), \
+         patch("tribal_cli.gateway.print_error"), \
+         patch("tribal_cli.gateway.color", side_effect=lambda t, c: t), \
          patch("gateway.platforms.feishu.qr_register", return_value=qr_result):
 
-        from triibal_cli.gateway import _setup_feishu
+        from tribal_cli.gateway import _setup_feishu
         _setup_feishu()
 
     return saved_env

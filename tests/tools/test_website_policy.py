@@ -88,7 +88,7 @@ def test_check_website_access_supports_wildcard_subdomains_only(tmp_path):
 
 
 def test_default_config_exposes_website_blocklist_shape():
-    from triibal_cli.config import DEFAULT_CONFIG
+    from tribal_cli.config import DEFAULT_CONFIG
 
     website_blocklist = DEFAULT_CONFIG["security"]["website_blocklist"]
     assert website_blocklist["enabled"] is False
@@ -241,10 +241,10 @@ def test_load_website_blocklist_wraps_shared_file_read_errors(tmp_path, monkeypa
     assert result["rules"] == []  # shared file rules skipped
 
 
-def test_check_website_access_uses_dynamic_triibal_home(monkeypatch, tmp_path):
-    triibal_home = tmp_path / "triibal-home"
-    triibal_home.mkdir()
-    (triibal_home / "config.yaml").write_text(
+def test_check_website_access_uses_dynamic_tribal_home(monkeypatch, tmp_path):
+    tribal_home = tmp_path / "tribal-home"
+    tribal_home.mkdir()
+    (tribal_home / "config.yaml").write_text(
         yaml.safe_dump(
             {
                 "security": {
@@ -259,11 +259,11 @@ def test_check_website_access_uses_dynamic_triibal_home(monkeypatch, tmp_path):
         encoding="utf-8",
     )
 
-    monkeypatch.setenv("TRIIBAL_HOME", str(triibal_home))
+    monkeypatch.setenv("TRIBAL_HOME", str(tribal_home))
 
-    # Invalidate the module-level cache so the new TRIIBAL_HOME is picked up.
+    # Invalidate the module-level cache so the new TRIBAL_HOME is picked up.
     # A prior test may have cached a default policy (enabled=False) under the
-    # old TRIIBAL_HOME set by the autouse _isolate_triibal_home fixture.
+    # old TRIBAL_HOME set by the autouse _isolate_tribal_home fixture.
     from tools.website_policy import invalidate_cache
     invalidate_cache()
 
@@ -454,8 +454,8 @@ def test_check_website_access_fails_open_on_malformed_config(tmp_path, monkeypat
     with pytest.raises(WebsitePolicyError):
         check_website_access("https://example.com", config_path=config_path)
 
-    # Simulate default path by pointing TRIIBAL_HOME to tmp_path
-    monkeypatch.setenv("TRIIBAL_HOME", str(tmp_path))
+    # Simulate default path by pointing TRIBAL_HOME to tmp_path
+    monkeypatch.setenv("TRIBAL_HOME", str(tmp_path))
     from tools import website_policy
     website_policy.invalidate_cache()
 

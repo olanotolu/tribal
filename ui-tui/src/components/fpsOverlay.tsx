@@ -1,6 +1,6 @@
-// FPS counter overlay (TRIIBAL_TUI_FPS=1). Zero-cost when disabled.
+// FPS counter overlay (TRIBAL_TUI_FPS=1). Zero-cost when disabled.
 
-import { Text } from '@triibal/ink'
+import { Text } from '@tribal/ink'
 import { useStore } from '@nanostores/react'
 
 import { SHOW_FPS } from '../config/env.js'

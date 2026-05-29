@@ -1,12 +1,12 @@
 ---
 sidebar_position: 18
 title: "Browser CDP Supervisor"
-description: "How Triibal detects and responds to native JS dialogs and interacts with cross-origin iframes via a persistent CDP connection."
+description: "How Tribal detects and responds to native JS dialogs and interacts with cross-origin iframes via a persistent CDP connection."
 ---
 
 # Browser CDP Supervisor
 
-The CDP supervisor closes two long-standing gaps in Triibal' browser tooling:
+The CDP supervisor closes two long-standing gaps in Tribal' browser tooling:
 
 1. **Native JS dialogs** (`alert`/`confirm`/`prompt`/`beforeunload`) block the
    page's JS thread. Without supervision, the agent has no way to know a
@@ -34,7 +34,7 @@ auto-dismisses native dialogs within ~10ms, so `Page.handleJavaScriptDialog`
 can't keep up. The supervisor injects a bridge script via
 `Page.addScriptToEvaluateOnNewDocument` that overrides
 `window.alert`/`confirm`/`prompt` with a synchronous XHR to a magic host
-(`triibal-dialog-bridge.invalid`). `Fetch.enable` intercepts those XHRs before
+(`tribal-dialog-bridge.invalid`). `Fetch.enable` intercepts those XHRs before
 they touch the network — the dialog becomes a `Fetch.requestPaused` event the
 supervisor captures, and `respond_to_dialog` fulfills via
 `Fetch.fulfillRequest` with a JSON body the injected script decodes.
@@ -49,7 +49,7 @@ Camofox is unsupported — no CDP surface, REST-only.
 
 ### CDPSupervisor
 
-One `asyncio.Task` running in a background daemon thread per Triibal `task_id`.
+One `asyncio.Task` running in a background daemon thread per Tribal `task_id`.
 Holds a persistent WebSocket to the backend's CDP endpoint. Maintains:
 
 - **Dialog queue** — `List[PendingDialog]` with `{id, type, message, default_prompt, session_id, opened_at}`
@@ -176,8 +176,8 @@ expiry, while the supervisor's long-lived connection keeps a valid session.
 - `tools/browser_supervisor.py` — `CDPSupervisor`, `SupervisorRegistry`, `PendingDialog`, `FrameInfo`
 - `tools/browser_dialog_tool.py` — `browser_dialog` tool handler
 - `tools/browser_tool.py` — `browser_navigate` start-hook, `browser_snapshot` merge, `/browser connect` reattach, `_cleanup_browser_session` teardown
-- `toolsets.py` — registers `browser_dialog` in `browser`, `triibal-acp`, `triibal-api-server`, and core toolsets (gated on CDP reachability)
-- `triibal_cli/config.py` — `browser.dialog_policy` and `browser.dialog_timeout_s` defaults
+- `toolsets.py` — registers `browser_dialog` in `browser`, `tribal-acp`, `tribal-api-server`, and core toolsets (gated on CDP reachability)
+- `tribal_cli/config.py` — `browser.dialog_policy` and `browser.dialog_timeout_s` defaults
 
 ## Non-goals
 

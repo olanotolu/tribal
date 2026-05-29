@@ -1,10 +1,10 @@
 ---
 name: agentmail
-description: Give the agent its own dedicated email inbox via AgentMail. Send, receive, and manage email autonomously using agent-owned email addresses (e.g. triibal-agent@agentmail.to).
+description: Give the agent its own dedicated email inbox via AgentMail. Send, receive, and manage email autonomously using agent-owned email addresses (e.g. tribal-agent@agentmail.to).
 version: 1.0.0
 platforms: [linux, macos, windows]
 metadata:
-  triibal:
+  tribal:
     tags: [email, communication, agentmail, mcp]
     category: email
 ---
@@ -35,7 +35,7 @@ AgentMail gives the agent its own identity and inbox.
 - Create an account and generate an API key (starts with `am_`)
 
 ### 2. Configure MCP Server
-Add to `~/.triibal/config.yaml` (paste your actual key — MCP env vars are not expanded from .env):
+Add to `~/.tribal/config.yaml` (paste your actual key — MCP env vars are not expanded from .env):
 ```yaml
 mcp_servers:
   agentmail:
@@ -45,9 +45,9 @@ mcp_servers:
       AGENTMAIL_API_KEY: "am_your_key_here"
 ```
 
-### 3. Restart Triibal
+### 3. Restart Tribal
 ```bash
-triibal
+tribal
 ```
 All 11 AgentMail tools are now available automatically.
 
@@ -71,8 +71,8 @@ All 11 AgentMail tools are now available automatically.
 
 ### Create an inbox and send an email
 1. Create a dedicated inbox:
-   - Use `create_inbox` with a username (e.g. `triibal-agent`)
-   - The agent gets address: `triibal-agent@agentmail.to`
+   - Use `create_inbox` with a username (e.g. `tribal-agent`)
+   - The agent gets address: `tribal-agent@agentmail.to`
 2. Send an email:
    - Use `send_message` with `inbox_id`, `to`, `subject`, `text`
 3. Check for replies:
@@ -100,7 +100,7 @@ All 11 AgentMail tools are now available automatically.
 
 **Agent-to-human outreach:**
 ```
-1. create_inbox (username: "triibal-outreach")
+1. create_inbox (username: "tribal-outreach")
 2. send_message (to: user@example.com, subject: "Hello", text: "...")
 3. list_threads to check for replies
 ```
@@ -115,7 +115,7 @@ All 11 AgentMail tools are now available automatically.
 ## Verification
 After setup, test with:
 ```
-triibal --toolsets mcp -q "Create an AgentMail inbox called test-agent and tell me its email address"
+tribal --toolsets mcp -q "Create an AgentMail inbox called test-agent and tell me its email address"
 ```
 You should see the new inbox address returned.
 

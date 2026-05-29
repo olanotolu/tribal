@@ -3,7 +3,7 @@
 **Target:** {target_url}
 **Date:** {date}
 **Scope:** {scope_description}
-**Tester:** Triibal Agent (automated exploratory QA)
+**Tester:** Tribal Agent (automated exploratory QA)
 
 ---
 

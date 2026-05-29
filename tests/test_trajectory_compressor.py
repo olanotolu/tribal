@@ -17,18 +17,18 @@ from trajectory_compressor import (
 )
 
 
-def test_import_loads_env_from_triibal_home(tmp_path, monkeypatch):
-    home = tmp_path / ".triibal"
+def test_import_loads_env_from_tribal_home(tmp_path, monkeypatch):
+    home = tmp_path / ".tribal"
     home.mkdir()
-    (home / ".env").write_text("OPENROUTER_API_KEY=from-triibal-home\n", encoding="utf-8")
+    (home / ".env").write_text("OPENROUTER_API_KEY=from-tribal-home\n", encoding="utf-8")
 
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
     sys.modules.pop("trajectory_compressor", None)
     importlib.import_module("trajectory_compressor")
 
-    assert os.getenv("OPENROUTER_API_KEY") == "from-triibal-home"
+    assert os.getenv("OPENROUTER_API_KEY") == "from-tribal-home"
 
 
 def test_generate_summary_kimi_omits_temperature():

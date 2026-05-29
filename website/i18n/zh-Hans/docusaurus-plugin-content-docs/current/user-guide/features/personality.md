@@ -1,40 +1,40 @@
 ---
 sidebar_position: 9
 title: "个性与 SOUL.md"
-description: "通过全局 SOUL.md、内置个性预设和自定义角色定义来自定义 Triibal Agent 的个性"
+description: "通过全局 SOUL.md、内置个性预设和自定义角色定义来自定义 Tribal Agent 的个性"
 ---
 
 # 个性与 SOUL.md
 
-Triibal Agent 的个性完全可自定义。`SOUL.md` 是**主要身份标识**——它是系统提示词（prompt）中的第一项内容，定义了 Agent 是谁。
+Tribal Agent 的个性完全可自定义。`SOUL.md` 是**主要身份标识**——它是系统提示词（prompt）中的第一项内容，定义了 Agent 是谁。
 
-- `SOUL.md` — 存放在 `TRIIBAL_HOME` 中的持久角色文件，作为 Agent 的身份标识（系统提示词中的第 1 个槽位）
+- `SOUL.md` — 存放在 `TRIBAL_HOME` 中的持久角色文件，作为 Agent 的身份标识（系统提示词中的第 1 个槽位）
 - 内置或自定义的 `/personality` 预设 — 会话级系统提示词覆盖层
 
-如果你想改变 Triibal 的身份，或将其替换为完全不同的 Agent 角色，请编辑 `SOUL.md`。
+如果你想改变 Tribal 的身份，或将其替换为完全不同的 Agent 角色，请编辑 `SOUL.md`。
 
 ## SOUL.md 的工作方式
 
-Triibal 现在会自动在以下位置生成默认的 `SOUL.md`：
+Tribal 现在会自动在以下位置生成默认的 `SOUL.md`：
 
 ```text
-~/.triibal/SOUL.md
+~/.tribal/SOUL.md
 ```
 
-更准确地说，它使用当前实例的 `TRIIBAL_HOME`，因此如果你以自定义主目录运行 Triibal，它将使用：
+更准确地说，它使用当前实例的 `TRIBAL_HOME`，因此如果你以自定义主目录运行 Tribal，它将使用：
 
 ```text
-$TRIIBAL_HOME/SOUL.md
+$TRIBAL_HOME/SOUL.md
 ```
 
 ### 重要行为
 
 - **SOUL.md 是 Agent 的主要身份标识。** 它占据系统提示词的第 1 个槽位，替代硬编码的默认身份。
-- 如果 `SOUL.md` 尚不存在，Triibal 会自动创建一个初始文件
+- 如果 `SOUL.md` 尚不存在，Tribal 会自动创建一个初始文件
 - 已有的用户 `SOUL.md` 文件不会被覆盖
-- Triibal 仅从 `TRIIBAL_HOME` 加载 `SOUL.md`
-- Triibal 不会在当前工作目录中查找 `SOUL.md`
-- 如果 `SOUL.md` 存在但为空，或无法加载，Triibal 将回退到内置的默认身份
+- Tribal 仅从 `TRIBAL_HOME` 加载 `SOUL.md`
+- Tribal 不会在当前工作目录中查找 `SOUL.md`
+- 如果 `SOUL.md` 存在但为空，或无法加载，Tribal 将回退到内置的默认身份
 - 如果 `SOUL.md` 有内容，该内容在经过安全扫描和截断处理后将原样注入
 - SOUL.md **不会**在上下文文件部分重复出现——它仅作为身份标识出现一次
 
@@ -44,23 +44,23 @@ $TRIIBAL_HOME/SOUL.md
 
 这样可以保持个性的可预测性。
 
-如果 Triibal 从你启动它的任意目录加载 `SOUL.md`，你的个性可能会在不同项目之间意外改变。通过仅从 `TRIIBAL_HOME` 加载，个性归属于 Triibal 实例本身。
+如果 Tribal 从你启动它的任意目录加载 `SOUL.md`，你的个性可能会在不同项目之间意外改变。通过仅从 `TRIBAL_HOME` 加载，个性归属于 Tribal 实例本身。
 
 这也让用户更容易理解：
-- "编辑 `~/.triibal/SOUL.md` 来更改 Triibal 的默认个性。"
+- "编辑 `~/.tribal/SOUL.md` 来更改 Tribal 的默认个性。"
 
 ## 编辑位置
 
 对于大多数用户：
 
 ```bash
-~/.triibal/SOUL.md
+~/.tribal/SOUL.md
 ```
 
 如果你使用自定义主目录：
 
 ```bash
-$TRIIBAL_HOME/SOUL.md
+$TRIBAL_HOME/SOUL.md
 ```
 
 ## SOUL.md 应该写什么？
@@ -71,7 +71,7 @@ $TRIIBAL_HOME/SOUL.md
 - 直接程度
 - 默认交互风格
 - 风格上应避免的内容
-- Triibal 应如何处理不确定性、分歧或模糊情况
+- Tribal 应如何处理不确定性、分歧或模糊情况
 
 不适合写入的内容：
 - 一次性项目说明
@@ -116,7 +116,7 @@ You optimize for truth, clarity, and usefulness over politeness theater.
 - Treat edge cases as part of the design, not cleanup
 ```
 
-## Triibal 注入提示词的内容
+## Tribal 注入提示词的内容
 
 `SOUL.md` 的内容直接进入系统提示词的第 1 个槽位——即 Agent 身份位置。不会在其周围添加任何包装语言。
 
@@ -124,7 +124,7 @@ You optimize for truth, clarity, and usefulness over politeness theater.
 - 提示词注入扫描
 - 内容过大时进行截断
 
-如果文件为空、仅含空白字符或无法读取，Triibal 将回退到内置默认身份（"You are Triibal Agent, an intelligent AI assistant created by Triibal..."）。当 `skip_context_files` 被设置时（例如在子 Agent/委托上下文中），同样适用此回退。
+如果文件为空、仅含空白字符或无法读取，Tribal 将回退到内置默认身份（"You are Tribal Agent, an intelligent AI assistant created by Tribal..."）。当 `skip_context_files` 被设置时（例如在子 Agent/委托上下文中），同样适用此回退。
 
 ## 安全扫描
 
@@ -172,7 +172,7 @@ You optimize for truth, clarity, and usefulness over politeness theater.
 
 ## 内置个性
 
-Triibal 内置了多种个性，可通过 `/personality` 切换。
+Tribal 内置了多种个性，可通过 `/personality` 切换。
 
 | 名称 | 描述 |
 |------|-------------|
@@ -183,7 +183,7 @@ Triibal 内置了多种个性，可通过 `/personality` 切换。
 | **teacher** | 耐心的教育者，配有清晰示例 |
 | **kawaii** | 可爱表达、闪光效果与热情 ★ |
 | **catgirl** | 带有猫咪表达方式的 Neko-chan，nya~ |
-| **pirate** | 船长 Triibal，精通技术的海盗 |
+| **pirate** | 船长 Tribal，精通技术的海盗 |
 | **shakespeare** | 充满戏剧张力的吟游诗人风格 |
 | **surfer** | 超级冷静的冲浪者氛围 |
 | **noir** | 硬派侦探叙事风格 |
@@ -207,11 +207,11 @@ Triibal 内置了多种个性，可通过 `/personality` 切换。
 /personality teacher
 ```
 
-这些是便捷的覆盖层，但你的全局 `SOUL.md` 仍然赋予 Triibal 持久的默认个性，除非覆盖层对其进行了实质性更改。
+这些是便捷的覆盖层，但你的全局 `SOUL.md` 仍然赋予 Tribal 持久的默认个性，除非覆盖层对其进行了实质性更改。
 
 ## 在配置中定义自定义个性
 
-你也可以在 `~/.triibal/config.yaml` 的 `agent.personalities` 下定义命名的自定义个性。
+你也可以在 `~/.tribal/config.yaml` 的 `agent.personalities` 下定义命名的自定义个性。
 
 ```yaml
 agent:
@@ -231,7 +231,7 @@ agent:
 
 一个强健的默认配置：
 
-1. 在 `~/.triibal/SOUL.md` 中维护一个经过深思熟虑的全局 `SOUL.md`
+1. 在 `~/.tribal/SOUL.md` 中维护一个经过深思熟虑的全局 `SOUL.md`
 2. 将项目说明放在 `AGENTS.md` 中
 3. 仅在需要临时模式切换时使用 `/personality`
 
@@ -259,13 +259,13 @@ agent:
 - [上下文文件](/user-guide/features/context-files)
 - [配置](/user-guide/configuration)
 - [技巧与最佳实践](/guides/tips)
-- [SOUL.md 指南](/guides/use-soul-with-triibal)
+- [SOUL.md 指南](/guides/use-soul-with-tribal)
 
 ## CLI 外观与对话个性
 
 对话个性与 CLI 外观是相互独立的：
 
-- `SOUL.md`、`agent.system_prompt` 和 `/personality` 影响 Triibal 的说话方式
-- `display.skin` 和 `/skin` 影响 Triibal 在终端中的显示外观
+- `SOUL.md`、`agent.system_prompt` 和 `/personality` 影响 Tribal 的说话方式
+- `display.skin` 和 `/skin` 影响 Tribal 在终端中的显示外观
 
 关于终端外观，请参阅 [皮肤与主题](./skins.md)。

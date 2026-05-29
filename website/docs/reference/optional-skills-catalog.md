@@ -1,22 +1,22 @@
 ---
 sidebar_position: 9
 title: "Optional Skills Catalog"
-description: "Official optional skills shipped with triibal-agent — install via triibal skills install official/<category>/<skill>"
+description: "Official optional skills shipped with tribal-agent — install via tribal skills install official/<category>/<skill>"
 ---
 
 # Optional Skills Catalog
 
-Optional skills ship with triibal-agent under `optional-skills/` but are **not active by default**. Install them explicitly:
+Optional skills ship with tribal-agent under `optional-skills/` but are **not active by default**. Install them explicitly:
 
 ```bash
-triibal skills install official/<category>/<skill>
+tribal skills install official/<category>/<skill>
 ```
 
 For example:
 
 ```bash
-triibal skills install official/blockchain/solana
-triibal skills install official/mlops/flash-attention
+tribal skills install official/blockchain/solana
+tribal skills install official/mlops/flash-attention
 ```
 
 Each skill below links to a dedicated page with its full definition, setup, and usage.
@@ -24,7 +24,7 @@ Each skill below links to a dedicated page with its full definition, setup, and 
 To uninstall:
 
 ```bash
-triibal skills uninstall <skill-name>
+tribal skills uninstall <skill-name>
 ```
 
 ## autonomous-ai-agents
@@ -32,7 +32,7 @@ triibal skills uninstall <skill-name>
 | Skill | Description |
 |-------|-------------|
 | [**blackbox**](/docs/user-guide/skills/optional/autonomous-ai-agents/autonomous-ai-agents-blackbox) | Delegate coding tasks to Blackbox AI CLI agent. Multi-model agent with built-in judge that runs tasks through multiple LLMs and picks the best result. Requires the blackbox CLI and a Blackbox AI API key. |
-| [**honcho**](/docs/user-guide/skills/optional/autonomous-ai-agents/autonomous-ai-agents-honcho) | Configure and use Honcho memory with Triibal -- cross-session user modeling, multi-profile peer isolation, observation config, dialectic reasoning, session summaries, and context budget enforcement. Use when setting up Honcho, troubleshoo... |
+| [**honcho**](/docs/user-guide/skills/optional/autonomous-ai-agents/autonomous-ai-agents-honcho) | Configure and use Honcho memory with Tribal -- cross-session user modeling, multi-profile peer isolation, observation config, dialectic reasoning, session summaries, and context budget enforcement. Use when setting up Honcho, troubleshoo... |
 | [**openhands**](/docs/user-guide/skills/optional/autonomous-ai-agents/autonomous-ai-agents-openhands) | Delegate coding to OpenHands CLI (model-agnostic, LiteLLM). |
 
 ## blockchain
@@ -53,10 +53,10 @@ triibal skills uninstall <skill-name>
 
 | Skill | Description |
 |-------|-------------|
-| [**blender-mcp**](/docs/user-guide/skills/optional/creative/creative-blender-mcp) | Control Blender directly from Triibal via socket connection to the blender-mcp addon. Create 3D objects, materials, animations, and run arbitrary Blender Python (bpy) code. Use when user wants to create or modify anything in Blender. |
+| [**blender-mcp**](/docs/user-guide/skills/optional/creative/creative-blender-mcp) | Control Blender directly from Tribal via socket connection to the blender-mcp addon. Create 3D objects, materials, animations, and run arbitrary Blender Python (bpy) code. Use when user wants to create or modify anything in Blender. |
 | [**concept-diagrams**](/docs/user-guide/skills/optional/creative/creative-concept-diagrams) | Generate flat, minimal light/dark-aware SVG diagrams as standalone HTML files, using a unified educational visual language with 9 semantic color ramps, sentence-case typography, and automatic dark mode. Best suited for educational and no... |
 | [**hyperframes**](/docs/user-guide/skills/optional/creative/creative-hyperframes) | Create HTML-based video compositions, animated title cards, social overlays, captioned talking-head videos, audio-reactive visuals, and shader transitions using HyperFrames. HTML is the source of truth for video. Use when the user wants... |
-| [**kanban-video-orchestrator**](/docs/user-guide/skills/optional/creative/creative-kanban-video-orchestrator) | Plan, set up, and monitor a multi-agent video production pipeline backed by Triibal Kanban. Use when the user wants to make ANY video — narrative film, product/marketing, music video, explainer, ASCII/terminal art, abstract/generative loo... |
+| [**kanban-video-orchestrator**](/docs/user-guide/skills/optional/creative/creative-kanban-video-orchestrator) | Plan, set up, and monitor a multi-agent video production pipeline backed by Tribal Kanban. Use when the user wants to make ANY video — narrative film, product/marketing, music video, explainer, ASCII/terminal art, abstract/generative loo... |
 | [**meme-generation**](/docs/user-guide/skills/optional/creative/creative-meme-generation) | Generate real meme images by picking a template and overlaying text with Pillow. Produces actual .png meme files. |
 
 ## devops
@@ -78,7 +78,7 @@ triibal skills uninstall <skill-name>
 
 | Skill | Description |
 |-------|-------------|
-| [**agentmail**](/docs/user-guide/skills/optional/email/email-agentmail) | Give the agent its own dedicated email inbox via AgentMail. Send, receive, and manage email autonomously using agent-owned email addresses (e.g. triibal-agent@agentmail.to). |
+| [**agentmail**](/docs/user-guide/skills/optional/email/email-agentmail) | Give the agent its own dedicated email inbox via AgentMail. Send, receive, and manage email autonomously using agent-owned email addresses (e.g. tribal-agent@agentmail.to). |
 
 ## finance
 
@@ -111,7 +111,7 @@ triibal skills uninstall <skill-name>
 
 | Skill | Description |
 |-------|-------------|
-| [**openclaw-migration**](/docs/user-guide/skills/optional/migration/migration-openclaw-migration) | Migrate a user's OpenClaw customization footprint into Triibal Agent. Imports Triibal-compatible memories, SOUL.md, command allowlists, user skills, and selected workspace assets from ~/.openclaw, then reports exactly what could not be mig... |
+| [**openclaw-migration**](/docs/user-guide/skills/optional/migration/migration-openclaw-migration) | Migrate a user's OpenClaw customization footprint into Tribal Agent. Imports Tribal-compatible memories, SOUL.md, command allowlists, user skills, and selected workspace assets from ~/.openclaw, then reports exactly what could not be mig... |
 
 ## mlops
 
@@ -156,7 +156,7 @@ triibal skills uninstall <skill-name>
 | [**shop-app**](/docs/user-guide/skills/optional/productivity/productivity-shop-app) | Shop.app: product search, order tracking, returns, reorder. |
 | [**shopify**](/docs/user-guide/skills/optional/productivity/productivity-shopify) | Shopify Admin & Storefront GraphQL APIs via curl. Products, orders, customers, inventory, metafields. |
 | [**siyuan**](/docs/user-guide/skills/optional/productivity/productivity-siyuan) | SiYuan Note API for searching, reading, creating, and managing blocks and documents in a self-hosted knowledge base via curl. |
-| [**telephony**](/docs/user-guide/skills/optional/productivity/productivity-telephony) | Give Triibal phone capabilities without core tool changes. Provision and persist a Twilio number, send and receive SMS/MMS, make direct calls, and place AI-driven outbound calls through Bland.ai or Vapi. |
+| [**telephony**](/docs/user-guide/skills/optional/productivity/productivity-telephony) | Give Tribal phone capabilities without core tool changes. Provision and persist a Twilio number, send and receive SMS/MMS, make direct calls, and place AI-driven outbound calls through Bland.ai or Vapi. |
 
 ## research
 

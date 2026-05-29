@@ -1,10 +1,10 @@
 """Tests for /save — the conversation snapshot slash command.
 
-Regression: the old implementation wrote ``triibal_conversation_<ts>.json``
+Regression: the old implementation wrote ``tribal_conversation_<ts>.json``
 to the current working directory (CWD). Users who ran /save expected the
-file to be discoverable via ``triibal sessions browse``, but CWD-resident
+file to be discoverable via ``tribal sessions browse``, but CWD-resident
 snapshots are not indexed in the state DB and are generally invisible.
-The fix writes snapshots under ``~/.triibal/sessions/saved/`` and prints
+The fix writes snapshots under ``~/.tribal/sessions/saved/`` and prints
 the absolute path plus the resume hint for the live session.
 """
 
@@ -21,15 +21,15 @@ import pytest
 
 
 @pytest.fixture
-def triibal_home(tmp_path, monkeypatch):
-    home = tmp_path / ".triibal"
+def tribal_home(tmp_path, monkeypatch):
+    home = tmp_path / ".tribal"
     home.mkdir()
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
-    monkeypatch.setenv("TRIIBAL_HOME", str(home))
-    # Clear any cached triibal_home computation
-    import triibal_constants
-    if hasattr(triibal_constants, "_triibal_home_cache"):
-        triibal_constants._triibal_home_cache = None
+    monkeypatch.setenv("TRIBAL_HOME", str(home))
+    # Clear any cached tribal_home computation
+    import tribal_constants
+    if hasattr(tribal_constants, "_tribal_home_cache"):
+        tribal_constants._tribal_home_cache = None
     return home
 
 
@@ -43,15 +43,15 @@ def _make_stub_cli(history):
     )
 
 
-def test_save_conversation_writes_under_triibal_home(triibal_home, tmp_path, monkeypatch, capsys):
-    """Snapshot must land under ~/.triibal/sessions/saved/, not CWD."""
+def test_save_conversation_writes_under_tribal_home(tribal_home, tmp_path, monkeypatch, capsys):
+    """Snapshot must land under ~/.tribal/sessions/saved/, not CWD."""
     # Change CWD to a different directory to prove the file does NOT go there.
     work = tmp_path / "somewhere-else"
     work.mkdir()
     monkeypatch.chdir(work)
 
-    # Import fresh to pick up the TRIIBAL_HOME fixture
-    for mod in [m for m in sys.modules if m.startswith("cli") or m == "triibal_constants"]:
+    # Import fresh to pick up the TRIBAL_HOME fixture
+    for mod in [m for m in sys.modules if m.startswith("cli") or m == "tribal_constants"]:
         sys.modules.pop(mod, None)
 
     import cli  # noqa: F401  (module under test)
@@ -62,16 +62,16 @@ def test_save_conversation_writes_under_triibal_home(triibal_home, tmp_path, mon
     ])
 
     # Call the unbound method against our stub.
-    cli.TriibalCLI.save_conversation(stub)
+    cli.TribalCLI.save_conversation(stub)
 
     # File must NOT be in CWD
-    cwd_leak = list(work.glob("triibal_conversation_*.json"))
+    cwd_leak = list(work.glob("tribal_conversation_*.json"))
     assert not cwd_leak, f"snapshot leaked to CWD: {cwd_leak}"
 
-    # File MUST be under ~/.triibal/sessions/saved/
-    saved_dir = triibal_home / "sessions" / "saved"
+    # File MUST be under ~/.tribal/sessions/saved/
+    saved_dir = tribal_home / "sessions" / "saved"
     assert saved_dir.is_dir(), "expected saved/ subdirectory to be created"
-    files = list(saved_dir.glob("triibal_conversation_*.json"))
+    files = list(saved_dir.glob("tribal_conversation_*.json"))
     assert len(files) == 1, files
 
     payload = json.loads(files[0].read_text())
@@ -85,18 +85,18 @@ def test_save_conversation_writes_under_triibal_home(triibal_home, tmp_path, mon
     # User-facing message must include the absolute path AND the resume hint.
     out = capsys.readouterr().out
     assert str(files[0]) in out, out
-    assert "triibal --resume 20260101_120000_abc123" in out, out
+    assert "tribal --resume 20260101_120000_abc123" in out, out
 
 
-def test_save_conversation_empty_history_does_nothing(triibal_home, capsys):
-    for mod in [m for m in sys.modules if m.startswith("cli") or m == "triibal_constants"]:
+def test_save_conversation_empty_history_does_nothing(tribal_home, capsys):
+    for mod in [m for m in sys.modules if m.startswith("cli") or m == "tribal_constants"]:
         sys.modules.pop(mod, None)
     import cli
 
     stub = _make_stub_cli([])
-    cli.TriibalCLI.save_conversation(stub)
+    cli.TribalCLI.save_conversation(stub)
 
-    saved_dir = triibal_home / "sessions" / "saved"
+    saved_dir = tribal_home / "sessions" / "saved"
     assert not saved_dir.exists() or not list(saved_dir.iterdir())
     out = capsys.readouterr().out
     assert "No conversation to save" in out

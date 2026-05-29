@@ -18,8 +18,8 @@ Configuration surfaces (env wins over config.yaml when set non-empty):
   Environment overrides — used by Fly.io's platform-secret injection so
   per-deploy values don't need to bake into ``config.yaml``:
 
-      TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID  — shape ``agent:{agent_instance_id}``
-      TRIIBAL_DASHBOARD_PORTAL_URL       — defaults to
+      TRIBAL_DASHBOARD_OAUTH_CLIENT_ID  — shape ``agent:{agent_instance_id}``
+      TRIBAL_DASHBOARD_PORTAL_URL       — defaults to
                                           ``https://portal.nousresearch.com``
                                           (production Portal). Override only
                                           for staging (``portal.rewbs.uk``)
@@ -38,7 +38,7 @@ Key contract points encoded here:
     JWKS is cached for 5 minutes.
   - V1 has NO refresh tokens — ``refresh_session`` always raises
     ``RefreshExpiredError`` so the middleware redirects to ``/auth/login``.
-  - audience claim is the bare ``client_id`` (no ``triibal-cli:`` prefix).
+  - audience claim is the bare ``client_id`` (no ``tribal-cli:`` prefix).
   - tolerant ``oauth_contract_version`` check: missing → warn + proceed;
     present and ``!= 1`` → refuse.
 
@@ -46,7 +46,7 @@ The cookie payload returned by ``start_login`` stashes the PKCE
 ``code_verifier`` and the OAuth ``state`` parameter for the
 ``/auth/callback`` handler to retrieve. The auth-route layer is the owner
 of cookie names; this provider just hands back ``{"code_verifier": …,
-"state": …}`` and the route serializes those into the ``triibal_session_pkce``
+"state": …}`` and the route serializes those into the ``tribal_session_pkce``
 cookie.
 
 Forward compatibility: if a future Portal contract starts issuing refresh
@@ -58,7 +58,7 @@ here.
 Skip reasons:
   The plugin exposes a module-level ``LAST_SKIP_REASON`` that the gate's
   fail-closed branch reads to surface a useful operator error message
-  ("Set TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID …") instead of the bare "no
+  ("Set TRIBAL_DASHBOARD_OAUTH_CLIENT_ID …") instead of the bare "no
   providers registered" the gate would otherwise emit.
 """
 
@@ -74,7 +74,7 @@ from typing import Any, Dict, Optional
 
 import httpx
 
-from triibal_cli.dashboard_auth import (
+from tribal_cli.dashboard_auth import (
     DashboardAuthProvider,
     InvalidCodeError,
     LoginStart,
@@ -90,7 +90,7 @@ logger = logging.getLogger(__name__)
 # Defaults
 # ---------------------------------------------------------------------------
 
-# Production Portal URL. Override via TRIIBAL_DASHBOARD_PORTAL_URL for
+# Production Portal URL. Override via TRIBAL_DASHBOARD_PORTAL_URL for
 # staging (portal.rewbs.uk) or a custom deployment. Contract docs name
 # this as the production issuer.
 _DEFAULT_PORTAL_URL = "https://portal.nousresearch.com"
@@ -190,12 +190,12 @@ class NousDashboardAuthProvider(DashboardAuthProvider):
             "code_challenge_method": "S256",
         }
         redirect_url = f"{self._authorize_url}?{urllib.parse.urlencode(params)}"
-        # The auth-route layer expects ``cookie_payload[\"triibal_session_pkce\"]``
+        # The auth-route layer expects ``cookie_payload[\"tribal_session_pkce\"]``
         # as a single semicolon-delimited string of ``key=value`` segments,
         # matching the stub provider's shape. The route handler prepends
         # ``provider=`` so the callback knows which plugin to dispatch to.
         cookie_payload = {
-            "triibal_session_pkce": f"state={state};verifier={code_verifier}",
+            "tribal_session_pkce": f"state={state};verifier={code_verifier}",
         }
         return LoginStart(redirect_url=redirect_url, cookie_payload=cookie_payload)
 
@@ -369,7 +369,7 @@ class NousDashboardAuthProvider(DashboardAuthProvider):
         except jwt.InvalidTokenError as exc:
             # Surface the actual claim values that failed verification so
             # operators don't have to dig into the JWT to debug config drift
-            # between TRIIBAL_DASHBOARD_PORTAL_URL / TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID
+            # between TRIBAL_DASHBOARD_PORTAL_URL / TRIBAL_DASHBOARD_OAUTH_CLIENT_ID
             # and what Portal is actually emitting. Decoding without verification
             # is safe here: we've already failed to verify, and we never trust
             # these values — they're surfaced for diagnostics only.
@@ -464,7 +464,7 @@ def _load_config_oauth_section() -> dict:
     through to ``{}`` so register() can rely on `.get(...)` access.
     """
     try:
-        from triibal_cli.config import cfg_get, load_config
+        from tribal_cli.config import cfg_get, load_config
 
         cfg = load_config()
     except Exception as exc:  # noqa: BLE001 — broad catch is intentional
@@ -482,14 +482,14 @@ def _resolve_client_id() -> str:
     """Resolve the OAuth client_id with env-overrides-config precedence.
 
     Order:
-      1. ``TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID`` env var (when non-empty
+      1. ``TRIBAL_DASHBOARD_OAUTH_CLIENT_ID`` env var (when non-empty
          after strip — empty values are treated as unset so a
          provisioned-but-not-populated Fly secret can't shadow a valid
          config.yaml entry).
       2. ``dashboard.oauth.client_id`` in ``config.yaml``.
       3. Empty string — signals "no client_id configured" to the caller.
     """
-    env = os.environ.get("TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID", "").strip()
+    env = os.environ.get("TRIBAL_DASHBOARD_OAUTH_CLIENT_ID", "").strip()
     if env:
         return env
     cfg_value = _load_config_oauth_section().get("client_id", "")
@@ -500,11 +500,11 @@ def _resolve_portal_url() -> str:
     """Resolve the Portal URL with env-overrides-config precedence.
 
     Order:
-      1. ``TRIIBAL_DASHBOARD_PORTAL_URL`` env var (non-empty after strip).
+      1. ``TRIBAL_DASHBOARD_PORTAL_URL`` env var (non-empty after strip).
       2. ``dashboard.oauth.portal_url`` in ``config.yaml``.
       3. :data:`_DEFAULT_PORTAL_URL` (production Portal).
     """
-    env = os.environ.get("TRIIBAL_DASHBOARD_PORTAL_URL", "").strip()
+    env = os.environ.get("TRIBAL_DASHBOARD_PORTAL_URL", "").strip()
     if env:
         return env
     cfg_value = str(
@@ -517,21 +517,21 @@ def register(ctx) -> None:
     """Plugin entry — called by the plugin loader at startup.
 
     Registers ``NousDashboardAuthProvider`` only when a client_id is
-    configured (either via ``TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID`` env var
+    configured (either via ``TRIBAL_DASHBOARD_OAUTH_CLIENT_ID`` env var
     or via ``dashboard.oauth.client_id`` in ``config.yaml``). The env
     var wins when set non-empty — Fly.io's platform-secret injection
     pushes the per-deploy value through this path.
 
     When skipping, writes a short human-readable reason to the module-
     level :data:`LAST_SKIP_REASON` so the dashboard's fail-closed branch
-    can surface "Set TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID …" instead of the
+    can surface "Set TRIBAL_DASHBOARD_OAUTH_CLIENT_ID …" instead of the
     bare "no providers registered" the gate would otherwise emit. The
     reason mentions BOTH configuration surfaces so operators don't
     guess wrong about which one to populate.
 
     Operator-owned dashboards (loopback / ``--insecure``) leave both
     surfaces unset, so this plugin is a no-op for them. The gate-
-    engagement layer (``triibal_cli.web_server.should_require_auth`` +
+    engagement layer (``tribal_cli.web_server.should_require_auth`` +
     the fail-closed check in ``start_server``) handles the "public bind
     with zero providers" case independently.
     """
@@ -543,10 +543,10 @@ def register(ctx) -> None:
 
     if not client_id:
         LAST_SKIP_REASON = (
-            "TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID is not set (and "
+            "TRIBAL_DASHBOARD_OAUTH_CLIENT_ID is not set (and "
             "dashboard.oauth.client_id in config.yaml is empty). The "
             "Nous Portal provisions this env var (shape "
-            "'agent:{instance_id}') when it deploys a Triibal Agent "
+            "'agent:{instance_id}') when it deploys a Tribal Agent "
             "instance — set it to your provisioned client id (either "
             "as an env var or under dashboard.oauth.client_id in "
             "config.yaml), or pass --insecure to skip the OAuth gate "
@@ -557,7 +557,7 @@ def register(ctx) -> None:
 
     if not client_id.startswith("agent:"):
         LAST_SKIP_REASON = (
-            f"TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID={client_id!r} doesn't match "
+            f"TRIBAL_DASHBOARD_OAUTH_CLIENT_ID={client_id!r} doesn't match "
             f"the contract shape 'agent:{{instance_id}}'. The Nous Portal "
             f"provisions this value at deploy time; check your Fly app's "
             f"secrets or override with the value from the Portal admin UI."

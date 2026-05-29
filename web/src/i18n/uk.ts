@@ -50,7 +50,7 @@ export const uk: Translations = {
   },
 
   app: {
-    brand: "Triibal Agent",
+    brand: "Tribal Agent",
     brandShort: "HA",
     closeNavigation: "Закрити навігацію",
     closeModelTools: "Закрити модель та інструменти",
@@ -120,8 +120,8 @@ export const uk: Translations = {
     starting: "Запускається",
     startedInBackground: "Запущено у фоні — перевірте журнали для прогресу",
     stopped: "Зупинено",
-    updateTriibal: "Оновити Triibal",
-    updatingTriibal: "Оновлення Triibal…",
+    updateTribal: "Оновити Tribal",
+    updatingTribal: "Оновлення Tribal…",
     waitingForOutput: "Очікування виводу…",
   },
 
@@ -268,7 +268,7 @@ export const uk: Translations = {
     enableRuntime: "Увімкнути",
     forceReinstall: "Примусово перевстановити (спершу видалити наявну теку)",
     headline:
-      "Знаходьте, встановлюйте, вмикайте та оновлюйте плагіни Triibal (паритет з `triibal plugins`).",
+      "Знаходьте, встановлюйте, вмикайте та оновлюйте плагіни Tribal (паритет з `tribal plugins`).",
     identifierLabel: "Git URL або owner/repo",
     inactive: "неактивний",
     installBtn: "Встановити",
@@ -285,8 +285,8 @@ export const uk: Translations = {
     providersHint:
       "Записує memory.provider (порожньо = вбудований) та context.engine у config.yaml. Набуває чинності в наступній сесії.",
     refreshDashboard: "Перескан розширень панелі",
-    removeConfirm: "Видалити цей плагін з ~/.triibal/plugins/?",
-    removeHint: "Видаляти можна лише плагіни, встановлені користувачем у ~/.triibal/plugins.",
+    removeConfirm: "Видалити цей плагін з ~/.tribal/plugins/?",
+    removeHint: "Видаляти можна лише плагіни, встановлені користувачем у ~/.tribal/plugins.",
     rescanHeading: "Реєстр SPA-плагінів",
     rescanHint: "Скануйте після додавання файлів на диск, щоб бічна панель підхопила нові маніфести.",
     runtimeHeading: "Час виконання шлюзу (YAML-плагіни)",
@@ -308,7 +308,7 @@ export const uk: Translations = {
     all: "Усі",
     categories: "Категорії",
     filters: "Фільтри",
-    noSkills: "Навичок не знайдено. Навички завантажуються з ~/.triibal/skills/",
+    noSkills: "Навичок не знайдено. Навички завантажуються з ~/.tribal/skills/",
     noSkillsMatch: "Жодна навичка не відповідає вашому пошуку чи фільтру.",
     skillCount: "{count} навичок",
     resultCount: "{count} результатів",
@@ -322,7 +322,7 @@ export const uk: Translations = {
   },
 
   config: {
-    configPath: "~/.triibal/config.yaml",
+    configPath: "~/.tribal/config.yaml",
     filters: "Фільтри",
     sections: "Розділи",
     exportConfig: "Експортувати конфігурацію як JSON",
@@ -434,11 +434,11 @@ export const uk: Translations = {
   achievements: {
     hero: {
       kicker: "Agentic Gamerscore",
-      title: "Triibal Achievements",
+      title: "Tribal Achievements",
       subtitle:
-        "Колекційні значки Triibal, отримані з реальної історії сеансів. Відомі, але ще не виконані досягнення показані як Виявлені; Секретні досягнення залишаються прихованими, доки не з'явиться перший відповідний сигнал.",
+        "Колекційні значки Tribal, отримані з реальної історії сеансів. Відомі, але ще не виконані досягнення показані як Виявлені; Секретні досягнення залишаються прихованими, доки не з'явиться перший відповідний сигнал.",
       scan_subtitle:
-        "Сканування історії сеансів Triibal. Перше сканування на великих історіях може тривати 5–10 секунд.",
+        "Сканування історії сеансів Tribal. Перше сканування на великих історіях може тривати 5–10 секунд.",
     },
     actions: {
       rescan: "Повторне сканування",
@@ -453,7 +453,7 @@ export const uk: Translations = {
       highest_tier: "Найвищий рівень",
       highest_tier_hint: "Copper → Silver → Gold → Diamond → Olympian",
       latest: "Останнє",
-      latest_hint_empty: "запускайте Triibal частіше",
+      latest_hint_empty: "запускайте Tribal частіше",
       none_yet: "Поки немає",
     },
     state: {
@@ -484,10 +484,10 @@ export const uk: Translations = {
       tiers_header: "Рівні",
       secret_header: "Секретні досягнення",
       secret_body:
-        "Секрети приховують свій точний тригер. Щойно Triibal побачить пов'язаний сигнал, картка стає Виявленою та показує свою умову.",
+        "Секрети приховують свій точний тригер. Щойно Tribal побачить пов'язаний сигнал, картка стає Виявленою та показує свою умову.",
       scan_status_header: "Стан сканування",
       scan_status_body:
-        "Triibal одноразово сканує локальну історію, а потім картки з'являться автоматично. Якщо це триває кілька секунд — нічого не зависло.",
+        "Tribal одноразово сканує локальну історію, а потім картки з'являться автоматично. Якщо це триває кілька секунд — нічого не зависло.",
       what_scanned_header: "Що сканується",
       what_scanned_body:
         "Сеанси, виклики інструментів, метадані моделей, помилки, досягнення та локальний стан розблокування.",
@@ -534,7 +534,7 @@ export const uk: Translations = {
         "«Поділитися в X» відкриває попередньо заповнений допис у новій вкладці. Якщо хочете прикріпити значок 1200×630 — спочатку натисніть «Копіювати зображення»: X дозволить вставити його прямо в редактор твіта. «Завантажити PNG» збереже файл для використання будь-де.",
       clipboard_unsupported:
         "Цей браузер не підтримує копіювання зображень у буфер обміну — використайте «Завантажити».",
-      tweet_text: "Just unlocked {tier_part}\"{name}\" in Triibal Agent ☤",
+      tweet_text: "Just unlocked {tier_part}\"{name}\" in Tribal Agent ☤",
     },
   },
   kanban: {

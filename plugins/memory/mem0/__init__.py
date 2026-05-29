@@ -7,10 +7,10 @@ Original PR #2933 by kartik-mem0, adapted to MemoryProvider ABC.
 
 Config via environment variables:
   MEM0_API_KEY       — Mem0 Platform API key (required)
-  MEM0_USER_ID       — User identifier (default: triibal-user)
-  MEM0_AGENT_ID      — Agent identifier (default: triibal)
+  MEM0_USER_ID       — User identifier (default: tribal-user)
+  MEM0_AGENT_ID      — Agent identifier (default: tribal)
 
-Or via $TRIIBAL_HOME/mem0.json.
+Or via $TRIBAL_HOME/mem0.json.
 """
 
 from __future__ import annotations
@@ -38,23 +38,23 @@ _BREAKER_COOLDOWN_SECS = 120
 # ---------------------------------------------------------------------------
 
 def _load_config() -> dict:
-    """Load config from env vars, with $TRIIBAL_HOME/mem0.json overrides.
+    """Load config from env vars, with $TRIBAL_HOME/mem0.json overrides.
 
     Environment variables provide defaults; mem0.json (if present) overrides
     individual keys.  This avoids a silent failure when the JSON file exists
     but is missing fields like ``api_key`` that the user set in ``.env``.
     """
-    from triibal_constants import get_triibal_home
+    from tribal_constants import get_tribal_home
 
     config = {
         "api_key": os.environ.get("MEM0_API_KEY", ""),
-        "user_id": os.environ.get("MEM0_USER_ID", "triibal-user"),
-        "agent_id": os.environ.get("MEM0_AGENT_ID", "triibal"),
+        "user_id": os.environ.get("MEM0_USER_ID", "tribal-user"),
+        "agent_id": os.environ.get("MEM0_AGENT_ID", "tribal"),
         "rerank": True,
         "keyword_search": False,
     }
 
-    config_path = get_triibal_home() / "mem0.json"
+    config_path = get_tribal_home() / "mem0.json"
     if config_path.exists():
         try:
             file_cfg = json.loads(config_path.read_text(encoding="utf-8"))
@@ -124,8 +124,8 @@ class Mem0MemoryProvider(MemoryProvider):
         self._client = None
         self._client_lock = threading.Lock()
         self._api_key = ""
-        self._user_id = "triibal-user"
-        self._agent_id = "triibal"
+        self._user_id = "tribal-user"
+        self._agent_id = "tribal"
         self._rerank = True
         self._prefetch_result = ""
         self._prefetch_lock = threading.Lock()
@@ -143,11 +143,11 @@ class Mem0MemoryProvider(MemoryProvider):
         cfg = _load_config()
         return bool(cfg.get("api_key"))
 
-    def save_config(self, values, triibal_home):
-        """Write config to $TRIIBAL_HOME/mem0.json."""
+    def save_config(self, values, tribal_home):
+        """Write config to $TRIBAL_HOME/mem0.json."""
         import json
         from pathlib import Path
-        config_path = Path(triibal_home) / "mem0.json"
+        config_path = Path(tribal_home) / "mem0.json"
         existing = {}
         if config_path.exists():
             try:
@@ -160,8 +160,8 @@ class Mem0MemoryProvider(MemoryProvider):
     def get_config_schema(self):
         return [
             {"key": "api_key", "description": "Mem0 Platform API key", "secret": True, "required": True, "env_var": "MEM0_API_KEY", "url": "https://app.mem0.ai"},
-            {"key": "user_id", "description": "User identifier", "default": "triibal-user"},
-            {"key": "agent_id", "description": "Agent identifier", "default": "triibal"},
+            {"key": "user_id", "description": "User identifier", "default": "tribal-user"},
+            {"key": "agent_id", "description": "Agent identifier", "default": "tribal"},
             {"key": "rerank", "description": "Enable reranking for recall", "default": "true", "choices": ["true", "false"]},
         ]
 
@@ -205,8 +205,8 @@ class Mem0MemoryProvider(MemoryProvider):
         self._api_key = self._config.get("api_key", "")
         # Prefer gateway-provided user_id for per-user memory scoping;
         # fall back to config/env default for CLI (single-user) sessions.
-        self._user_id = kwargs.get("user_id") or self._config.get("user_id", "triibal-user")
-        self._agent_id = self._config.get("agent_id", "triibal")
+        self._user_id = kwargs.get("user_id") or self._config.get("user_id", "tribal-user")
+        self._agent_id = self._config.get("agent_id", "tribal")
         self._rerank = self._config.get("rerank", True)
 
     def _read_filters(self) -> Dict[str, Any]:

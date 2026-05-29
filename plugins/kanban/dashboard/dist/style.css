@@ -1,11 +1,11 @@
 /*
- * Triibal Kanban — dashboard plugin styles.
+ * Tribal Kanban — dashboard plugin styles.
  *
  * All colors reference theme CSS vars so the board reskins with the
  * active dashboard theme. No hardcoded palette.
  */
 
-.triibal-kanban {
+.tribal-kanban {
   width: 100%;
 }
 
@@ -18,11 +18,11 @@
  * surfaces that must read as plain text on the board's own background.
  *
  * Rather than play whack-a-mole with theme rules (the pre-#21086 approach
- * was a single ``.triibal-kanban code { background: transparent }`` rule
+ * was a single ``.tribal-kanban code { background: transparent }`` rule
  * that lost specificity fights in the drawer context), reset EVERY
  * <code>/<pre> inside the kanban plugin container to transparent with
  * ``!important``, then opt back in ONLY on the class that carries
- * intentional styling (``.triibal-kanban-md code``, the inline code pill
+ * intentional styling (``.tribal-kanban-md code``, the inline code pill
  * inside rendered task-body Markdown).
  *
  * Net effect: any new theme, shipped or third-party, can introduce
@@ -31,16 +31,16 @@
  * Regression coverage: #21086 (task-drawer event payloads unreadable
  * across every shipped theme).
  */
-.triibal-kanban code,
-.triibal-kanban pre,
-.triibal-kanban-drawer code,
-.triibal-kanban-drawer pre {
+.tribal-kanban code,
+.tribal-kanban pre,
+.tribal-kanban-drawer code,
+.tribal-kanban-drawer pre {
   background: transparent !important;
   color: inherit;
 }
 /* The Markdown renderer intentionally paints a subtle code pill behind
  * inline ``<code>`` inside task-body prose — but NOT inside a fenced
- * block (those are a ``<pre class="triibal-kanban-md-code">`` with a
+ * block (those are a ``<pre class="tribal-kanban-md-code">`` with a
  * bare ``<code>`` inside, and the pill would double up with the pre
  * background). ``:not()`` scopes this opt-back-in to inline code only.
  *
@@ -48,28 +48,28 @@
  * so the pill renders consistently even when a theme forgets to set
  * ``--color-foreground`` (pre-existing safeguard from #18576).
  */
-.triibal-kanban .triibal-kanban-md code:not(.triibal-kanban-md-code *) {
+.tribal-kanban .tribal-kanban-md code:not(.tribal-kanban-md-code *) {
   background: color-mix(in srgb, currentColor 8%, transparent) !important;
 }
 /* Tighten contrast on the drawer-specific payload class — it lives on
  * its own line in the events list, so matching the muted-foreground
  * color keeps it visually distinct from the event title without
  * screaming for attention. */
-.triibal-kanban-event-payload,
-.triibal-kanban-drawer .triibal-kanban-event-payload {
+.tribal-kanban-event-payload,
+.tribal-kanban-drawer .tribal-kanban-event-payload {
   color: var(--color-muted-foreground) !important;
 }
 
 /* ---- Columns layout -------------------------------------------------- */
 
-.triibal-kanban-columns {
+.tribal-kanban-columns {
   display: flex;
   gap: 0.75rem;
   align-items: start;
   overflow-x: auto;
 }
 
-.triibal-kanban-column {
+.tribal-kanban-column {
   flex: 0 0 280px;
   display: flex;
   flex-direction: column;
@@ -82,12 +82,12 @@
   transition: border-color 120ms ease, background-color 120ms ease;
 }
 
-.triibal-kanban-column--drop {
+.tribal-kanban-column--drop {
   border-color: var(--color-ring);
   background: color-mix(in srgb, var(--color-ring) 8%, var(--color-card));
 }
 
-.triibal-kanban-column-header {
+.tribal-kanban-column-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -97,19 +97,19 @@
   color: var(--color-foreground);
 }
 
-.triibal-kanban-column-label {
+.tribal-kanban-column-label {
   flex: 1;
   letter-spacing: 0.01em;
 }
 
-.triibal-kanban-column-count {
+.tribal-kanban-column-count {
   font-variant-numeric: tabular-nums;
   color: var(--color-muted-foreground);
   font-size: 0.75rem;
   font-weight: 500;
 }
 
-.triibal-kanban-column-add {
+.tribal-kanban-column-add {
   appearance: none;
   background: transparent;
   border: 1px solid var(--color-border);
@@ -121,11 +121,11 @@
   font-size: 1rem;
   cursor: pointer;
 }
-.triibal-kanban-column-add:hover {
+.tribal-kanban-column-add:hover {
   background: color-mix(in srgb, var(--color-foreground) 8%, transparent);
 }
 
-.triibal-kanban-column-sub {
+.tribal-kanban-column-sub {
   padding: 0 0.25rem 0.5rem;
   font-size: 0.7rem;
   color: var(--color-muted-foreground);
@@ -133,7 +133,7 @@
   margin-bottom: 0.5rem;
 }
 
-.triibal-kanban-column-body {
+.tribal-kanban-column-body {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -143,7 +143,7 @@
   min-height: 0;
 }
 
-.triibal-kanban-empty {
+.tribal-kanban-empty {
   padding: 1.5rem 0.5rem;
   text-align: center;
   font-size: 0.75rem;
@@ -154,24 +154,24 @@
 
 /* ---- Status dots ----------------------------------------------------- */
 
-.triibal-kanban-dot {
+.tribal-kanban-dot {
   display: inline-block;
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 999px;
   background: var(--color-muted-foreground);
 }
-.triibal-kanban-dot-triage   { background: #b47dd6; }  /* lilac — fresh/unspecified */
-.triibal-kanban-dot-todo     { background: var(--color-muted-foreground); }
-.triibal-kanban-dot-ready    { background: #d4b348; }  /* amber */
-.triibal-kanban-dot-running  { background: #3fb97d; }  /* green */
-.triibal-kanban-dot-blocked  { background: var(--color-destructive, #d14a4a); }
-.triibal-kanban-dot-done     { background: #4a8cd1; }  /* blue */
-.triibal-kanban-dot-archived { background: var(--color-border); }
+.tribal-kanban-dot-triage   { background: #b47dd6; }  /* lilac — fresh/unspecified */
+.tribal-kanban-dot-todo     { background: var(--color-muted-foreground); }
+.tribal-kanban-dot-ready    { background: #d4b348; }  /* amber */
+.tribal-kanban-dot-running  { background: #3fb97d; }  /* green */
+.tribal-kanban-dot-blocked  { background: var(--color-destructive, #d14a4a); }
+.tribal-kanban-dot-done     { background: #4a8cd1; }  /* blue */
+.tribal-kanban-dot-archived { background: var(--color-border); }
 
 /* ---- Progress pill (N/M child tasks done) --------------------------- */
 
-.triibal-kanban-progress {
+.tribal-kanban-progress {
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.62rem;
   padding: 0.05rem 0.35rem;
@@ -181,7 +181,7 @@
   color: var(--color-muted-foreground);
   letter-spacing: 0.02em;
 }
-.triibal-kanban-progress--full {
+.tribal-kanban-progress--full {
   background: color-mix(in srgb, #3fb97d 22%, transparent);
   border-color: color-mix(in srgb, #3fb97d 45%, transparent);
   color: var(--color-foreground);
@@ -189,18 +189,18 @@
 
 /* ---- Lanes (per-profile sub-grouping inside Running) ---------------- */
 
-.triibal-kanban-lane {
+.tribal-kanban-lane {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
   padding: 0.25rem 0 0.35rem;
   border-top: 1px dashed color-mix(in srgb, var(--color-border) 70%, transparent);
 }
-.triibal-kanban-lane:first-child {
+.tribal-kanban-lane:first-child {
   border-top: 0;
   padding-top: 0;
 }
-.triibal-kanban-lane-head {
+.tribal-kanban-lane-head {
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -212,51 +212,51 @@
   color: var(--color-muted-foreground);
   padding: 0 0.1rem;
 }
-.triibal-kanban-lane-name {
+.tribal-kanban-lane-name {
   font-weight: 600;
   font-family: var(--font-mono, ui-monospace, monospace);
 }
-.triibal-kanban-lane-count {
+.tribal-kanban-lane-count {
   margin-left: auto;
   font-variant-numeric: tabular-nums;
 }
 
 /* ---- Card ------------------------------------------------------------ */
 
-.triibal-kanban-card {
+.tribal-kanban-card {
   cursor: grab;
   transition: transform 100ms ease, box-shadow 100ms ease;
 }
-.triibal-kanban-card:hover {
+.tribal-kanban-card:hover {
   box-shadow: 0 1px 0 0 var(--color-ring) inset, 0 0 0 1px var(--color-ring) inset;
 }
-.triibal-kanban-card:active {
+.tribal-kanban-card:active {
   cursor: grabbing;
   transform: scale(0.995);
 }
 
-.triibal-kanban-card-content {
+.tribal-kanban-card-content {
   padding: 0.5rem 0.6rem !important;
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
 }
 
-.triibal-kanban-card-row {
+.tribal-kanban-card-row {
   display: flex;
   align-items: center;
   gap: 0.35rem;
   flex-wrap: wrap;
 }
 
-.triibal-kanban-card-id {
+.tribal-kanban-card-id {
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.65rem;
   color: var(--color-muted-foreground);
   letter-spacing: 0.03em;
 }
 
-.triibal-kanban-card-title {
+.tribal-kanban-card-title {
   font-size: 0.85rem;
   font-weight: 500;
   line-height: 1.3;
@@ -264,13 +264,13 @@
   word-break: break-word;
 }
 
-.triibal-kanban-card-meta {
+.tribal-kanban-card-meta {
   font-size: 0.7rem;
   color: var(--color-muted-foreground);
   gap: 0.55rem;
 }
 
-.triibal-kanban-priority {
+.tribal-kanban-priority {
   font-size: 0.6rem !important;
   padding: 0.05rem 0.3rem !important;
   background: color-mix(in srgb, var(--color-ring) 18%, transparent);
@@ -278,12 +278,12 @@
   border: 1px solid color-mix(in srgb, var(--color-ring) 40%, transparent);
 }
 
-.triibal-kanban-tag {
+.tribal-kanban-tag {
   font-size: 0.6rem !important;
   padding: 0.05rem 0.3rem !important;
 }
 
-.triibal-kanban-needs-assignee {
+.tribal-kanban-needs-assignee {
   font-size: 0.6rem !important;
   padding: 0.05rem 0.3rem !important;
   background: color-mix(in srgb, var(--color-warning, #d4b348) 16%, transparent);
@@ -291,20 +291,20 @@
   color: var(--color-foreground);
 }
 
-.triibal-kanban-assignee {
+.tribal-kanban-assignee {
   font-weight: 500;
   color: color-mix(in srgb, var(--color-foreground) 80%, var(--color-muted-foreground));
 }
-.triibal-kanban-unassigned {
+.tribal-kanban-unassigned {
   font-style: italic;
 }
-.triibal-kanban-ago {
+.tribal-kanban-ago {
   margin-left: auto;
 }
 
 /* ---- Inline create --------------------------------------------------- */
 
-.triibal-kanban-inline-create {
+.tribal-kanban-inline-create {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -315,14 +315,14 @@
   border-radius: var(--radius-sm, 0.25rem);
 }
 
-.triibal-kanban-inline-create > .flex.gap-2:last-child > button:first-of-type {
+.tribal-kanban-inline-create > .flex.gap-2:last-child > button:first-of-type {
   flex: 1;
   min-width: 0;
 }
 
 /* ---- Drawer (task detail side panel) --------------------------------- */
 
-.triibal-kanban-drawer-shade {
+.tribal-kanban-drawer-shade {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
@@ -331,23 +331,23 @@
   justify-content: flex-end;
 }
 
-.triibal-kanban-drawer {
-  width: min(var(--triibal-kanban-drawer-width, 640px), 92vw);
+.tribal-kanban-drawer {
+  width: min(var(--tribal-kanban-drawer-width, 640px), 92vw);
   height: 100vh;
   background: var(--color-card);
   border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   box-shadow: -4px 0 18px rgba(0, 0, 0, 0.35);
-  animation: triibal-kanban-drawer-in 180ms ease-out;
+  animation: tribal-kanban-drawer-in 180ms ease-out;
 }
 
-@keyframes triibal-kanban-drawer-in {
+@keyframes tribal-kanban-drawer-in {
   from { transform: translateX(100%); opacity: 0.3; }
   to   { transform: translateX(0);    opacity: 1; }
 }
 
-.triibal-kanban-drawer-head {
+.tribal-kanban-drawer-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -356,7 +356,7 @@
   font-family: var(--font-mono, ui-monospace, monospace);
 }
 
-.triibal-kanban-drawer-close {
+.tribal-kanban-drawer-close {
   appearance: none;
   background: transparent;
   border: 0;
@@ -366,9 +366,9 @@
   cursor: pointer;
   padding: 0 0.25rem;
 }
-.triibal-kanban-drawer-close:hover { color: var(--color-foreground); }
+.tribal-kanban-drawer-close:hover { color: var(--color-foreground); }
 
-.triibal-kanban-drawer-body {
+.tribal-kanban-drawer-body {
   flex: 1;
   overflow-y: auto;
   padding: 0.9rem;
@@ -377,7 +377,7 @@
   gap: 0.85rem;
 }
 
-.triibal-kanban-drawer-title {
+.tribal-kanban-drawer-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -385,7 +385,7 @@
   font-weight: 600;
 }
 
-.triibal-kanban-drawer-meta {
+.tribal-kanban-drawer-meta {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
@@ -395,41 +395,41 @@
   border-radius: var(--radius-sm, 0.25rem);
 }
 
-.triibal-kanban-meta-row {
+.tribal-kanban-meta-row {
   display: flex;
   gap: 0.5rem;
   font-size: 0.8rem;
 }
-.triibal-kanban-meta-label {
+.tribal-kanban-meta-label {
   width: 92px;
   color: var(--color-muted-foreground);
 }
-.triibal-kanban-meta-value {
+.tribal-kanban-meta-value {
   color: var(--color-foreground);
   word-break: break-word;
 }
 
-.triibal-kanban-actions {
+.tribal-kanban-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
 }
 
 /* Specifier result banner — sits directly under the status action row. */
-.triibal-kanban-msg-ok,
-.triibal-kanban-msg-err {
+.tribal-kanban-msg-ok,
+.tribal-kanban-msg-err {
   margin-top: 0.4rem;
   padding: 0.35rem 0.55rem;
   border-radius: 0.375rem;
   font-size: 0.85rem;
   line-height: 1.3;
 }
-.triibal-kanban-msg-ok {
+.tribal-kanban-msg-ok {
   background: rgba(46, 160, 67, 0.12);
   color: #2ea043;
   border: 1px solid rgba(46, 160, 67, 0.35);
 }
-.triibal-kanban-msg-err {
+.tribal-kanban-msg-err {
   background: rgba(248, 81, 73, 0.12);
   color: #f85149;
   border: 1px solid rgba(248, 81, 73, 0.35);
@@ -437,17 +437,17 @@
 
 /* ---- Home channel subscription toggles (per-platform, per-task) ----- */
 
-.triibal-kanban-home-subs {
+.tribal-kanban-home-subs {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
 }
-.triibal-kanban-home-sub {
+.tribal-kanban-home-sub {
   font-family: var(--font-mono, ui-monospace, monospace);
   text-transform: lowercase;
   letter-spacing: 0.02em;
 }
-.triibal-kanban-home-sub--on {
+.tribal-kanban-home-sub--on {
   /* Subscribed toggle — use a strong ring-colored accent so the on/off
    * distinction reads at a glance, not just from the ✓ prefix. Border +
    * filled background + bolder weight keep the state obvious across
@@ -459,20 +459,20 @@
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ring) 40%, transparent);
 }
 
-.triibal-kanban-section {
+.tribal-kanban-section {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-.triibal-kanban-section-head {
+.tribal-kanban-section-head {
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.07em;
   color: var(--color-muted-foreground);
 }
 
-.triibal-kanban-pre {
+.tribal-kanban-pre {
   margin: 0;
   padding: 0.5rem 0.6rem;
   white-space: pre-wrap;
@@ -486,7 +486,7 @@
   color: var(--color-foreground);
 }
 
-.triibal-kanban-comment {
+.tribal-kanban-comment {
   border-left: 2px solid color-mix(in srgb, var(--color-ring) 35%, transparent);
   padding-left: 0.5rem;
   display: flex;
@@ -494,31 +494,31 @@
   gap: 0.2rem;
 }
 
-.triibal-kanban-comment-head {
+.tribal-kanban-comment-head {
   display: flex;
   gap: 0.5rem;
   font-size: 0.7rem;
 }
-.triibal-kanban-comment-author {
+.tribal-kanban-comment-author {
   font-weight: 600;
   color: var(--color-foreground);
 }
-.triibal-kanban-comment-ago {
+.tribal-kanban-comment-ago {
   color: var(--color-muted-foreground);
 }
 
-.triibal-kanban-event {
+.tribal-kanban-event {
   display: flex;
   gap: 0.5rem;
   font-size: 0.7rem;
   color: var(--color-muted-foreground);
   font-family: var(--font-mono, ui-monospace, monospace);
 }
-.triibal-kanban-event-kind {
+.tribal-kanban-event-kind {
   color: var(--color-foreground);
   min-width: 6rem;
 }
-.triibal-kanban-event-payload {
+.tribal-kanban-event-payload {
   color: var(--color-muted-foreground);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -526,7 +526,7 @@
   max-width: 280px;
 }
 
-.triibal-kanban-drawer-comment-row {
+.tribal-kanban-drawer-comment-row {
   display: flex;
   gap: 0.4rem;
   padding: 0.55rem 0.75rem;
@@ -534,7 +534,7 @@
   background: color-mix(in srgb, var(--color-card) 90%, transparent);
 }
 
-.triibal-kanban-count {
+.tribal-kanban-count {
   display: inline-flex;
   gap: 0.2rem;
   align-items: center;
@@ -542,7 +542,7 @@
 
 /* ---- Selection chrome ----------------------------------------------- */
 
-.triibal-kanban-card--selected :where(.triibal-kanban-card-content) {
+.tribal-kanban-card--selected :where(.tribal-kanban-card-content) {
   box-shadow: 0 0 0 2px var(--color-ring) inset,
               0 0 0 1px var(--color-ring) inset;
   background: color-mix(in srgb, var(--color-ring) 6%, var(--color-card));
@@ -551,13 +551,13 @@
 /* Batch drag source styling — cards that are part of the current multi-drag.
    The browser ghost image floats; we dim the original DOM nodes so the user
    sees the whole set is in-flight. */
-.triibal-kanban-card--dragging-source :where(.triibal-kanban-card-content) {
+.tribal-kanban-card--dragging-source :where(.tribal-kanban-card-content) {
   opacity: 0.45;
   filter: grayscale(0.6);
   transition: opacity 120ms ease, filter 120ms ease;
 }
 
-.triibal-kanban-card-check {
+.tribal-kanban-card-check {
   width: 0.85rem;
   height: 0.85rem;
   margin: 0;
@@ -567,7 +567,7 @@
 
 /* ---- Bulk action bar ------------------------------------------------ */
 
-.triibal-kanban-bulk {
+.tribal-kanban-bulk {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -577,25 +577,25 @@
   border-radius: var(--radius-sm, 0.25rem);
   flex-wrap: wrap;
 }
-.triibal-kanban-bulk-count {
+.tribal-kanban-bulk-count {
   font-weight: 600;
   font-size: 0.75rem;
   padding-right: 0.25rem;
 }
 
-.triibal-kanban-bulk > button,
-.triibal-kanban-bulk-reassign > button {
+.tribal-kanban-bulk > button,
+.tribal-kanban-bulk-reassign > button {
   height: 1.7rem !important;
   padding: 0 0.5rem !important;
   font-size: 0.7rem !important;
   border: 1px solid var(--color-border);
   cursor: pointer;
 }
-.triibal-kanban-bulk > button:hover:not(:disabled),
-.triibal-kanban-bulk-reassign > button:hover:not(:disabled) {
+.tribal-kanban-bulk > button:hover:not(:disabled),
+.tribal-kanban-bulk-reassign > button:hover:not(:disabled) {
   background: color-mix(in srgb, var(--color-foreground) 8%, transparent);
 }
-.triibal-kanban-bulk-reassign {
+.tribal-kanban-bulk-reassign {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -605,30 +605,30 @@
 
 /* ---- Dependency editor chips --------------------------------------- */
 
-.triibal-kanban-deps-row {
+.tribal-kanban-deps-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.4rem;
 }
-.triibal-kanban-deps-label {
+.tribal-kanban-deps-label {
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   color: var(--color-muted-foreground);
   min-width: 4rem;
 }
-.triibal-kanban-deps-chips {
+.tribal-kanban-deps-chips {
   display: flex;
   gap: 0.3rem;
   flex-wrap: wrap;
   flex: 1;
 }
-.triibal-kanban-deps-empty {
+.tribal-kanban-deps-empty {
   font-size: 0.7rem;
   color: var(--color-muted-foreground);
   font-style: italic;
 }
-.triibal-kanban-dep-chip {
+.tribal-kanban-dep-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.15rem;
@@ -640,7 +640,7 @@
   font-size: 0.68rem;
   color: var(--color-foreground);
 }
-.triibal-kanban-dep-chip-x {
+.tribal-kanban-dep-chip-x {
   appearance: none;
   background: transparent;
   border: 0;
@@ -650,43 +650,43 @@
   line-height: 1;
   padding: 0 0.15rem;
 }
-.triibal-kanban-dep-chip-x:hover { color: var(--color-destructive, #d14a4a); }
+.tribal-kanban-dep-chip-x:hover { color: var(--color-destructive, #d14a4a); }
 
 /* ---- Inline edit affordances --------------------------------------- */
 
-.triibal-kanban-editable {
+.tribal-kanban-editable {
   cursor: pointer;
   border-bottom: 1px dotted color-mix(in srgb, var(--color-border) 80%, transparent);
 }
-.triibal-kanban-editable:hover {
+.tribal-kanban-editable:hover {
   color: var(--color-foreground);
   border-bottom-color: var(--color-ring);
 }
 
-.triibal-kanban-drawer-title-text {
+.tribal-kanban-drawer-title-text {
   cursor: pointer;
 }
-.triibal-kanban-drawer-title-text:hover {
+.tribal-kanban-drawer-title-text:hover {
   text-decoration: underline;
   text-decoration-color: var(--color-ring);
   text-decoration-style: dotted;
   text-underline-offset: 3px;
 }
 
-.triibal-kanban-edit-row {
+.tribal-kanban-edit-row {
   display: flex;
   align-items: center;
   gap: 0.35rem;
   width: 100%;
 }
 
-.triibal-kanban-section-head-row {
+.tribal-kanban-section-head-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
 }
-.triibal-kanban-edit-link {
+.tribal-kanban-edit-link {
   appearance: none;
   background: transparent;
   border: 0;
@@ -696,9 +696,9 @@
   cursor: pointer;
   padding: 0;
 }
-.triibal-kanban-edit-link:hover { color: var(--color-ring); }
+.tribal-kanban-edit-link:hover { color: var(--color-ring); }
 
-.triibal-kanban-textarea {
+.tribal-kanban-textarea {
   width: 100%;
   min-height: 8rem;
   background: var(--color-card);
@@ -711,7 +711,7 @@
   line-height: 1.5;
   resize: vertical;
 }
-.triibal-kanban-textarea:focus {
+.tribal-kanban-textarea:focus {
   outline: none;
   border-color: var(--color-ring);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ring) 30%, transparent);
@@ -719,33 +719,33 @@
 
 /* ---- Markdown rendering -------------------------------------------- */
 
-.triibal-kanban-md {
+.tribal-kanban-md {
   font-size: 0.85rem;
   line-height: 1.6;
   color: var(--color-foreground);
 }
-.triibal-kanban-md p  { margin: 0.25rem 0; }
-.triibal-kanban-md h1,
-.triibal-kanban-md h2,
-.triibal-kanban-md h3,
-.triibal-kanban-md h4 {
+.tribal-kanban-md p  { margin: 0.25rem 0; }
+.tribal-kanban-md h1,
+.tribal-kanban-md h2,
+.tribal-kanban-md h3,
+.tribal-kanban-md h4 {
   margin: 0.6rem 0 0.2rem;
   line-height: 1.25;
 }
-.triibal-kanban-md h1 { font-size: 1.05rem; }
-.triibal-kanban-md h2 { font-size: 0.95rem; }
-.triibal-kanban-md h3 { font-size: 0.88rem; }
-.triibal-kanban-md h4 { font-size: 0.82rem; }
-.triibal-kanban-md ul {
+.tribal-kanban-md h1 { font-size: 1.05rem; }
+.tribal-kanban-md h2 { font-size: 0.95rem; }
+.tribal-kanban-md h3 { font-size: 0.88rem; }
+.tribal-kanban-md h4 { font-size: 0.82rem; }
+.tribal-kanban-md ul {
   margin: 0.25rem 0 0.25rem 1.1rem;
   padding: 0;
 }
-.triibal-kanban-md li { margin: 0.1rem 0; }
-.triibal-kanban-md a {
+.tribal-kanban-md li { margin: 0.1rem 0; }
+.tribal-kanban-md a {
   color: var(--color-ring);
   text-decoration: underline;
 }
-.triibal-kanban-md code {
+.tribal-kanban-md code {
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.8rem;
   padding: 0.05rem 0.3rem;
@@ -761,11 +761,11 @@
  * UA default on <code> elements — otherwise themes that don't set
  * --color-foreground leave code text rendering near-black on dark themes
  * (see issue #18576). */
-.triibal-kanban pre.triibal-kanban-md-code {
+.tribal-kanban pre.tribal-kanban-md-code {
   margin: 0.35rem 0;
   padding: 0.5rem 0.6rem;
-  /* Higher specificity (``.triibal-kanban pre.triibal-kanban-md-code`` vs
-   * the reset's ``.triibal-kanban pre``) so this intentional pill wins
+  /* Higher specificity (``.tribal-kanban pre.tribal-kanban-md-code`` vs
+   * the reset's ``.tribal-kanban pre``) so this intentional pill wins
    * over our own ``<pre>`` reset. ``!important`` also needed so theme
    * rules that drop their own ``code``/``pre`` fill don't knock it out
    * either. #21086. */
@@ -774,18 +774,18 @@
   border-radius: var(--radius-sm, 0.25rem);
   overflow-x: auto;
 }
-.triibal-kanban-md-code code {
+.tribal-kanban-md-code code {
   background: transparent;
   padding: 0;
   font-size: 0.8rem;
   white-space: pre;
   color: inherit;
 }
-.triibal-kanban-md strong { font-weight: 600; }
+.tribal-kanban-md strong { font-weight: 600; }
 
 /* ---- Touch-drag proxy ---------------------------------------------- */
 
-.triibal-kanban-touch-proxy {
+.tribal-kanban-touch-proxy {
   pointer-events: none;
   opacity: 0.85;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
@@ -795,7 +795,7 @@
 
 /* ---- Multi-drag ghost ----------------------------------------------- */
 
-.triibal-kanban-drag-ghost {
+.tribal-kanban-drag-ghost {
   position: fixed;
   left: -9999px;
   padding: 0.45rem 0.8rem;
@@ -812,24 +812,24 @@
 
 /* ---- Staleness tiers ------------------------------------------------ */
 
-.triibal-kanban-card--stale-amber :where(.triibal-kanban-card-content) {
+.tribal-kanban-card--stale-amber :where(.tribal-kanban-card-content) {
   box-shadow: 0 0 0 1px #d4b34888 inset;
 }
-.triibal-kanban-card--stale-amber:hover :where(.triibal-kanban-card-content) {
+.tribal-kanban-card--stale-amber:hover :where(.tribal-kanban-card-content) {
   box-shadow: 0 0 0 2px #d4b348 inset;
 }
-.triibal-kanban-card--stale-red :where(.triibal-kanban-card-content) {
+.tribal-kanban-card--stale-red :where(.tribal-kanban-card-content) {
   box-shadow: 0 0 0 1px var(--color-destructive, #d14a4a) inset,
               0 0 8px color-mix(in srgb, var(--color-destructive, #d14a4a) 30%, transparent);
 }
-.triibal-kanban-card--stale-red:hover :where(.triibal-kanban-card-content) {
+.tribal-kanban-card--stale-red:hover :where(.tribal-kanban-card-content) {
   box-shadow: 0 0 0 2px var(--color-destructive, #d14a4a) inset,
               0 0 10px color-mix(in srgb, var(--color-destructive, #d14a4a) 45%, transparent);
 }
 
 /* ---- Worker log pane ------------------------------------------------ */
 
-.triibal-kanban-log {
+.tribal-kanban-log {
   max-height: 360px;
   overflow: auto;
   white-space: pre;
@@ -840,56 +840,56 @@
 
 /* ---- Run history (per-attempt log in the drawer) ------------------- */
 
-.triibal-kanban-run {
+.tribal-kanban-run {
   border-left: 2px solid var(--color-border);
   padding: 0.35rem 0.5rem;
   margin-bottom: 0.4rem;
   background: color-mix(in srgb, var(--color-foreground) 3%, transparent);
   border-radius: var(--radius-sm, 0.25rem);
 }
-.triibal-kanban-run--active  { border-left-color: #3fb97d; }
-.triibal-kanban-run--completed { border-left-color: #4a8cd1; }
-.triibal-kanban-run--ended { border-left-color: #6b7280; }  /* generic fallback when outcome is unset */
-.triibal-kanban-run--blocked { border-left-color: var(--color-destructive, #d14a4a); }
-.triibal-kanban-run--crashed,
-.triibal-kanban-run--timed_out,
-.triibal-kanban-run--gave_up,
-.triibal-kanban-run--spawn_failed {
+.tribal-kanban-run--active  { border-left-color: #3fb97d; }
+.tribal-kanban-run--completed { border-left-color: #4a8cd1; }
+.tribal-kanban-run--ended { border-left-color: #6b7280; }  /* generic fallback when outcome is unset */
+.tribal-kanban-run--blocked { border-left-color: var(--color-destructive, #d14a4a); }
+.tribal-kanban-run--crashed,
+.tribal-kanban-run--timed_out,
+.tribal-kanban-run--gave_up,
+.tribal-kanban-run--spawn_failed {
   border-left-color: var(--color-destructive, #d14a4a);
   background: color-mix(in srgb, var(--color-destructive, #d14a4a) 6%, transparent);
 }
-.triibal-kanban-run--reclaimed { border-left-color: #d4b348; }
+.tribal-kanban-run--reclaimed { border-left-color: #d4b348; }
 
-.triibal-kanban-run-head {
+.tribal-kanban-run-head {
   display: flex;
   align-items: center;
   gap: 0.6rem;
   font-size: 0.7rem;
 }
-.triibal-kanban-run-outcome {
+.tribal-kanban-run-outcome {
   font-family: var(--font-mono, ui-monospace, monospace);
   font-weight: 600;
   letter-spacing: 0.05em;
   color: var(--color-foreground);
 }
-.triibal-kanban-run-profile {
+.tribal-kanban-run-profile {
   color: var(--color-muted-foreground);
 }
-.triibal-kanban-run-elapsed {
+.tribal-kanban-run-elapsed {
   font-variant-numeric: tabular-nums;
   color: var(--color-muted-foreground);
 }
-.triibal-kanban-run-ago {
+.tribal-kanban-run-ago {
   margin-left: auto;
   color: var(--color-muted-foreground);
 }
-.triibal-kanban-run-summary {
+.tribal-kanban-run-summary {
   font-size: 0.82rem;
   line-height: 1.5;
   padding: 0.2rem 0 0;
   color: var(--color-foreground);
 }
-.triibal-kanban-run-error {
+.tribal-kanban-run-error {
   font-size: 0.7rem;
   color: var(--color-destructive, #d14a4a);
   padding: 0.15rem 0 0;
@@ -902,37 +902,37 @@
  * Uses a native <details>/<summary> pair so collapse is browser-handled
  * (zero JS); large blobs default collapsed via the open=false attribute.
  * See issue #19548. */
-.triibal-kanban-run-meta-block {
+.tribal-kanban-run-meta-block {
   margin-top: 0.4rem;
   padding: 0.25rem 0.5rem;
   border-left: 2px solid var(--color-border);
   background: transparent;
 }
-.triibal-kanban-run-meta-block > summary.triibal-kanban-run-meta-label {
+.tribal-kanban-run-meta-block > summary.tribal-kanban-run-meta-label {
   cursor: pointer;
   list-style: none;
 }
-.triibal-kanban-run-meta-block > summary.triibal-kanban-run-meta-label::-webkit-details-marker {
+.tribal-kanban-run-meta-block > summary.tribal-kanban-run-meta-label::-webkit-details-marker {
   display: none;
 }
-.triibal-kanban-run-meta-block > summary.triibal-kanban-run-meta-label::before {
+.tribal-kanban-run-meta-block > summary.tribal-kanban-run-meta-label::before {
   content: "▶ ";
   display: inline-block;
   font-size: 0.6rem;
   margin-right: 0.25rem;
   transition: transform 120ms ease;
 }
-.triibal-kanban-run-meta-block[open] > summary.triibal-kanban-run-meta-label::before {
+.tribal-kanban-run-meta-block[open] > summary.tribal-kanban-run-meta-label::before {
   transform: rotate(90deg);
 }
-.triibal-kanban-run-meta-label {
+.tribal-kanban-run-meta-label {
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   color: var(--color-muted-foreground);
   padding-bottom: 0.15rem;
 }
-.triibal-kanban-run-meta {
+.tribal-kanban-run-meta {
   display: block;
   max-height: 8.5rem;
   overflow: auto;
@@ -949,26 +949,26 @@
 /* -------------------------------------------------------------------------
    Multi-project: board switcher + create-board dialog
    ------------------------------------------------------------------------- */
-.triibal-kanban-boardswitcher {
+.tribal-kanban-boardswitcher {
   border: 1px solid var(--color-border, rgba(120, 120, 140, 0.25));
   border-radius: 0.5rem;
   padding: 0.6rem 0.85rem;
   background: var(--color-card-subtle, rgba(255, 255, 255, 0.02));
 }
-.triibal-kanban-boardswitcher-inner {
+.tribal-kanban-boardswitcher-inner {
   display: flex;
   align-items: flex-end;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
-.triibal-kanban-boardswitcher-compact {
+.tribal-kanban-boardswitcher-compact {
   display: flex;
   justify-content: flex-end;
   padding: 0 0.25rem;
   gap: 0.5rem;
   align-items: center;
 }
-.triibal-kanban-docs-link {
+.tribal-kanban-docs-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -985,14 +985,14 @@
   cursor: help;
   transition: color 0.15s, background 0.15s, border-color 0.15s;
 }
-.triibal-kanban-docs-link:hover,
-.triibal-kanban-docs-link:focus-visible {
+.tribal-kanban-docs-link:hover,
+.tribal-kanban-docs-link:focus-visible {
   color: var(--color-foreground, #e7e7ee);
   background: var(--color-card, rgba(255, 255, 255, 0.08));
   border-color: var(--color-border, rgba(160, 160, 190, 0.45));
   outline: none;
 }
-.triibal-kanban-dialog-backdrop {
+.tribal-kanban-dialog-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(8, 10, 16, 0.55);
@@ -1002,7 +1002,7 @@
   align-items: center;
   justify-content: center;
 }
-.triibal-kanban-dialog {
+.tribal-kanban-dialog {
   background: var(--color-card, #121421);
   color: var(--color-foreground);
   border: 1px solid var(--color-border, rgba(120, 120, 140, 0.25));
@@ -1014,12 +1014,12 @@
   overflow: auto;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
 }
-.triibal-kanban-dialog-title {
+.tribal-kanban-dialog-title {
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
-.triibal-kanban-dialog-actions {
+.tribal-kanban-dialog-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
@@ -1031,7 +1031,7 @@
 /* strip, recovery popover. Orange/red palette but muted so the board     */
 /* doesn't scream on every render.                                        */
 /* ---------------------------------------------------------------------- */
-.triibal-kanban-warning-badge {
+.tribal-kanban-warning-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1042,24 +1042,24 @@
 }
 
 /* Attention strip — collapsed state is a thin bar. */
-.triibal-kanban-attention {
+.tribal-kanban-attention {
   border: 1px solid rgba(255, 158, 59, 0.35);
   background: rgba(255, 158, 59, 0.06);
   border-radius: 0.5rem;
   overflow: hidden;
 }
-.triibal-kanban-attention-bar {
+.tribal-kanban-attention-bar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.75rem;
   font-size: 0.8125rem;
 }
-.triibal-kanban-attention-icon { color: #ff9e3b; font-size: 1rem; }
-.triibal-kanban-attention-text { flex: 1; }
-.triibal-kanban-attention-toggle,
-.triibal-kanban-attention-dismiss,
-.triibal-kanban-attention-row-btn {
+.tribal-kanban-attention-icon { color: #ff9e3b; font-size: 1rem; }
+.tribal-kanban-attention-text { flex: 1; }
+.tribal-kanban-attention-toggle,
+.tribal-kanban-attention-dismiss,
+.tribal-kanban-attention-row-btn {
   background: transparent;
   border: 1px solid rgba(120, 120, 140, 0.3);
   border-radius: 0.3rem;
@@ -1068,63 +1068,63 @@
   color: inherit;
   cursor: pointer;
 }
-.triibal-kanban-attention-toggle:hover,
-.triibal-kanban-attention-dismiss:hover,
-.triibal-kanban-attention-row-btn:hover {
+.tribal-kanban-attention-toggle:hover,
+.tribal-kanban-attention-dismiss:hover,
+.tribal-kanban-attention-row-btn:hover {
   background: rgba(255, 158, 59, 0.12);
 }
-.triibal-kanban-attention-list {
+.tribal-kanban-attention-list {
   border-top: 1px solid rgba(255, 158, 59, 0.2);
   padding: 0.25rem 0;
 }
-.triibal-kanban-attention-row {
+.tribal-kanban-attention-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.3rem 0.75rem;
   font-size: 0.8125rem;
 }
-.triibal-kanban-attention-row:hover {
+.tribal-kanban-attention-row:hover {
   background: rgba(255, 158, 59, 0.08);
 }
-.triibal-kanban-attention-row-id {
+.tribal-kanban-attention-row-id {
   font-family: ui-monospace, SFMono-Regular, monospace;
   font-size: 0.75rem;
   color: var(--color-muted-foreground, #888);
   min-width: 7rem;
 }
-.triibal-kanban-attention-row-title {
+.tribal-kanban-attention-row-title {
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.triibal-kanban-attention-row-meta {
+.tribal-kanban-attention-row-meta {
   font-size: 0.75rem;
   color: var(--color-muted-foreground, #888);
 }
 
 /* Events tab — callout style for hallucination events. */
-.triibal-kanban-event--hallucination {
+.tribal-kanban-event--hallucination {
   border-left: 3px solid #ff6b6b;
   background: rgba(255, 107, 107, 0.08);
   padding: 0.5rem 0.65rem;
   border-radius: 0.35rem;
   margin: 0.25rem 0;
 }
-.triibal-kanban-event-header,
-.triibal-kanban-event-header-plain {
+.tribal-kanban-event-header,
+.tribal-kanban-event-header-plain {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.triibal-kanban-event-warning-icon { color: #ff6b6b; font-size: 1rem; }
-.triibal-kanban-event-warning-label {
+.tribal-kanban-event-warning-icon { color: #ff6b6b; font-size: 1rem; }
+.tribal-kanban-event-warning-label {
   color: #ff6b6b;
   font-weight: 600;
   font-size: 0.8125rem;
 }
-.triibal-kanban-event-phantom-row {
+.tribal-kanban-event-phantom-row {
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -1132,11 +1132,11 @@
   margin-top: 0.3rem;
   padding-left: 1.35rem;
 }
-.triibal-kanban-event-phantom-label {
+.tribal-kanban-event-phantom-label {
   font-size: 0.75rem;
   color: var(--color-muted-foreground, #999);
 }
-.triibal-kanban-event-phantom-chip {
+.tribal-kanban-event-phantom-chip {
   font-family: ui-monospace, SFMono-Regular, monospace;
   font-size: 0.75rem;
   padding: 0.1rem 0.4rem;
@@ -1146,14 +1146,14 @@
 }
 
 /* Recovery section header — amber accent when the task has warnings. */
-.triibal-kanban-section-head-warning { color: #ff9e3b; }
-.triibal-kanban-section-head-row {
+.tribal-kanban-section-head-warning { color: #ff9e3b; }
+.tribal-kanban-section-head-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
 }
-.triibal-kanban-section-toggle {
+.tribal-kanban-section-toggle {
   background: transparent;
   border: 1px solid rgba(120, 120, 140, 0.3);
   border-radius: 0.3rem;
@@ -1164,7 +1164,7 @@
 }
 
 /* Recovery popover body. */
-.triibal-kanban-recovery {
+.tribal-kanban-recovery {
   border: 1px solid rgba(120, 120, 140, 0.25);
   background: rgba(255, 158, 59, 0.04);
   border-radius: 0.5rem;
@@ -1173,26 +1173,26 @@
   flex-direction: column;
   gap: 0.75rem;
 }
-.triibal-kanban-recovery-title {
+.tribal-kanban-recovery-title {
   font-weight: 600;
   font-size: 0.8125rem;
 }
-.triibal-kanban-recovery-hint {
+.tribal-kanban-recovery-hint {
   font-size: 0.75rem;
   color: var(--color-muted-foreground, #888);
   line-height: 1.35;
 }
-.triibal-kanban-recovery-section {
+.tribal-kanban-recovery-section {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
-.triibal-kanban-recovery-label {
+.tribal-kanban-recovery-label {
   font-size: 0.75rem;
   color: var(--color-muted-foreground, #888);
 }
-.triibal-kanban-recovery-input,
-.triibal-kanban-recovery-select {
+.tribal-kanban-recovery-input,
+.tribal-kanban-recovery-select {
   padding: 0.25rem 0.4rem;
   font-size: 0.8125rem;
   background: rgba(0, 0, 0, 0.15);
@@ -1201,23 +1201,23 @@
   color: inherit;
   outline: none;
 }
-.triibal-kanban-recovery-action-row {
+.tribal-kanban-recovery-action-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
-.triibal-kanban-recovery-action-label {
+.tribal-kanban-recovery-action-label {
   font-size: 0.8125rem;
   font-weight: 600;
   min-width: 8rem;
 }
-.triibal-kanban-recovery-action-desc {
+.tribal-kanban-recovery-action-desc {
   flex: 1;
   font-size: 0.75rem;
   color: var(--color-muted-foreground, #888);
 }
-.triibal-kanban-recovery-btn {
+.tribal-kanban-recovery-btn {
   padding: 0.25rem 0.7rem;
   font-size: 0.75rem;
   background: rgba(255, 158, 59, 0.15);
@@ -1226,32 +1226,32 @@
   color: inherit;
   cursor: pointer;
 }
-.triibal-kanban-recovery-btn:hover:not(:disabled) {
+.tribal-kanban-recovery-btn:hover:not(:disabled) {
   background: rgba(255, 158, 59, 0.25);
 }
-.triibal-kanban-recovery-btn:disabled {
+.tribal-kanban-recovery-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
-.triibal-kanban-recovery-reassign-row {
+.tribal-kanban-recovery-reassign-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
-.triibal-kanban-recovery-checkbox {
+.tribal-kanban-recovery-checkbox {
   font-size: 0.75rem;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
 }
-.triibal-kanban-recovery-cmd-row {
+.tribal-kanban-recovery-cmd-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
-.triibal-kanban-recovery-cmd {
+.tribal-kanban-recovery-cmd {
   font-family: ui-monospace, SFMono-Regular, monospace;
   font-size: 0.75rem;
   padding: 0.2rem 0.5rem;
@@ -1263,17 +1263,17 @@
   overflow-x: auto;
   white-space: nowrap;
 }
-.triibal-kanban-recovery-msg {
+.tribal-kanban-recovery-msg {
   font-size: 0.75rem;
   padding: 0.35rem 0.5rem;
   border-radius: 0.3rem;
 }
-.triibal-kanban-recovery-msg--ok {
+.tribal-kanban-recovery-msg--ok {
   background: rgba(120, 200, 120, 0.12);
   color: #6bc46b;
   border: 1px solid rgba(120, 200, 120, 0.3);
 }
-.triibal-kanban-recovery-msg--err {
+.tribal-kanban-recovery-msg--err {
   background: rgba(255, 107, 107, 0.12);
   color: #ff8b8b;
   border: 1px solid rgba(255, 107, 107, 0.3);
@@ -1286,54 +1286,54 @@
 
 /* Severity token variables so every diagnostic-coloured surface uses the */
 /* same palette. */
-.triibal-kanban-diag,
-.triibal-kanban-attention,
-.triibal-kanban-warning-badge,
-.triibal-kanban-attention-row {
-  --triibal-diag-warning: #ff9e3b;
-  --triibal-diag-error:   #ff6b3d;
-  --triibal-diag-critical: #ff4d4d;
+.tribal-kanban-diag,
+.tribal-kanban-attention,
+.tribal-kanban-warning-badge,
+.tribal-kanban-attention-row {
+  --tribal-diag-warning: #ff9e3b;
+  --tribal-diag-error:   #ff6b3d;
+  --tribal-diag-critical: #ff4d4d;
 }
 
 /* Warning-badge severity variants (overrides the base colour). */
-.triibal-kanban-warning-badge--warning { color: var(--triibal-diag-warning); }
-.triibal-kanban-warning-badge--error   { color: var(--triibal-diag-error); font-weight: 700; }
-.triibal-kanban-warning-badge--critical { color: var(--triibal-diag-critical); font-weight: 700; }
+.tribal-kanban-warning-badge--warning { color: var(--tribal-diag-warning); }
+.tribal-kanban-warning-badge--error   { color: var(--tribal-diag-error); font-weight: 700; }
+.tribal-kanban-warning-badge--critical { color: var(--tribal-diag-critical); font-weight: 700; }
 
 /* Attention-strip severity variants. */
-.triibal-kanban-attention--warning {
+.tribal-kanban-attention--warning {
   border-color: rgba(255, 158, 59, 0.35);
   background: rgba(255, 158, 59, 0.06);
 }
-.triibal-kanban-attention--error {
+.tribal-kanban-attention--error {
   border-color: rgba(255, 107, 61, 0.45);
   background: rgba(255, 107, 61, 0.08);
 }
-.triibal-kanban-attention--critical {
+.tribal-kanban-attention--critical {
   border-color: rgba(255, 77, 77, 0.55);
   background: rgba(255, 77, 77, 0.10);
 }
-.triibal-kanban-attention--error .triibal-kanban-attention-icon { color: var(--triibal-diag-error); }
-.triibal-kanban-attention--critical .triibal-kanban-attention-icon { color: var(--triibal-diag-critical); }
+.tribal-kanban-attention--error .tribal-kanban-attention-icon { color: var(--tribal-diag-error); }
+.tribal-kanban-attention--critical .tribal-kanban-attention-icon { color: var(--tribal-diag-critical); }
 
 /* Per-row severity marker in the expanded attention list. */
-.triibal-kanban-attention-row-sev {
+.tribal-kanban-attention-row-sev {
   display: inline-block;
   min-width: 1.5rem;
   font-weight: 600;
 }
-.triibal-kanban-attention-row--warning .triibal-kanban-attention-row-sev { color: var(--triibal-diag-warning); }
-.triibal-kanban-attention-row--error    .triibal-kanban-attention-row-sev { color: var(--triibal-diag-error); font-weight: 700; }
-.triibal-kanban-attention-row--critical .triibal-kanban-attention-row-sev { color: var(--triibal-diag-critical); font-weight: 700; }
+.tribal-kanban-attention-row--warning .tribal-kanban-attention-row-sev { color: var(--tribal-diag-warning); }
+.tribal-kanban-attention-row--error    .tribal-kanban-attention-row-sev { color: var(--tribal-diag-error); font-weight: 700; }
+.tribal-kanban-attention-row--critical .tribal-kanban-attention-row-sev { color: var(--tribal-diag-critical); font-weight: 700; }
 
 /* Individual diagnostic card inside the drawer's Diagnostics section. */
-.triibal-kanban-diag-list {
+.tribal-kanban-diag-list {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
-.triibal-kanban-diag {
-  border-left: 3px solid var(--triibal-diag-warning);
+.tribal-kanban-diag {
+  border-left: 3px solid var(--tribal-diag-warning);
   background: rgba(255, 158, 59, 0.05);
   border-radius: 0.35rem;
   padding: 0.6rem 0.75rem;
@@ -1341,70 +1341,70 @@
   flex-direction: column;
   gap: 0.4rem;
 }
-.triibal-kanban-diag--error {
-  border-left-color: var(--triibal-diag-error);
+.tribal-kanban-diag--error {
+  border-left-color: var(--tribal-diag-error);
   background: rgba(255, 107, 61, 0.06);
 }
-.triibal-kanban-diag--critical {
-  border-left-color: var(--triibal-diag-critical);
+.tribal-kanban-diag--critical {
+  border-left-color: var(--tribal-diag-critical);
   background: rgba(255, 77, 77, 0.07);
 }
-.triibal-kanban-diag-header {
+.tribal-kanban-diag-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.triibal-kanban-diag-sev {
+.tribal-kanban-diag-sev {
   font-weight: 700;
   min-width: 1.5rem;
 }
-.triibal-kanban-diag--warning .triibal-kanban-diag-sev { color: var(--triibal-diag-warning); }
-.triibal-kanban-diag--error    .triibal-kanban-diag-sev { color: var(--triibal-diag-error); }
-.triibal-kanban-diag--critical .triibal-kanban-diag-sev { color: var(--triibal-diag-critical); }
-.triibal-kanban-diag-title {
+.tribal-kanban-diag--warning .tribal-kanban-diag-sev { color: var(--tribal-diag-warning); }
+.tribal-kanban-diag--error    .tribal-kanban-diag-sev { color: var(--tribal-diag-error); }
+.tribal-kanban-diag--critical .tribal-kanban-diag-sev { color: var(--tribal-diag-critical); }
+.tribal-kanban-diag-title {
   font-weight: 600;
   font-size: 0.875rem;
 }
-.triibal-kanban-diag-detail {
+.tribal-kanban-diag-detail {
   font-size: 0.8125rem;
   color: var(--color-foreground, #ccc);
   line-height: 1.4;
 }
-.triibal-kanban-diag-data {
+.tribal-kanban-diag-data {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   font-size: 0.75rem;
 }
-.triibal-kanban-diag-data-row {
+.tribal-kanban-diag-data-row {
   display: flex;
   align-items: center;
   gap: 0.35rem;
   flex-wrap: wrap;
 }
-.triibal-kanban-diag-data-key {
+.tribal-kanban-diag-data-key {
   color: var(--color-muted-foreground, #888);
   font-weight: 500;
 }
-.triibal-kanban-diag-data-val {
+.tribal-kanban-diag-data-val {
   font-family: ui-monospace, SFMono-Regular, monospace;
 }
-.triibal-kanban-diag-reassign-row {
+.tribal-kanban-diag-reassign-row {
   display: flex;
   align-items: center;
   gap: 0.4rem;
   font-size: 0.75rem;
 }
-.triibal-kanban-diag-reassign-label {
+.tribal-kanban-diag-reassign-label {
   color: var(--color-muted-foreground, #888);
 }
-.triibal-kanban-diag-actions {
+.tribal-kanban-diag-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-top: 0.1rem;
 }
-.triibal-kanban-diag-action-btn {
+.tribal-kanban-diag-action-btn {
   padding: 0.25rem 0.6rem;
   font-size: 0.75rem;
   background: rgba(0, 0, 0, 0.2);
@@ -1414,48 +1414,48 @@
   cursor: pointer;
   text-decoration: none;
 }
-.triibal-kanban-diag-action-btn:hover:not(:disabled) {
+.tribal-kanban-diag-action-btn:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.3);
 }
-.triibal-kanban-diag-action-btn:disabled {
+.tribal-kanban-diag-action-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
-.triibal-kanban-diag-action-btn--suggested {
+.tribal-kanban-diag-action-btn--suggested {
   background: rgba(255, 158, 59, 0.15);
   border-color: rgba(255, 158, 59, 0.4);
   font-weight: 600;
 }
-.triibal-kanban-diag-action-btn--suggested:hover:not(:disabled) {
+.tribal-kanban-diag-action-btn--suggested:hover:not(:disabled) {
   background: rgba(255, 158, 59, 0.25);
 }
-.triibal-kanban-diag-action-btn--unknown {
+.tribal-kanban-diag-action-btn--unknown {
   opacity: 0.6;
   cursor: default;
 }
-.triibal-kanban-diag-msg {
+.tribal-kanban-diag-msg {
   font-size: 0.75rem;
   padding: 0.35rem 0.5rem;
   border-radius: 0.3rem;
 }
-.triibal-kanban-diag-msg--ok {
+.tribal-kanban-diag-msg--ok {
   background: rgba(120, 200, 120, 0.12);
   color: #6bc46b;
   border: 1px solid rgba(120, 200, 120, 0.3);
 }
-.triibal-kanban-diag-msg--err {
+.tribal-kanban-diag-msg--err {
   background: rgba(255, 107, 61, 0.12);
   color: #ff8b6b;
   border: 1px solid rgba(255, 107, 61, 0.3);
 }
 /* ---- Partial failure highlight --------------------------------------- */
-.triibal-kanban-card--failed :where(.triibal-kanban-card-content) {
+.tribal-kanban-card--failed :where(.tribal-kanban-card-content) {
   box-shadow: 0 0 0 2px var(--color-destructive, #d14a4a) inset,
               0 0 8px color-mix(in srgb, var(--color-destructive, #d14a4a) 30%, transparent);
 }
 
 /* ---- Larger checkbox hit target -------------------------------------- */
-.triibal-kanban-card-check-wrap {
+.tribal-kanban-card-check-wrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1464,7 +1464,7 @@
   margin: -0.3rem;
   cursor: pointer;
 }
-.triibal-kanban-card-check {
+.tribal-kanban-card-check {
   width: 0.95rem;
   height: 0.95rem;
   margin: 0;
@@ -1473,7 +1473,7 @@
 }
 
 /* ---- Column select-all checkbox -------------------------------------- */
-.triibal-kanban-col-check {
+.tribal-kanban-col-check {
   width: 0.9rem;
   height: 0.9rem;
   margin: 0 0.15rem 0 0;
@@ -1482,14 +1482,14 @@
 }
 
 /* ---- Bulk action bar extras ------------------------------------------ */
-.triibal-kanban-bulk-priority {
+.tribal-kanban-bulk-priority {
   display: flex;
   align-items: center;
   gap: 0.25rem;
   padding-left: 0.5rem;
   border-left: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
 }
-.triibal-kanban-bulk-reclaim-first {
+.tribal-kanban-bulk-reclaim-first {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -1499,7 +1499,7 @@
 
 /* ---- Trash drop zone ------------------------------------------------- */
 
-.triibal-kanban-trash {
+.tribal-kanban-trash {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1518,22 +1518,22 @@
   pointer-events: none;
 }
 
-.triibal-kanban-trash--active {
+.tribal-kanban-trash--active {
   opacity: 1;
   pointer-events: auto;
 }
 
-.triibal-kanban-trash--drop {
+.tribal-kanban-trash--drop {
   border-color: var(--color-destructive, #d14a4a);
   background: color-mix(in srgb, var(--color-destructive, #d14a4a) 8%, var(--color-card));
   color: var(--color-destructive, #d14a4a);
 }
 
-.triibal-kanban-trash-icon {
+.tribal-kanban-trash-icon {
   font-size: 1.25rem;
   line-height: 1;
 }
 
-.triibal-kanban-trash-label {
+.tribal-kanban-trash-label {
   font-weight: 500;
 }

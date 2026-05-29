@@ -13,11 +13,11 @@ through a thin wrapper that mirrors the real dispatch shape.
 
 from unittest.mock import MagicMock, patch
 
-from cli import TriibalCLI
+from cli import TribalCLI
 
 
 def _make_cli():
-    cli = TriibalCLI.__new__(TriibalCLI)
+    cli = TribalCLI.__new__(TribalCLI)
     cli._should_exit = False
     cli.conversation_history = []
     cli.agent = None

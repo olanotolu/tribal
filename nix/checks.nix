@@ -6,18 +6,18 @@
 { inputs, ... }: {
   perSystem = { pkgs, lib, self', ... }:
     let
-      triibal-agent = self'.packages.default;
-      triibalVenv = triibal-agent.triibalVenv;
+      tribal-agent = self'.packages.default;
+      tribalVenv = tribal-agent.tribalVenv;
 
       configMergeScript = pkgs.callPackage ./configMergeScript.nix { };
 
       # Auto-generated config key reference — always in sync with Python
-      configKeys = pkgs.runCommand "triibal-config-keys" {} ''
+      configKeys = pkgs.runCommand "tribal-config-keys" {} ''
         set -euo pipefail
         export HOME=$TMPDIR
-        ${triibalVenv}/bin/python3 -c '
+        ${tribalVenv}/bin/python3 -c '
 import json, sys
-from triibal_cli.config import DEFAULT_CONFIG
+from tribal_cli.config import DEFAULT_CONFIG
 
 def leaf_paths(d, prefix=""):
     paths = []
@@ -49,7 +49,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
           results = map (sys: { inherit sys; result = tryEvalPkg sys; }) targetSystems;
           failures = builtins.filter (r: !r.result.success) results;
           failMsg = lib.concatMapStringsSep "\n" (r: "  - ${r.sys}") failures;
-        in pkgs.runCommand "triibal-cross-eval" { } (
+        in pkgs.runCommand "tribal-cross-eval" { } (
           if failures != [] then
             throw "Package fails to evaluate on:\n${failMsg}"
           else ''
@@ -60,15 +60,15 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         );
       } // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         # Verify binaries exist and are executable
-        package-contents = pkgs.runCommand "triibal-package-contents" { } ''
+        package-contents = pkgs.runCommand "tribal-package-contents" { } ''
           set -e
           echo "=== Checking binaries ==="
-          test -x ${triibal-agent}/bin/triibal || (echo "FAIL: triibal binary missing"; exit 1)
-          test -x ${triibal-agent}/bin/triibal-agent || (echo "FAIL: triibal-agent binary missing"; exit 1)
+          test -x ${tribal-agent}/bin/tribal || (echo "FAIL: tribal binary missing"; exit 1)
+          test -x ${tribal-agent}/bin/tribal-agent || (echo "FAIL: tribal-agent binary missing"; exit 1)
           echo "PASS: All binaries present"
 
           echo "=== Checking version ==="
-          ${triibal-agent}/bin/triibal version 2>&1 | grep -qi "triibal" || (echo "FAIL: version check"; exit 1)
+          ${tribal-agent}/bin/tribal version 2>&1 | grep -qi "tribal" || (echo "FAIL: version check"; exit 1)
           echo "PASS: Version check"
 
           echo "=== All checks passed ==="
@@ -77,11 +77,11 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         '';
 
         # Verify every pyproject.toml [project.scripts] entry has a wrapped binary
-        entry-points-sync = pkgs.runCommand "triibal-entry-points-sync" { } ''
+        entry-points-sync = pkgs.runCommand "tribal-entry-points-sync" { } ''
           set -e
           echo "=== Checking entry points match pyproject.toml [project.scripts] ==="
-          for bin in triibal triibal-agent triibal-acp; do
-            test -x ${triibal-agent}/bin/$bin || (echo "FAIL: $bin binary missing from Nix package"; exit 1)
+          for bin in tribal tribal-agent tribal-acp; do
+            test -x ${tribal-agent}/bin/$bin || (echo "FAIL: $bin binary missing from Nix package"; exit 1)
             echo "PASS: $bin present"
           done
 
@@ -90,13 +90,13 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         '';
 
         # Verify CLI subcommands are accessible
-        cli-commands = pkgs.runCommand "triibal-cli-commands" { } ''
+        cli-commands = pkgs.runCommand "tribal-cli-commands" { } ''
           set -e
           export HOME=$(mktemp -d)
 
-          echo "=== Checking triibal --help ==="
-          ${triibal-agent}/bin/triibal --help 2>&1 | grep -q "gateway" || (echo "FAIL: gateway subcommand missing"; exit 1)
-          ${triibal-agent}/bin/triibal --help 2>&1 | grep -q "config" || (echo "FAIL: config subcommand missing"; exit 1)
+          echo "=== Checking tribal --help ==="
+          ${tribal-agent}/bin/tribal --help 2>&1 | grep -q "gateway" || (echo "FAIL: gateway subcommand missing"; exit 1)
+          ${tribal-agent}/bin/tribal --help 2>&1 | grep -q "config" || (echo "FAIL: config subcommand missing"; exit 1)
           echo "PASS: All subcommands accessible"
 
           echo "=== All CLI checks passed ==="
@@ -105,19 +105,19 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         '';
 
         # Verify bundled skills are present in the package
-        bundled-skills = pkgs.runCommand "triibal-bundled-skills" { } ''
+        bundled-skills = pkgs.runCommand "tribal-bundled-skills" { } ''
           set -e
           echo "=== Checking bundled skills ==="
-          test -d ${triibal-agent}/share/triibal-agent/skills || (echo "FAIL: skills directory missing"; exit 1)
+          test -d ${tribal-agent}/share/tribal-agent/skills || (echo "FAIL: skills directory missing"; exit 1)
           echo "PASS: skills directory exists"
 
-          SKILL_COUNT=$(find ${triibal-agent}/share/triibal-agent/skills -name "SKILL.md" | wc -l)
+          SKILL_COUNT=$(find ${tribal-agent}/share/tribal-agent/skills -name "SKILL.md" | wc -l)
           test "$SKILL_COUNT" -gt 0 || (echo "FAIL: no SKILL.md files found in skills directory"; exit 1)
           echo "PASS: $SKILL_COUNT bundled skills found"
 
-          grep -q "TRIIBAL_BUNDLED_SKILLS" ${triibal-agent}/bin/triibal || \
-            (echo "FAIL: TRIIBAL_BUNDLED_SKILLS not in wrapper"; exit 1)
-          echo "PASS: TRIIBAL_BUNDLED_SKILLS set in wrapper"
+          grep -q "TRIBAL_BUNDLED_SKILLS" ${tribal-agent}/bin/tribal || \
+            (echo "FAIL: TRIBAL_BUNDLED_SKILLS not in wrapper"; exit 1)
+          echo "PASS: TRIBAL_BUNDLED_SKILLS set in wrapper"
 
           echo "=== All bundled skills checks passed ==="
           mkdir -p $out
@@ -125,19 +125,19 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         '';
 
         # Verify bundled plugins (platforms, memory, context_engine) are present
-        bundled-plugins = pkgs.runCommand "triibal-bundled-plugins" { } ''
+        bundled-plugins = pkgs.runCommand "tribal-bundled-plugins" { } ''
           set -e
           echo "=== Checking bundled plugins ==="
-          test -d ${triibal-agent}/share/triibal-agent/plugins || (echo "FAIL: plugins directory missing"; exit 1)
+          test -d ${tribal-agent}/share/tribal-agent/plugins || (echo "FAIL: plugins directory missing"; exit 1)
           echo "PASS: plugins directory exists"
 
-          test -f ${triibal-agent}/share/triibal-agent/plugins/platforms/irc/plugin.yaml || \
+          test -f ${tribal-agent}/share/tribal-agent/plugins/platforms/irc/plugin.yaml || \
             (echo "FAIL: irc plugin manifest missing"; exit 1)
           echo "PASS: irc plugin manifest present"
 
-          grep -q "TRIIBAL_BUNDLED_PLUGINS" ${triibal-agent}/bin/triibal || \
-            (echo "FAIL: TRIIBAL_BUNDLED_PLUGINS not in wrapper"; exit 1)
-          echo "PASS: TRIIBAL_BUNDLED_PLUGINS set in wrapper"
+          grep -q "TRIBAL_BUNDLED_PLUGINS" ${tribal-agent}/bin/tribal || \
+            (echo "FAIL: TRIBAL_BUNDLED_PLUGINS not in wrapper"; exit 1)
+          echo "PASS: TRIBAL_BUNDLED_PLUGINS set in wrapper"
 
           echo "=== All bundled plugins checks passed ==="
           mkdir -p $out
@@ -145,65 +145,65 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         '';
 
         # Verify bundled TUI is present and compiled
-        bundled-tui = pkgs.runCommand "triibal-bundled-tui" { } ''
+        bundled-tui = pkgs.runCommand "tribal-bundled-tui" { } ''
           set -e
           echo "=== Checking bundled TUI ==="
-          test -d ${triibal-agent}/ui-tui || (echo "FAIL: ui-tui directory missing"; exit 1)
+          test -d ${tribal-agent}/ui-tui || (echo "FAIL: ui-tui directory missing"; exit 1)
           echo "PASS: ui-tui directory exists"
 
-          test -f ${triibal-agent}/ui-tui/dist/entry.js || (echo "FAIL: compiled entry.js missing"; exit 1)
+          test -f ${tribal-agent}/ui-tui/dist/entry.js || (echo "FAIL: compiled entry.js missing"; exit 1)
           echo "PASS: compiled entry.js present"
 
           # self-contained bundle; no runtime node_modules expected
 
-          grep -q "TRIIBAL_TUI_DIR" ${triibal-agent}/bin/triibal || \
-            (echo "FAIL: TRIIBAL_TUI_DIR not in wrapper"; exit 1)
-          echo "PASS: TRIIBAL_TUI_DIR set in wrapper"
+          grep -q "TRIBAL_TUI_DIR" ${tribal-agent}/bin/tribal || \
+            (echo "FAIL: TRIBAL_TUI_DIR not in wrapper"; exit 1)
+          echo "PASS: TRIBAL_TUI_DIR set in wrapper"
 
           echo "=== All bundled TUI checks passed ==="
           mkdir -p $out
           echo "ok" > $out/result
         '';
 
-        # Verify TRIIBAL_NODE is set in wrapper and points to Node 20+
+        # Verify TRIBAL_NODE is set in wrapper and points to Node 20+
         # (string-width uses the /v regex flag which requires Node 20+)
-        triibal-node = pkgs.runCommand "triibal-node-version" { } ''
+        tribal-node = pkgs.runCommand "tribal-node-version" { } ''
           set -e
-          echo "=== Checking TRIIBAL_NODE in wrapper ==="
-          grep -q "TRIIBAL_NODE" ${triibal-agent}/bin/triibal || \
-            (echo "FAIL: TRIIBAL_NODE not set in wrapper"; exit 1)
-          echo "PASS: TRIIBAL_NODE present in wrapper"
+          echo "=== Checking TRIBAL_NODE in wrapper ==="
+          grep -q "TRIBAL_NODE" ${tribal-agent}/bin/tribal || \
+            (echo "FAIL: TRIBAL_NODE not set in wrapper"; exit 1)
+          echo "PASS: TRIBAL_NODE present in wrapper"
 
-          TRIIBAL_NODE=$(sed -n "s/^export TRIIBAL_NODE='\(.*\)'/\1/p" ${triibal-agent}/bin/triibal)
-          test -x "$TRIIBAL_NODE" || (echo "FAIL: TRIIBAL_NODE=$TRIIBAL_NODE not executable"; exit 1)
-          echo "PASS: TRIIBAL_NODE executable at $TRIIBAL_NODE"
+          TRIBAL_NODE=$(sed -n "s/^export TRIBAL_NODE='\(.*\)'/\1/p" ${tribal-agent}/bin/tribal)
+          test -x "$TRIBAL_NODE" || (echo "FAIL: TRIBAL_NODE=$TRIBAL_NODE not executable"; exit 1)
+          echo "PASS: TRIBAL_NODE executable at $TRIBAL_NODE"
 
-          NODE_MAJOR=$("$TRIIBAL_NODE" --version | sed 's/^v//' | cut -d. -f1)
+          NODE_MAJOR=$("$TRIBAL_NODE" --version | sed 's/^v//' | cut -d. -f1)
           test "$NODE_MAJOR" -ge 20 || \
             (echo "FAIL: Node v$NODE_MAJOR < 20, TUI needs /v regex flag support"; exit 1)
           echo "PASS: Node v$NODE_MAJOR >= 20"
 
-          echo "=== All TRIIBAL_NODE checks passed ==="
+          echo "=== All TRIBAL_NODE checks passed ==="
           mkdir -p $out
           echo "ok" > $out/result
         '';
 
-        # Verify TRIIBAL_MANAGED guard works on all mutation commands
-        managed-guard = pkgs.runCommand "triibal-managed-guard" { } ''
+        # Verify TRIBAL_MANAGED guard works on all mutation commands
+        managed-guard = pkgs.runCommand "tribal-managed-guard" { } ''
           set -e
           export HOME=$(mktemp -d)
 
           check_blocked() {
             local label="$1"
             shift
-            OUTPUT=$(TRIIBAL_MANAGED=true "$@" 2>&1 || true)
+            OUTPUT=$(TRIBAL_MANAGED=true "$@" 2>&1 || true)
             echo "$OUTPUT" | grep -q "managed by NixOS" || (echo "FAIL: $label not guarded"; echo "$OUTPUT"; exit 1)
             echo "PASS: $label blocked in managed mode"
           }
 
-          echo "=== Checking TRIIBAL_MANAGED guards ==="
-          check_blocked "config set" ${triibal-agent}/bin/triibal config set model foo
-          check_blocked "config edit" ${triibal-agent}/bin/triibal config edit
+          echo "=== Checking TRIBAL_MANAGED guards ==="
+          check_blocked "config set" ${tribal-agent}/bin/tribal config set model foo
+          check_blocked "config edit" ${tribal-agent}/bin/tribal config edit
 
           echo "=== All guard checks passed ==="
           mkdir -p $out
@@ -213,23 +213,23 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         # Verify extraPythonPackages PYTHONPATH injection
         extra-python-packages = let
           testPkg = pkgs.python312Packages.pyfiglet;
-          triibalWithExtra = triibal-agent.override {
+          tribalWithExtra = tribal-agent.override {
             extraPythonPackages = [ testPkg ];
           };
-        in pkgs.runCommand "triibal-extra-python-packages" { } ''
+        in pkgs.runCommand "tribal-extra-python-packages" { } ''
           set -e
           echo "=== Checking extraPythonPackages PYTHONPATH injection ==="
 
-          grep -q "PYTHONPATH" ${triibalWithExtra}/bin/triibal || \
+          grep -q "PYTHONPATH" ${tribalWithExtra}/bin/tribal || \
             (echo "FAIL: PYTHONPATH not in wrapper"; exit 1)
           echo "PASS: PYTHONPATH present in wrapper"
 
-          grep -q "${testPkg}" ${triibalWithExtra}/bin/triibal || \
+          grep -q "${testPkg}" ${tribalWithExtra}/bin/tribal || \
             (echo "FAIL: test package path not in PYTHONPATH"; exit 1)
           echo "PASS: test package path found in wrapper"
 
           echo "=== Checking base package has no PYTHONPATH ==="
-          if grep -q "PYTHONPATH" ${triibal-agent}/bin/triibal; then
+          if grep -q "PYTHONPATH" ${tribal-agent}/bin/tribal; then
             echo "FAIL: base package should not have PYTHONPATH"; exit 1
           fi
           echo "PASS: base package clean"
@@ -241,18 +241,18 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
 
         # Verify extraDependencyGroups passes through to python.nix
         extra-dependency-groups = let
-          triibalWithGroups = triibal-agent.override {
+          tribalWithGroups = tribal-agent.override {
             extraDependencyGroups = [ "honcho" ];
           };
-        in pkgs.runCommand "triibal-extra-dependency-groups" { } ''
+        in pkgs.runCommand "tribal-extra-dependency-groups" { } ''
           set -e
           echo "=== Checking extraDependencyGroups override evaluates ==="
 
           # Eval-only: verify the override produces valid derivation paths
           # without building the full venv (which is expensive and redundant
           # since the mechanism is just list concatenation into python.nix).
-          echo "derivation: ${triibalWithGroups}"
-          echo "venv: ${triibalWithGroups.triibalVenv}"
+          echo "derivation: ${tribalWithGroups}"
+          echo "venv: ${tribalWithGroups.tribalVenv}"
           echo "PASS: extraDependencyGroups override evaluates cleanly"
 
           echo "=== All extraDependencyGroups checks passed ==="
@@ -263,10 +263,10 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         # Regression guard: messaging deps live outside [all], so the
         # #messaging variant must actually ship discord.py — otherwise
         # `nix profile install .#messaging` regresses to the broken default.
-        messaging-variant = pkgs.runCommand "triibal-messaging-variant" { } ''
+        messaging-variant = pkgs.runCommand "tribal-messaging-variant" { } ''
           set -e
           echo "=== Checking discord.py importable from messaging variant ==="
-          ${self'.packages.messaging.triibalVenv}/bin/python3 -c \
+          ${self'.packages.messaging.tribalVenv}/bin/python3 -c \
             "import discord; print(discord.__version__)"
           echo "PASS: discord.py importable from messaging variant venv"
           mkdir -p $out
@@ -333,7 +333,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
                 - USER_VAR
           '';
 
-        in pkgs.runCommand "triibal-config-roundtrip" {
+        in pkgs.runCommand "tribal-config-roundtrip" {
           nativeBuildInputs = [ pkgs.jq ];
         } ''
           set -e
@@ -344,12 +344,12 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
 
           # Helper: run merge then load with Python, output merged JSON
           merge_and_load() {
-            local triibal_home="$1"
-            export TRIIBAL_HOME="$triibal_home"
-            ${configMergeScript} ${nixSettings} "$triibal_home/config.yaml"
-            ${triibalVenv}/bin/python3 -c '
+            local tribal_home="$1"
+            export TRIBAL_HOME="$tribal_home"
+            ${configMergeScript} ${nixSettings} "$tribal_home/config.yaml"
+            ${tribalVenv}/bin/python3 -c '
 import json, sys
-from triibal_cli.config import load_config
+from tribal_cli.config import load_config
 json.dump(load_config(), sys.stdout, default=str)
 '
           }

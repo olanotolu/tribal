@@ -1,12 +1,12 @@
-"""Harness: dashboard opt-in via TRIIBAL_DASHBOARD.
+"""Harness: dashboard opt-in via TRIBAL_DASHBOARD.
 
-Today (tini): dashboard starts once when TRIIBAL_DASHBOARD=1; if it crashes
+Today (tini): dashboard starts once when TRIBAL_DASHBOARD=1; if it crashes
 it stays dead. After Phase 2 (s6): dashboard starts once; if it crashes
 it is restarted under supervision. The restart-after-crash test lives in
 Phase 2 Task 2.5; this file only locks the opt-in surface (which must
 not change between tini and s6).
 
-Every ``docker exec`` here runs as the unprivileged ``triibal`` user
+Every ``docker exec`` here runs as the unprivileged ``tribal`` user
 (via :func:`docker_exec`/:func:`docker_exec_sh` in conftest), matching
 the realistic runtime context. See the conftest module docstring.
 """
@@ -37,7 +37,7 @@ def _poll(container: str, probe: str, *, deadline_s: float = 30.0,
 def test_dashboard_not_running_by_default(
     built_image: str, container_name: str,
 ) -> None:
-    """Without TRIIBAL_DASHBOARD, no dashboard process should be running."""
+    """Without TRIBAL_DASHBOARD, no dashboard process should be running."""
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name, built_image,
          "sleep", "60"],
@@ -46,23 +46,23 @@ def test_dashboard_not_running_by_default(
     # Give the entrypoint enough time to finish bootstrap; if a dashboard
     # were going to start it'd be visible by now.
     time.sleep(5)
-    r = docker_exec(container_name, "pgrep", "-f", "triibal dashboard")
+    r = docker_exec(container_name, "pgrep", "-f", "tribal dashboard")
     # pgrep exits non-zero when no match found
     assert r.returncode != 0, (
-        "Dashboard should not be running without TRIIBAL_DASHBOARD"
+        "Dashboard should not be running without TRIBAL_DASHBOARD"
     )
 
 
 def test_dashboard_slot_reports_down_when_disabled(
     built_image: str, container_name: str,
 ) -> None:
-    """Without TRIIBAL_DASHBOARD, s6-svstat should report the dashboard
+    """Without TRIBAL_DASHBOARD, s6-svstat should report the dashboard
     slot as DOWN (not up-with-sleep-infinity, which would
-    false-positive `triibal doctor` and any other health check).
+    false-positive `tribal doctor` and any other health check).
 
     Locks the PR #30136 review item I3 fix: cont-init.d/03-dashboard-toggle
     writes a `down` marker file in the live service-dir when
-    TRIIBAL_DASHBOARD is unset, so the slot reflects reality.
+    TRIBAL_DASHBOARD is unset, so the slot reflects reality.
     """
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name, built_image,
@@ -77,7 +77,7 @@ def test_dashboard_slot_reports_down_when_disabled(
     )
     assert r.returncode == 0, f"s6-svstat failed: {r.stderr!r} / {r.stdout!r}"
     assert "down" in r.stdout, (
-        f"Dashboard slot should be 'down' without TRIIBAL_DASHBOARD; "
+        f"Dashboard slot should be 'down' without TRIBAL_DASHBOARD; "
         f"svstat reports: {r.stdout!r}"
     )
 
@@ -85,10 +85,10 @@ def test_dashboard_slot_reports_down_when_disabled(
 def test_dashboard_slot_reports_up_when_enabled(
     built_image: str, container_name: str,
 ) -> None:
-    """Symmetry: with TRIIBAL_DASHBOARD=1, s6-svstat reports the slot as up."""
+    """Symmetry: with TRIBAL_DASHBOARD=1, s6-svstat reports the slot as up."""
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name,
-         "-e", "TRIIBAL_DASHBOARD=1", built_image, "sleep", "120"],
+         "-e", "TRIBAL_DASHBOARD=1", built_image, "sleep", "120"],
         check=True, capture_output=True, timeout=30,
     )
     # uvicorn takes a moment to bind; poll svstat.
@@ -110,28 +110,28 @@ def test_dashboard_slot_reports_up_when_enabled(
 def test_dashboard_opt_in_starts(
     built_image: str, container_name: str,
 ) -> None:
-    """With TRIIBAL_DASHBOARD=1, a dashboard process should be visible."""
+    """With TRIBAL_DASHBOARD=1, a dashboard process should be visible."""
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name,
-         "-e", "TRIIBAL_DASHBOARD=1", built_image, "sleep", "120"],
+         "-e", "TRIBAL_DASHBOARD=1", built_image, "sleep", "120"],
         check=True, capture_output=True, timeout=30,
     )
     # Poll for the dashboard subprocess to appear — the entrypoint
     # backgrounds it and bootstrap (skills sync etc.) can take a few
     # seconds before the python process actually launches.
     ok, _ = _poll(
-        container_name, "pgrep -f 'triibal dashboard'", deadline_s=30.0,
+        container_name, "pgrep -f 'tribal dashboard'", deadline_s=30.0,
     )
-    assert ok, "Dashboard should be running with TRIIBAL_DASHBOARD=1"
+    assert ok, "Dashboard should be running with TRIBAL_DASHBOARD=1"
 
 
 def test_dashboard_port_override(
     built_image: str, container_name: str,
 ) -> None:
-    """TRIIBAL_DASHBOARD_PORT changes the dashboard's listen port."""
+    """TRIBAL_DASHBOARD_PORT changes the dashboard's listen port."""
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name,
-         "-e", "TRIIBAL_DASHBOARD=1", "-e", "TRIIBAL_DASHBOARD_PORT=9120",
+         "-e", "TRIBAL_DASHBOARD=1", "-e", "TRIBAL_DASHBOARD_PORT=9120",
          built_image, "sleep", "120"],
         check=True, capture_output=True, timeout=30,
     )
@@ -161,12 +161,12 @@ def test_dashboard_restarts_after_crash(
     """
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name,
-         "-e", "TRIIBAL_DASHBOARD=1", built_image, "sleep", "120"],
+         "-e", "TRIBAL_DASHBOARD=1", built_image, "sleep", "120"],
         check=True, capture_output=True, timeout=30,
     )
     # Wait for the first dashboard to come up.
     ok, _ = _poll(
-        container_name, "pgrep -f 'triibal dashboard'", deadline_s=30.0,
+        container_name, "pgrep -f 'tribal dashboard'", deadline_s=30.0,
     )
     assert ok, "Dashboard never started initially"
 
@@ -176,7 +176,7 @@ def test_dashboard_restarts_after_crash(
     first_pid: str | None = None
     for _attempt in range(10):
         first_pid_result = docker_exec(
-            container_name, "pgrep", "-f", "triibal dashboard",
+            container_name, "pgrep", "-f", "tribal dashboard",
         )
         first_pids = first_pid_result.stdout.strip().split()
         if first_pids:
@@ -185,15 +185,15 @@ def test_dashboard_restarts_after_crash(
         time.sleep(0.5)
     assert first_pid is not None, "Could not capture initial dashboard PID"
 
-    # Kill the dashboard. The dashboard process runs as triibal, so the
-    # triibal user can kill it (same UID).
+    # Kill the dashboard. The dashboard process runs as tribal, so the
+    # tribal user can kill it (same UID).
     docker_exec(container_name, "kill", "-9", first_pid)
 
     # s6 backs off ~1s before restart; allow up to 15s for the new
     # process to appear with a different PID.
     deadline = time.monotonic() + 15.0
     while time.monotonic() < deadline:
-        r = docker_exec(container_name, "pgrep", "-f", "triibal dashboard")
+        r = docker_exec(container_name, "pgrep", "-f", "tribal dashboard")
         pids = r.stdout.strip().split() if r.returncode == 0 else []
         if pids and pids[0] != first_pid:
             return  # success
@@ -207,7 +207,7 @@ def test_dashboard_restarts_after_crash(
 # ---------------------------------------------------------------------------
 # OAuth auth-gate behaviour — regression guard for the dashboard-insecure
 # auto-injection bug. Pre-fix, the s6 run script appended `--insecure`
-# whenever `TRIIBAL_DASHBOARD_HOST` was non-loopback, silently disabling
+# whenever `TRIBAL_DASHBOARD_HOST` was non-loopback, silently disabling
 # the OAuth gate on every container-deployed dashboard. The matching
 # static-text guard lives in tests/test_docker_home_override_scripts.py;
 # this is the behavioural end-to-end check.
@@ -217,7 +217,7 @@ def test_dashboard_restarts_after_crash(
 def _fetch_api_status(container: str, *, deadline_s: float = 60.0) -> dict:
     """Poll ``/api/status`` from inside the container via the venv python.
 
-    The dashboard binds to ``TRIIBAL_DASHBOARD_HOST`` (typically ``0.0.0.0``)
+    The dashboard binds to ``TRIBAL_DASHBOARD_HOST`` (typically ``0.0.0.0``)
     so loopback inside the container works. The image doesn't ship
     ``curl`` but Python's stdlib ``urllib`` is good enough.
 
@@ -225,7 +225,7 @@ def _fetch_api_status(container: str, *, deadline_s: float = 60.0) -> dict:
     timeout.
     """
     probe = (
-        "/opt/triibal/.venv/bin/python -c "
+        "/opt/tribal/.venv/bin/python -c "
         "'import json,urllib.request as u;"
         "print(u.urlopen(\"http://127.0.0.1:9119/api/status\",timeout=5)"
         ".read().decode())'"
@@ -254,7 +254,7 @@ def test_dashboard_oauth_gate_engages_on_non_loopback_bind(
     """The s6 dashboard run script must NOT auto-add ``--insecure`` when the
     dashboard binds to ``0.0.0.0``. The OAuth auth gate engages on its own
     when a ``DashboardAuthProvider`` is registered (the bundled nous
-    provider activates whenever ``TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID`` is
+    provider activates whenever ``TRIBAL_DASHBOARD_OAUTH_CLIENT_ID`` is
     set).
 
     Regression guard for the wildcard-subdomain rollout where every
@@ -266,42 +266,42 @@ def test_dashboard_oauth_gate_engages_on_non_loopback_bind(
     """
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name,
-         "-e", "TRIIBAL_DASHBOARD=1",
-         "-e", "TRIIBAL_DASHBOARD_HOST=0.0.0.0",
-         "-e", "TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID=agent:test-instance",
+         "-e", "TRIBAL_DASHBOARD=1",
+         "-e", "TRIBAL_DASHBOARD_HOST=0.0.0.0",
+         "-e", "TRIBAL_DASHBOARD_OAUTH_CLIENT_ID=agent:test-instance",
          built_image, "sleep", "120"],
         check=True, capture_output=True, timeout=30,
     )
     status = _fetch_api_status(container_name)
     assert status.get("auth_required") is True, (
         "OAuth gate must be engaged on 0.0.0.0 bind when a provider is "
-        "registered and TRIIBAL_DASHBOARD_INSECURE is unset. Got: "
+        "registered and TRIBAL_DASHBOARD_INSECURE is unset. Got: "
         f"{status!r}"
     )
     assert "nous" in status.get("auth_providers", []), (
         "Bundled dashboard_auth/nous provider should register when "
-        f"TRIIBAL_DASHBOARD_OAUTH_CLIENT_ID is set. Got: {status!r}"
+        f"TRIBAL_DASHBOARD_OAUTH_CLIENT_ID is set. Got: {status!r}"
     )
 
 
 def test_dashboard_insecure_env_var_opts_out_of_gate(
     built_image: str, container_name: str,
 ) -> None:
-    """``TRIIBAL_DASHBOARD_INSECURE=1`` re-enables the legacy no-gate mode
+    """``TRIBAL_DASHBOARD_INSECURE=1`` re-enables the legacy no-gate mode
     for operators running on trusted LANs behind a reverse proxy without
     the OAuth contract. Same opt-out shape as the rest of the s6 boolean
-    envs (``TRIIBAL_DASHBOARD``, ``TRIIBAL_DASHBOARD_TUI``).
+    envs (``TRIBAL_DASHBOARD``, ``TRIBAL_DASHBOARD_TUI``).
     """
     subprocess.run(
         ["docker", "run", "-d", "--name", container_name,
-         "-e", "TRIIBAL_DASHBOARD=1",
-         "-e", "TRIIBAL_DASHBOARD_HOST=0.0.0.0",
-         "-e", "TRIIBAL_DASHBOARD_INSECURE=1",
+         "-e", "TRIBAL_DASHBOARD=1",
+         "-e", "TRIBAL_DASHBOARD_HOST=0.0.0.0",
+         "-e", "TRIBAL_DASHBOARD_INSECURE=1",
          built_image, "sleep", "120"],
         check=True, capture_output=True, timeout=30,
     )
     status = _fetch_api_status(container_name)
     assert status.get("auth_required") is False, (
-        "TRIIBAL_DASHBOARD_INSECURE=1 must disable the auth gate (explicit "
+        "TRIBAL_DASHBOARD_INSECURE=1 must disable the auth gate (explicit "
         f"opt-in for trusted-LAN deployments). Got: {status!r}"
     )

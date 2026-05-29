@@ -3,8 +3,8 @@
 Tests cover:
 - Active agent runs indefinitely (no inactivity timeout)
 - Idle agent triggers inactivity timeout with diagnostic info
-- Unlimited timeout (TRIIBAL_CRON_TIMEOUT=0)
-- Backward compat: TRIIBAL_CRON_TIMEOUT env var still works
+- Unlimited timeout (TRIBAL_CRON_TIMEOUT=0)
+- Backward compat: TRIBAL_CRON_TIMEOUT env var still works
 - Error message includes activity summary
 """
 
@@ -156,7 +156,7 @@ class TestInactivityTimeout:
         assert result is None  # Never got a result — interrupted
 
     def test_unlimited_timeout(self):
-        """TRIIBAL_CRON_TIMEOUT=0 means no timeout at all."""
+        """TRIBAL_CRON_TIMEOUT=0 means no timeout at all."""
         agent = FakeAgent(idle_seconds=0.0)
         _cron_inactivity_limit = None  # unlimited
 
@@ -179,9 +179,9 @@ class TestInactivityTimeout:
         return 600.0
 
     def test_timeout_env_var_parsing(self, monkeypatch):
-        """TRIIBAL_CRON_TIMEOUT env var is respected."""
-        monkeypatch.setenv("TRIIBAL_CRON_TIMEOUT", "1200")
-        raw = os.getenv("TRIIBAL_CRON_TIMEOUT", "").strip()
+        """TRIBAL_CRON_TIMEOUT env var is respected."""
+        monkeypatch.setenv("TRIBAL_CRON_TIMEOUT", "1200")
+        raw = os.getenv("TRIBAL_CRON_TIMEOUT", "").strip()
         _cron_timeout = self._parse_cron_timeout(raw)
         assert _cron_timeout == 1200.0
 
@@ -189,26 +189,26 @@ class TestInactivityTimeout:
         assert _cron_inactivity_limit == 1200.0
 
     def test_timeout_zero_means_unlimited(self, monkeypatch):
-        """TRIIBAL_CRON_TIMEOUT=0 yields None (unlimited)."""
-        monkeypatch.setenv("TRIIBAL_CRON_TIMEOUT", "0")
-        raw = os.getenv("TRIIBAL_CRON_TIMEOUT", "").strip()
+        """TRIBAL_CRON_TIMEOUT=0 yields None (unlimited)."""
+        monkeypatch.setenv("TRIBAL_CRON_TIMEOUT", "0")
+        raw = os.getenv("TRIBAL_CRON_TIMEOUT", "").strip()
         _cron_timeout = self._parse_cron_timeout(raw)
         _cron_inactivity_limit = _cron_timeout if _cron_timeout > 0 else None
         assert _cron_inactivity_limit is None
 
     def test_timeout_invalid_value_falls_back_to_default(self, monkeypatch):
-        """TRIIBAL_CRON_TIMEOUT=abc should fall back to 600s, not raise ValueError."""
-        monkeypatch.setenv("TRIIBAL_CRON_TIMEOUT", "abc")
-        raw = os.getenv("TRIIBAL_CRON_TIMEOUT", "").strip()
+        """TRIBAL_CRON_TIMEOUT=abc should fall back to 600s, not raise ValueError."""
+        monkeypatch.setenv("TRIBAL_CRON_TIMEOUT", "abc")
+        raw = os.getenv("TRIBAL_CRON_TIMEOUT", "").strip()
         _cron_timeout = self._parse_cron_timeout(raw)
         assert _cron_timeout == 600.0
         _cron_inactivity_limit = _cron_timeout if _cron_timeout > 0 else None
         assert _cron_inactivity_limit == 600.0
 
     def test_timeout_empty_string_uses_default(self, monkeypatch):
-        """TRIIBAL_CRON_TIMEOUT='' (empty) should use the 600s default."""
-        monkeypatch.setenv("TRIIBAL_CRON_TIMEOUT", "")
-        raw = os.getenv("TRIIBAL_CRON_TIMEOUT", "").strip()
+        """TRIBAL_CRON_TIMEOUT='' (empty) should use the 600s default."""
+        monkeypatch.setenv("TRIBAL_CRON_TIMEOUT", "")
+        raw = os.getenv("TRIBAL_CRON_TIMEOUT", "").strip()
         _cron_timeout = self._parse_cron_timeout(raw)
         assert _cron_timeout == 600.0
 
@@ -304,13 +304,13 @@ class TestInactivityTimeout:
 class TestSysPathOrdering:
     """Test that sys.path is set before repo-level imports."""
 
-    def test_triibal_time_importable(self):
-        """triibal_time should be importable when cron.scheduler loads."""
+    def test_tribal_time_importable(self):
+        """tribal_time should be importable when cron.scheduler loads."""
         # This import would fail if sys.path.insert comes after the import
-        from cron.scheduler import _triibal_now
-        assert callable(_triibal_now)
+        from cron.scheduler import _tribal_now
+        assert callable(_tribal_now)
 
-    def test_triibal_constants_importable(self):
-        """triibal_constants should be importable from cron context."""
-        from triibal_constants import get_triibal_home
-        assert callable(get_triibal_home)
+    def test_tribal_constants_importable(self):
+        """tribal_constants should be importable from cron context."""
+        from tribal_constants import get_tribal_home
+        assert callable(get_tribal_home)

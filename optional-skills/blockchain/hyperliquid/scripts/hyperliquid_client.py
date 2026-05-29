@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Hyperliquid CLI Tool for Triibal Agent
+Hyperliquid CLI Tool for Tribal Agent
 -------------------------------------
 Queries the Hyperliquid info endpoint for market and account data.
 Uses only Python standard library - no external packages required.
@@ -40,13 +40,13 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 
-USER_AGENT = "TriibalAgent/1.0"
+USER_AGENT = "TribalAgent/1.0"
 DEFAULT_USER_ENV = "HYPERLIQUID_USER_ADDRESS"
 DEFAULT_API_BASE = "https://api.hyperliquid.xyz"
 
 
-def _triibal_home() -> Path:
-    return Path(os.environ.get("TRIIBAL_HOME", "~/.triibal")).expanduser()
+def _tribal_home() -> Path:
+    return Path(os.environ.get("TRIBAL_HOME", "~/.tribal")).expanduser()
 
 
 def _dotenv_paths() -> List[Path]:
@@ -55,7 +55,7 @@ def _dotenv_paths() -> List[Path]:
     if project_env.exists():
         paths.append(project_env)
 
-    user_env = _triibal_home() / ".env"
+    user_env = _tribal_home() / ".env"
     if user_env.exists():
         paths.append(user_env)
 
@@ -115,7 +115,7 @@ def _resolve_user(user: Optional[str]) -> str:
 
     sys.exit(
         "Missing Hyperliquid address. Pass <address> explicitly or set "
-        f"{DEFAULT_USER_ENV} in your environment or ~/.triibal/.env."
+        f"{DEFAULT_USER_ENV} in your environment or ~/.tribal/.env."
     )
 
 
@@ -1534,7 +1534,7 @@ def _add_json_flag(parser: argparse.ArgumentParser) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Hyperliquid CLI Tool for Triibal Agent")
+    parser = argparse.ArgumentParser(description="Hyperliquid CLI Tool for Tribal Agent")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     dexs = subparsers.add_parser("dexs", help="List available perpetual dexs")

@@ -95,8 +95,8 @@ def register(ctx) -> None:
         setup_fn=_register_meet_cli,
         handler_fn=_meet_command,
         description=(
-            "Let the triibal agent join a Google Meet call and scrape live "
-            "captions into a transcript. See: triibal meet setup"
+            "Let the tribal agent join a Google Meet call and scrape live "
+            "captions into a transcript. See: tribal meet setup"
         ),
     )
 

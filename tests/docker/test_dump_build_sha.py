@@ -1,20 +1,20 @@
-"""Regression test: ``triibal dump`` reports a real git SHA inside the container.
+"""Regression test: ``tribal dump`` reports a real git SHA inside the container.
 
 Background: ``.dockerignore`` excludes ``.git``, so ``git rev-parse HEAD``
-fails inside the published image and ``triibal dump`` used to report
+fails inside the published image and ``tribal dump`` used to report
 ``version: ... [(unknown)]``.  The Dockerfile now writes the build-time
-``$TRIIBAL_GIT_SHA`` build-arg to ``/opt/triibal/.triibal_build_sha`` and
-``triibal_cli/build_info.py`` reads it as a fallback.
+``$TRIBAL_GIT_SHA`` build-arg to ``/opt/tribal/.tribal_build_sha`` and
+``tribal_cli/build_info.py`` reads it as a fallback.
 
 CI (``.github/workflows/docker-publish.yml``) always sets the build-arg
 to ``${{ github.sha }}``.  Local ``docker build`` (the ``built_image``
 fixture in ``tests/docker/conftest.py``) does NOT — so locally the file
-is absent and ``triibal dump`` correctly falls back to ``(unknown)``.
+is absent and ``tribal dump`` correctly falls back to ``(unknown)``.
 
 This test handles both cases:
 
-* If ``/opt/triibal/.triibal_build_sha`` exists in the image, assert that
-  ``triibal dump`` surfaces its content as the version SHA (not
+* If ``/opt/tribal/.tribal_build_sha`` exists in the image, assert that
+  ``tribal dump`` surfaces its content as the version SHA (not
   ``(unknown)``).
 * If the file is absent, assert the legacy behaviour (``(unknown)``)
   still holds — defensive guard against the helper accidentally
@@ -34,7 +34,7 @@ def _run_dump(image: str) -> str:
     """Return the stdout of ``docker run <image> dump``.
 
     Relies on Docker's anonymous VOLUME for ``/opt/data`` (declared by the
-    Dockerfile) so the container's triibal user (UID 10000) can bootstrap
+    Dockerfile) so the container's tribal user (UID 10000) can bootstrap
     its config.  Anonymous volumes are auto-cleaned by ``--rm``, so unlike
     a host bind-mount we don't have to chown anything to UID 10000 (which
     would break cleanup on non-root hosts).
@@ -44,18 +44,18 @@ def _run_dump(image: str) -> str:
         capture_output=True, text=True, timeout=120,
     )
     assert r.returncode == 0, (
-        f"triibal dump exited {r.returncode}: "
+        f"tribal dump exited {r.returncode}: "
         f"stderr={r.stderr[-1000:]!r}\nstdout={r.stdout[-1000:]!r}"
     )
     return r.stdout
 
 
 def _read_baked_sha_from_image(image: str) -> str | None:
-    """Return the ``/opt/triibal/.triibal_build_sha`` content, or None if absent."""
+    """Return the ``/opt/tribal/.tribal_build_sha`` content, or None if absent."""
     r = subprocess.run(
         [
             "docker", "run", "--rm", "--entrypoint", "cat", image,
-            "/opt/triibal/.triibal_build_sha",
+            "/opt/tribal/.tribal_build_sha",
         ],
         capture_output=True, text=True, timeout=30,
     )
@@ -65,7 +65,7 @@ def _read_baked_sha_from_image(image: str) -> str | None:
 
 
 def test_dump_reports_baked_sha_when_present(built_image: str) -> None:
-    """When the image was built with ``TRIIBAL_GIT_SHA``, dump must surface it.
+    """When the image was built with ``TRIBAL_GIT_SHA``, dump must surface it.
 
     Together with the smoke-test action (which exercises ``--help``), this
     closes the regression loop for the missing-sha bug: any future change
@@ -91,7 +91,7 @@ def test_dump_reports_baked_sha_when_present(built_image: str) -> None:
         )
         return
 
-    # CI path: build-arg was set, baked file exists.  ``triibal dump``
+    # CI path: build-arg was set, baked file exists.  ``tribal dump``
     # truncates to 8 chars via ``git rev-parse --short=8`` semantics.
     assert reported != "(unknown)", (
         "baked SHA file present in image but dump still reported "
