@@ -99,6 +99,7 @@ class TestResolveCommand:
         assert resolve_command("copy").name == "copy"
         assert resolve_command("agents").name == "agents"
         assert resolve_command("genesis").name == "genesis"
+        assert resolve_command("tribe").name == "tribe"
 
     def test_alias_resolves_to_canonical(self):
         assert resolve_command("bg").name == "background"
@@ -155,6 +156,12 @@ class TestDerivedDicts:
     def test_genesis_command_is_in_tribal_category(self):
         assert "/genesis" in COMMANDS
         assert "/genesis" in COMMANDS_BY_CATEGORY["Tribal"]
+
+    def test_tribe_command_is_in_tribal_category(self):
+        assert "/tribe" in COMMANDS
+        assert "/tribe" in COMMANDS_BY_CATEGORY["Tribal"]
+        tribe = next(cmd for cmd in COMMAND_REGISTRY if cmd.name == "tribe")
+        assert tribe.subcommands == ("ask", "status", "roles")
 
     def test_commands_by_category_covers_all_categories(self):
         registry_categories = {cmd.category for cmd in COMMAND_REGISTRY if not cmd.gateway_only}

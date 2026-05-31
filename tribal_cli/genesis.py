@@ -28,6 +28,17 @@ from utils import atomic_json_write, atomic_yaml_write
 
 SCHEMA_VERSION = 1
 DEFAULT_TRIBE_ID = "local"
+DEFAULT_LAW: dict[str, Any] = {
+    "schema_version": 1,
+    "canon": {"auto_promote": False},
+    "folklore": {"allow_drafts": True, "max_drafts_per_council": 3},
+    "taboos": [
+        "no fake certainty",
+        "no canon without ritual",
+        "no elder authority on newborn tribes",
+    ],
+    "mirofish": {"status": "planned_v2"},
+}
 
 
 class GenesisConfirmationError(ValueError):
@@ -151,8 +162,8 @@ def _tribe_payload(birth: dict[str, Any]) -> dict[str, Any]:
         "genesis_id": birth["birth_id"],
         "born_at": birth["born_at"],
         "ontology": {
-            "objects": ["tribe", "soul", "lemma", "lineage"],
-            "actions": ["remember", "validate", "ritualize", "season"],
+            "objects": ["tribe", "soul", "law", "lore", "lemma", "lineage", "council", "role"],
+            "actions": ["remember", "validate", "ritualize", "season", "convene"],
         },
     }
 
@@ -224,6 +235,11 @@ def _ensure_birth_files(
         "lore/lemmas.jsonl",
     )
 
+    law_path = home / "law.yaml"
+    if not law_path.exists():
+        atomic_yaml_write(law_path, DEFAULT_LAW, sort_keys=False)
+        (created if overwrite else repaired).append("law.yaml")
+
     lineage_path = home / "lineage.jsonl"
     lineage_existed = lineage_path.exists()
     if overwrite or not lineage_existed:
@@ -250,7 +266,7 @@ def _archive_existing(home: Path, now: datetime, birth: dict[str, Any]) -> str:
         archive = home / archive_rel
     archive.mkdir(parents=True, exist_ok=False)
 
-    for name in ("genesis.json", "tribe.yaml", "SOUL.md", "lineage.jsonl"):
+    for name in ("genesis.json", "tribe.yaml", "SOUL.md", "law.yaml", "lineage.jsonl"):
         src = home / name
         if src.exists():
             shutil.copy2(src, archive / name)
@@ -261,7 +277,7 @@ def _archive_existing(home: Path, now: datetime, birth: dict[str, Any]) -> str:
 
 
 def _clear_rebirth_targets(home: Path) -> None:
-    for name in ("genesis.json", "tribe.yaml", "SOUL.md", "lineage.jsonl"):
+    for name in ("genesis.json", "tribe.yaml", "SOUL.md", "law.yaml", "lineage.jsonl"):
         path = home / name
         if path.exists():
             path.unlink()

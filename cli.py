@@ -8343,6 +8343,20 @@ class TribalCLI:
                 self._console_print(handle_genesis_slash_command(cmd_original))
             except GenesisConfirmationError as e:
                 self._console_print(str(e))
+        elif canonical == "tribe":
+            from tribal_cli.tribe import (
+                TribeCouncilError,
+                TribeNotBornError,
+                handle_tribe_slash_command,
+            )
+            try:
+                if cmd_original.strip().lower().startswith("/tribe ask") and self.agent is None:
+                    self._console_print("Initializing agent...")
+                    if not self._initialize_agent():
+                        return True
+                self._console_print(handle_tribe_slash_command(cmd_original, agent=self.agent))
+            except (TribeCouncilError, TribeNotBornError) as e:
+                self._console_print(str(e))
         elif canonical == "profile":
             self._handle_profile_command()
         elif canonical == "tools":

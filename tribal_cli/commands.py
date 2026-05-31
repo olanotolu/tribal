@@ -106,6 +106,9 @@ COMMAND_REGISTRY: list[CommandDef] = [
     # Tribal
     CommandDef("genesis", "Birth or inspect this Tribal agent's founding tribe", "Tribal",
                args_hint="[--domain id] [--rebirth]", cli_only=True),
+    CommandDef("tribe", "Ask the tribe; the council answers", "Tribal",
+               args_hint="<ask|status|roles>", subcommands=("ask", "status", "roles"),
+               cli_only=True),
 
     CommandDef("steer", "Inject a message after the next tool call without interrupting", "Session",
                args_hint="<prompt>"),

@@ -56,10 +56,17 @@ class TestGenesisBirth:
         assert tribe["domain"] == "hospitality.nyc.fnb"
         assert tribe["status"] == "born"
         assert tribe["genesis_id"] == birth["birth_id"]
-        assert tribe["ontology"]["objects"] == ["tribe", "soul", "lemma", "lineage"]
+        assert tribe["ontology"]["objects"] == ["tribe", "soul", "law", "lore", "lemma", "lineage", "council", "role"]
+        assert tribe["ontology"]["actions"] == ["remember", "validate", "ritualize", "season", "convene"]
 
         assert (tmp_path / "SOUL.md").read_text(encoding="utf-8") == DEFAULT_SOUL_MD
         assert (tmp_path / "lore" / "lemmas.jsonl").read_text(encoding="utf-8") == ""
+        law = yaml.safe_load((tmp_path / "law.yaml").read_text(encoding="utf-8"))
+        assert law["schema_version"] == 1
+        assert law["canon"]["auto_promote"] is False
+        assert law["folklore"]["allow_drafts"] is True
+        assert law["folklore"]["max_drafts_per_council"] == 3
+        assert law["mirofish"]["status"] == "planned_v2"
 
         lineage = _read_lineage(tmp_path / "lineage.jsonl")
         assert len(lineage) == 1
@@ -74,8 +81,10 @@ class TestGenesisBirth:
         birth_before = (tmp_path / "genesis.json").read_text(encoding="utf-8")
         soul_path = tmp_path / "SOUL.md"
         lore_path = tmp_path / "lore" / "lemmas.jsonl"
+        law_path = tmp_path / "law.yaml"
         soul_path.write_text("custom soul\n", encoding="utf-8")
         lore_path.write_text('{"claim":"keep me"}\n', encoding="utf-8")
+        law_path.write_text("custom: law\n", encoding="utf-8")
 
         result = run_genesis(domain="changed", home=tmp_path, now=_utc(1))
 
@@ -83,6 +92,7 @@ class TestGenesisBirth:
         assert (tmp_path / "genesis.json").read_text(encoding="utf-8") == birth_before
         assert soul_path.read_text(encoding="utf-8") == "custom soul\n"
         assert lore_path.read_text(encoding="utf-8") == '{"claim":"keep me"}\n'
+        assert law_path.read_text(encoding="utf-8") == "custom: law\n"
 
     def test_first_birth_preserves_existing_soul_lore_and_lineage(self, tmp_path):
         from tribal_cli.genesis import run_genesis
@@ -91,12 +101,14 @@ class TestGenesisBirth:
         (tmp_path / "SOUL.md").write_text("already awake\n", encoding="utf-8")
         (tmp_path / "lore" / "lemmas.jsonl").write_text('{"claim":"pre-genesis"}\n', encoding="utf-8")
         (tmp_path / "lineage.jsonl").write_text('{"event":"legacy"}\n', encoding="utf-8")
+        (tmp_path / "law.yaml").write_text("custom: law\n", encoding="utf-8")
 
         result = run_genesis(domain="local", home=tmp_path, now=_utc())
 
         assert result.status == "born"
         assert (tmp_path / "SOUL.md").read_text(encoding="utf-8") == "already awake\n"
         assert (tmp_path / "lore" / "lemmas.jsonl").read_text(encoding="utf-8") == '{"claim":"pre-genesis"}\n'
+        assert (tmp_path / "law.yaml").read_text(encoding="utf-8") == "custom: law\n"
         lineage = _read_lineage(tmp_path / "lineage.jsonl")
         assert lineage[0]["event"] == "legacy"
         assert lineage[1]["event"] == "genesis.birth"
@@ -108,11 +120,13 @@ class TestGenesisBirth:
         (tmp_path / "tribe.yaml").unlink()
         (tmp_path / "lineage.jsonl").unlink()
         (tmp_path / "lore" / "lemmas.jsonl").unlink()
+        (tmp_path / "law.yaml").unlink()
 
         result = run_genesis(domain="ignored", home=tmp_path, now=_utc(1))
 
         assert result.status == "already_born"
         assert sorted(result.repaired) == [
+            "law.yaml",
             "lineage.jsonl",
             "lore/lemmas.jsonl",
             "tribe.yaml",
@@ -152,6 +166,7 @@ class TestGenesisBirth:
         assert archive.is_dir()
         assert _read_json(archive / "genesis.json")["birth_id"] == old.birth["birth_id"]
         assert (archive / "lore" / "lemmas.jsonl").read_text(encoding="utf-8") == '{"claim":"old canon"}\n'
+        assert (archive / "law.yaml").is_file()
 
         assert _read_json(tmp_path / "genesis.json")["tribe_id"] == "new.domain"
         assert (tmp_path / "lore" / "lemmas.jsonl").read_text(encoding="utf-8") == ""

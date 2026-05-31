@@ -10989,6 +10989,15 @@ def cmd_genesis(args):
         sys.exit(code)
 
 
+def cmd_tribe(args):
+    """Ask or inspect the current Tribal council."""
+    from tribal_cli.tribe import cmd_tribe as _cmd_tribe
+
+    code = _cmd_tribe(args)
+    if code:
+        sys.exit(code)
+
+
 def _build_provider_choices() -> list[str]:
     """Build the --provider choices list from CANONICAL_PROVIDERS + 'auto'."""
     try:
@@ -11023,7 +11032,7 @@ _BUILTIN_SUBCOMMANDS = frozenset(
         "kanban", "login", "logout", "logs", "lsp", "mcp", "memory", "migrate",
         "model", "pairing", "plugins", "portal", "postinstall", "profile", "proxy",
         "send", "sessions", "setup",
-        "skills", "slack", "status", "tools", "uninstall", "update",
+        "skills", "slack", "status", "tools", "tribe", "uninstall", "update",
         "version", "webhook", "whatsapp", "chat", "secrets", "security",
         # Help-ish invocations — plugin commands not being listed in
         # top-level --help is an acceptable trade-off for skipping an
@@ -13746,6 +13755,24 @@ Examples:
         help='Exact confirmation phrase for rebirth, e.g. "REBIRTH local"',
     )
     genesis_parser.set_defaults(func=cmd_genesis)
+
+    # =========================================================================
+    # tribe command
+    # =========================================================================
+    tribe_parser = subparsers.add_parser(
+        "tribe",
+        help="Ask the tribe; the council answers",
+        description="Convene or inspect the Tribal council runtime.",
+    )
+    tribe_subparsers = tribe_parser.add_subparsers(dest="tribe_command")
+    tribe_ask = tribe_subparsers.add_parser("ask", help="Ask the tribe; the council answers")
+    tribe_ask.add_argument("--json", action="store_true", default=False, help="Print machine-readable council JSON")
+    tribe_ask.add_argument("question", nargs="+", help="Question to put before the tribe")
+    tribe_status = tribe_subparsers.add_parser("status", help="Show tribe, law, lore, and council status")
+    tribe_status.add_argument("--json", action="store_true", default=False, help="Print machine-readable status JSON")
+    tribe_roles = tribe_subparsers.add_parser("roles", help="List Scout, Elder, Oracle, Skeptic, and Keeper")
+    tribe_roles.add_argument("--json", action="store_true", default=False, help="Print machine-readable roles JSON")
+    tribe_parser.set_defaults(func=cmd_tribe)
 
     # =========================================================================
     # version command
