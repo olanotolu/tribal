@@ -8384,6 +8384,10 @@ class TribalCLI:
             from tribal_cli.fieldwork import handle_field_slash_command
 
             self._console_print(handle_field_slash_command(cmd_original))
+        elif canonical == "oracle":
+            from tribal_cli.oracle import handle_oracle_slash_command
+
+            self._console_print(handle_oracle_slash_command(cmd_original))
         elif canonical == "profile":
             self._handle_profile_command()
         elif canonical == "tools":

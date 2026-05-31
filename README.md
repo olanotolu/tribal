@@ -63,6 +63,9 @@ tribal genesis      # Birth this agent's founding tribe and lineage
 tribal tribe status # Show the tribe, law, lore, and council state
 tribal tribe roles  # List Scout, Elder, Oracle, Skeptic, and Keeper
 tribal tribe ask "Should I take the Thursday slot?" # Ask the tribe; the council answers
+tribal tribe ask --simulate "Should I ship this week?" # Ask with Oracle simulation context
+tribal oracle status # Check whether MiroFish is configured
+tribal oracle simulate "Will this launch land?" --horizon-days 7
 tribal lore list    # List folklore and canon
 tribal lore show tk_12345678 # Inspect one lemma
 tribal lore confirm tk_12345678 --evidence "It survived contact with reality"
@@ -77,6 +80,7 @@ tribal doctor       # Diagnose local configuration
 
 `tribal genesis` is the difference between an agent on its first day and one born with lineage.
 `tribal tribe ask` is the first act of life: Scout, Elder, Oracle, and Skeptic convene, and Keeper records the lineage and draft folklore.
+`tribal oracle` is the simulation chamber: it can use an external MiroFish server through `TRIBAL_MIROFISH_BASE_URL`, or fall back honestly to text-only rehearsal.
 `tribal field` is how the tribe goes into the world: council decisions become 7-day experiments, and calendar evidence becomes reports.
 `tribal ritual review` is how the tribe decides whether folklore deserves to become canon after lived outcomes arrive.
 `tribal ritual apply` is the Keeper's gavel: it applies those decisions to the lore book.

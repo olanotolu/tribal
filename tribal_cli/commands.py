@@ -122,6 +122,10 @@ COMMAND_REGISTRY: list[CommandDef] = [
                args_hint="<list|show|observe|report>",
                subcommands=("list", "show", "observe", "report"),
                cli_only=True),
+    CommandDef("oracle", "Run or inspect the Oracle simulation chamber", "Tribal",
+               args_hint="<status|simulate|show>",
+               subcommands=("status", "simulate", "show"),
+               cli_only=True),
 
     CommandDef("steer", "Inject a message after the next tool call without interrupting", "Session",
                args_hint="<prompt>"),

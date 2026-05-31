@@ -60,6 +60,8 @@ def _seed_experiment(home, field_id="field_1", lemma_id="tk_ship"):
         },
         "experiment": "Run the shortest feedback loop.",
         "falsifiers": ["If the demo ships and nobody cares, weaken the decision."],
+        "oracle_id": "oracle_1",
+        "signal_to_watch": "Three users ask for access within seven days.",
         "window": {"start": "2026-05-31T12:00:00Z", "end": "2026-06-07T12:00:00Z"},
         "sources": ["calendar"],
         "created_at": "2026-05-31T12:00:00Z",
@@ -170,6 +172,8 @@ class TestFieldworkRuntime:
         assert report["observations"]["calendar"]["event_count"] == 2
         assert report["observations"]["calendar"]["demo_event_count"] == 1
         assert report["observations"]["calendar"]["investor_event_count"] == 1
+        assert report["observations"]["oracle"]["signal_to_watch"] == "Three users ask for access within seven days."
+        assert "Oracle signal to watch" in report["evidence"]
         assert _jsonl(tmp_path / "fieldwork" / "reports.jsonl")[0]["report_id"] == report["report_id"]
         lemma = _jsonl(tmp_path / "lore" / "lemmas.jsonl")[0]
         assert lemma["promotion"]["status"] == "unvalidated"

@@ -23,6 +23,7 @@ import yaml
 
 from tribal_constants import get_tribal_home
 from tribal_cli.genesis import DEFAULT_LAW
+from tribal_cli.oracle import run_oracle_simulate
 from utils import atomic_yaml_write
 
 
@@ -125,7 +126,7 @@ def _role_catalog() -> list[dict[str, str]]:
     return [
         {"name": "Scout", "meaning": "Gathers live signal and immediate context."},
         {"name": "Elder", "meaning": "Reads existing lore and admits when canon is empty."},
-        {"name": "Oracle", "meaning": "Projects likely outcomes; MiroFish remains planned_v2."},
+        {"name": "Oracle", "meaning": "Projects likely outcomes; MiroFish can act as its simulation chamber."},
         {"name": "Skeptic", "meaning": "Attacks weak claims, stale lore, and fake certainty."},
         {"name": "Keeper", "meaning": "Parent process writes lineage and folklore drafts."},
     ]
@@ -269,7 +270,31 @@ def _lore_context(lore_rows: list[dict[str, Any]]) -> str:
     return "Existing lore tail:\n" + json.dumps(preview, ensure_ascii=False, indent=2)
 
 
-def _wave_one_tasks(question: str, tribe_id: str, lore_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _oracle_context(receipt: dict[str, Any] | None) -> str:
+    if not receipt:
+        return "MiroFish status: not requested; use text simulation only."
+    preview = {
+        "oracle_id": receipt.get("oracle_id"),
+        "provider": receipt.get("provider"),
+        "status": receipt.get("status"),
+        "assumptions": receipt.get("assumptions", [])[:3],
+        "weighted_outcomes": receipt.get("weighted_outcomes", [])[:3],
+        "deciding_factor": receipt.get("deciding_factor", ""),
+        "signal_to_watch": receipt.get("signal_to_watch", ""),
+    }
+    return (
+        "MiroFish Oracle receipt:\n"
+        + json.dumps(preview, ensure_ascii=False, indent=2)
+        + "\nIf provider is text_fallback, say plainly that no real MiroFish simulation ran."
+    )
+
+
+def _wave_one_tasks(
+    question: str,
+    tribe_id: str,
+    lore_rows: list[dict[str, Any]],
+    oracle_receipt: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     shared = (
         f"Tribe: {tribe_id}\n"
         f"Question: {question}\n"
@@ -293,8 +318,8 @@ def _wave_one_tasks(question: str, tribe_id: str, lore_rows: list[dict[str, Any]
         },
         {
             "role_name": "Oracle",
-            "goal": "Oracle role for a Tribal council: project likely outcomes in text simulation. No tools. One turn.",
-            "context": shared + "\nMiroFish status: planned_v2; do not claim a real MiroFish run occurred.",
+            "goal": "Oracle role for a Tribal council: project likely outcomes from simulation context. No tools. One turn.",
+            "context": shared + "\n" + _oracle_context(oracle_receipt),
             "toolsets": [],
             "role": "leaf",
         },
@@ -429,10 +454,20 @@ def _extract_falsifiers(skeptic_summary: str) -> list[str]:
     return unique[:3]
 
 
-def _build_closure(question: str, roles: list[dict[str, Any]]) -> dict[str, Any]:
+def _build_closure(
+    question: str,
+    roles: list[dict[str, Any]],
+    oracle_receipt: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     call = _select_call(roles)
     skeptic_summary = next((role.get("summary", "") for role in roles if role.get("name") == "Skeptic"), "")
     falsifiers = _extract_falsifiers(skeptic_summary)
+    signal_to_watch = ""
+    if oracle_receipt:
+        signal_to_watch = str(oracle_receipt.get("signal_to_watch") or "")
+        if signal_to_watch:
+            falsifiers.append(f"If Oracle signal is absent ({signal_to_watch}), weaken or revise this council decision.")
+    falsifiers = _dedupe_falsifiers(falsifiers)
     experiment = (
         f"Run the shortest feedback loop: act on '{call}' as a bounded experiment, "
         "then test the strongest Skeptic falsifier before treating the pattern as lore."
@@ -450,6 +485,7 @@ def _build_closure(question: str, roles: list[dict[str, Any]]) -> dict[str, Any]
         },
         "dissent": skeptic_summary,
         "falsifiers": falsifiers,
+        "oracle": _oracle_consensus(oracle_receipt),
         "keeper_role": {
             "name": "Keeper",
             "status": "completed",
@@ -457,6 +493,30 @@ def _build_closure(question: str, roles: list[dict[str, Any]]) -> dict[str, Any]
             "duration_seconds": 0,
             "payload": {},
         },
+    }
+
+
+def _dedupe_falsifiers(falsifiers: list[str]) -> list[str]:
+    unique: list[str] = []
+    seen: set[str] = set()
+    for item in falsifiers:
+        key = re.sub(r"\s+", " ", str(item).strip().lower())
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        unique.append(str(item))
+    return unique[:3]
+
+
+def _oracle_consensus(receipt: dict[str, Any] | None) -> dict[str, Any]:
+    if not receipt:
+        return {}
+    return {
+        "oracle_id": receipt.get("oracle_id"),
+        "provider": receipt.get("provider"),
+        "status": receipt.get("status"),
+        "deciding_factor": receipt.get("deciding_factor", ""),
+        "signal_to_watch": receipt.get("signal_to_watch", ""),
     }
 
 
@@ -468,6 +528,7 @@ def _draft_lemmas(
     roles: list[dict[str, Any]],
     law: dict[str, Any],
     closure: dict[str, Any],
+    oracle_receipt: dict[str, Any] | None,
     now: datetime,
 ) -> list[str]:
     folklore = law.get("folklore") if isinstance(law.get("folklore"), dict) else {}
@@ -500,6 +561,7 @@ def _draft_lemmas(
             if role.get("name") != "Keeper"
         ],
         "falsifiers": closure.get("falsifiers") or [],
+        "oracle": _oracle_consensus(oracle_receipt),
         "confidence": decision.get("confidence", "draft"),
         "promotion": {"status": "unvalidated"},
     }
@@ -537,6 +599,7 @@ def _build_consensus(
         "decision": decision,
         "dissent": closure.get("dissent", ""),
         "falsifiers": closure.get("falsifiers", []),
+        "oracle": closure.get("oracle", {}),
     }
 
 
@@ -546,6 +609,7 @@ def run_tribe_ask(
     home: str | Path | None = None,
     agent: Any | None = None,
     delegate_runner: DelegateRunner | None = None,
+    simulate: bool = False,
     now: datetime | None = None,
 ) -> TribeResult:
     home_path = Path(home) if home is not None else get_tribal_home()
@@ -560,14 +624,23 @@ def run_tribe_ask(
 
     lore_rows = _read_jsonl(home_path / "lore" / "lemmas.jsonl")
     council_id = f"council_{_stamp(now).lower()}_{uuid.uuid4().hex[:8]}"
+    oracle_receipt: dict[str, Any] | None = None
+    if simulate:
+        oracle_receipt = run_oracle_simulate(
+            scenario=question,
+            home=home_path,
+            source_council_id=council_id,
+            wait=False,
+            now=now,
+        ).payload["simulation"]
 
     with _council_delegation_budget():
-        wave_one_raw = runner({"tasks": _wave_one_tasks(question, tribe_id, lore_rows)})
+        wave_one_raw = runner({"tasks": _wave_one_tasks(question, tribe_id, lore_rows, oracle_receipt)})
         wave_one_roles = _delegate_results(wave_one_raw, ["Scout", "Elder", "Oracle"])
         skeptic_raw = runner(_skeptic_args(question, tribe_id, wave_one_roles))
         skeptic_role = _delegate_results(skeptic_raw, ["Skeptic"])
     roles = _ensure_skeptic_challenge(question, wave_one_roles + skeptic_role)
-    closure = _build_closure(question, roles)
+    closure = _build_closure(question, roles, oracle_receipt)
     roles_with_keeper = roles + [closure["keeper_role"]]
 
     draft_ids = _draft_lemmas(
@@ -577,6 +650,7 @@ def run_tribe_ask(
         roles=roles_with_keeper,
         law=law,
         closure=closure,
+        oracle_receipt=oracle_receipt,
         now=now,
     )
     fieldwork_ids: list[str] = []
@@ -595,6 +669,7 @@ def run_tribe_ask(
         "consensus": consensus,
         "draft_lemmas": draft_ids,
         "fieldwork": fieldwork_ids,
+        "oracle": _oracle_consensus(oracle_receipt),
         "lineage_event_id": lineage_event_id,
     }
     if draft_ids:
@@ -613,6 +688,7 @@ def run_tribe_ask(
         "falsifiers": consensus.get("falsifiers", []),
         "draft_lemmas": draft_ids,
         "fieldwork": fieldwork_ids,
+        "oracle": _oracle_consensus(oracle_receipt),
     }
     _append_jsonl(home_path / "lineage.jsonl", lineage)
     _append_jsonl(home_path / "council" / "sessions.jsonl", council)
@@ -696,6 +772,9 @@ def render_tribe_result(result: TribeResult, *, json_output: bool = False) -> st
     for role in c.get("roles", []):
         lines.append(f"- {role.get('name')}: {role.get('status')} -- {role.get('summary')}")
     lines.append(f"Draft folklore: {len(c.get('draft_lemmas') or [])}")
+    oracle = c.get("oracle") if isinstance(c.get("oracle"), dict) else {}
+    if oracle.get("oracle_id"):
+        lines.append(f"Oracle: {oracle.get('oracle_id')} ({oracle.get('provider')}:{oracle.get('status')})")
     return "\n".join(lines)
 
 
@@ -715,7 +794,9 @@ def handle_tribe_slash_command(command: str, *, agent: Any | None = None) -> str
     if subcmd == "roles":
         return render_tribe_result(run_tribe_roles(), json_output=json_output)
     if subcmd == "ask":
-        result = run_tribe_ask(" ".join(rest), agent=agent)
+        simulate = "--simulate" in rest
+        rest = [part for part in rest if part != "--simulate"]
+        result = run_tribe_ask(" ".join(rest), agent=agent, simulate=simulate)
         return render_tribe_result(result, json_output=json_output)
     return "Usage: /tribe ask <question> | /tribe status | /tribe roles"
 
@@ -757,7 +838,10 @@ def cmd_tribe(args: argparse.Namespace) -> int:
                 request_overrides=turn_route.get("request_overrides"),
             ):
                 return 1
-            result = run_tribe_ask(question, agent=cli.agent)
+            if bool(getattr(args, "simulate", False)):
+                result = run_tribe_ask(question, agent=cli.agent, simulate=True)
+            else:
+                result = run_tribe_ask(question, agent=cli.agent)
             print(render_tribe_result(result, json_output=json_output))
             return 0
     except (TribeNotBornError, TribeCouncilError) as exc:

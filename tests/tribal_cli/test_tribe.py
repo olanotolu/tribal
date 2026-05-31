@@ -269,6 +269,62 @@ class TestTribeCouncilRuntime:
         assert len(result.council["draft_lemmas"]) == 1
         assert len(_jsonl(tmp_path / "lore" / "lemmas.jsonl")) == 1
 
+    def test_tribe_ask_with_simulate_attaches_oracle_receipt(self, tmp_path, monkeypatch):
+        import tribal_cli.tribe as tribe_mod
+        from tribal_cli.tribe import run_tribe_ask
+
+        _birth(tmp_path)
+
+        def fake_oracle_simulate(**kwargs):
+            assert kwargs["scenario"] == "Should I ship the demo?"
+            assert kwargs["source_council_id"].startswith("council_")
+            return SimpleNamespace(payload={"simulation": {
+                "oracle_id": "oracle_1",
+                "provider": "mirofish",
+                "status": "completed",
+                "assumptions": ["The demo can ship this week."],
+                "weighted_outcomes": [{"label": "Warm intros", "probability": 0.7}],
+                "deciding_factor": "First-session clarity.",
+                "signal_to_watch": "Three users ask for access within seven days.",
+            }})
+
+        monkeypatch.setattr(tribe_mod, "run_oracle_simulate", fake_oracle_simulate)
+
+        def fake_delegate(args):
+            if "tasks" in args:
+                oracle = args["tasks"][2]
+                assert "MiroFish Oracle receipt" in oracle["context"]
+                assert "oracle_1" in oracle["context"]
+                assert "Three users ask for access" in oracle["context"]
+                return json.dumps({
+                    "results": [
+                        {"task_index": 0, "status": "completed", "summary": json.dumps({"summary": "Ship the demo.", "draft_lemmas": []})},
+                        {"task_index": 1, "status": "completed", "summary": json.dumps({"summary": "No lore yet.", "draft_lemmas": []})},
+                        {"task_index": 2, "status": "completed", "summary": json.dumps({"summary": "Oracle simulation favors shipping.", "draft_lemmas": []})},
+                    ]
+                })
+            return json.dumps({
+                "results": [{
+                    "task_index": 0,
+                    "status": "completed",
+                    "summary": json.dumps({"summary": "What if nobody cares?", "draft_lemmas": []}),
+                }]
+            })
+
+        result = run_tribe_ask(
+            "Should I ship the demo?",
+            home=tmp_path,
+            delegate_runner=fake_delegate,
+            simulate=True,
+            now=_utc(),
+        )
+
+        assert result.council["oracle"]["oracle_id"] == "oracle_1"
+        assert result.council["consensus"]["oracle"]["signal_to_watch"] == "Three users ask for access within seven days."
+        experiments = _jsonl(tmp_path / "fieldwork" / "experiments.jsonl")
+        assert experiments[0]["oracle_id"] == "oracle_1"
+        assert experiments[0]["signal_to_watch"] == "Three users ask for access within seven days."
+
     def test_cli_tribe_ask_uses_real_init_path(self, tmp_path, monkeypatch, capsys):
         import tribal_cli.tribe as tribe_mod
 

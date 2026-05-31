@@ -163,6 +163,7 @@ def open_fieldwork_for_council(
     window_end = asked_at + timedelta(days=DEFAULT_FIELD_WINDOW_DAYS)
     consensus = council.get("consensus") if isinstance(council.get("consensus"), dict) else {}
     decision = consensus.get("decision") if isinstance(consensus.get("decision"), dict) else {}
+    oracle = consensus.get("oracle") if isinstance(consensus.get("oracle"), dict) else {}
     opened: list[str] = []
 
     for lemma_id in council.get("draft_lemmas") or []:
@@ -179,6 +180,8 @@ def open_fieldwork_for_council(
             "decision": decision,
             "experiment": experiment_text,
             "falsifiers": consensus.get("falsifiers") or [],
+            "oracle_id": oracle.get("oracle_id"),
+            "signal_to_watch": oracle.get("signal_to_watch") or "",
             "window": {"start": _iso_z(asked_at), "end": _iso_z(window_end)},
             "sources": ["calendar"],
             "created_at": _iso_z(now),
@@ -306,7 +309,7 @@ def _calendar_observations(events: list[dict[str, Any]], experiment: dict[str, A
         if is_meeting:
             meeting_minutes += int((end - start).total_seconds() // 60)
 
-    return {
+    observations = {
         "calendar": {
             "event_count": len(in_window),
             "meeting_count": meeting_events,
@@ -319,6 +322,13 @@ def _calendar_observations(events: list[dict[str, Any]], experiment: dict[str, A
             "window": {"start": _iso_z(window_start), "end": _iso_z(window_end)},
         }
     }
+    signal = str(experiment.get("signal_to_watch") or "").strip()
+    if signal:
+        observations["oracle"] = {
+            "oracle_id": experiment.get("oracle_id"),
+            "signal_to_watch": signal,
+        }
+    return observations
 
 
 def _recommend_from_calendar(experiment: dict[str, Any], observations: dict[str, Any]) -> str:
@@ -349,7 +359,12 @@ def _evidence_text(experiment: dict[str, Any], observations: dict[str, Any], rec
         f"{calendar.get('demo_event_count', 0)} demo/shipping event(s), "
         f"{calendar.get('investor_event_count', 0)} investor event(s), "
         f"{calendar.get('focus_event_count', 0)} focus block(s). "
-        f"Recommendation: {action} evidence."
+        + (
+            f"Oracle signal to watch: {experiment.get('signal_to_watch')}. "
+            if experiment.get("signal_to_watch")
+            else ""
+        )
+        + f"Recommendation: {action} evidence."
     )
 
 

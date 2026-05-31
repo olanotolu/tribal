@@ -11025,6 +11025,15 @@ def cmd_field(args):
         sys.exit(code)
 
 
+def cmd_oracle(args):
+    """Inspect or run the Tribal Oracle simulation chamber."""
+    from tribal_cli.oracle import cmd_oracle as _cmd_oracle
+
+    code = _cmd_oracle(args)
+    if code:
+        sys.exit(code)
+
+
 def _build_provider_choices() -> list[str]:
     """Build the --provider choices list from CANONICAL_PROVIDERS + 'auto'."""
     try:
@@ -11057,7 +11066,7 @@ _BUILTIN_SUBCOMMANDS = frozenset(
         "config", "cron", "curator", "dashboard", "debug", "doctor",
         "dump", "fallback", "field", "gateway", "genesis", "hooks", "import", "insights",
         "kanban", "login", "logout", "logs", "lore", "lsp", "mcp", "memory", "migrate",
-        "model", "pairing", "plugins", "portal", "postinstall", "profile", "proxy",
+        "model", "oracle", "pairing", "plugins", "portal", "postinstall", "profile", "proxy",
         "ritual", "send", "sessions", "setup",
         "skills", "slack", "status", "tools", "tribe", "uninstall", "update",
         "version", "webhook", "whatsapp", "chat", "secrets", "security",
@@ -13794,6 +13803,7 @@ Examples:
     tribe_subparsers = tribe_parser.add_subparsers(dest="tribe_command")
     tribe_ask = tribe_subparsers.add_parser("ask", help="Ask the tribe; the council answers")
     tribe_ask.add_argument("--json", action="store_true", default=False, help="Print machine-readable council JSON")
+    tribe_ask.add_argument("--simulate", action="store_true", default=False, help="Ask the Oracle to use MiroFish if configured")
     tribe_ask.add_argument("question", nargs="+", help="Question to put before the tribe")
     tribe_status = tribe_subparsers.add_parser("status", help="Show tribe, law, lore, and council status")
     tribe_status.add_argument("--json", action="store_true", default=False, help="Print machine-readable status JSON")
@@ -13883,6 +13893,28 @@ Examples:
     )
     field_report.add_argument("--json", action="store_true", default=False, help="Print machine-readable report JSON")
     field_parser.set_defaults(func=cmd_field)
+
+    # =========================================================================
+    # oracle command
+    # =========================================================================
+    oracle_parser = subparsers.add_parser(
+        "oracle",
+        help="Run or inspect the Oracle simulation chamber",
+        description="Use MiroFish as the Oracle simulation chamber when TRIBAL_MIROFISH_BASE_URL is configured.",
+    )
+    oracle_subparsers = oracle_parser.add_subparsers(dest="oracle_command")
+    oracle_status = oracle_subparsers.add_parser("status", help="Show MiroFish Oracle adapter status")
+    oracle_status.add_argument("--json", action="store_true", default=False, help="Print machine-readable Oracle status")
+    oracle_simulate = oracle_subparsers.add_parser("simulate", help="Run an Oracle scenario simulation")
+    oracle_simulate.add_argument("scenario", nargs="+", help="Scenario to simulate")
+    oracle_simulate.add_argument("--seed", default=None, help="Optional seed markdown/text file")
+    oracle_simulate.add_argument("--horizon-days", type=int, default=7, help="Prediction horizon in days")
+    oracle_simulate.add_argument("--wait", action="store_true", default=False, help="Wait for MiroFish report completion")
+    oracle_simulate.add_argument("--json", action="store_true", default=False, help="Print machine-readable Oracle result")
+    oracle_show = oracle_subparsers.add_parser("show", help="Show one Oracle simulation receipt")
+    oracle_show.add_argument("oracle_id", help="Oracle simulation id, e.g. oracle_20260531t120000z_1234abcd")
+    oracle_show.add_argument("--json", action="store_true", default=False, help="Print machine-readable Oracle result")
+    oracle_parser.set_defaults(func=cmd_oracle)
 
     # =========================================================================
     # version command
