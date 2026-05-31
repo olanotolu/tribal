@@ -8365,6 +8365,21 @@ class TribalCLI:
                 self._console_print(handle_tribe_slash_command(cmd_original, agent=self.agent))
             except (TribeCouncilError, TribeNotBornError) as e:
                 self._console_print(str(e))
+        elif canonical in {"lore", "outcome", "falsify", "ritual"}:
+            from tribal_cli.ritual import (
+                handle_falsify_slash_command,
+                handle_lore_slash_command,
+                handle_outcome_slash_command,
+                handle_ritual_slash_command,
+            )
+            if canonical == "lore":
+                self._console_print(handle_lore_slash_command(cmd_original))
+            elif canonical == "outcome":
+                self._console_print(handle_outcome_slash_command(cmd_original))
+            elif canonical == "falsify":
+                self._console_print(handle_falsify_slash_command(cmd_original))
+            else:
+                self._console_print(handle_ritual_slash_command(cmd_original))
         elif canonical == "profile":
             self._handle_profile_command()
         elif canonical == "tools":

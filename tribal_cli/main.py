@@ -10998,6 +10998,24 @@ def cmd_tribe(args):
         sys.exit(code)
 
 
+def cmd_lore(args):
+    """Inspect or update Tribal lore."""
+    from tribal_cli.ritual import cmd_lore as _cmd_lore
+
+    code = _cmd_lore(args)
+    if code:
+        sys.exit(code)
+
+
+def cmd_ritual(args):
+    """Review Tribal folklore through Ritual."""
+    from tribal_cli.ritual import cmd_ritual as _cmd_ritual
+
+    code = _cmd_ritual(args)
+    if code:
+        sys.exit(code)
+
+
 def _build_provider_choices() -> list[str]:
     """Build the --provider choices list from CANONICAL_PROVIDERS + 'auto'."""
     try:
@@ -11029,9 +11047,9 @@ _BUILTIN_SUBCOMMANDS = frozenset(
         "computer-use",
         "config", "cron", "curator", "dashboard", "debug", "doctor",
         "dump", "fallback", "gateway", "genesis", "hooks", "import", "insights",
-        "kanban", "login", "logout", "logs", "lsp", "mcp", "memory", "migrate",
+        "kanban", "login", "logout", "logs", "lore", "lsp", "mcp", "memory", "migrate",
         "model", "pairing", "plugins", "portal", "postinstall", "profile", "proxy",
-        "send", "sessions", "setup",
+        "ritual", "send", "sessions", "setup",
         "skills", "slack", "status", "tools", "tribe", "uninstall", "update",
         "version", "webhook", "whatsapp", "chat", "secrets", "security",
         # Help-ish invocations — plugin commands not being listed in
@@ -13773,6 +13791,49 @@ Examples:
     tribe_roles = tribe_subparsers.add_parser("roles", help="List Scout, Elder, Oracle, Skeptic, and Keeper")
     tribe_roles.add_argument("--json", action="store_true", default=False, help="Print machine-readable roles JSON")
     tribe_parser.set_defaults(func=cmd_tribe)
+
+    # =========================================================================
+    # lore command
+    # =========================================================================
+    lore_parser = subparsers.add_parser(
+        "lore",
+        help="Inspect or update Tribal lore",
+        description="List, show, confirm, or falsify Tribal lore lemmas.",
+    )
+    lore_subparsers = lore_parser.add_subparsers(dest="lore_command")
+    lore_list = lore_subparsers.add_parser("list", help="List Tribal lore")
+    lore_list.add_argument(
+        "--status",
+        choices=["folklore", "canon", "falsified", "stale", "all"],
+        default=None,
+        help="Filter by lemma status (default: folklore and canon)",
+    )
+    lore_list.add_argument("--json", action="store_true", default=False, help="Print machine-readable lore JSON")
+    lore_show = lore_subparsers.add_parser("show", help="Show one Tribal lore lemma")
+    lore_show.add_argument("lemma_id", help="Lemma id, e.g. tk_12345678")
+    lore_show.add_argument("--json", action="store_true", default=False, help="Print machine-readable lemma JSON")
+    lore_confirm = lore_subparsers.add_parser("confirm", help="Record confirming outcome evidence")
+    lore_confirm.add_argument("lemma_id", help="Lemma id, e.g. tk_12345678")
+    lore_confirm.add_argument("--evidence", required=True, help="Outcome evidence that supports the lemma")
+    lore_confirm.add_argument("--json", action="store_true", default=False, help="Print machine-readable outcome JSON")
+    lore_falsify = lore_subparsers.add_parser("falsify", help="Record falsifying outcome evidence")
+    lore_falsify.add_argument("lemma_id", help="Lemma id, e.g. tk_12345678")
+    lore_falsify.add_argument("--evidence", required=True, help="Outcome evidence that contradicts the lemma")
+    lore_falsify.add_argument("--json", action="store_true", default=False, help="Print machine-readable outcome JSON")
+    lore_parser.set_defaults(func=cmd_lore)
+
+    # =========================================================================
+    # ritual command
+    # =========================================================================
+    ritual_parser = subparsers.add_parser(
+        "ritual",
+        help="Review folklore and recommend canon/falsification decisions",
+        description="Run Ritual review over Tribal folklore.",
+    )
+    ritual_subparsers = ritual_parser.add_subparsers(dest="ritual_command")
+    ritual_review = ritual_subparsers.add_parser("review", help="Review folklore for canon, stale, or falsified status")
+    ritual_review.add_argument("--json", action="store_true", default=False, help="Print machine-readable review JSON")
+    ritual_parser.set_defaults(func=cmd_ritual)
 
     # =========================================================================
     # version command

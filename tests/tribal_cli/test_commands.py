@@ -733,7 +733,7 @@ class TestGhostText:
         assert _suggestion("/fast f") == "ast"
 
     def test_fast_subcommand_suggestion_hidden_when_filtered(self):
-        completer = SlashCommandCompleter(command_filter=lambda cmd: cmd != "/fast")
+        completer = SlashCommandCompleter(command_filter=lambda cmd: cmd not in {"/fast", "/falsify"})
         assert _suggestion("/fa", completer=completer) is None
 
     def test_no_suggestion_for_non_slash(self):

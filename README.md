@@ -63,12 +63,18 @@ tribal genesis      # Birth this agent's founding tribe and lineage
 tribal tribe status # Show the tribe, law, lore, and council state
 tribal tribe roles  # List Scout, Elder, Oracle, Skeptic, and Keeper
 tribal tribe ask "Should I take the Thursday slot?" # Ask the tribe; the council answers
+tribal lore list    # List folklore and canon
+tribal lore show tk_12345678 # Inspect one lemma
+tribal lore confirm tk_12345678 --evidence "It survived contact with reality"
+tribal lore falsify tk_12345678 --evidence "The falsifier happened"
+tribal ritual review # Review folklore for canon, stale, or falsified status
 tribal gateway      # Run messaging gateway
 tribal doctor       # Diagnose local configuration
 ```
 
 `tribal genesis` is the difference between an agent on its first day and one born with lineage.
 `tribal tribe ask` is the first act of life: Scout, Elder, Oracle, and Skeptic convene, and Keeper records the lineage and draft folklore.
+`tribal ritual review` is how the tribe decides whether folklore deserves to become canon after lived outcomes arrive.
 
 ## Upstream Attribution
 
