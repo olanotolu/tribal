@@ -8380,6 +8380,10 @@ class TribalCLI:
                 self._console_print(handle_falsify_slash_command(cmd_original))
             else:
                 self._console_print(handle_ritual_slash_command(cmd_original))
+        elif canonical == "field":
+            from tribal_cli.fieldwork import handle_field_slash_command
+
+            self._console_print(handle_field_slash_command(cmd_original))
         elif canonical == "profile":
             self._handle_profile_command()
         elif canonical == "tools":

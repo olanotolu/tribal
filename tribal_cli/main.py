@@ -11016,6 +11016,15 @@ def cmd_ritual(args):
         sys.exit(code)
 
 
+def cmd_field(args):
+    """Inspect or report Tribal Fieldwork."""
+    from tribal_cli.fieldwork import cmd_field as _cmd_field
+
+    code = _cmd_field(args)
+    if code:
+        sys.exit(code)
+
+
 def _build_provider_choices() -> list[str]:
     """Build the --provider choices list from CANONICAL_PROVIDERS + 'auto'."""
     try:
@@ -11046,7 +11055,7 @@ _BUILTIN_SUBCOMMANDS = frozenset(
         "acp", "auth", "backup", "bundles", "checkpoints", "claw", "completion",
         "computer-use",
         "config", "cron", "curator", "dashboard", "debug", "doctor",
-        "dump", "fallback", "gateway", "genesis", "hooks", "import", "insights",
+        "dump", "fallback", "field", "gateway", "genesis", "hooks", "import", "insights",
         "kanban", "login", "logout", "logs", "lore", "lsp", "mcp", "memory", "migrate",
         "model", "pairing", "plugins", "portal", "postinstall", "profile", "proxy",
         "ritual", "send", "sessions", "setup",
@@ -13836,6 +13845,44 @@ Examples:
     ritual_apply = ritual_subparsers.add_parser("apply", help="Apply Ritual recommendations to lore status")
     ritual_apply.add_argument("--json", action="store_true", default=False, help="Print machine-readable apply JSON")
     ritual_parser.set_defaults(func=cmd_ritual)
+
+    # =========================================================================
+    # field command
+    # =========================================================================
+    field_parser = subparsers.add_parser(
+        "field",
+        help="Track real-world evidence for Tribal council decisions",
+        description="List, inspect, observe, or report Fieldwork experiments.",
+    )
+    field_subparsers = field_parser.add_subparsers(dest="field_command")
+    field_list = field_subparsers.add_parser("list", help="List Fieldwork experiments")
+    field_list.add_argument(
+        "--status",
+        choices=["open", "closed", "all"],
+        default="open",
+        help="Filter by Fieldwork status (default: open)",
+    )
+    field_list.add_argument("--json", action="store_true", default=False, help="Print machine-readable Fieldwork JSON")
+    field_show = field_subparsers.add_parser("show", help="Show one Fieldwork experiment")
+    field_show.add_argument("field_id", help="Fieldwork id, e.g. field_20260531t120000z_1234abcd")
+    field_show.add_argument("--json", action="store_true", default=False, help="Print machine-readable Fieldwork JSON")
+    field_observe = field_subparsers.add_parser("observe", help="Observe calendar evidence for Fieldwork")
+    field_observe.add_argument("field_id", nargs="?", help="Fieldwork id to observe")
+    field_observe.add_argument("--all", action="store_true", default=False, help="Observe all open Fieldwork experiments")
+    field_observe.add_argument("--adapter", default="calendar-json", help="Evidence adapter (v1: calendar-json)")
+    field_observe.add_argument("--input", required=True, help="Path to normalized calendar JSON")
+    field_observe.add_argument("--json", action="store_true", default=False, help="Print machine-readable report JSON")
+    field_report = field_subparsers.add_parser("report", help="Record manual Fieldwork evidence")
+    field_report.add_argument("field_id", help="Fieldwork id to report against")
+    field_report.add_argument("--evidence", required=True, help="Real-world evidence to store")
+    field_report.add_argument(
+        "--recommend",
+        choices=["confirm", "falsify", "none"],
+        default="none",
+        help="Recommended lore outcome; does not mutate lore",
+    )
+    field_report.add_argument("--json", action="store_true", default=False, help="Print machine-readable report JSON")
+    field_parser.set_defaults(func=cmd_field)
 
     # =========================================================================
     # version command

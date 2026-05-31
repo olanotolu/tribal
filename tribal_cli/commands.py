@@ -118,6 +118,10 @@ COMMAND_REGISTRY: list[CommandDef] = [
                args_hint="<lemma-id> <evidence>", cli_only=True),
     CommandDef("ritual", "Review or apply folklore canon decisions", "Tribal",
                args_hint="<review|apply>", subcommands=("review", "apply"), cli_only=True),
+    CommandDef("field", "Track real-world evidence for council decisions", "Tribal",
+               args_hint="<list|show|observe|report>",
+               subcommands=("list", "show", "observe", "report"),
+               cli_only=True),
 
     CommandDef("steer", "Inject a message after the next tool call without interrupting", "Session",
                args_hint="<prompt>"),

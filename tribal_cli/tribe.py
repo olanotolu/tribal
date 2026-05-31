@@ -579,6 +579,7 @@ def run_tribe_ask(
         closure=closure,
         now=now,
     )
+    fieldwork_ids: list[str] = []
     lineage_event_id = f"lin_{uuid.uuid4().hex[:10]}"
     consensus = _build_consensus(question, roles_with_keeper, closure, draft_ids)
     council = {
@@ -593,8 +594,13 @@ def run_tribe_ask(
         ],
         "consensus": consensus,
         "draft_lemmas": draft_ids,
+        "fieldwork": fieldwork_ids,
         "lineage_event_id": lineage_event_id,
     }
+    if draft_ids:
+        from tribal_cli.fieldwork import open_fieldwork_for_council
+
+        fieldwork_ids.extend(open_fieldwork_for_council(home=home_path, council=council, now=now))
     lineage = {
         "schema_version": SCHEMA_VERSION,
         "event": "council.convened",
@@ -606,6 +612,7 @@ def run_tribe_ask(
         "decision": consensus.get("decision", {}),
         "falsifiers": consensus.get("falsifiers", []),
         "draft_lemmas": draft_ids,
+        "fieldwork": fieldwork_ids,
     }
     _append_jsonl(home_path / "lineage.jsonl", lineage)
     _append_jsonl(home_path / "council" / "sessions.jsonl", council)
@@ -617,6 +624,12 @@ def run_tribe_status(*, home: str | Path | None = None) -> TribeResult:
     birth = _require_birth(home_path)
     _ensure_law(home_path)
     lore_rows = _read_jsonl(home_path / "lore" / "lemmas.jsonl")
+    try:
+        from tribal_cli.fieldwork import fieldwork_counts
+
+        fields = fieldwork_counts(home=home_path)
+    except Exception:
+        fields = {"open": 0, "closed": 0, "total": 0}
     council = {
         "tribe_id": birth.get("tribe_id", "local"),
         "birth_id": birth.get("birth_id"),
@@ -625,6 +638,9 @@ def run_tribe_status(*, home: str | Path | None = None) -> TribeResult:
         "canon_count": sum(1 for row in lore_rows if row.get("status") == "canon"),
         "folklore_count": sum(1 for row in lore_rows if row.get("status") == "folklore"),
         "council_count": _count_jsonl(home_path / "council" / "sessions.jsonl"),
+        "fieldwork_count": fields["total"],
+        "open_fieldwork_count": fields["open"],
+        "closed_fieldwork_count": fields["closed"],
         "mirofish": "planned_v2",
     }
     return TribeResult(status="status", home=home_path, council=council)
@@ -654,6 +670,10 @@ def render_tribe_result(result: TribeResult, *, json_output: bool = False) -> st
             f"Law: {c.get('law')}",
             f"Lore: {c.get('lore_count')} total ({c.get('folklore_count')} folklore, {c.get('canon_count')} canon)",
             f"Councils: {c.get('council_count')}",
+            (
+                f"Fieldwork: {c.get('fieldwork_count')} total "
+                f"({c.get('open_fieldwork_count')} open, {c.get('closed_fieldwork_count')} closed)"
+            ),
             "MiroFish: planned_v2",
         ])
     if result.status == "roles":
